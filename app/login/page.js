@@ -107,17 +107,6 @@ export default function LoginPage() {
               Não tem conta? <a href="/cadastro" style={{ color: '#059669', fontWeight: 600 }}>Cadastre-se grátis</a>
             </p>
           </div>
-
-          {/* Demo credentials */}
-          <div style={{ marginTop: 32, padding: 20, background: '#f0fdf4', borderRadius: 12, border: '1px solid #a7f3d0' }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: '#059669', marginBottom: 8 }}>🔑 ACESSO DEMO</p>
-            <p style={{ fontSize: 13, color: '#475569', marginBottom: 4 }}>
-              <strong>Admin:</strong> admin@cobbra.com.br / Cobbra@Admin2026
-            </p>
-            <p style={{ fontSize: 13, color: '#475569' }}>
-              <strong>Usuário:</strong> marina@demo.com / Cobbra@Admin2026
-            </p>
-          </div>
         </div>
       </div>
     </div>
