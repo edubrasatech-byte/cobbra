@@ -691,7 +691,7 @@ export default function HomePage() {
               </div>
               <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 28 }}>menos de R$ 0,33/dia</p>
               <div style={{ flex: 1 }}>
-                {['Até 3 cobranças simultâneas', 'Lembretes por e-mail', 'Dashboard básico', 'Templates padrão', '1 chave Pix'].map((f, i) => (
+                {['Até 20 cobranças simultâneas', 'Lembretes por e-mail', 'Dashboard básico', 'Templates padrão', '1 chave Pix'].map((f, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, fontSize: 14, color: '#334155' }}>
                     <span style={{ color: '#10b981' }}>✓</span> {f}
                   </div>
@@ -739,7 +739,7 @@ export default function HomePage() {
                 🔥 ROI médio de 2.000%+ no 1º mês
               </div>
               <div style={{ flex: 1 }}>
-                {['Até 20 cobranças simultâneas', 'WhatsApp + e-mail automático', 'Dashboard completo', 'Templates personalizáveis', 'Relatórios de recebimento', 'Múltiplas chaves Pix', 'Suporte e-mail + WhatsApp'].map((f, i) => (
+                {['Até 50 cobranças simultâneas', 'WhatsApp + e-mail automático', 'Dashboard completo', 'Templates personalizáveis', 'Relatórios de recebimento', 'Múltiplas chaves Pix', 'Suporte e-mail + WhatsApp'].map((f, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, fontSize: 14, color: '#d1fae5' }}>
                     <span style={{ color: '#34d399', fontWeight: 800, fontSize: 16 }}>✓</span> {f}
                   </div>

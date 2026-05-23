@@ -88,16 +88,16 @@ export async function POST(request) {
       );
       const activeCount = activeData?.active_count || 0;
 
-      if (userPlan === 'starter' && activeCount >= 3) {
+      if (userPlan === 'starter' && activeCount >= 20) {
         return Response.json(
-          { error: 'Você atingiu o limite máximo de 3 cobranças simultâneas ativas do plano Starter. Faça upgrade para cadastrar mais!' },
+          { error: 'Você atingiu o limite máximo de 20 cobranças simultâneas ativas do plano Starter. Faça upgrade para cadastrar mais!' },
           { status: 403 }
         );
       }
 
-      if (userPlan === 'crescimento' && activeCount >= 20) {
+      if (userPlan === 'crescimento' && activeCount >= 50) {
         return Response.json(
-          { error: 'Você atingiu o limite máximo de 20 cobranças simultâneas ativas do plano Crescimento. Faça upgrade para o plano Cobra Pro para ter cobranças ilimitadas!' },
+          { error: 'Você atingiu o limite máximo de 50 cobranças simultâneas ativas do plano Crescimento. Faça upgrade para o plano Cobra Pro para ter cobranças ilimitadas!' },
           { status: 403 }
         );
       }
