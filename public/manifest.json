@@ -1,0 +1,14 @@
+{
+  "name": "Cobbra — Cobrança Automática",
+  "short_name": "Cobbra",
+  "description": "Automatize suas cobranças pelo WhatsApp. Receba 100% no Pix.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#059669",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "categories": ["finance", "business", "productivity"]
+}
