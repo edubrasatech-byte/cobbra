@@ -28,6 +28,15 @@ export default function DashboardLayout({ children }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
 
+  // Copilot States
+  const [copilotInput, setCopilotInput] = useState('');
+  const [copilotLoading, setCopilotLoading] = useState(false);
+  const [copilotResponse, setCopilotResponse] = useState(null);
+  const [showCopilotModal, setShowCopilotModal] = useState(false);
+  const [copilotError, setCopilotError] = useState('');
+  const [copilotSuccessMsg, setCopilotSuccessMsg] = useState('');
+  const [allClients, setAllClients] = useState([]);
+
   // Search, profile modal and rebate states
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -38,6 +47,147 @@ export default function DashboardLayout({ children }) {
   const [rebateCharge, setRebateCharge] = useState(null);
   const [rebateAmount, setRebateAmount] = useState('');
   const [rebateMsg, setRebateMsg] = useState('');
+
+  // Load clients for the Copilot selector
+  useEffect(() => {
+    if (showCopilotModal) {
+      fetch('/api/clientes?limit=200')
+        .then(r => r.json())
+        .then(data => setAllClients(data.clients || []))
+        .catch(() => {});
+    }
+  }, [showCopilotModal]);
+
+  async function handleCopilotSubmit(commandText) {
+    if (!commandText || !commandText.trim()) return;
+    setCopilotLoading(true);
+    setCopilotError('');
+    setCopilotSuccessMsg('');
+    setShowCopilotModal(true);
+    setCopilotResponse(null);
+
+    try {
+      const res = await fetch('/api/ai/copilot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command: commandText })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCopilotResponse(data);
+        if (data.intent === 'view_stats') {
+          router.push('/dashboard/relatorios');
+          setTimeout(() => {
+            setShowCopilotModal(false);
+            setCopilotInput('');
+          }, 2000);
+        } else if (data.intent === 'view_clients') {
+          router.push('/dashboard/clientes');
+          setTimeout(() => {
+            setShowCopilotModal(false);
+            setCopilotInput('');
+          }, 2000);
+        } else if (data.intent === 'view_calendar') {
+          router.push('/dashboard/calendario');
+          setTimeout(() => {
+            setShowCopilotModal(false);
+            setCopilotInput('');
+          }, 2000);
+        }
+      } else {
+        setCopilotError(data.error || 'Erro ao processar comando com Copilot');
+      }
+    } catch (e) {
+      setCopilotError('Erro de conexão ao servidor.');
+    } finally {
+      setCopilotLoading(false);
+    }
+  }
+
+  async function executeCopilotAction() {
+    if (!copilotResponse) return;
+    setCopilotLoading(true);
+    setCopilotError('');
+    
+    const { intent, client_id, amount, due_date, description } = copilotResponse;
+
+    if (!client_id) {
+      setCopilotError('Por favor, selecione um cliente para lançar a cobrança.');
+      setCopilotLoading(false);
+      return;
+    }
+
+    if (!amount || parseFloat(amount) <= 0) {
+      setCopilotError('Por favor, insira um valor válido maior que zero.');
+      setCopilotLoading(false);
+      return;
+    }
+
+    try {
+      if (intent === 'create_charge') {
+        const res = await fetch('/api/cobrancas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            client_id,
+            amount: parseFloat(amount),
+            due_date,
+            description: description || 'Cobrança via AI Copilot',
+            recurrence: 'once',
+            reminder_channel: 'both',
+            payment_method: 'pix',
+            daily_interest_rate: 0
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setCopilotSuccessMsg('Cobrança lançada com sucesso! 🐍🎉');
+          fetchNotifications();
+          setCopilotInput('');
+          setTimeout(() => {
+            setShowCopilotModal(false);
+            setCopilotResponse(null);
+            if (pathname === '/dashboard' || pathname === '/dashboard/cobrancas') {
+              window.location.reload();
+            }
+          }, 2000);
+        } else {
+          setCopilotError(data.error || 'Erro ao criar cobrança.');
+        }
+      } else if (intent === 'create_daily_billing') {
+        const res = await fetch('/api/cobranca-diaria', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            client_id,
+            amount: parseFloat(amount),
+            description: description || 'Faturamento Diário via AI Copilot',
+            interest_rate: 0,
+            status: 'active'
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setCopilotSuccessMsg('Faturamento diário configurado com sucesso! 📅🐍');
+          fetchNotifications();
+          setCopilotInput('');
+          setTimeout(() => {
+            setShowCopilotModal(false);
+            setCopilotResponse(null);
+            if (pathname === '/dashboard/cobranca-diaria') {
+              window.location.reload();
+            }
+          }, 2000);
+        } else {
+          setCopilotError(data.error || 'Erro ao criar faturamento diário.');
+        }
+      }
+    } catch (e) {
+      setCopilotError('Erro de conexão ao servidor.');
+    } finally {
+      setCopilotLoading(false);
+    }
+  }
 
   // Search effect
   useEffect(() => {
@@ -372,18 +522,31 @@ export default function DashboardLayout({ children }) {
             <h1 style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>{pageTitle}</h1>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div className="dash-topbar-search" style={{ position: 'relative' }}>
-              <input 
-                placeholder="Buscar cliente..." 
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                style={{
-                  padding: '8px 16px 8px 36px', borderRadius: 8, background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)', color: '#e2e8f0', fontSize: 13, width: 220,
-                  outline: 'none', fontFamily: "'Inter',sans-serif"
-                }} 
-              />
-              <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 14, color: '#64748b' }}>🔍</span>
+            <div className="dash-topbar-search" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ position: 'relative' }}>
+                <input 
+                  placeholder="🪄 AI Assist: Cobre R$ 150 de Ju amanhã..." 
+                  value={copilotInput}
+                  onChange={e => {
+                    setCopilotInput(e.target.value);
+                    setSearchTerm(e.target.value); // Sync to trigger normal client search popover
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      handleCopilotSubmit(copilotInput);
+                    }
+                  }}
+                  style={{
+                    padding: '8px 16px 8px 36px', borderRadius: 8, background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(5,150,105,0.25)', color: '#e2e8f0', fontSize: 13, width: 340,
+                    outline: 'none', fontFamily: "'Inter',sans-serif", transition: 'all 0.3s ease',
+                    boxShadow: copilotInput ? '0 0 10px rgba(5,150,105,0.15)' : 'none'
+                  }} 
+                  onFocus={e => e.target.style.borderColor = '#059669'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(5,150,105,0.25)'}
+                />
+                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 14, color: '#64748b' }}>🪄</span>
+              </div>
 
               {/* Search Results Popover */}
               {searchResults.length > 0 && (
@@ -680,6 +843,181 @@ export default function DashboardLayout({ children }) {
       )}
 
       {rebateMsg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1002, boxShadow: '0 4px 14px rgba(16,185,129,0.3)' }}>{rebateMsg}</div>}
+
+      {/* Copilot AI Modal */}
+      {showCopilotModal && (
+        <div 
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1001, backdropFilter: 'blur(8px)', animation: 'fadeIn 0.2s ease' }}
+          onClick={() => {
+            if (!copilotLoading) {
+              setShowCopilotModal(false);
+              setCopilotResponse(null);
+            }
+          }}
+        >
+          <div 
+            onClick={e => e.stopPropagation()} 
+            style={{ 
+              background: 'rgba(30, 41, 59, 0.95)', borderRadius: 24, padding: 32, width: 500, 
+              border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)'
+            }}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 16, marginBottom: 20 }}>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(135deg, #059669, #0d9488)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>🪄</div>
+              <div>
+                <h3 style={{ fontSize: 18, fontWeight: 800, color: '#fff', margin: 0 }}>Dashboard AI Copilot</h3>
+                <p style={{ fontSize: 11, color: '#64748b', margin: 0 }}>Catarina Inteligência de Ação</p>
+              </div>
+            </div>
+
+            {/* Loading state */}
+            {copilotLoading && (
+              <div style={{ padding: '40px 0', textAlign: 'center' }}>
+                <div style={{ width: 50, height: 50, border: '4px solid rgba(16,185,129,0.1)', borderTop: '4px solid #10b981', borderRadius: '50%', margin: '0 auto 20px', animation: 'spin 1s linear infinite' }} />
+                <p style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600 }}>Catarina está processando seu comando...</p>
+                <p style={{ color: '#64748b', fontSize: 12, marginTop: 4 }}>Validando intenções e estruturando dados 🐍</p>
+              </div>
+            )}
+
+            {/* Error state */}
+            {copilotError && !copilotLoading && (
+              <div style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 12, padding: 16, marginBottom: 20 }}>
+                <p style={{ color: '#fca5a5', fontSize: 13, margin: 0, fontWeight: 500 }}>❌ {copilotError}</p>
+              </div>
+            )}
+
+            {/* Success state */}
+            {copilotSuccessMsg && !copilotLoading && (
+              <div style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 12, padding: 16, marginBottom: 20, textAlign: 'center' }}>
+                <p style={{ color: '#6ee7b7', fontSize: 14, margin: 0, fontWeight: 700 }}>{copilotSuccessMsg}</p>
+              </div>
+            )}
+
+            {/* Content Form when structured response received */}
+            {copilotResponse && !copilotLoading && !copilotSuccessMsg && (
+              <div>
+                <p style={{ color: '#cbd5e1', fontSize: 13, lineHeight: 1.5, background: 'rgba(255,255,255,0.03)', padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.04)', marginBottom: 20 }}>
+                  {copilotResponse.responseMessage}
+                </p>
+
+                {(copilotResponse.intent === 'create_charge' || copilotResponse.intent === 'create_daily_billing') ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 }}>
+                    {/* Client Selection */}
+                    <div>
+                      <label style={{ display: 'block', fontSize: 12, color: '#94a3b8', marginBottom: 6, fontWeight: 600 }}>Cliente Associado</label>
+                      <select
+                        value={copilotResponse.client_id || ''}
+                        onChange={e => setCopilotResponse(prev => ({ ...prev, client_id: e.target.value }))}
+                        style={{
+                          width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)',
+                          background: '#1e293b', color: '#fff', fontSize: 13, outline: 'none'
+                        }}
+                      >
+                        <option value="">-- Selecione o Cliente --</option>
+                        {allClients.map(cl => (
+                          <option key={cl.id} value={cl.id}>{cl.name}</option>
+                        ))}
+                      </select>
+                      {!copilotResponse.client_id && (
+                        <span style={{ fontSize: 11, color: '#f59e0b', display: 'block', marginTop: 4 }}>
+                          ⚠️ Não consegui mapear o cliente automaticamente. Por favor selecione na lista acima!
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Amount */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, color: '#94a3b8', marginBottom: 6, fontWeight: 600 }}>Valor (R$)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={copilotResponse.amount || ''}
+                          onChange={e => setCopilotResponse(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
+                          style={{
+                            width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)',
+                            background: '#1e293b', color: '#fff', fontSize: 13, outline: 'none'
+                          }}
+                        />
+                      </div>
+
+                      {/* Due Date (for single charge) */}
+                      {copilotResponse.intent === 'create_charge' && (
+                        <div>
+                          <label style={{ display: 'block', fontSize: 12, color: '#94a3b8', marginBottom: 6, fontWeight: 600 }}>Vencimento</label>
+                          <input
+                            type="date"
+                            value={copilotResponse.due_date || ''}
+                            onChange={e => setCopilotResponse(prev => ({ ...prev, due_date: e.target.value }))}
+                            style={{
+                              width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)',
+                              background: '#1e293b', color: '#fff', fontSize: 13, outline: 'none'
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                      <label style={{ display: 'block', fontSize: 12, color: '#94a3b8', marginBottom: 6, fontWeight: 600 }}>Descrição / Identificador</label>
+                      <input
+                        type="text"
+                        value={copilotResponse.description || ''}
+                        onChange={e => setCopilotResponse(prev => ({ ...prev, description: e.target.value }))}
+                        style={{
+                          width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)',
+                          background: '#1e293b', color: '#fff', fontSize: 13, outline: 'none'
+                        }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ textAlign: 'center', padding: '10px 0 20px', color: '#94a3b8', fontSize: 13 }}>
+                    Nenhuma ação de banco de dados necessária para esta intenção.
+                  </div>
+                )}
+
+                {/* Footer Buttons */}
+                <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+                  <button
+                    onClick={() => {
+                      setShowCopilotModal(false);
+                      setCopilotResponse(null);
+                    }}
+                    style={{ padding: '10px 20px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', color: '#cbd5e1', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', fontSize: 13, fontFamily: 'Inter' }}
+                  >
+                    Fechar
+                  </button>
+                  
+                  {(copilotResponse.intent === 'create_charge' || copilotResponse.intent === 'create_daily_billing') && (
+                    <button
+                      onClick={executeCopilotAction}
+                      style={{ padding: '10px 20px', borderRadius: 10, background: '#059669', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, fontFamily: 'Inter' }}
+                    >
+                      Confirmar e Lançar 🐍
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Custom spinner style */}
+            <style jsx global>{`
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+              @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+              }
+            `}</style>
+          </div>
+        </div>
+      )}
 
       <Chatbot />
     </div>

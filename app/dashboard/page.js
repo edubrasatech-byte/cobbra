@@ -90,6 +90,8 @@ export default function DashboardHome() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedBarIndex, setSelectedBarIndex] = useState(null);
+  const [insights, setInsights] = useState([]);
+  const [insightsLoading, setInsightsLoading] = useState(false);
 
   function loadStats() {
     setLoading(true);
@@ -124,8 +126,22 @@ export default function DashboardHome() {
       });
   }
 
+  function loadInsights() {
+    setInsightsLoading(true);
+    fetch('/api/ai/insights')
+      .then(r => r.json())
+      .then(data => {
+        setInsights(data.insights || []);
+        setInsightsLoading(false);
+      })
+      .catch(() => {
+        setInsightsLoading(false);
+      });
+  }
+
   useEffect(() => {
     loadStats();
+    loadInsights();
   }, []);
 
   if (loading || !stats) return (
@@ -186,6 +202,68 @@ export default function DashboardHome() {
             🔄 Recarregar Dados
           </button>
         </div>
+
+        {/* AI Insights Section */}
+        <div style={{
+          background: 'rgba(30, 41, 59, 0.4)', borderRadius: 20, padding: 24,
+          border: '1px solid rgba(5,150,105,0.15)', marginBottom: 28,
+          backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 22 }}>🪄</span>
+              <div>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: '#fff', margin: 0 }}>Catarina AI Insights</h3>
+                <p style={{ fontSize: 11, color: '#64748b', margin: 0 }}>Conselhos automáticos baseados nos seus números reais</p>
+              </div>
+            </div>
+            <span style={{
+              fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 6,
+              background: 'rgba(16,185,129,0.15)', color: '#6ee7b7', textTransform: 'uppercase'
+            }}>Gemini 2.5 Flash</span>
+          </div>
+
+          {insightsLoading ? (
+            <div style={{ display: 'flex', gap: 16, overflowX: 'auto', padding: '4px 0' }}>
+              {[1, 2, 3].map(i => (
+                <div key={i} style={{ flex: 1, minWidth: 240, height: 100, background: '#1e293b', borderRadius: 12, border: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span className="animate-pulse" style={{ fontSize: 12, color: '#64748b' }}>Analisando fluxo de caixa...</span>
+                </div>
+              ))}
+            </div>
+          ) : insights.length === 0 ? (
+            <p style={{ color: '#64748b', fontSize: 13, margin: 0, fontStyle: 'italic' }}>Nenhum insight gerado ainda. Registre cobranças para Catarina começar a analisar!</p>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, overflowX: 'auto' }} className="insights-grid">
+              {insights.map((insight, idx) => {
+                const borderColors = { success: '#10b981', warning: '#ef4444', info: '#3b82f6' };
+                const bgColors = { success: 'rgba(16,185,129,0.03)', warning: 'rgba(239,68,68,0.03)', info: 'rgba(59,130,246,0.03)' };
+                return (
+                  <div 
+                    key={idx} 
+                    style={{
+                      background: '#1e293b', borderRadius: 12, padding: 16,
+                      border: '1px solid rgba(255,255,255,0.05)',
+                      borderLeft: `4px solid ${borderColors[insight.type] || '#64748b'}`,
+                      transition: 'all 0.3s'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                  >
+                    <h4 style={{ margin: '0 0 6px 0', fontSize: 14, fontWeight: 700, color: '#fff' }}>{insight.title}</h4>
+                    <p style={{ margin: 0, fontSize: 12, color: '#94a3b8', lineHeight: 1.5 }}>{insight.text}</p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <style>{`
+          @media (max-width: 900px) {
+            .insights-grid { grid-template-columns: 1fr !important; }
+          }
+        `}</style>
 
         {/* Stats Cards */}
         <div className="stats-row">

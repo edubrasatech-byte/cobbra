@@ -321,8 +321,48 @@ export default function ConfiguracoesPage() {
           )}
 
           {activeTab === 'integrations' && (
-            <div style={cardS}>
-              {user?.plan !== 'cobra_pro' && user?.plan !== 'trial' ? (
+            <div>
+              {/* Catarina AI card (visible to everyone) */}
+              <div style={{ ...cardS, marginBottom: 24 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>🤖</div>
+                  <div>
+                    <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', margin: 0 }}>Catarina AI Engine & Copilot</h3>
+                    <p style={{ fontSize: 12, color: '#94a3b8', margin: 0 }}>Google Gemini 2.5 Flash de Graça 🐍</p>
+                  </div>
+                </div>
+
+                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(5,150,105,0.25)', borderRadius: 12, padding: 18, marginBottom: 20, lineHeight: 1.6 }}>
+                  <p style={{ fontSize: 13, color: '#e2e8f0', margin: '0 0 10px 0', fontWeight: 600 }}>💡 Como funciona o custo zero?</p>
+                  <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>
+                    Para que a inteligência artificial do Cobbra seja 100% gratuita ou custe centavos, nós integramos o sistema diretamente com o plano grátis do <strong>Google Gemini 2.5 Flash</strong>. 
+                    Você só precisa obter sua chave gratuita de API no <strong>Google AI Studio</strong> e salvá-la nas variáveis de ambiente da sua hospedagem na Railway com o nome <strong>GEMINI_API_KEY</strong>. O Cobbra lerá a chave automaticamente de forma totalmente segura!
+                  </p>
+                  <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 13, color: '#10b981', fontWeight: 700, marginTop: 12, textDecoration: 'none' }}>
+                    Obter Chave API no Google AI Studio →
+                  </a>
+                </div>
+
+                <h4 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 12 }}>Limites diários do seu plano:</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 12 }} className="ai-limits-grid">
+                  <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 10, padding: 12, border: user?.plan === 'starter' ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.04)' }}>
+                    <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 4px 0', fontWeight: 600 }}>STARTER</p>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: user?.plan === 'starter' ? '#10b981' : '#fff', margin: 0 }}>20 chamadas/dia</p>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 10, padding: 12, border: user?.plan === 'crescimento' ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.04)' }}>
+                    <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 4px 0', fontWeight: 600 }}>CRESCIMENTO</p>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: user?.plan === 'crescimento' ? '#10b981' : '#fff', margin: 0 }}>50 chamadas/dia</p>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 10, padding: 12, border: user?.plan === 'cobra_pro' ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.04)' }}>
+                    <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 4px 0', fontWeight: 600 }}>COBRA PRO</p>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: user?.plan === 'cobra_pro' ? '#10b981' : '#fff', margin: 0 }}>Ilimitadas</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Integrations locking cards */}
+              <div style={cardS}>
+                {user?.plan !== 'cobra_pro' && user?.plan !== 'trial' ? (
                 <div style={{ textAlign: 'center', padding: '40px 20px' }}>
                   <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
                   <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 10 }}>Integrações Personalizadas</h3>
@@ -365,6 +405,7 @@ export default function ConfiguracoesPage() {
                 </>
               )}
             </div>
+          </div>
           )}
 
           {activeTab === 'security' && (

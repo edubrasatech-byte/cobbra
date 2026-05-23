@@ -27,6 +27,8 @@ export default function CobrancasPage() {
   });
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
+  const [cobrancaHumor, setCobrancaHumor] = useState('gentil');
+  const [cobrancaAiLoading, setCobrancaAiLoading] = useState(false);
 
   // Rebate states
   const [showRebateModal, setShowRebateModal] = useState(false);
@@ -99,6 +101,48 @@ export default function CobrancasPage() {
     } catch (error) {
       console.error(error);
       alert('Erro de conexão ao criar cobrança.');
+    }
+  }
+
+  async function handleRedigirComIA() {
+    if (!form.client_id) {
+      alert('Por favor, selecione um cliente primeiro.');
+      return;
+    }
+    if (!form.amount) {
+      alert('Por favor, insira o valor da cobrança.');
+      return;
+    }
+    if (!form.due_date) {
+      alert('Por favor, defina a data de vencimento.');
+      return;
+    }
+
+    const client = clients.find(c => c.id === form.client_id);
+    const clientName = client ? client.name : 'Cliente';
+    const amountVal = parseFloat(form.amount).toFixed(2);
+    const formattedDate = new Date(form.due_date + 'T12:00:00').toLocaleDateString('pt-BR');
+
+    setCobrancaAiLoading(true);
+
+    const promptText = `Olá Catarina, por favor redija uma mensagem curta e educada de lembrete de cobrança no tom '${cobrancaHumor}' para o cliente '${clientName}' no valor de R$ ${amountVal} com vencimento em ${formattedDate}. Não inclua nenhum cabeçalho, introdução ou bloco de código markdown. Retorne apenas o texto exato da mensagem pronto para ser enviado! 🐍`;
+
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: promptText })
+      });
+      const data = await res.json();
+      if (res.ok && data.text) {
+        setForm(prev => ({ ...prev, description: data.text.trim() }));
+      } else {
+        alert('Catarina está ocupada no momento. Tente novamente! 🐍');
+      }
+    } catch (e) {
+      alert('Erro de conexão ao gerar texto de cobrança.');
+    } finally {
+      setCobrancaAiLoading(false);
     }
   }
 
@@ -365,9 +409,45 @@ export default function CobrancasPage() {
                   <input type="date" value={form.due_date} onChange={e => setForm({ ...form, due_date: e.target.value })} style={inputS} required />
                 </div>
               </div>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'flex-end', marginBottom: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Humor da Cobrança (AI Copywriting)</label>
+                  <select 
+                    value={cobrancaHumor} 
+                    onChange={e => setCobrancaHumor(e.target.value)} 
+                    style={selectS}
+                  >
+                    <option style={{ color: '#0f172a' }} value="gentil">😇 Gentil (Amigável e leve)</option>
+                    <option style={{ color: '#0f172a' }} value="firme">👔 Firme (Direto e profissional)</option>
+                    <option style={{ color: '#0f172a' }} value="urgente">🚨 Urgente (Alerta com seriedade)</option>
+                    <option style={{ color: '#0f172a' }} value="divertido">🐍 Divertido (Com trocadilhos de cobrinha)</option>
+                  </select>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={handleRedigirComIA}
+                  disabled={cobrancaAiLoading}
+                  style={{
+                    padding: '12px 20px', borderRadius: 8, background: 'rgba(5,150,105,0.15)',
+                    color: '#6ee7b7', border: '1px solid rgba(5,150,105,0.3)', fontWeight: 600,
+                    cursor: 'pointer', fontFamily: 'Inter', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6,
+                    height: 44, opacity: cobrancaAiLoading ? 0.6 : 1
+                  }}
+                >
+                  {cobrancaAiLoading ? 'Redigindo...' : '🪄 Redigir com IA'}
+                </button>
+              </div>
+
               <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Descrição</label>
-                <input type="text" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Ex: Mensalidade Maio/2026" style={inputS} />
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Descrição / Mensagem de Cobrança</label>
+                <textarea 
+                  rows="3"
+                  value={form.description} 
+                  onChange={e => setForm({ ...form, description: e.target.value })} 
+                  placeholder="Ex: Mensalidade de Maio/2026. Use o botão de IA acima para redigir um texto incrível!" 
+                  style={{ ...inputS, height: 'unset', resize: 'vertical' }} 
+                />
               </div>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>

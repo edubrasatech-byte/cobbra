@@ -27,7 +27,7 @@ export default function Chatbot() {
     { q: '💰 Tem taxa sobre o valor recebido?', a: 'Nenhuma! Diferente de outros intermediadores de pagamento, o Cobbra não retém nenhuma porcentagem do seu Pix. Você paga apenas a assinatura do plano mensal e recebe o dinheiro integral direto no seu banco!' }
   ];
 
-  const handleSendMessage = (text) => {
+  const handleSendMessage = async (text) => {
     if (!text.trim()) return;
 
     // Add user message
@@ -40,34 +40,34 @@ export default function Chatbot() {
     setInputText('');
     setIsTyping(true);
 
-    // Simulate thinking delay
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: text,
+          history: messages.map(m => ({ sender: m.sender, text: m.text }))
+        })
+      });
+      const data = await res.json();
       setIsTyping(false);
-      let replyText = '';
-      const t = text.toLowerCase();
 
-      if (t.includes('whatsapp') || t.includes('conectar') || t.includes('celular') || t.includes('qr code')) {
-        replyText = 'Para conectar o WhatsApp ao Cobbra, acesse "Configurações > Integrações", clique em "Configurar" no card do WhatsApp e insira as credenciais do seu provedor (Z-API/Evolution). O processo é super amigável e não requer código!';
-      } else if (t.includes('plano') || t.includes('planos') || t.includes('preço') || t.includes('preços') || t.includes('mensalidade') || t.includes('gratis') || t.includes('grátis')) {
-        replyText = 'Temos três planos: Starter (R$ 9,90/mês, limite de 3 cobranças), Crescimento (R$ 19,90/mês, limite de 20 cobranças) e Cobra Pro (R$ 49,90/mês, cobranças ilimitadas). Escolha o melhor para a escala do seu negócio!';
-      } else if (t.includes('juro') || t.includes('juros') || t.includes('multa') || t.includes('atraso')) {
-        replyText = 'Com o Cobbra você pode adicionar juros diários pós-vencimento de forma flexível. O saldo da dívida é recalculado a cada dia que passa e exibido com destaque na tela de cobranças e no link do cliente!';
-      } else if (t.includes('diaria') || t.includes('diária') || t.includes('faturamento diário')) {
-        replyText = 'A Cobrança Diária é o recurso perfeito para locadoras de carros, estúdios ou serviços recorrentes de alta frequência. Você configura o valor diário no painel de cobrança diária e a cobrança acumula no histórico do cliente!';
-      } else if (t.includes('taxa') || t.includes('pix') || t.includes('taxas') || t.includes('receber')) {
-        replyText = 'Aqui a taxa é zero! O dinheiro do Pix cai direto na sua chave cadastrada sem passar pelo Cobbra. Você fica com 100% do valor pago pelo cliente!';
-      } else if (t.includes('abatimento') || t.includes('abater') || t.includes('desconto')) {
-        replyText = 'Você pode realizar abatimentos parciais em qualquer cobrança pendente. Basta ir na aba de Cobranças ou clicar no perfil do cliente, selecionar "Abater Parte", digitar o valor e o saldo será atualizado automaticamente!';
-      } else {
-        replyText = 'Excelente pergunta! Como assistente inteligente do Cobbra, posso te garantir que nossa ferramenta ajuda você a reduzir a inadimplência em até 40% enviando lembretes gentis por WhatsApp e e-mail. Se precisar de ajuda para configurar, me avise!';
-      }
-
+      const botMsg = {
+        sender: 'bot',
+        text: data.text || 'Tive uma pequena lentidão na minha conexão. Pode repetir? 🐍',
+        time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        ticketOpened: data.ticketOpened
+      };
+      setMessages(prev => [...prev, botMsg]);
+    } catch (err) {
+      console.error(err);
+      setIsTyping(false);
       setMessages(prev => [...prev, {
         sender: 'bot',
-        text: replyText,
+        text: 'Tive uma pequena lentidão na minha conexão. Pode repetir? 🐍',
         time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
       }]);
-    }, 1000);
+    }
   };
 
   return (
@@ -94,9 +94,11 @@ export default function Chatbot() {
       {isOpen && (
         <div style={{
           position: 'absolute', bottom: 75, right: 0, width: 360, height: 500,
-          background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)',
-          borderRadius: 20, boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
-          overflow: 'hidden', display: 'flex', flexDirection: 'column'
+          background: 'rgba(30, 41, 59, 0.85)', border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: 20, boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+          overflow: 'hidden', display: 'flex', flexDirection: 'column',
+          backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+          animation: 'fadeInUp 0.3s ease'
         }}>
           {/* Header */}
           <div style={{ padding: '16px 20px', background: 'linear-gradient(135deg, #059669, #0d9488)', display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -119,7 +121,7 @@ export default function Chatbot() {
                 key={i}
                 style={{
                   alignSelf: m.sender === 'user' ? 'flex-end' : 'flex-start',
-                  maxWidth: '80%',
+                  maxWidth: '85%',
                   background: m.sender === 'user' ? '#059669' : 'rgba(255,255,255,0.05)',
                   borderRadius: m.sender === 'user' ? '16px 16px 2px 16px' : '16px 16px 16px 2px',
                   padding: '10px 14px',
@@ -127,6 +129,11 @@ export default function Chatbot() {
                 }}
               >
                 <p style={{ margin: 0, fontSize: 13, color: '#fff', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{m.text}</p>
+                {m.ticketOpened && (
+                  <div style={{ marginTop: 8, padding: '8px 12px', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.25)', borderRadius: 8, fontSize: 11, color: '#f59e0b', fontWeight: 600 }}>
+                    🎫 Chamado prioritário aberto para suporte@cobbra.com.br
+                  </div>
+                )}
                 <span style={{ fontSize: 9, color: '#64748b', display: 'block', textAlign: 'right', marginTop: 4 }}>{m.time}</span>
               </div>
             ))}
@@ -135,9 +142,11 @@ export default function Chatbot() {
               <div style={{
                 alignSelf: 'flex-start', background: 'rgba(255,255,255,0.05)',
                 borderRadius: '16px 16px 16px 2px', padding: '10px 14px',
-                border: '1px solid rgba(255,255,255,0.04)', color: '#94a3b8', fontSize: 12
+                border: '1px solid rgba(255,255,255,0.04)', color: '#94a3b8', fontSize: 12,
+                display: 'flex', alignItems: 'center', gap: 6
               }}>
-                Cobrinha está escrevendo... 🐍
+                <span>Catarina está pensando</span>
+                <span className="animate-pulse" style={{ color: '#10b981' }}>🐍...</span>
               </div>
             )}
           </div>
