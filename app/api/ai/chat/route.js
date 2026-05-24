@@ -16,7 +16,7 @@ export async function POST(request) {
     let isTicketOpened = false;
 
     // Strict system prompt containing business info, plans, FAQ, and support triggers
-    const systemPrompt = `Você é a Catarina, a assistente inteligente oficial da plataforma SaaS brasileira Cobbra. 
+    let systemPrompt = `Você é a Catarina, a assistente inteligente oficial da plataforma SaaS brasileira Cobbra. 
 Cobbra é uma plataforma que envia cobranças gentis por WhatsApp e e-mail de forma 100% automática. Receba direto no seu Pix, sem taxas intermediárias.
 Valores dos planos:
 - Starter: R$ 9,90/mês, até 20 cobranças simultâneas, lembretes por E-mail.
@@ -27,6 +27,55 @@ INSTRUÇÃO RÍGIDA DE AUTO-SUPORTE:
 Se o usuário solicitar ações que apenas o administrador/suporte oficial do Cobbra possa realizar manualmente (como estornar pagamentos de assinatura, cancelamento manual de planos com reembolso, relatar falhas técnicas severas do sistema, ou requisições complexas de infraestrutura), você deve dizer de forma muito simpática que entende a gravidade e que está abrindo um chamado de suporte prioritário para ele.
 Neste caso, e SOMENTE neste caso, você DEVE terminar a sua resposta incluindo exatamente a marcação secreta: [SUPPORT_TICKET_TRIGGER]. Isso avisará o sistema para notificar o suporte imediatamente no e-mail suporte@cobbra.com.br.
 Responda sempre em português brasileiro, seja simpática, solícita e use emojis de cobrinha 🐍.`;
+
+    if (user) {
+      // Fetch dynamic dashboard analytics from SQLite to provide hyper-intelligent user support
+      const clientsCount = queryOne('SELECT COUNT(*) as total FROM clients WHERE user_id = ?', [user.id])?.total || 0;
+      const chargesCount = queryOne('SELECT COUNT(*) as total FROM charges WHERE user_id = ?', [user.id])?.total || 0;
+      
+      const stats = queryOne(`
+        SELECT 
+          SUM(amount) as total_charged,
+          SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) as total_received,
+          SUM(CASE WHEN status = 'overdue' THEN amount ELSE 0 END) as total_overdue
+        FROM charges 
+        WHERE user_id = ?`,
+        [user.id]
+      );
+      
+      const totalCharged = stats?.total_charged || 0;
+      const totalReceived = stats?.total_received || 0;
+      const totalOverdue = stats?.total_overdue || 0;
+      const overduePercent = totalCharged > 0 ? ((totalOverdue / totalCharged) * 100).toFixed(1) : '0';
+
+      const topDebtor = queryOne(`
+        SELECT cl.name, SUM(c.amount) as overdue_sum 
+        FROM charges c
+        JOIN clients cl ON c.client_id = cl.id
+        WHERE c.user_id = ? AND c.status = 'overdue'
+        GROUP BY c.client_id
+        ORDER BY overdue_sum DESC
+        LIMIT 1
+      `, [user.id]);
+
+      const debtorInfo = topDebtor 
+        ? `${topDebtor.name} (R$ ${Number(topDebtor.overdue_sum).toFixed(2)} em atraso)`
+        : 'Nenhum cliente inadimplente crítico';
+
+      systemPrompt += `\n\nCONTEXTO REAL DO USUÁRIO LOGADO:
+Nome do usuário: ${user.name}
+E-mail: ${user.email}
+Plano ativo: ${user.plan || 'trial'}
+Estatísticas reais do negócio dele no SQLite do Cobbra:
+- Total de clientes cadastrados: ${clientsCount}
+- Total de cobranças criadas: ${chargesCount}
+- Faturamento Total Lançado: R$ ${Number(totalCharged).toFixed(2)}
+- Total Recebido (Pago): R$ ${Number(totalReceived).toFixed(2)}
+- Total em Atraso (Vencido): R$ ${Number(totalOverdue).toFixed(2)} (Taxa de Inadimplência: ${overduePercent}%)
+- Maior Devedor Atual: ${debtorInfo}
+
+Se o usuário perguntar sobre o seu faturamento, clientes, inadimplência, ou quem deve para ele, você DEVE responder consultando exatamente os números acima com precisão e oferecendo conselhos práticos de cobrança amigável para ajudá-lo a receber!`;
+    }
 
     if (apiKey) {
       // NATIVE DEPENDENCY-FREE FETCH CALL TO GEMINI API

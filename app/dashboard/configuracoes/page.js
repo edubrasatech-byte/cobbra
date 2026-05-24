@@ -31,7 +31,25 @@ export default function ConfiguracoesPage() {
   });
   const [intLoading, setIntLoading] = useState(false);
 
+  // WhatsApp Option A connection states
+  const [waMethod, setWaMethod] = useState('simplified');
+  const [whatsappStatus, setWhatsappStatus] = useState('disconnected');
+  const [whatsappPhone, setWhatsappPhone] = useState('');
+  const [whatsappQrCode, setWhatsappQrCode] = useState('');
+  const [waSimPhone, setWaSimPhone] = useState('');
+
   useEffect(() => {
+    // Fetch active WhatsApp connection status
+    fetch('/api/whatsapp/connect')
+      .then(r => r.json())
+      .then(data => {
+        if (data.status) {
+          setWhatsappStatus(data.status);
+          setWhatsappPhone(data.phone || '');
+        }
+      })
+      .catch(() => {});
+
     fetch('/api/auth/me').then(r => r.json()).then(d => {
       if (d.user) { 
         setUser(d.user); 
@@ -62,7 +80,81 @@ export default function ConfiguracoesPage() {
       .catch(err => console.error(err));
   }, []);
 
+  // Polling WhatsApp status when scanning or connecting
+  useEffect(() => {
+    let interval;
+    if (whatsappStatus === 'connecting' || whatsappStatus === 'scanning') {
+      interval = setInterval(() => {
+        fetch('/api/whatsapp/connect')
+          .then(r => r.json())
+          .then(data => {
+            if (data.status === 'connected') {
+              setWhatsappStatus('connected');
+              setWhatsappPhone(data.phone || '');
+              clearInterval(interval);
+              showMsg('WhatsApp conectado com sucesso! 📱');
+            }
+          })
+          .catch(() => {});
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [whatsappStatus]);
+
   function showMsg(text) { setMsg(text); setTimeout(() => setMsg(''), 3000); }
+
+  async function handleStartWaConnection() {
+    setWhatsappStatus('connecting');
+    try {
+      const res = await fetch('/api/whatsapp/connect');
+      const data = await res.json();
+      if (data.qrCode) {
+        setWhatsappQrCode(data.qrCode);
+        setWhatsappStatus('scanning');
+      } else if (data.status === 'connected') {
+        setWhatsappStatus('connected');
+        setWhatsappPhone(data.phone || '');
+      }
+    } catch (e) {
+      setWhatsappStatus('disconnected');
+      alert('Erro de conexão com o servidor Evolution.');
+    }
+  }
+
+  async function handleSimulateScan() {
+    const phone = waSimPhone || '(11) 99999-9999';
+    try {
+      const res = await fetch('/api/whatsapp/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setWhatsappStatus('connected');
+        setWhatsappPhone(phone);
+        showMsg('WhatsApp pareado com sucesso! 🎉');
+      }
+    } catch (e) {
+      alert('Erro ao simular conexão.');
+    }
+  }
+
+  async function handleDisconnectWa() {
+    if (!confirm('Deseja realmente desparear seu WhatsApp do disparador central?')) return;
+    try {
+      const res = await fetch('/api/whatsapp/connect', { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        setWhatsappStatus('disconnected');
+        setWhatsappPhone('');
+        setWhatsappQrCode('');
+        showMsg('WhatsApp desconectado! 🛑');
+      }
+    } catch (e) { 
+      alert('Erro ao desconectar WhatsApp.');
+    }
+  }
 
   async function handleSaveScoreRates() {
     setMsg('Salvando configurações de score...');
@@ -423,8 +515,15 @@ export default function ConfiguracoesPage() {
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                       <div style={{ width: 44, height: 44, borderRadius: 12, background: `${intg.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{intg.icon}</div>
                       <div style={{ flex: 1 }}>
-                        <p style={{ fontSize: 15, fontWeight: 600, color: '#e2e8f0' }}>{intg.name}</p>
-                        <p style={{ fontSize: 13, color: '#64748b' }}>{intg.desc}</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <p style={{ fontSize: 15, fontWeight: 600, color: '#e2e8f0', margin: 0 }}>{intg.name}</p>
+                          {intg.key === 'whatsapp' && whatsappStatus === 'connected' && (
+                            <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 6, background: 'rgba(16,185,129,0.15)', color: '#10b981' }}>
+                              🟢 Ativo ({whatsappPhone})
+                            </span>
+                          )}
+                        </div>
+                        <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0 0' }}>{intg.desc}</p>
                       </div>
                       <button 
                         onClick={() => {
@@ -623,28 +722,123 @@ export default function ConfiguracoesPage() {
             <form onSubmit={handleSaveIntegration}>
               {selectedInt === 'whatsapp' ? (
                 <>
-                  <div style={{ marginBottom: 16 }}>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Instância API (Evolution API / Z-API URL) *</label>
-                    <input 
-                      type="url" 
-                      value={intForm.whatsappUrl} 
-                      onChange={e => setIntForm({ ...intForm, whatsappUrl: e.target.value })} 
-                      placeholder="https://api.z-api.io/instances/..." 
-                      style={inputS} 
-                      required 
-                    />
+                  {/* Method tabs Selector */}
+                  <div style={{ display: 'flex', gap: 8, background: 'rgba(255,255,255,0.03)', padding: 4, borderRadius: 10, marginBottom: 24 }}>
+                    <button type="button" onClick={() => setWaMethod('simplified')} style={{
+                      flex: 1, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter', fontSize: 12, fontWeight: 600,
+                      background: waMethod === 'simplified' ? '#059669' : 'transparent',
+                      color: waMethod === 'simplified' ? '#fff' : '#94a3b8', transition: 'all 0.2s'
+                    }}>
+                      ⚡ Simplificado (Cobbra API)
+                    </button>
+                    <button type="button" onClick={() => setWaMethod('advanced')} style={{
+                      flex: 1, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter', fontSize: 12, fontWeight: 600,
+                      background: waMethod === 'advanced' ? '#059669' : 'transparent',
+                      color: waMethod === 'advanced' ? '#fff' : '#94a3b8', transition: 'all 0.2s'
+                    }}>
+                      ⚙️ Avançado (Z-API / BYOK)
+                    </button>
                   </div>
-                  <div style={{ marginBottom: 24 }}>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Token / API Key *</label>
-                    <input 
-                      type="password" 
-                      value={intForm.whatsappToken} 
-                      onChange={e => setIntForm({ ...intForm, whatsappToken: e.target.value })} 
-                      placeholder="Token da instância" 
-                      style={inputS} 
-                      required 
-                    />
-                  </div>
+
+                  {waMethod === 'simplified' ? (
+                    <div style={{ textAlign: 'center', padding: '10px 0 20px 0' }}>
+                      {whatsappStatus === 'disconnected' && (
+                        <div>
+                          <p style={{ fontSize: 13, color: '#cbd5e1', marginBottom: 20 }}>
+                            Conecte o seu número de WhatsApp pessoal ou comercial no nosso disparador central da Cobbra. Rápido, seguro e incluso no seu plano!
+                          </p>
+                          <button
+                            type="button"
+                            onClick={handleStartWaConnection}
+                            style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'Inter' }}
+                          >
+                            Gerar QR Code de Conexão 📱
+                          </button>
+                        </div>
+                      )}
+
+                      {whatsappStatus === 'connecting' && (
+                        <div style={{ padding: '20px 0' }}>
+                          <div style={{ border: '4px solid rgba(255,255,255,0.05)', borderTop: '4px solid #10b981', borderRadius: '50%', width: 40, height: 40, margin: '0 auto 16px', animation: 'spin 1s linear infinite' }} />
+                          <p style={{ fontSize: 13, color: '#94a3b8' }}>Solicitando nova instância ao disparador central...</p>
+                        </div>
+                      )}
+
+                      {whatsappStatus === 'scanning' && (
+                        <div>
+                          <p style={{ fontSize: 13, color: '#cbd5e1', marginBottom: 16 }}>
+                            Abra o WhatsApp no seu celular, acesse <strong>Aparelhos Conectados &gt; Conectar um Aparelho</strong> e escaneie o código abaixo:
+                          </p>
+                          
+                          <div style={{ background: '#fff', padding: 16, borderRadius: 16, display: 'inline-block', marginBottom: 20, boxShadow: '0 8px 30px rgba(0,0,0,0.3)' }}>
+                            <img src={whatsappQrCode} alt="WhatsApp QR Code" style={{ width: 180, height: 180, display: 'block' }} />
+                          </div>
+
+                          <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(16,185,129,0.3)', borderRadius: 10, padding: 14, maxWidth: 360, margin: '0 auto' }}>
+                            <p style={{ fontSize: 11, color: '#34d399', margin: '0 0 8px 0', fontWeight: 700 }}>🧪 SIMULADOR DE TESTE RÁPIDO:</p>
+                            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                              <input 
+                                type="text"
+                                placeholder="Seu número Ex: (11) 99999-9999"
+                                value={waSimPhone}
+                                onChange={e => setWaSimPhone(e.target.value)}
+                                style={{ ...inputS, width: 200, padding: '6px 10px', fontSize: 12, height: 32 }}
+                              />
+                              <button
+                                type="button"
+                                onClick={handleSimulateScan}
+                                style={{ padding: '6px 12px', borderRadius: 8, background: '#10b981', color: '#fff', fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'Inter', height: 32 }}
+                              >
+                                Parear Celular ⚡
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {whatsappStatus === 'connected' && (
+                        <div style={{ padding: '10px 0' }}>
+                          <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, margin: '0 auto 16px' }}>🟢</div>
+                          <h4 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 6 }}>WhatsApp Conectado!</h4>
+                          <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 24 }}>
+                            Aparelho ativo: <strong>{whatsappPhone}</strong>
+                          </p>
+                          <button
+                            type="button"
+                            onClick={handleDisconnectWa}
+                            style={{ padding: '10px 20px', borderRadius: 8, background: 'rgba(239,68,68,0.15)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.2)', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter' }}
+                          >
+                            🔴 Desconectar Aparelho
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ marginBottom: 16 }}>
+                        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Instância API (Evolution API / Z-API URL) *</label>
+                        <input 
+                          type="url" 
+                          value={intForm.whatsappUrl} 
+                          onChange={e => setIntForm({ ...intForm, whatsappUrl: e.target.value })} 
+                          placeholder="https://api.z-api.io/instances/..." 
+                          style={inputS} 
+                          required 
+                        />
+                      </div>
+                      <div style={{ marginBottom: 24 }}>
+                        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Token / API Key *</label>
+                        <input 
+                          type="password" 
+                          value={intForm.whatsappToken} 
+                          onChange={e => setIntForm({ ...intForm, whatsappToken: e.target.value })} 
+                          placeholder="Token da instância" 
+                          style={inputS} 
+                          required 
+                        />
+                      </div>
+                    </>
+                  )}
                 </>
               ) : (
                 <>
@@ -713,23 +907,25 @@ export default function ConfiguracoesPage() {
                   type="button" 
                   onClick={() => setShowIntModal(false)} 
                   style={{ padding: '12px 24px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', color: '#94a3b8', fontSize: 14, fontWeight: 600, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'Inter' }}
-                  disabled={intLoading}
+                  disabled={intLoading} 
                 >
-                  Cancelar
+                  {selectedInt === 'whatsapp' && waMethod === 'simplified' ? 'Fechar' : 'Cancelar'}
                 </button>
-                <button 
-                  type="submit" 
-                  style={{ 
-                    padding: '12px 24px', borderRadius: 10, 
-                    background: intLoading ? '#3b4252' : 'linear-gradient(135deg,#059669,#0d9488)', 
-                    color: '#fff', fontSize: 14, fontWeight: 700, 
-                    cursor: intLoading ? 'not-allowed' : 'pointer', border: 'none', 
-                    fontFamily: 'Inter' 
-                  }}
-                  disabled={intLoading}
-                >
-                  {intLoading ? 'Salvando...' : 'Salvar e Testar Conexão'}
-                </button>
+                {!(selectedInt === 'whatsapp' && waMethod === 'simplified') && (
+                  <button 
+                    type="submit" 
+                    style={{ 
+                      padding: '12px 24px', borderRadius: 10, 
+                      background: intLoading ? '#3b4252' : 'linear-gradient(135deg,#059669,#0d9488)', 
+                      color: '#fff', fontSize: 14, fontWeight: 700, 
+                      cursor: intLoading ? 'not-allowed' : 'pointer', border: 'none', 
+                      fontFamily: 'Inter' 
+                    }} 
+                    disabled={intLoading} 
+                  >
+                    {intLoading ? 'Salvando...' : 'Salvar e Testar Conexão'}
+                  </button>
+                )}
               </div>
             </form>
 

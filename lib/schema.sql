@@ -25,6 +25,9 @@ CREATE TABLE IF NOT EXISTS users (
   interest_rate_risk REAL DEFAULT 0.5,
   score_limit_good REAL DEFAULT 0.2,
   score_limit_regular REAL DEFAULT 0.4,
+  whatsapp_status TEXT DEFAULT 'disconnected',
+  whatsapp_phone TEXT,
+  whatsapp_instance TEXT,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))
 );
