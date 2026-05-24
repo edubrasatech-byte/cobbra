@@ -95,7 +95,7 @@ Plano ativo: ${user.plan || 'trial'}`;
 
     if (apiKey) {
       try {
-        // NATIVE DEPENDENCY-FREE FETCH CALL TO GEMINI API
+        // NATIVE DEPENDENCY-FREE FETCH CALL TO GEMINI API (using stable gemini-2.5-flash)
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
         
         // Convert chat history format for Gemini API
@@ -140,6 +140,10 @@ Plano ativo: ${user.plan || 'trial'}`;
         if (response.ok) {
           const data = await response.json();
           aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          if (!aiResponse) {
+            console.warn('[GEMINI CHAT WARNING] Gemini returned empty response or candidate safety block, falling back to rule-based reply.');
+            aiResponse = getFallbackReply(message);
+          }
         } else {
           const errorText = await response.text();
           console.error('[GEMINI API ERROR]', errorText);
