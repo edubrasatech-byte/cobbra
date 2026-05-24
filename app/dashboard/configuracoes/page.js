@@ -10,6 +10,7 @@ export default function ConfiguracoesPage() {
 
   // Score rates states
   const [scoreRates, setScoreRates] = useState({ excellent: 0.1, regular: 0.3, risk: 0.5 });
+  const [scoreThresholds, setScoreThresholds] = useState({ good: 20, regular: 40 });
 
   // Password change states
   const [pwError, setPwError] = useState('');
@@ -40,6 +41,10 @@ export default function ConfiguracoesPage() {
           pix_key_type: d.user.pix_key_type || 'email', 
           phone: d.user.phone || '' 
         }); 
+        setScoreThresholds({
+          good: Math.round((d.user.score_limit_good ?? 0.2) * 100),
+          regular: Math.round((d.user.score_limit_regular ?? 0.4) * 100)
+        });
       }
     });
 
@@ -60,8 +65,10 @@ export default function ConfiguracoesPage() {
   function showMsg(text) { setMsg(text); setTimeout(() => setMsg(''), 3000); }
 
   async function handleSaveScoreRates() {
-    setMsg('Salvando taxas por score...');
-    const res = await fetch('/api/cobranca-diaria', {
+    setMsg('Salvando configurações de score...');
+    
+    // 1. Save interest rates configuration
+    const res1 = await fetch('/api/cobranca-diaria', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -70,11 +77,25 @@ export default function ConfiguracoesPage() {
         interest_rate_risk: scoreRates.risk
       })
     });
-    if (res.ok) {
-      showMsg('Taxas de juros por score salvas! 📈');
+
+    // 2. Save score percentage thresholds configuration
+    const res2 = await fetch('/api/auth/me', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        score_limit_good: scoreThresholds.good / 100,
+        score_limit_regular: scoreThresholds.regular / 100
+      })
+    });
+
+    if (res1.ok && res2.ok) {
+      const data = await res2.json();
+      if (data.user) {
+        setUser(data.user);
+      }
+      showMsg('Configurações e taxas por score salvas! 📈');
     } else {
-      const err = await res.json();
-      alert(err.error || 'Erro ao salvar taxas.');
+      alert('Erro ao salvar as configurações de score.');
     }
   }
 
@@ -282,7 +303,7 @@ export default function ConfiguracoesPage() {
               <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8 }}>Juros por Faixa de Score</h3>
               <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 24 }}>Defina as taxas padrão de juros diários pós-vencimento a serem aplicadas de acordo com o score pagador do cliente.</p>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 24 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 32 }}>
                 <div style={{ background: 'rgba(16,185,129,0.08)', borderRadius: 12, padding: 16, border: '1px solid rgba(16,185,129,0.15)' }}>
                   <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#10b981', marginBottom: 8 }}>😊 Score Excelente (% ao dia)</label>
                   <input type="number" step="0.01" value={scoreRates.excellent} onChange={e => setScoreRates({ ...scoreRates, excellent: parseFloat(e.target.value) || 0 })} style={inputS} />
@@ -296,8 +317,24 @@ export default function ConfiguracoesPage() {
                   <input type="number" step="0.01" value={scoreRates.risk} onChange={e => setScoreRates({ ...scoreRates, risk: parseFloat(e.target.value) || 0 })} style={inputS} />
                 </div>
               </div>
+
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8 }}>Limites de Faixa de Score</h3>
+              <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 24 }}>Defina o limite de inadimplência (proporção de cobranças vencidas sobre o faturado total) para classificar o score de risco do cliente.</p>
               
-              <button onClick={handleSaveScoreRates} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter' }}>Salvar Taxas</button>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }} className="score-limits-grid">
+                <div style={{ background: 'rgba(110,231,183,0.08)', borderRadius: 12, padding: 16, border: '1px solid rgba(110,231,183,0.15)' }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#6ee7b7', marginBottom: 8 }}>😊 Limite Máximo Score Bom (% de inadimplência)</label>
+                  <input type="number" min="1" max="99" value={scoreThresholds.good} onChange={e => setScoreThresholds({ ...scoreThresholds, good: parseInt(e.target.value) || 0 })} style={inputS} />
+                  <span style={{ display: 'block', fontSize: 11, color: '#64748b', marginTop: 6 }}>Clientes abaixo deste percentual de dívidas vencidas serão considerados <strong>Bons pagadores</strong>.</span>
+                </div>
+                <div style={{ background: 'rgba(245,158,11,0.08)', borderRadius: 12, padding: 16, border: '1px solid rgba(245,158,11,0.15)' }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#f59e0b', marginBottom: 8 }}>⚠️ Limite Máximo Score Regular (% de inadimplência)</label>
+                  <input type="number" min="2" max="100" value={scoreThresholds.regular} onChange={e => setScoreThresholds({ ...scoreThresholds, regular: parseInt(e.target.value) || 0 })} style={inputS} />
+                  <span style={{ display: 'block', fontSize: 11, color: '#64748b', marginTop: 6 }}>Clientes entre o limite Bom e este serão classificados como <strong>Regulares</strong>. Acima deste serão de <strong>Alto Risco</strong>.</span>
+                </div>
+              </div>
+              
+              <button onClick={handleSaveScoreRates} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter' }}>Salvar Configurações</button>
             </div>
           )}
 

@@ -180,15 +180,18 @@ export default function ClientesPage() {
   }
 
   const getPayerScore = c => {
+    const limitGood = user?.score_limit_good ?? 0.2;
+    const limitRegular = user?.score_limit_regular ?? 0.4;
+    
     if (!c.total_charged || c.total_charged === 0) {
       return { l: 'Excelente', c: '#10b981', b: 'rgba(16,185,129,0.15)', s: '⭐⭐⭐⭐⭐' };
     }
     const overdueRatio = c.total_overdue / c.total_charged;
     if (c.total_overdue === 0) {
       return { l: 'Excelente', c: '#10b981', b: 'rgba(16,185,129,0.15)', s: '⭐⭐⭐⭐⭐' };
-    } else if (overdueRatio < 0.2) {
+    } else if (overdueRatio < limitGood) {
       return { l: 'Bom', c: '#6ee7b7', b: 'rgba(110,231,183,0.15)', s: '⭐⭐⭐⭐' };
-    } else if (overdueRatio < 0.4) {
+    } else if (overdueRatio < limitRegular) {
       return { l: 'Regular', c: '#f59e0b', b: 'rgba(245,158,11,0.15)', s: '⭐⭐⭐' };
     } else {
       return { l: 'Alto Risco', c: '#ef4444', b: 'rgba(239,68,68,0.15)', s: '⭐' };
