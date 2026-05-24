@@ -61,6 +61,16 @@ export default function CobrancasPage() {
       .catch(() => setLoading(false));
   }
 
+  function handleReload() {
+    if (filter === '' && search === '') {
+      loadCharges();
+    } else {
+      setFilter('');
+      setSearch('');
+    }
+    triggerToast('Tabela de cobranças recarregada! 🔄', 'success');
+  }
+
   useEffect(() => { 
     loadCharges(); 
     fetch('/api/clientes?limit=100').then(r=>r.json()).then(d=>setClients(d.clients||[])); 
@@ -323,7 +333,7 @@ export default function CobrancasPage() {
         </div>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <button 
-            onClick={loadCharges}
+            onClick={handleReload}
             style={{
               background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
               borderRadius: 10, padding: '12px 18px', color: '#cbd5e1', cursor: 'pointer',
