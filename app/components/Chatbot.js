@@ -13,18 +13,26 @@ export default function Chatbot() {
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef(null);
+  const messagesEndRef = useRef(null);
+
+  // Smooth and extremely reliable scroll to bottom
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 80);
+  };
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (isOpen) {
+      scrollToBottom();
     }
-  }, [messages, isTyping]);
+  }, [messages, isTyping, isOpen]);
 
   const faqData = [
     { q: '⚡ Conectar WhatsApp', a: 'Para conectar seu WhatsApp Business, acesse as Configurações > Integrações no seu painel. Clique em "Configurar" ao lado do WhatsApp e siga o tutorial escaneando o QR Code da Z-API ou Evolution API com o seu celular. Leva menos de 2 minutos!' },
     { q: '💎 Planos & Limites', a: 'Starter (R$ 9,90/mês, até 3 cobranças ativas), Crescimento (R$ 19,90/mês, até 20 cobranças simultâneas) e Cobra Pro (R$ 49,90/mês, cobranças ilimitadas e suporte prioritário). Sem taxas Pix, você recebe 100% direto na sua conta!' },
     { q: '📈 Juros por Score', a: 'Você pode definir a taxa de juros diários ao criar qualquer cobrança. Se o cliente atrasar, o Cobbra calcula e exibe os juros acumulados corrigidos automaticamente dia após dia, incentivando o pagamento rápido. Altere as taxas por score no painel!' },
-    { q: '🛡️ Segurança de Dados', a: 'Nenhuma! Diferente de outros intermediadores de pagamento, o Cobbra não retém nenhuma porcentagem do seu Pix. Você paga apenas a assinatura do plano mensal e recebe o dinheiro integral direto no seu banco!' }
+    { q: '🛡️ Sem Taxas Pix', a: 'Nenhuma! Diferente de outros intermediadores de pagamento, o Cobbra não retém nenhuma porcentagem do seu Pix. Você paga apenas a assinatura do plano mensal e recebe o dinheiro integral direto no seu banco!' }
   ];
 
   const handleSendMessage = async (text) => {
@@ -71,13 +79,13 @@ export default function Chatbot() {
   };
 
   return (
-    <div style={{ position: 'fixed', bottom: 30, right: 30, zIndex: 1000, fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ position: 'fixed', bottom: 30, right: 30, zIndex: 10000, fontFamily: "'Inter', sans-serif" }}>
       
-      {/* Dynamic Keyframes injected globally */}
+      {/* Global CSS Inject including dark backdrop, bubbles, and custom Windows scrollbar */}
       <style jsx global>{`
         @keyframes c3-float {
           0% { transform: translateY(0px) scale(1); }
-          50% { transform: translateY(-8px) scale(1.03); }
+          50% { transform: translateY(-6px) scale(1.02); }
           100% { transform: translateY(0px) scale(1); }
         }
         @keyframes c3-glow {
@@ -86,12 +94,12 @@ export default function Chatbot() {
           100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.4), 0 0 30px rgba(13, 148, 136, 0.2); }
         }
         @keyframes c3-slide-in {
-          from { opacity: 0; transform: translateY(12px) scale(0.97); }
+          from { opacity: 0; transform: translateY(8px) scale(0.98); }
           to { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes c3-pulse-wave {
-          0%, 100% { transform: scale(1); opacity: 0.4; }
-          50% { transform: scale(1.2); opacity: 1; }
+          0%, 100% { transform: scale(1); opacity: 0.5; }
+          50% { transform: scale(1.3); opacity: 1; }
         }
         @keyframes c3-sparkle {
           0% { background-position: 0% 50%; }
@@ -100,38 +108,62 @@ export default function Chatbot() {
         }
         @keyframes c3-typing-dot {
           0%, 100% { transform: translateY(0px); opacity: 0.3; }
-          50% { transform: translateY(-4px); opacity: 1; }
+          50% { transform: translateY(-3px); opacity: 1; }
         }
+        
+        /* Darker, opaque solid glass look for maximum readability and zero underlying text bleed */
         .c3-glass-panel {
-          backdrop-filter: blur(25px);
-          -webkit-backdrop-filter: blur(25px);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
           border: 1px solid rgba(255, 255, 255, 0.08);
-          background: rgba(15, 23, 42, 0.75) !important;
+          background: rgba(11, 15, 25, 0.98) !important; /* Extremely high opacity to block background text */
+          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04);
         }
+        
         .c3-bubble-user {
           background: linear-gradient(135deg, #10b981, #0d9488) !important;
-          box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+          box-shadow: 0 4px 14px rgba(16, 185, 129, 0.2);
           border: 1px solid rgba(255, 255, 255, 0.1);
+          min-width: 45px;
+          text-align: left;
         }
+        
         .c3-bubble-bot {
           background: rgba(255, 255, 255, 0.04) !important;
           border: 1px solid rgba(255, 255, 255, 0.06);
           border-left: 3px solid #10b981 !important;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
+        
         .c3-ticket-alert {
           background: rgba(245, 158, 11, 0.08) !important;
           border: 1px solid rgba(245, 158, 11, 0.2) !important;
           box-shadow: 0 0 15px rgba(245, 158, 11, 0.1) inset;
         }
+        
         .c3-input-glow:focus {
-          border-color: rgba(16, 185, 129, 0.5) !important;
-          box-shadow: 0 0 10px rgba(16, 185, 129, 0.25) !important;
+          border-color: rgba(16, 185, 129, 0.4) !important;
+          box-shadow: 0 0 10px rgba(16, 185, 129, 0.2) !important;
           background: rgba(15, 23, 42, 0.9) !important;
+        }
+
+        /* Sleek custom scrollbar to match the high-end dashboard aesthetics */
+        .c3-scrollbar::-webkit-scrollbar {
+          width: 5px;
+        }
+        .c3-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .c3-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+        }
+        .c3-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(16, 185, 129, 0.4);
         }
       `}</style>
 
-      {/* Floating Action Button (Trigger) */}
+      {/* Floating Action Trigger Button */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
         style={{
@@ -144,7 +176,7 @@ export default function Chatbot() {
           animation: isOpen ? 'none' : 'c3-float 4s ease-in-out infinite, c3-glow 3s ease-in-out infinite'
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.transform = 'scale(1.1) rotate(5deg)';
+          e.currentTarget.style.transform = 'scale(1.08) rotate(3deg)';
           e.currentTarget.style.boxShadow = '0 12px 35px rgba(16,185,129,0.5)';
         }}
         onMouseLeave={e => {
@@ -153,13 +185,13 @@ export default function Chatbot() {
         }}
       >
         {isOpen ? (
-          <span style={{ fontSize: 24, color: '#fff', fontWeight: 300, display: 'block', transform: 'scale(1.1)' }}>✕</span>
+          <span style={{ fontSize: 22, color: '#fff', fontWeight: 300, display: 'block' }}>✕</span>
         ) : (
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span>🐍</span>
-            {/* Pulsing indicator */}
+            {/* Live pulsating dot */}
             <span style={{
-              position: 'absolute', top: -4, right: -4, width: 10, height: 10, borderRadius: '50%',
+              position: 'absolute', top: -3, right: -3, width: 9, height: 9, borderRadius: '50%',
               background: '#34d399', border: '2px solid #0f172a',
               boxShadow: '0 0 8px #34d399'
             }} />
@@ -167,16 +199,15 @@ export default function Chatbot() {
         )}
       </button>
 
-      {/* Chat Window */}
+      {/* Futuristic Chat Window */}
       {isOpen && (
         <div 
           className="c3-glass-panel"
           style={{
             position: 'absolute', bottom: 82, right: 0, width: 375, height: 530,
-            borderRadius: 24, boxShadow: '0 24px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)',
-            overflow: 'hidden', display: 'flex', flexDirection: 'column',
+            borderRadius: 24, overflow: 'hidden', display: 'flex', flexDirection: 'column',
             animation: 'c3-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both',
-            zIndex: 9999
+            zIndex: 99999
           }}
         >
           {/* Glowing Top bar decoration */}
@@ -185,7 +216,7 @@ export default function Chatbot() {
           {/* Header */}
           <div style={{ 
             padding: '20px 24px', 
-            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(13, 148, 136, 0.04))', 
+            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(13, 148, 136, 0.02))', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'space-between',
@@ -193,16 +224,16 @@ export default function Chatbot() {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <div style={{ 
-                width: 42, height: 42, borderRadius: '50%', 
+                width: 40, height: 40, borderRadius: '50%', 
                 background: 'linear-gradient(135deg, #10b981, #0d9488)', 
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
-                boxShadow: '0 0 15px rgba(16,185,129,0.3)'
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+                boxShadow: '0 0 15px rgba(16,185,129,0.25)'
               }}>🐍</div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <p style={{ margin: 0, fontWeight: 800, color: '#fff', fontSize: 14, letterSpacing: '-0.3px' }}>Catarina AI</p>
                   <span style={{ 
-                    fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 6,
+                    fontSize: 9, fontWeight: 700, padding: '2px 5px', borderRadius: 6,
                     background: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', border: '1px solid rgba(59, 130, 246, 0.2)'
                   }}>V3.0</span>
                 </div>
@@ -226,10 +257,11 @@ export default function Chatbot() {
           {/* Messages Area */}
           <div 
             ref={scrollRef}
+            className="c3-scrollbar"
             style={{ 
               flex: 1, padding: '20px 24px', overflowY: 'auto', 
               display: 'flex', flexDirection: 'column', gap: 16,
-              background: 'radial-gradient(circle at top, rgba(16, 185, 129, 0.02) 0%, transparent 60%)'
+              background: 'radial-gradient(circle at top, rgba(16, 185, 129, 0.01) 0%, transparent 60%)'
             }}
           >
             {messages.map((m, i) => (
@@ -239,11 +271,11 @@ export default function Chatbot() {
                 style={{
                   alignSelf: m.sender === 'user' ? 'flex-end' : 'flex-start',
                   maxWidth: '85%',
-                  borderRadius: m.sender === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-                  padding: '12px 16px',
+                  borderRadius: m.sender === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                  padding: '12px 18px', // Increased horizontal padding for balanced UX layout
                   position: 'relative',
                   animation: 'c3-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both',
-                  overflow: 'hidden'
+                  overflow: 'visible' // Ensure no text boundary constraints
                 }}
               >
                 {/* Text */}
@@ -254,7 +286,8 @@ export default function Chatbot() {
                   lineHeight: 1.55, 
                   whiteSpace: 'pre-wrap',
                   fontWeight: 500,
-                  letterSpacing: '0.1px'
+                  letterSpacing: '0.1px',
+                  wordBreak: 'break-word'
                 }}>{m.text}</p>
                 
                 {/* Glowing alert card for Opened support tickets */}
@@ -296,15 +329,15 @@ export default function Chatbot() {
                 className="c3-bubble-bot"
                 style={{
                   alignSelf: 'flex-start',
-                  borderRadius: '20px 20px 20px 4px',
-                  padding: '14px 18px',
+                  borderRadius: '18px 18px 18px 4px',
+                  padding: '12px 18px',
                   color: '#94a3b8', fontSize: 12.5,
                   display: 'flex', alignItems: 'center', gap: 8,
                   animation: 'c3-slide-in 0.2s ease both'
                 }}
               >
                 <span style={{ fontSize: 14 }}>🐍</span>
-                <span style={{ fontWeight: 600, color: '#e2e8f0' }}>Catarina AI está raciocinando</span>
+                <span style={{ fontWeight: 600, color: '#e2e8f0' }}>Catarina AI está pensando</span>
                 <div style={{ display: 'inline-flex', gap: 3, marginLeft: 4 }}>
                   {[0, 1, 2].map(dot => (
                     <span key={dot} style={{
@@ -316,6 +349,9 @@ export default function Chatbot() {
                 </div>
               </div>
             )}
+
+            {/* Auto-Scroll Anchor Anchor */}
+            <div ref={messagesEndRef} style={{ height: 1, marginTop: -1 }} />
           </div>
 
           {/* Dynamic Quick FAQ Options capsules */}
@@ -364,7 +400,7 @@ export default function Chatbot() {
             borderTop: '1px solid rgba(255,255,255,0.06)', 
             display: 'flex', 
             gap: 12,
-            background: 'rgba(15, 23, 42, 0.4)'
+            background: 'rgba(11, 15, 25, 0.95)' /* Dark solid base for absolute overlap prevention */
           }}>
             <input 
               value={inputText}
@@ -387,7 +423,7 @@ export default function Chatbot() {
                 color: '#fff', border: 'none', fontSize: 16, fontWeight: 700,
                 cursor: 'pointer', fontFamily: 'Inter', display: 'flex',
                 alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                boxShadow: '0 4px 15px rgba(16,185,129,0.25)'
+                boxShadow: '0 4px 15px rgba(16,185,129,0.25)', flexShrink: 0
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.transform = 'scale(1.05)';
