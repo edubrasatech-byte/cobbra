@@ -27,8 +27,19 @@ export default function CobrancasPage() {
   });
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
+  const [msgType, setMsgType] = useState('success'); // 'success' | 'error' | 'loading' | 'info'
   const [cobrancaHumor, setCobrancaHumor] = useState('gentil');
   const [cobrancaAiLoading, setCobrancaAiLoading] = useState(false);
+
+  const triggerToast = (text, type = 'success') => {
+    setMsg(text);
+    setMsgType(type);
+    if (type !== 'loading') {
+      setTimeout(() => {
+        setMsg('');
+      }, 4000);
+    }
+  };
 
   // Rebate states
   const [showRebateModal, setShowRebateModal] = useState(false);
@@ -92,8 +103,7 @@ export default function CobrancasPage() {
           daily_interest_rate: '0' 
         }); 
         loadCharges(); 
-        setMsg('Cobrança criada! 🐍'); 
-        setTimeout(() => setMsg(''), 3000); 
+        triggerToast('Cobrança criada com sucesso! 🐍', 'success'); 
       } else {
         const err = await res.json();
         alert(err.error || 'Erro ao criar cobrança.');
@@ -153,30 +163,28 @@ export default function CobrancasPage() {
       body: JSON.stringify({ status }) 
     });
     loadCharges(); 
-    setMsg(`Status atualizado!`); 
-    setTimeout(() => setMsg(''), 3000);
+    triggerToast('Status de pagamento atualizado! 💰', 'success');
   }
 
   async function deleteCharge(id) {
     if (!confirm('Excluir esta cobrança?')) return;
     await fetch(`/api/cobrancas/${id}`, { method: 'DELETE' });
     loadCharges(); 
-    setMsg('Cobrança excluída.'); 
-    setTimeout(() => setMsg(''), 3000);
+    triggerToast('Cobrança excluída com sucesso! 🗑️', 'success');
   }
 
   async function sendManualReminder(c, channel) {
     if (channel === 'whatsapp' && user?.plan === 'starter') {
-      alert('O disparo via WhatsApp está disponível a partir do plano Crescimento. Faça upgrade para utilizar!');
+      triggerToast('O disparo via WhatsApp está disponível a partir do plano Crescimento. Faça upgrade para utilizar!', 'error');
       return;
     }
     
     if (channel === 'email' && !c.client_email) {
-      alert('Este cliente não possui e-mail cadastrado para receber lembretes.');
+      triggerToast('Este cliente não possui e-mail cadastrado para receber lembretes.', 'error');
       return;
     }
     
-    setMsg(`Enviando cobrança avulsa via ${channel === 'whatsapp' ? 'WhatsApp' : 'E-mail'}...`);
+    triggerToast(`Enviando cobrança avulsa via ${channel === 'whatsapp' ? 'WhatsApp' : 'E-mail'}... 🚀`, 'loading');
     
     // Construct default message using charge's description
     const message = c.description || `Olá! Passando para lembrar sobre seu pagamento de R$ ${c.amount.toFixed(2)} com vencimento em ${new Date(c.due_date).toLocaleDateString('pt-BR')}.`;
@@ -193,16 +201,13 @@ export default function CobrancasPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setMsg(`Cobrança enviada com sucesso via ${channel === 'whatsapp' ? 'WhatsApp' : 'E-mail'}! 🚀`);
-        setTimeout(() => setMsg(''), 3000);
+        triggerToast(`Sucesso: Cobrança enviada com sucesso via ${channel === 'whatsapp' ? 'WhatsApp' : 'E-mail'}! 🚀`, 'success');
         loadCharges();
       } else {
-        alert(data.error || 'Erro ao enviar lembrete.');
-        setMsg('');
+        triggerToast(`Falha no envio: ${data.error || 'Erro inesperado no servidor.'}`, 'error');
       }
     } catch (e) {
-      alert('Erro de conexão ao enviar lembrete.');
-      setMsg('');
+      triggerToast(`Erro de conexão: ${e.message || 'Sem sinal com o servidor.'}`, 'error');
     }
   }
 
@@ -221,8 +226,7 @@ export default function CobrancasPage() {
       setRebateAmount('');
       setRebateCharge(null);
       loadCharges();
-      setMsg('Abatimento parcial efetuado! 💸');
-      setTimeout(() => setMsg(''), 3000);
+      triggerToast('Abatimento parcial registrado com sucesso! 💸', 'success');
     }
   }
 
@@ -267,7 +271,46 @@ export default function CobrancasPage() {
 
   return (
     <div>
-      {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
+      {msg && (() => {
+        let bg = '#10b981'; 
+        let border = 'rgba(16,185,129,0.2)';
+        let shadow = 'rgba(16,185,129,0.3)';
+        let icon = '✅';
+
+        if (msgType === 'error') {
+          bg = '#ef4444'; 
+          border = 'rgba(239,68,68,0.2)';
+          shadow = 'rgba(239,68,68,0.3)';
+          icon = '❌';
+        } else if (msgType === 'loading') {
+          bg = '#3b82f6'; 
+          border = 'rgba(59,130,246,0.2)';
+          shadow = 'rgba(59,130,246,0.3)';
+          icon = '🔄';
+        } else if (msgType === 'info') {
+          bg = '#1e293b'; 
+          border = 'rgba(255,255,255,0.08)';
+          shadow = 'rgba(0,0,0,0.4)';
+          icon = '💡';
+        }
+
+        return (
+          <div style={{
+            position: 'fixed', top: 80, right: 32, background: bg, border: `1px solid ${border}`,
+            color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600,
+            zIndex: 1001, boxShadow: `0 8px 24px ${shadow}`, display: 'flex', alignItems: 'center',
+            gap: 10, animation: 'fadeInUp 0.3s ease-out', transition: 'all 0.3s'
+          }}>
+            {msgType === 'loading' ? (
+              <div style={{
+                border: '2px solid rgba(255,255,255,0.2)', borderTop: '2px solid #fff',
+                borderRadius: '50%', width: 14, height: 14, animation: 'spin 1s linear infinite'
+              }} />
+            ) : <span>{icon}</span>}
+            <span>{msg}</span>
+          </div>
+        );
+      })()}
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
