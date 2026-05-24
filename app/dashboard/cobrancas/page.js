@@ -314,42 +314,64 @@ export default function CobrancasPage() {
       })()}
 
       {/* Minimal Header and Filter Panel */}
-      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 border-b border-slate-900/60 pb-5">
         
-        {/* Search & Filters */}
-        <div className="flex items-center gap-2 flex-1 max-w-lg">
-          <div className="relative flex-1">
+        {/* Search & Filters Chips */}
+        <div className="flex flex-col gap-3 flex-1 max-w-lg">
+          {/* Search bar input */}
+          <div className="relative w-full">
             <input 
               placeholder="Buscar cobranças..." 
               value={search} 
               onChange={e => setSearch(e.target.value)} 
-              className="w-full py-2 pl-8 pr-4 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 transition-colors"
+              className="w-full py-2.5 pl-9 pr-4 text-xs bg-[#0C0E1A] border border-slate-800/60 text-white rounded-xl outline-none focus:border-emerald-500 transition-colors placeholder-slate-500 font-medium"
             />
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-slate-500">🔍</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">🔍</span>
           </div>
           
-          <select 
-            value={filter} 
-            onChange={e => setFilter(e.target.value)} 
-            className="py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-slate-300 rounded-lg outline-none focus:border-emerald-500 cursor-pointer"
-          >
-            <option value="">Status</option>
-            {Object.entries(STATUS).map(([k, v]) => <option key={k} value={k}>{v.l}</option>)}
-          </select>
+          {/* Chips Filter Row */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none max-w-full -mx-4 px-4 sm:mx-0 sm:px-0">
+            <button 
+              onClick={() => setFilter('')}
+              className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border whitespace-nowrap cursor-pointer ${
+                filter === '' 
+                  ? 'bg-slate-100 text-slate-900 border-white' 
+                  : 'bg-slate-900 text-slate-400 border-slate-800/60 hover:text-slate-200 hover:border-slate-700'
+              }`}
+            >
+              Todos
+            </button>
+            {Object.entries(STATUS).map(([k, v]) => {
+              const isSelected = filter === k;
+              return (
+                <button
+                  key={k}
+                  onClick={() => setFilter(k)}
+                  className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border whitespace-nowrap cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#10B981] text-white border-[#10B981]'
+                      : 'bg-slate-900 text-slate-400 border-slate-800/60 hover:text-slate-200 hover:border-slate-700'
+                  }`}
+                >
+                  {v.l}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2 justify-end">
+        <div className="flex items-center gap-2.5 justify-end">
           <button 
             onClick={handleReload}
-            className="px-3.5 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold hover:bg-slate-800 hover:text-slate-200 flex items-center gap-1.5 transition-colors"
+            className="px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800/60 text-slate-400 text-xs font-bold hover:bg-slate-850 hover:text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             🔄 Recarregar
           </button>
           
           <button 
             onClick={() => setShowModal(true)} 
-            className="px-4 py-2 rounded-lg bg-[#10B981] hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-lg shadow-emerald-500/10"
+            className="px-4 py-2.5 rounded-xl bg-[#10B981] hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-lg shadow-emerald-500/10 cursor-pointer"
           >
             + Nova Cobrança
           </button>
@@ -364,19 +386,22 @@ export default function CobrancasPage() {
             <div 
               key={c.id} 
               onClick={() => setActiveDrawerCharge(c)}
-              className="bg-[#0C0E1A] hover:bg-slate-900/60 border border-slate-800/40 p-4 rounded-xl flex items-center justify-between cursor-pointer transition-all duration-200"
+              className="bg-[#0C0E1A] hover:bg-slate-900/40 border border-slate-800/40 p-5 rounded-2xl flex items-center justify-between cursor-pointer transition-all duration-200 active:scale-[0.98]"
             >
-              <div className="min-w-0 pr-4">
-                <p className="font-bold text-sm text-slate-100 truncate">{c.client_name || 'N/A'}</p>
-                <p className="text-[11px] text-slate-500 truncate mt-1">{c.description || 'Cobrança Avulsa'}</p>
-                <p className="text-[10px] text-slate-600 mt-2 font-medium">
-                  Vence em: {new Date(c.due_date).toLocaleDateString('pt-BR')}
+              <div className="min-w-0 pr-4 flex-1">
+                <p className="font-extrabold text-sm text-slate-100 truncate">{c.client_name || 'Cliente Sem Nome'}</p>
+                <p className="text-[11px] text-slate-400 truncate mt-1">{c.description || 'Cobrança Avulsa'}</p>
+                <p className="text-[10px] text-slate-500 mt-2.5 font-semibold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
+                  Vencimento: {new Date(c.due_date).toLocaleDateString('pt-BR')}
                 </p>
               </div>
               
-              <div className="text-right flex-shrink-0 flex flex-col items-end gap-2">
-                <p className="font-black text-sm text-slate-100">{fmt(c.amount + interest)}</p>
-                <span className={`px-2 py-0.5 rounded text-[10px] font-semibold tracking-wider ${STATUS[c.status]?.b} ${STATUS[c.status]?.c}`}>
+              <div className="text-right flex-shrink-0 flex flex-col items-end gap-2.5">
+                <p className={`font-black text-sm tracking-tight ${c.status === 'paid' ? 'text-emerald-400' : 'text-slate-100'}`}>
+                  {fmt(c.amount + interest)}
+                </p>
+                <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border scale-90 origin-right ${STATUS[c.status]?.b} ${STATUS[c.status]?.c}`}>
                   {STATUS[c.status]?.l || c.status}
                 </span>
               </div>
@@ -385,11 +410,12 @@ export default function CobrancasPage() {
         })}
 
         {charges.length === 0 && (
-          <div className="p-8 text-center text-slate-500 text-xs bg-[#0C0E1A] rounded-xl border border-slate-800/40">
+          <div className="p-8 text-center text-slate-500 text-xs bg-[#0C0E1A] rounded-2xl border border-slate-800/40">
             {loading ? 'Carregando cobranças...' : 'Nenhuma cobrança encontrada'}
           </div>
         )}
       </div>
+
 
       {/* 🖥️ Desktop UI: Flat Minimalist Stripe-style Table */}
       <div className="hidden md:block bg-[#0C0E1A] rounded-xl border border-slate-800/40 overflow-hidden shadow-2xl">

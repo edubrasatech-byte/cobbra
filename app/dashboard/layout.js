@@ -556,7 +556,7 @@ export default function DashboardLayout({ children }) {
           </div>
 
           {/* 🪄 Catarina AI Engine: Flat Command Bar Widget */}
-          <div className="flex-1 max-w-sm md:max-w-md mx-4 relative">
+          <div className="hidden md:block flex-1 max-w-sm md:max-w-md mx-4 relative">
             <div className="relative group">
               <input 
                 placeholder="Pergunte à Catarina... (Ctrl+K)" 
@@ -605,7 +605,16 @@ export default function DashboardLayout({ children }) {
           </div>
 
           {/* Right Area - Notifications Bar */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2.5">
+            {/* Mobile AI Command Trigger Icon */}
+            <button 
+              onClick={() => setShowCopilotModal(true)}
+              className="md:hidden w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center text-sm cursor-pointer transition-all active:scale-90"
+              aria-label="Perguntar à Catarina"
+            >
+              🪄
+            </button>
+
             <div className="relative">
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
@@ -886,7 +895,7 @@ export default function DashboardLayout({ children }) {
       {/* 🪄 Minimalist Copilot AI Drawer/Modal */}
       {showCopilotModal && (
         <div 
-          className="fixed inset-0 bg-slate-950/80 z-[50] flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-slate-950/80 z-[50] flex items-end md:items-center justify-center p-0 md:p-4 backdrop-blur-sm"
           onClick={() => {
             if (!copilotLoading) {
               setShowCopilotModal(false);
@@ -896,7 +905,7 @@ export default function DashboardLayout({ children }) {
         >
           <div 
             onClick={e => e.stopPropagation()} 
-            className="bg-[#0C0E1A] rounded-2xl p-6 w-full max-w-md border border-slate-800/60 shadow-2xl flex flex-col"
+            className="bg-[#0C0E1A] rounded-t-3xl md:rounded-2xl p-6 w-full max-w-md border-t md:border border-slate-800/60 shadow-2xl flex flex-col max-h-[90vh] md:max-h-none overflow-y-auto animate-fadeInUp"
           >
             {/* Header */}
             <div className="flex items-center gap-3 border-b border-slate-800/40 pb-4 mb-4">
@@ -930,6 +939,68 @@ export default function DashboardLayout({ children }) {
               </div>
             )}
 
+            {/* Initial input for mobile or quick typing */}
+            {!copilotResponse && !copilotLoading && !copilotSuccessMsg && (
+              <div className="space-y-4 pt-2">
+                <div className="relative">
+                  <input
+                    autoFocus
+                    placeholder="Ex: Cobre R$ 150 de Carlos Eduardo amanhã..."
+                    value={copilotInput}
+                    onChange={e => {
+                      setCopilotInput(e.target.value);
+                      setSearchTerm(e.target.value);
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        handleCopilotSubmit(copilotInput);
+                      }
+                    }}
+                    className="w-full py-3 pl-4 pr-12 text-xs bg-slate-950 border border-slate-800/80 text-slate-100 placeholder-slate-500 rounded-xl outline-none focus:border-emerald-500 transition-colors"
+                  />
+                  <button
+                    onClick={() => handleCopilotSubmit(copilotInput)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs transition-all"
+                  >
+                    ➔
+                  </button>
+                </div>
+
+                {/* Voice / Text Suggestions */}
+                <div>
+                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-2">Comandos Sugeridos</span>
+                  <div className="grid grid-cols-1 gap-2">
+                    {[
+                      'Cobre R$ 150 de Carlos Eduardo amanhã',
+                      'Configurar recorrente de R$ 90 para Carlos Eduardo',
+                      'Ver relatórios de faturamento',
+                      'Como está a adimplência hoje?'
+                    ].map((suggestion, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => {
+                          setCopilotInput(suggestion);
+                          handleCopilotSubmit(suggestion);
+                        }}
+                        className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-850 hover:bg-slate-800 hover:text-emerald-400 text-[10px] text-slate-400 font-semibold text-left transition-colors flex items-center gap-2"
+                      >
+                        <span className="text-emerald-500 text-xs">✨</span>
+                        <span>{suggestion}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => setShowCopilotModal(false)}
+                  className="w-full py-3 bg-slate-900 border border-slate-800 text-slate-400 rounded-xl text-xs font-bold transition-all mt-4"
+                >
+                  Cancelar
+                </button>
+              </div>
+            )}
+
             {/* Content Form when structured response received */}
             {copilotResponse && !copilotLoading && !copilotSuccessMsg && (
               <div className="space-y-4">
@@ -946,7 +1017,7 @@ export default function DashboardLayout({ children }) {
                       <select
                         value={copilotResponse.client_id || ''}
                         onChange={e => setCopilotResponse(prev => ({ ...prev, client_id: e.target.value }))}
-                        className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500"
+                        className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 cursor-pointer"
                       >
                         <option value="">-- Selecione o Cliente --</option>
                         {allClients.map(cl => (
@@ -1008,12 +1079,11 @@ export default function DashboardLayout({ children }) {
                 <div className="flex gap-3 justify-end pt-2">
                   <button
                     onClick={() => {
-                      setShowCopilotModal(false);
                       setCopilotResponse(null);
                     }}
                     className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold hover:bg-slate-800"
                   >
-                    Fechar
+                    Voltar
                   </button>
                   
                   {(copilotResponse.intent === 'create_charge' || copilotResponse.intent === 'create_daily_billing') && (
@@ -1030,6 +1100,15 @@ export default function DashboardLayout({ children }) {
           </div>
         </div>
       )}
+
+      {/* Mobile Glowing AI Floating Action Button (FAB) */}
+      <button
+        onClick={() => setShowCopilotModal(true)}
+        className="fixed bottom-20 right-6 w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white flex items-center justify-center text-xl shadow-lg shadow-emerald-500/20 border border-emerald-400/20 md:hidden active:scale-90 transition-all z-40 animate-pulse cursor-pointer"
+        aria-label="Catarina AI Copilot"
+      >
+        🪄
+      </button>
 
       {/* Floating support chatbot */}
       <Chatbot />
