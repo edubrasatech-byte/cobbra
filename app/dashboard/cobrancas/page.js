@@ -165,6 +165,47 @@ export default function CobrancasPage() {
     setTimeout(() => setMsg(''), 3000);
   }
 
+  async function sendManualReminder(c, channel) {
+    if (channel === 'whatsapp' && user?.plan === 'starter') {
+      alert('O disparo via WhatsApp está disponível a partir do plano Crescimento. Faça upgrade para utilizar!');
+      return;
+    }
+    
+    if (channel === 'email' && !c.client_email) {
+      alert('Este cliente não possui e-mail cadastrado para receber lembretes.');
+      return;
+    }
+    
+    setMsg(`Enviando cobrança avulsa via ${channel === 'whatsapp' ? 'WhatsApp' : 'E-mail'}...`);
+    
+    // Construct default message using charge's description
+    const message = c.description || `Olá! Passando para lembrar sobre seu pagamento de R$ ${c.amount.toFixed(2)} com vencimento em ${new Date(c.due_date).toLocaleDateString('pt-BR')}.`;
+    
+    try {
+      const res = await fetch('/api/lembretes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          charge_id: c.id,
+          channel: channel,
+          message: message
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMsg(`Cobrança enviada com sucesso via ${channel === 'whatsapp' ? 'WhatsApp' : 'E-mail'}! 🚀`);
+        setTimeout(() => setMsg(''), 3000);
+        loadCharges();
+      } else {
+        alert(data.error || 'Erro ao enviar lembrete.');
+        setMsg('');
+      }
+    } catch (e) {
+      alert('Erro de conexão ao enviar lembrete.');
+      setMsg('');
+    }
+  }
+
   async function handleRebateSubmit(e) {
     e.preventDefault();
     if (!rebateCharge || !rebateAmount || parseFloat(rebateAmount) <= 0) return;
@@ -259,8 +300,8 @@ export default function CobrancasPage() {
       </div>
 
       {/* Table */}
-      <div style={{ background: '#1e293b', borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+      <div style={{ background: '#1e293b', borderRadius: 16, overflowX: 'auto', border: '1px solid rgba(255,255,255,0.06)', width: '100%' }}>
+        <table style={{ width: '100%', minWidth: 920, borderCollapse: 'collapse', fontSize: 14 }}>
           <thead>
             <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
               {['Cliente', 'Descrição', 'Valor Original', 'Juros Acumulados', 'Vencimento', 'Status', 'Canal', 'Ações'].map(h => (
@@ -291,7 +332,7 @@ export default function CobrancasPage() {
                     {c.reminder_channel === 'both' ? '📱+✉️' : c.reminder_channel === 'whatsapp' ? '📱' : '✉️'}
                   </td>
                   <td style={{ padding: '14px 16px' }}>
-                    <div style={{ display: 'flex', gap: 6 }}>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                       {c.status !== 'paid' && c.status !== 'cancelled' && (
                         <>
                           <button onClick={() => updateStatus(c.id, 'paid')} style={{ padding: '4px 10px', borderRadius: 6, background: 'rgba(16,185,129,0.15)', color: '#10b981', fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'Inter' }}>✓ Pago</button>
@@ -303,6 +344,18 @@ export default function CobrancasPage() {
                             style={{ padding: '4px 10px', borderRadius: 6, background: 'rgba(59,130,246,0.15)', color: '#3b82f6', fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'Inter' }}
                           >
                             Abater
+                          </button>
+                          <button 
+                            onClick={() => sendManualReminder(c, 'whatsapp')} 
+                            style={{ padding: '4px 10px', borderRadius: 6, background: 'rgba(37,211,102,0.15)', color: '#25d366', fontSize: 11, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'Inter', display: 'flex', alignItems: 'center', gap: 4 }}
+                          >
+                            📱 Whats
+                          </button>
+                          <button 
+                            onClick={() => sendManualReminder(c, 'email')} 
+                            style={{ padding: '4px 10px', borderRadius: 6, background: 'rgba(14,165,233,0.15)', color: '#0ea5e9', fontSize: 11, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'Inter', display: 'flex', alignItems: 'center', gap: 4 }}
+                          >
+                            ✉️ Email
                           </button>
                         </>
                       )}
