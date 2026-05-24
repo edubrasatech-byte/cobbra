@@ -222,22 +222,24 @@ export default function ClientesPage() {
     <div>
       {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <input placeholder="Buscar clientes..." value={search} onChange={e => setSearch(e.target.value)} style={{ ...inputS, width: 260 }} />
-          <select value={healthFilter} onChange={e => setHealthFilter(e.target.value)} style={{ ...inputS, width: 180, appearance: 'auto', color: '#e2e8f0' }}>
-            <option style={{ color: '#0f172a' }} value="">Todos os status</option>
-            {Object.entries(HEALTH).map(([k, v]) => <option style={{ color: '#0f172a' }} key={k} value={k}>{v.i} {v.l}</option>)}
-          </select>
-          <button onClick={loadClients} style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#e2e8f0', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.2s', outline: 'none' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}>
-            🔄 Recarregar
-          </button>
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center mb-6 px-4 md:px-0">
+        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+          <input placeholder="Buscar clientes..." value={search} onChange={e => setSearch(e.target.value)} className="w-full sm:w-64" style={inputS} />
+          <div className="flex gap-2">
+            <select value={healthFilter} onChange={e => setHealthFilter(e.target.value)} className="flex-1 sm:w-44" style={{ ...inputS, appearance: 'auto', color: '#e2e8f0' }}>
+              <option style={{ color: '#0f172a' }} value="">Todos os status</option>
+              {Object.entries(HEALTH).map(([k, v]) => <option style={{ color: '#0f172a' }} key={k} value={k}>{v.i} {v.l}</option>)}
+            </select>
+            <button onClick={loadClients} className="px-4 rounded-xl bg-white/5 border border-white/10 text-slate-200 text-sm font-semibold flex items-center justify-center gap-1.5 hover:bg-white/10 active:scale-95 transition-all">
+              🔄
+            </button>
+          </div>
         </div>
-        <button onClick={() => setShowModal(true)} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter' }}>+ Novo Cliente</button>
+        <button onClick={() => setShowModal(true)} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter' }} className="w-full md:w-auto text-center">+ Novo Cliente</button>
       </div>
 
       {/* Cards Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 md:px-0 pb-24">
         {clients.map(c => {
           const h = HEALTH[c.health_score] || HEALTH.good;
           const score = getPayerScore(c);
@@ -285,9 +287,9 @@ export default function ClientesPage() {
                 )}
               </div>
               <div>
-                <div style={{ display: 'flex', gap: 8, fontSize: 12, color: '#64748b', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 12, marginTop: 4 }}>
-                  {c.email && <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1 }}>✉️ {c.email}</span>}
-                  {c.phone && <span>📱 {c.phone}</span>}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-500 border-t border-white/5 pt-3 mt-1 min-w-0">
+                  {c.email && <span className="truncate min-w-0" title={c.email}>✉️ {c.email}</span>}
+                  {c.phone && <span className="shrink-0">📱 {c.phone}</span>}
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 12, justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 11, color: '#059669', fontWeight: 600 }}>👁️ Ver histórico</span>
@@ -308,7 +310,7 @@ export default function ClientesPage() {
       {selectedClient && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999, backdropFilter: 'blur(4px)' }}
           onClick={() => setSelectedClient(null)}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#1e293b', borderRadius: 20, padding: 36, width: 720, maxHeight: '85vh', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 md:p-8 max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto border border-white/10">
             
             {/* Header info */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 20, marginBottom: 20 }}>
@@ -335,7 +337,7 @@ export default function ClientesPage() {
             </div>
 
             {/* Score and Quick Stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr', gap: 12, marginBottom: 24 }}>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
               <div style={{ background: 'rgba(5,150,105,0.08)', borderRadius: 12, padding: 14, border: '1px solid rgba(5,150,105,0.15)' }}>
                 <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 4 }}>Pontualidade (Score)</p>
                 <p style={{ fontSize: 15, fontWeight: 700, color: getPayerScore(selectedClient).c, margin: 0 }}>
@@ -423,7 +425,7 @@ export default function ClientesPage() {
       {/* Partial Abatement Modal (Modal Secundário) */}
       {abaterCharge && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1001, backdropFilter: 'blur(5px)' }} onClick={() => setAbaterCharge(null)}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#1e293b', borderRadius: 20, padding: 32, width: 420, border: '1px solid rgba(255,255,255,0.15)' }}>
+          <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 max-w-md w-full mx-4 border border-white/15">
             <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>💸 Abater Parte do Valor</h3>
             <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20 }}>
               Dívida: <strong>{abaterCharge.description || 'Sem descrição'}</strong><br />
@@ -466,7 +468,7 @@ export default function ClientesPage() {
       {/* Create Client Modal */}
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }} onClick={() => setShowModal(false)}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#1e293b', borderRadius: 20, padding: 36, width: 500, maxHeight: '90vh', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 md:p-8 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto border border-white/10">
             <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 24 }}>Novo Cliente</h3>
             <form onSubmit={createClient}>
               {[

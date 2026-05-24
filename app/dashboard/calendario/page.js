@@ -66,12 +66,12 @@ export default function CalendarioPage() {
   const cardS = { background: '#1e293b', borderRadius: 16, padding: 24, border: '1px solid rgba(255,255,255,0.06)' };
 
   return (
-    <div>
+    <div className="pb-24">
       <style>{`
         .cal-responsive-styles .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         .cal-responsive-styles .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
         .cal-responsive-styles .header-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
-        .cal-responsive-styles .cal-cell { min-height: 90px; background: rgba(255,255,255,0.02); border-radius: 10px; padding: 8px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; position: relative; }
+        .cal-responsive-styles .cal-cell { min-height: 90px; background: rgba(255,255,255,0.02); border-radius: 10px; padding: 8px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; position: relative; display: flex; flex-direction: column; }
         .cal-responsive-styles .cal-cell:hover { background: rgba(5,150,105,0.08); border-color: rgba(5,150,105,0.2); }
         .cal-responsive-styles .cal-cell.has-items { border-color: rgba(5,150,105,0.15); }
         .cal-responsive-styles .cal-cell.is-today { border-color: #059669; box-shadow: 0 0 12px rgba(5,150,105,0.25); }
@@ -90,24 +90,24 @@ export default function CalendarioPage() {
         }
         @media (max-width: 640px) {
           .cal-responsive-styles .summary-grid { grid-template-columns: 1fr; }
-          .cal-responsive-styles .cal-cell { min-height: 60px; padding: 4px; }
+          .cal-responsive-styles .cal-cell { min-height: 76px; padding: 4px; }
           .cal-responsive-styles .cal-cell .day-num { font-size: 11px !important; }
           .cal-responsive-styles .cal-cell .amount-badge { font-size: 8px !important; padding: 1px 3px !important; }
           .cal-responsive-styles .header-nav h2 { font-size: 18px !important; }
         }
       `}</style>
 
-      <div className="cal-responsive-styles">
+      <div className="cal-responsive-styles px-4 lg:px-0">
         {/* Header with month navigation */}
         <div className="header-nav">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div className="flex items-center justify-between sm:justify-start gap-4 w-full sm:w-auto">
             <button onClick={prevMonth} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 16px', color: '#e2e8f0', fontSize: 14, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(5,150,105,0.15)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}>◀</button>
             <h2 style={{ fontSize: 22, fontWeight: 800, color: '#fff', margin: 0, whiteSpace: 'nowrap' }}>
               📅 {MESES[month]} de {year}
             </h2>
             <button onClick={nextMonth} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 16px', color: '#e2e8f0', fontSize: 14, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(5,150,105,0.15)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}>▶</button>
           </div>
-          <button onClick={() => { setYear(today.getFullYear()); setMonth(today.getMonth() + 1); }} style={{ background: 'linear-gradient(135deg,#059669,#0d9488)', border: 'none', borderRadius: 10, padding: '10px 20px', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Hoje</button>
+          <button onClick={() => { setYear(today.getFullYear()); setMonth(today.getMonth() + 1); }} style={{ background: 'linear-gradient(135deg,#059669,#0d9488)', border: 'none', borderRadius: 10, padding: '10px 20px', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }} className="w-full sm:w-auto text-center">Hoje</button>
         </div>
 
         {/* Summary Cards */}

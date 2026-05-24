@@ -328,21 +328,26 @@ export default function ConfiguracoesPage() {
     <div>
       {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
 
-      <div style={{ display: 'flex', gap: 24 }}>
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar */}
-        <div style={{ width: 220 }}>
+        <div className="w-full lg:w-[220px] flex lg:flex-col overflow-x-auto lg:overflow-x-visible pb-3 lg:pb-0 gap-2 lg:gap-1 scrollbar-none shrink-0">
           {tabs.map(t => (
-            <button key={t.key} onClick={() => setActiveTab(t.key)} style={{
-              display: 'block', width: '100%', padding: '12px 16px', borderRadius: 10, border: 'none', cursor: 'pointer',
-              fontFamily: 'Inter', textAlign: 'left', marginBottom: 4, fontSize: 14, fontWeight: activeTab === t.key ? 600 : 500,
-              background: activeTab === t.key ? 'rgba(5,150,105,0.15)' : 'transparent',
-              color: activeTab === t.key ? '#10b981' : '#94a3b8', transition: 'all 0.2s'
-            }}>{t.label}</button>
+            <button
+              key={t.key}
+              onClick={() => setActiveTab(t.key)}
+              className={`whitespace-nowrap px-4 py-2.5 lg:px-4 lg:py-3 rounded-xl border-none cursor-pointer font-sans text-sm font-semibold transition-all shrink-0 w-auto lg:w-full text-center lg:text-left ${
+                activeTab === t.key
+                  ? 'bg-[rgba(5,150,105,0.15)] text-[#10b981]'
+                  : 'bg-transparent text-[#94a3b8] hover:text-[#e2e8f0] hover:bg-white/5'
+              }`}
+            >
+              {t.label}
+            </button>
           ))}
         </div>
 
         {/* Content */}
-        <div style={{ flex: 1 }}>
+        <div className="flex-1 w-full min-w-0">
           {activeTab === 'profile' && (
             <div style={cardS}>
               <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 24 }}>Perfil do Negócio</h3>
@@ -395,17 +400,17 @@ export default function ConfiguracoesPage() {
               <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8 }}>Juros por Faixa de Score</h3>
               <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 24 }}>Defina as taxas padrão de juros diários pós-vencimento a serem aplicadas de acordo com o score pagador do cliente.</p>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 32 }}>
-                <div style={{ background: 'rgba(16,185,129,0.08)', borderRadius: 12, padding: 16, border: '1px solid rgba(16,185,129,0.15)' }}>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#10b981', marginBottom: 8 }}>😊 Score Excelente (% ao dia)</label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div className="bg-[rgba(16,185,129,0.08)] rounded-xl p-4 border border-[rgba(16,185,129,0.15)]">
+                  <label className="block text-xs font-semibold text-[#10b981] mb-2">😊 Score Excelente (% ao dia)</label>
                   <input type="number" step="0.01" value={scoreRates.excellent} onChange={e => setScoreRates({ ...scoreRates, excellent: parseFloat(e.target.value) || 0 })} style={inputS} />
                 </div>
-                <div style={{ background: 'rgba(245,158,11,0.08)', borderRadius: 12, padding: 16, border: '1px solid rgba(245,158,11,0.15)' }}>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#f59e0b', marginBottom: 8 }}>⚠️ Score Regular (% ao dia)</label>
+                <div className="bg-[rgba(245,158,11,0.08)] rounded-xl p-4 border border-[rgba(245,158,11,0.15)]">
+                  <label className="block text-xs font-semibold text-[#f59e0b] mb-2">⚠️ Score Regular (% ao dia)</label>
                   <input type="number" step="0.01" value={scoreRates.regular} onChange={e => setScoreRates({ ...scoreRates, regular: parseFloat(e.target.value) || 0 })} style={inputS} />
                 </div>
-                <div style={{ background: 'rgba(239,68,68,0.08)', borderRadius: 12, padding: 16, border: '1px solid rgba(239,68,68,0.15)' }}>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#ef4444', marginBottom: 8 }}>🚨 Score de Risco (% ao dia)</label>
+                <div className="bg-[rgba(239,68,68,0.08)] rounded-xl p-4 border border-[rgba(239,68,68,0.15)]">
+                  <label className="block text-xs font-semibold text-[#ef4444] mb-2">🚨 Score de Risco (% ao dia)</label>
                   <input type="number" step="0.01" value={scoreRates.risk} onChange={e => setScoreRates({ ...scoreRates, risk: parseFloat(e.target.value) || 0 })} style={inputS} />
                 </div>
               </div>
@@ -413,14 +418,14 @@ export default function ConfiguracoesPage() {
               <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8 }}>Limites de Faixa de Score</h3>
               <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 24 }}>Defina o limite de inadimplência (proporção de cobranças vencidas sobre o faturado total) para classificar o score de risco do cliente.</p>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }} className="score-limits-grid">
-                <div style={{ background: 'rgba(110,231,183,0.08)', borderRadius: 12, padding: 16, border: '1px solid rgba(110,231,183,0.15)' }}>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#6ee7b7', marginBottom: 8 }}>😊 Limite Máximo Score Bom (% de inadimplência)</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-[rgba(110,231,183,0.08)] rounded-xl p-4 border border-[rgba(110,231,183,0.15)]">
+                  <label className="block text-xs font-semibold text-[#6ee7b7] mb-2">😊 Limite Máximo Score Bom (% de inadimplência)</label>
                   <input type="number" min="1" max="99" value={scoreThresholds.good} onChange={e => setScoreThresholds({ ...scoreThresholds, good: parseInt(e.target.value) || 0 })} style={inputS} />
                   <span style={{ display: 'block', fontSize: 11, color: '#64748b', marginTop: 6 }}>Clientes abaixo deste percentual de dívidas vencidas serão considerados <strong>Bons pagadores</strong>.</span>
                 </div>
-                <div style={{ background: 'rgba(245,158,11,0.08)', borderRadius: 12, padding: 16, border: '1px solid rgba(245,158,11,0.15)' }}>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#f59e0b', marginBottom: 8 }}>⚠️ Limite Máximo Score Regular (% de inadimplência)</label>
+                <div className="bg-[rgba(245,158,11,0.08)] rounded-xl p-4 border border-[rgba(245,158,11,0.15)]">
+                  <label className="block text-xs font-semibold text-[#f59e0b] mb-2">⚠️ Limite Máximo Score Regular (% de inadimplência)</label>
                   <input type="number" min="2" max="100" value={scoreThresholds.regular} onChange={e => setScoreThresholds({ ...scoreThresholds, regular: parseInt(e.target.value) || 0 })} style={inputS} />
                   <span style={{ display: 'block', fontSize: 11, color: '#64748b', marginTop: 6 }}>Clientes entre o limite Bom e este serão classificados como <strong>Regulares</strong>. Acima deste serão de <strong>Alto Risco</strong>.</span>
                 </div>
@@ -474,7 +479,7 @@ export default function ConfiguracoesPage() {
                 </div>
 
                 <h4 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 12 }}>Limites diários do seu plano:</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 12 }} className="ai-limits-grid">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
                   <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 10, padding: 12, border: user?.plan === 'starter' ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.04)' }}>
                     <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 4px 0', fontWeight: 600 }}>STARTER</p>
                     <p style={{ fontSize: 14, fontWeight: 700, color: user?.plan === 'starter' ? '#10b981' : '#fff', margin: 0 }}>20 chamadas/dia</p>
@@ -618,7 +623,7 @@ export default function ConfiguracoesPage() {
               </div>
 
               {/* Grid of 3 Plans */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 
                 {/* Starter Plan */}
                 <div style={{ background: 'rgba(255,255,255,0.02)', border: user?.plan === 'starter' ? '2px solid #059669' : '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>

@@ -73,10 +73,10 @@ export default function RelatoriosPage() {
   const cardS = { background: '#1e293b', borderRadius: 16, padding: 24, border: '1px solid rgba(255,255,255,0.06)' };
 
   return (
-    <div>
+    <div className="pb-24 px-4 lg:px-0">
       {/* Tabs and Reload */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-6 gap-4">
+        <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-none whitespace-nowrap">
           {tabs.map(t => (
             <button key={t.key} onClick={() => setActiveTab(t.key)} style={{
               padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'Inter',
@@ -196,7 +196,7 @@ export default function RelatoriosPage() {
 
       {/* Inadimplência */}
       {activeTab === 'inadimplencia' && data && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div style={cardS}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Inadimplência por mês</h3>
             {data.overdueByMonth?.map((m, i) => (
@@ -204,7 +204,7 @@ export default function RelatoriosPage() {
                 <span style={{ color: '#94a3b8', fontSize: 13 }}>{m.month}</span>
                 <div>
                   <span style={{ color: '#fca5a5', fontWeight: 600, fontSize: 14 }}>{fmt(m.total)}</span>
-                  <span style={{ color: '#64748b', fontSize: 12, marginLeft: 8 }}>({m.count} cobranças)</span>
+                  <span style={{ color: '#64748b', fontSize: 12, marginLeft: 8 }}>({m.count} {m.count === 1 ? 'cobrança' : 'cobranças'})</span>
                 </div>
               </div>
             ))}
@@ -215,13 +215,13 @@ export default function RelatoriosPage() {
             {data.overdueByClient?.map((c, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                 <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(239,68,68,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fca5a5', fontWeight: 700, fontSize: 12 }}>
-                  {c.name?.split(' ').map(n => n[0]).slice(0, 2).join('')}
+                  {c.name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
                 </div>
-                <div style={{ flex: 1 }}>
-                  <p style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600 }}>{c.name}</p>
-                  <p style={{ color: '#64748b', fontSize: 12 }}>{c.count} cobranças vencidas</p>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600 }} className="truncate">{c.name}</p>
+                  <p style={{ color: '#64748b', fontSize: 12 }}>{c.count} {c.count === 1 ? 'cobrança vencida' : 'cobranças vencidas'}</p>
                 </div>
-                <span style={{ color: '#fca5a5', fontWeight: 700, fontSize: 14 }}>{fmt(c.total)}</span>
+                <span style={{ color: '#fca5a5', fontWeight: 700, fontSize: 14, shrink: 0 }} className="shrink-0">{fmt(c.total)}</span>
               </div>
             ))}
             {(!data.overdueByClient || data.overdueByClient.length === 0) && <p style={{ color: '#64748b', textAlign: 'center', padding: 30 }}>Nenhum devedor! 🎉</p>}
@@ -231,17 +231,17 @@ export default function RelatoriosPage() {
 
       {/* Clients */}
       {activeTab === 'clients' && data && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div style={cardS}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>🏆 Melhores pagadores</h3>
             {data.topPayers?.map((c, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                <span style={{ color: '#f59e0b', fontWeight: 800, fontSize: 16, width: 24 }}>{i + 1}º</span>
-                <div style={{ flex: 1 }}>
-                  <p style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600 }}>{c.name}</p>
+                <span style={{ color: '#f59e0b', fontWeight: 800, fontSize: 16, width: 24, shrink: 0 }} className="shrink-0">{i + 1}º</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600 }} className="truncate">{c.name}</p>
                   <p style={{ color: '#64748b', fontSize: 12 }}>Taxa: {c.payment_rate || 0}%</p>
                 </div>
-                <span style={{ color: '#10b981', fontWeight: 700 }}>{fmt(c.total_paid)}</span>
+                <span style={{ color: '#10b981', fontWeight: 700, shrink: 0 }} className="shrink-0">{fmt(c.total_paid)}</span>
               </div>
             ))}
           </div>
@@ -249,12 +249,12 @@ export default function RelatoriosPage() {
             <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>⚠️ Maiores devedores</h3>
             {data.topDebtors?.map((c, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                <span style={{ color: '#ef4444', fontWeight: 800, fontSize: 16, width: 24 }}>{i + 1}º</span>
-                <div style={{ flex: 1 }}>
-                  <p style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600 }}>{c.name}</p>
-                  <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(239,68,68,0.15)', color: '#fca5a5', fontWeight: 600 }}>{c.health_score}</span>
+                <span style={{ color: '#ef4444', fontWeight: 800, fontSize: 16, width: 24, shrink: 0 }} className="shrink-0">{i + 1}º</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600 }} className="truncate">{c.name}</p>
+                  <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(239,68,68,0.15)', color: '#fca5a5', fontWeight: 600, display: 'inline-block', marginTop: 2 }}>{c.health_score}</span>
                 </div>
-                <span style={{ color: '#fca5a5', fontWeight: 700 }}>{fmt(c.total_overdue)}</span>
+                <span style={{ color: '#fca5a5', fontWeight: 700, shrink: 0 }} className="shrink-0">{fmt(c.total_overdue)}</span>
               </div>
             ))}
           </div>
@@ -263,7 +263,7 @@ export default function RelatoriosPage() {
 
       {/* Reminders */}
       {activeTab === 'reminders' && data && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div style={{ ...cardS, textAlign: 'center' }}>
             <p style={{ fontSize: 40, marginBottom: 8 }}>📤</p>
             <p style={{ fontSize: 36, fontWeight: 800, color: '#3b82f6' }}>{data.totalSent || 0}</p>

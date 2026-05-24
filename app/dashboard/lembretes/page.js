@@ -49,10 +49,10 @@ export default function LembretesPage() {
     <div>
       {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
 
-      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-        <button onClick={() => setActiveTab('history')} style={{ padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'Inter', background: activeTab === 'history' ? 'linear-gradient(135deg,#059669,#0d9488)' : 'rgba(255,255,255,0.05)', color: activeTab === 'history' ? '#fff' : '#94a3b8', fontSize: 14, fontWeight: 600 }}>📋 Histórico</button>
-        <button onClick={() => setActiveTab('templates')} style={{ padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'Inter', background: activeTab === 'templates' ? 'linear-gradient(135deg,#059669,#0d9488)' : 'rgba(255,255,255,0.05)', color: activeTab === 'templates' ? '#fff' : '#94a3b8', fontSize: 14, fontWeight: 600 }}>✏️ Templates</button>
-        <button onClick={() => setActiveTab('daily')} style={{ padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'Inter', background: activeTab === 'daily' ? 'linear-gradient(135deg,#059669,#0d9488)' : 'rgba(255,255,255,0.05)', color: activeTab === 'daily' ? '#fff' : '#94a3b8', fontSize: 14, fontWeight: 600 }}>📅 Template Cobrança Diária</button>
+      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none whitespace-nowrap mb-6">
+        <button onClick={() => setActiveTab('history')} style={{ padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'Inter', background: activeTab === 'history' ? 'linear-gradient(135deg,#059669,#0d9488)' : 'rgba(255,255,255,0.05)', color: activeTab === 'history' ? '#fff' : '#94a3b8', fontSize: 14, fontWeight: 600 }} className="shrink-0">📋 Histórico</button>
+        <button onClick={() => setActiveTab('templates')} style={{ padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'Inter', background: activeTab === 'templates' ? 'linear-gradient(135deg,#059669,#0d9488)' : 'rgba(255,255,255,0.05)', color: activeTab === 'templates' ? '#fff' : '#94a3b8', fontSize: 14, fontWeight: 600 }} className="shrink-0">✏️ Templates</button>
+        <button onClick={() => setActiveTab('daily')} style={{ padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'Inter', background: activeTab === 'daily' ? 'linear-gradient(135deg,#059669,#0d9488)' : 'rgba(255,255,255,0.05)', color: activeTab === 'daily' ? '#fff' : '#94a3b8', fontSize: 14, fontWeight: 600 }} className="shrink-0">📅 Template Cobrança Diária</button>
       </div>
 
       {activeTab === 'history' && (
@@ -85,7 +85,7 @@ export default function LembretesPage() {
       )}
 
       {activeTab === 'templates' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {templates.map(t => {
             const tone = toneConfig[t.tone] || toneConfig.gentle;
             return (
@@ -112,7 +112,7 @@ export default function LembretesPage() {
       )}
 
       {activeTab === 'daily' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 20 }}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Template Editor */}
           <div style={cardS}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>

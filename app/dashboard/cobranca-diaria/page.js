@@ -292,9 +292,9 @@ export default function CobrancaDiariaPage() {
         }
       `}</style>
 
-      <div className="cd-responsive">
+      <div className="cd-responsive pb-24 px-4 lg:px-0">
         {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
-
+ 
         {/* Overview Stats Cards */}
         <div className="stats-grid">
           <div style={cardS}>
@@ -314,16 +314,16 @@ export default function CobrancaDiariaPage() {
             <h4 style={{ fontSize: 22, fontWeight: 800, color: '#f59e0b', margin: 0 }}>{avgInterest.toFixed(2)}%<span style={{ fontSize: 11, color: '#64748b', fontWeight: 500 }}>/dia</span></h4>
           </div>
         </div>
-
+ 
         {/* Filters Bar */}
         <div className="filter-bar">
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flex: 1 }}>
-            <input placeholder="Buscar faturamentos..." value={search} onChange={e => setSearch(e.target.value)} style={{ ...inputS, width: '100%', maxWidth: 280 }} />
+          <div className="flex gap-3 items-center w-full md:w-auto flex-1">
+            <input placeholder="Buscar faturamentos..." value={search} onChange={e => setSearch(e.target.value)} style={inputS} className="w-full md:w-72 min-w-0" />
             <button onClick={loadData} style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#e2e8f0', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.2s', outline: 'none', whiteSpace: 'nowrap' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}>
               🔄 Recarregar
             </button>
           </div>
-          <button onClick={handleNewBillClick} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter', whiteSpace: 'nowrap' }}>+ Ativar Cobrança Diária</button>
+          <button onClick={handleNewBillClick} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter', whiteSpace: 'nowrap' }} className="w-full md:w-auto text-center">+ Ativar Cobrança Diária</button>
         </div>
 
         {/* Cards list */}
