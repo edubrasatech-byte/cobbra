@@ -33,6 +33,7 @@ export default function ClientesPage() {
   });
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
+  const [user, setUser] = useState(null);
   
   // Detailed client view
   const [selectedClient, setSelectedClient] = useState(null);
@@ -54,7 +55,13 @@ export default function ClientesPage() {
       .catch(() => setLoading(false));
   }
 
-  useEffect(() => { loadClients(); }, []);
+  useEffect(() => {
+    loadClients();
+    fetch('/api/auth/me')
+      .then(r => r.json())
+      .then(d => { if (d.user) setUser(d.user); })
+      .catch(() => {});
+  }, []);
   useEffect(() => { loadClients(); }, [search, healthFilter]);
 
   // Load client charges when client is selected
