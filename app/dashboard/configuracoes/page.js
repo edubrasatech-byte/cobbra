@@ -457,18 +457,21 @@ export default function ConfiguracoesPage() {
                   <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>🤖</div>
                   <div>
                     <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', margin: 0 }}>Catarina AI Engine & Copilot</h3>
-                    <p style={{ fontSize: 12, color: '#94a3b8', margin: 0 }}>Google Gemini 2.5 Flash de Graça 🐍</p>
+                    <p style={{ fontSize: 12, color: '#94a3b8', margin: 0 }}>Integração Oficial Google Gemini 2.5 Flash 🐍</p>
                   </div>
                 </div>
 
                 <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(5,150,105,0.25)', borderRadius: 12, padding: 18, marginBottom: 20, lineHeight: 1.6 }}>
-                  <p style={{ fontSize: 13, color: '#e2e8f0', margin: '0 0 10px 0', fontWeight: 600 }}>💡 Como funciona o custo zero?</p>
+                  <p style={{ fontSize: 13, color: '#e2e8f0', margin: '0 0 10px 0', fontWeight: 600 }}>⚙️ Configuração do Google Gemini</p>
                   <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>
-                    Para que a inteligência artificial do Cobbra seja 100% gratuita ou custe centavos, nós integramos o sistema diretamente com o plano grátis do <strong>Google Gemini 2.5 Flash</strong>. 
-                    Você só precisa obter sua chave gratuita de API no <strong>Google AI Studio</strong> e salvá-la nas variáveis de ambiente da sua hospedagem na Railway com o nome <strong>GEMINI_API_KEY</strong>. O Cobbra lerá a chave automaticamente de forma totalmente segura!
+                    Para habilitar o suporte interativo da assistente Catarina, copywriting de cobranças e relatórios de insights, associe sua credencial do <strong>Google Gemini</strong>:
                   </p>
-                  <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 13, color: '#10b981', fontWeight: 700, marginTop: 12, textDecoration: 'none' }}>
-                    Obter Chave API no Google AI Studio →
+                  <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: '#cbd5e1' }}>
+                    <div>1. Gere uma chave de API no console do <strong>Google AI Studio</strong>.</div>
+                    <div>2. Adicione a chave nas variáveis do Railway com o nome <strong>GEMINI_API_KEY</strong>.</div>
+                  </div>
+                  <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 13, color: '#10b981', fontWeight: 700, marginTop: 14, textDecoration: 'none' }}>
+                    Acessar o Google AI Studio →
                   </a>
                 </div>
 
