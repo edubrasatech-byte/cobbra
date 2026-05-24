@@ -95,7 +95,9 @@ export function middleware(request) {
     }
   }
 
-  if (isPublicRoute || isApiAuth || isStaticFile) {
+  const isPublicApi = pathname === '/api/ai/chat';
+
+  if (isPublicRoute || isApiAuth || isStaticFile || isPublicApi) {
     return NextResponse.next();
   }
 
