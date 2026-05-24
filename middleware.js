@@ -58,7 +58,7 @@ export function middleware(request) {
   const isStaticFile = pathname.startsWith('/_next') || pathname.startsWith('/images') || pathname.includes('.');
 
   // Rate limit auth endpoints more strictly (anti brute-force)
-  if (isApiAuth) {
+  if (pathname === '/api/auth/login' || pathname === '/api/auth/register') {
     const key = getRateLimitKey(ip, 'auth');
     const result = checkRateLimit(key, AUTH_RATE_LIMIT_MAX);
     if (!result.allowed) {
