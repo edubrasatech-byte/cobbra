@@ -1,5 +1,6 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { query, queryOne, run, generateId } from '@/lib/db';
+import { sendEmail } from '@/lib/mailer';
 
 // GET /api/lembretes - List reminders
 export async function GET(request) {
@@ -66,14 +67,17 @@ export async function POST(request) {
       const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL;
       const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN;
       
-      if (userData?.whatsapp_status === 'connected' && evoUrl && evoToken) {
+      const isUserConnected = userData?.whatsapp_status === 'connected';
+      const instance = isUserConnected ? userData.whatsapp_instance : (process.env.EVOLUTION_DEFAULT_INSTANCE || 'cobbra_master');
+      
+      if (evoUrl && evoToken && (isUserConnected || process.env.EVOLUTION_DEFAULT_INSTANCE || 'cobbra_master')) {
         if (client.phone) {
           // Clean non-digits and format for WhatsApp (55 prefix for Brazil if missing)
           const cleanPhone = client.phone.replace(/\D/g, '');
           const waNumber = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
           
           try {
-            await fetch(`${evoUrl}/message/sendText/${userData.whatsapp_instance}`, {
+            await fetch(`${evoUrl}/message/sendText/${instance}`, {
               method: 'POST',
               headers: { 
                 'Content-Type': 'application/json',
@@ -85,7 +89,7 @@ export async function POST(request) {
                 textMessage: { text: message }
               })
             });
-            console.log(`[EVOLUTION API] Successfully sent WhatsApp message to ${waNumber} via instance ${userData.whatsapp_instance}`);
+            console.log(`[EVOLUTION API] Successfully sent WhatsApp message to ${waNumber} via instance ${instance}`);
           } catch (e) {
             console.error("[EVOLUTION API] Connection failed to send message:", e);
           }
@@ -96,7 +100,6 @@ export async function POST(request) {
     // 2. Real SMTP Email Dispatches via Hostinger / Nodemailer
     if (finalChannel === 'email' || finalChannel === 'both') {
       try {
-        const { sendEmail } = require('@/lib/mailer');
         const formattedDate = new Date(charge.due_date).toLocaleDateString('pt-BR');
         
         // Build email HTML template
