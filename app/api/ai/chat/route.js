@@ -78,47 +78,59 @@ Se o usuário perguntar sobre o seu faturamento, clientes, inadimplência, ou qu
     }
 
     if (apiKey) {
-      // NATIVE DEPENDENCY-FREE FETCH CALL TO GEMINI API
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-      
-      // Convert chat history format for Gemini API
-      const contents = [];
-      
-      // Inject system instructions as instructions
-      history.slice(-10).forEach(msg => {
-        contents.push({
-          role: msg.sender === 'user' ? 'user' : 'model',
-          parts: [{ text: msg.text }]
+      try {
+        // NATIVE DEPENDENCY-FREE FETCH CALL TO GEMINI API
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        
+        // Convert chat history format for Gemini API
+        const contents = [];
+        
+        // Filter out initial system messages from history to ensure it strictly starts with a 'user' turn
+        const userAndModelHistory = history.filter((msg, idx) => {
+          // If the very first message is not from 'user', filter it out for Gemini validation
+          if (idx === 0 && msg.sender !== 'user') return false;
+          return true;
         });
-      });
 
-      // Append current message
-      contents.push({
-        role: 'user',
-        parts: [{ text: message }]
-      });
+        // Inject history turns ensuring proper alternation
+        userAndModelHistory.slice(-10).forEach(msg => {
+          contents.push({
+            role: msg.sender === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.text }]
+          });
+        });
 
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [{ text: systemPrompt }]
-          },
-          contents,
-          generationConfig: {
-            maxOutputTokens: 800,
-            temperature: 0.7
-          }
-        })
-      });
+        // Append current message (guaranteed user turn at the end)
+        contents.push({
+          role: 'user',
+          parts: [{ text: message }]
+        });
 
-      if (response.ok) {
-        const data = await response.json();
-        aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      } else {
-        const errorText = await response.text();
-        console.error('[GEMINI API ERROR]', errorText);
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: {
+              parts: [{ text: systemPrompt }]
+            },
+            contents,
+            generationConfig: {
+              maxOutputTokens: 800,
+              temperature: 0.7
+            }
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        } else {
+          const errorText = await response.text();
+          console.error('[GEMINI API ERROR]', errorText);
+          aiResponse = getFallbackReply(message);
+        }
+      } catch (fetchError) {
+        console.error('[GEMINI FETCH EXCEPTION] Outgoing request failed, resorting to local offline brain:', fetchError);
         aiResponse = getFallbackReply(message);
       }
     } else {
