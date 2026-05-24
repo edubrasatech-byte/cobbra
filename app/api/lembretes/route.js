@@ -192,7 +192,7 @@ export async function POST(request) {
     }
 
     // Update charge
-    run('UPDATE charges SET status = "reminder_sent", reminders_sent = reminders_sent + 1, updated_at = datetime("now") WHERE id = ?', [charge_id]);
+    run("UPDATE charges SET status = 'reminder_sent', reminders_sent = reminders_sent + 1, updated_at = datetime('now') WHERE id = ?", [charge_id]);
 
     // Log activity
     run('INSERT INTO activity_log (id, user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?, ?)',
