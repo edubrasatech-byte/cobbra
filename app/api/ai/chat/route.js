@@ -2,8 +2,14 @@ import { getUserFromRequest } from '@/lib/auth';
 import { run, generateId, queryOne } from '@/lib/db';
 
 export async function POST(request) {
+  let user = null;
   try {
-    const user = getUserFromRequest(request);
+    user = getUserFromRequest(request);
+  } catch (authError) {
+    console.error('[GEMINI CHAT AUTH EXCEPTION] Failed to retrieve user session, treating as guest:', authError);
+  }
+
+  try {
     const body = await request.json();
     const { message, history = [] } = body;
 
@@ -29,40 +35,41 @@ Neste caso, e SOMENTE neste caso, você DEVE terminar a sua resposta incluindo e
 Responda sempre em português brasileiro, seja simpática, solícita e use emojis de cobrinha 🐍.`;
 
     if (user) {
-      // Fetch dynamic dashboard analytics from SQLite to provide hyper-intelligent user support
-      const clientsCount = queryOne('SELECT COUNT(*) as total FROM clients WHERE user_id = ?', [user.id])?.total || 0;
-      const chargesCount = queryOne('SELECT COUNT(*) as total FROM charges WHERE user_id = ?', [user.id])?.total || 0;
-      
-      const stats = queryOne(`
-        SELECT 
-          SUM(amount) as total_charged,
-          SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) as total_received,
-          SUM(CASE WHEN status = 'overdue' THEN amount ELSE 0 END) as total_overdue
-        FROM charges 
-        WHERE user_id = ?`,
-        [user.id]
-      );
-      
-      const totalCharged = stats?.total_charged || 0;
-      const totalReceived = stats?.total_received || 0;
-      const totalOverdue = stats?.total_overdue || 0;
-      const overduePercent = totalCharged > 0 ? ((totalOverdue / totalCharged) * 100).toFixed(1) : '0';
+      try {
+        // Fetch dynamic dashboard analytics from SQLite to provide hyper-intelligent user support
+        const clientsCount = queryOne('SELECT COUNT(*) as total FROM clients WHERE user_id = ?', [user.id])?.total || 0;
+        const chargesCount = queryOne('SELECT COUNT(*) as total FROM charges WHERE user_id = ?', [user.id])?.total || 0;
+        
+        const stats = queryOne(`
+          SELECT 
+            SUM(amount) as total_charged,
+            SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) as total_received,
+            SUM(CASE WHEN status = 'overdue' THEN amount ELSE 0 END) as total_overdue
+          FROM charges 
+          WHERE user_id = ?`,
+          [user.id]
+        );
+        
+        const totalCharged = stats?.total_charged || 0;
+        const totalReceived = stats?.total_received || 0;
+        const totalOverdue = stats?.total_overdue || 0;
+        const overduePercent = totalCharged > 0 ? ((totalOverdue / totalCharged) * 100).toFixed(1) : '0';
 
-      const topDebtor = queryOne(`
-        SELECT cl.name, SUM(c.amount) as overdue_sum 
-        FROM charges c
-        JOIN clients cl ON c.client_id = cl.id
-        WHERE c.user_id = ? AND c.status = 'overdue'
-        GROUP BY c.client_id
-        ORDER BY overdue_sum DESC
-        LIMIT 1
-      `, [user.id]);
+        const topDebtor = queryOne(`
+          SELECT cl.name, SUM(c.amount) as overdue_sum 
+          FROM charges c
+          JOIN clients cl ON c.client_id = cl.id
+          WHERE c.user_id = ? AND c.status = 'overdue'
+          GROUP BY c.client_id
+          ORDER BY overdue_sum DESC
+          LIMIT 1
+        `, [user.id]);
 
-      const debtorInfo = topDebtor 
-        ? `${topDebtor.name} (R$ ${Number(topDebtor.overdue_sum).toFixed(2)} em atraso)`
-        : 'Nenhum cliente inadimplente crítico';
+        const debtorInfo = topDebtor 
+          ? `${topDebtor.name} (R$ ${Number(topDebtor.overdue_sum).toFixed(2)} em atraso)`
+          : 'Nenhum cliente inadimplente crítico';
 
-      systemPrompt += `\n\nCONTEXTO REAL DO USUÁRIO LOGADO:
+        systemPrompt += `\n\nCONTEXTO REAL DO USUÁRIO LOGADO:
 Nome do usuário: ${user.name}
 E-mail: ${user.email}
 Plano ativo: ${user.plan || 'trial'}
@@ -75,6 +82,13 @@ Estatísticas reais do negócio dele no SQLite do Cobbra:
 - Maior Devedor Atual: ${debtorInfo}
 
 Se o usuário perguntar sobre o seu faturamento, clientes, inadimplência, ou quem deve para ele, você DEVE responder consultando exatamente os números acima com precisão e oferecendo conselhos práticos de cobrança amigável para ajudá-lo a receber!`;
+      } catch (dbError) {
+        console.error('[GEMINI CHAT DB STATS EXCEPTION] Proceeding with base profile:', dbError);
+        systemPrompt += `\n\nCONTEXTO REAL DO USUÁRIO LOGADO:
+Nome do usuário: ${user.name}
+E-mail: ${user.email}
+Plano ativo: ${user.plan || 'trial'}`;
+      }
     }
 
     if (apiKey) {
@@ -145,21 +159,25 @@ Se o usuário perguntar sobre o seu faturamento, clientes, inadimplência, ou qu
       
       // If we have an authenticated user, open a ticket
       if (user) {
-        const ticketId = generateId();
-        const details = `Chamado aberto automaticamente pela IA para ${user.name} (${user.email}). Mensagem do usuário: "${message}"`;
-        
-        // Log activity
-        run(
-          'INSERT INTO activity_log (id, user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?, ?)',
-          [generateId(), user.id, 'support_ticket_opened', 'user', user.id, details]
-        );
-        
-        // In-app Notification
-        run('INSERT INTO notifications (id, user_id, type, title, message, entity_type, entity_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-          [generateId(), user.id, 'warning', '🎫 Suporte Acionado', 'Catarina abriu um ticket prioritário para suporte@cobbra.com.br. Nossa equipe já está resolvendo!', 'user', user.id]
-        );
-        
-        console.warn(`[SUPPORT TICKET] Real-time email alert simulated: Sent ticket to suporte@cobbra.com.br for user ${user.email}`);
+        try {
+          const ticketId = generateId();
+          const details = `Chamado aberto automaticamente pela IA para ${user.name} (${user.email}). Mensagem do usuário: "${message}"`;
+          
+          // Log activity
+          run(
+            'INSERT INTO activity_log (id, user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?, ?)',
+            [generateId(), user.id, 'support_ticket_opened', 'user', user.id, details]
+          );
+          
+          // In-app Notification
+          run('INSERT INTO notifications (id, user_id, type, title, message, entity_type, entity_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [generateId(), user.id, 'warning', '🎫 Suporte Acionado', 'Catarina abriu um ticket prioritário para suporte@cobbra.com.br. Nossa equipe já está resolvendo!', 'user', user.id]
+          );
+          
+          console.warn(`[SUPPORT TICKET] Real-time email alert simulated: Sent ticket to suporte@cobbra.com.br for user ${user.email}`);
+        } catch (dbTicketError) {
+          console.error('[GEMINI CHAT TICKET DB EXCEPTION] Failed to record ticket in database:', dbTicketError);
+        }
       } else {
         console.warn(`[SUPPORT TICKET] Guest user requested help. Simulated alert to suporte@cobbra.com.br. Message: "${message}"`);
       }
