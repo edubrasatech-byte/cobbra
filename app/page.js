@@ -495,6 +495,164 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ===== CATARINA AI ENGINE V3.0 ===== */}
+      <section style={{ 
+        padding: '85px 0', 
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
+        color: '#fff', 
+        position: 'relative', 
+        overflow: 'hidden',
+        borderTop: '1px solid rgba(5,150,105,0.2)',
+        borderBottom: '1px solid rgba(5,150,105,0.2)'
+      }}>
+        {/* Glow Effects */}
+        <div style={{ position: 'absolute', top: -150, left: -150, width: 350, height: 350, borderRadius: '50%', background: 'rgba(16,185,129,0.06)', filter: 'blur(80px)' }} />
+        <div style={{ position: 'absolute', bottom: -150, right: -150, width: 350, height: 350, borderRadius: '50%', background: 'rgba(13,148,136,0.06)', filter: 'blur(80px)' }} />
+
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative' }}>
+          
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <span style={{ 
+              fontSize: 11, fontWeight: 700, padding: '4px 12px', borderRadius: 100, 
+              background: 'rgba(16,185,129,0.15)', color: '#34d399', textTransform: 'uppercase', 
+              letterSpacing: 1, border: '1px solid rgba(16,185,129,0.2)' 
+            }}>
+              ✨ NOVA ATUALIZAÇÃO 3.0
+            </span>
+            <h2 style={{ fontSize: 42, fontWeight: 900, marginTop: 16, marginBottom: 16, letterSpacing: -1 }}>
+              Conheça a <span style={{ background: 'linear-gradient(135deg, #10b981, #0d9488)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Catarina AI Engine</span>
+            </h2>
+            <p style={{ fontSize: 18, color: '#94a3b8', maxWidth: 640, margin: '0 auto', lineHeight: 1.6 }}>
+              Muito além de notificações automáticas. Uma engenharia de inteligência artificial completa e de custo zero feita para gerenciar seu fluxo de caixa por você.
+            </p>
+          </div>
+
+          <div className="hero-grid" style={{ display: 'flex', alignItems: 'center', gap: 60, flexWrap: 'wrap' }}>
+            {/* Left side: Features grid */}
+            <div style={{ flex: 1.2, display: 'flex', flexDirection: 'column', gap: 20 }}>
+              
+              {[
+                {
+                  icon: '🪄',
+                  title: 'Dashboard Copilot (Linguagem Natural)',
+                  desc: 'Comande a plataforma conversando de forma natural. Catarina traduz frases livres em lançamentos e ações financeiras estruturadas de banco de dados.',
+                  badge: '“Cobre R$ 150 do Gustavo amanhã”'
+                },
+                {
+                  icon: '😇',
+                  title: 'Copywriter de Lembretes (Humor da IA)',
+                  desc: 'Redija mensagens perfeitas para seu WhatsApp com um clique. Escolha o tom de abordagem (Gentil 😇, Firme 👔, Urgente 🚨 ou Divertido 🐍) e evite desgastes comerciais.',
+                  badge: 'Livre-se de textos robóticos'
+                },
+                {
+                  icon: '📈',
+                  title: 'Insights Financeiros Inteligentes',
+                  desc: 'A IA analisa de forma 100% anônima e segura seu histórico financeiro e gera automaticamente 3 conselhos de negócios práticos para otimizar suas datas de recebimento e fluxo de caixa.',
+                  badge: 'Decisões orientadas a dados'
+                }
+              ].map((f, i) => (
+                <div 
+                  key={i} 
+                  style={{ 
+                    background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: 24, 
+                    border: '1px solid rgba(255,255,255,0.06)', transition: 'all 0.3s' 
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = 'rgba(5,150,105,0.08)';
+                    e.currentTarget.style.borderColor = 'rgba(5,150,105,0.3)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
+                  }}
+                >
+                  <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                    <div style={{ 
+                      width: 44, height: 44, borderRadius: 12, background: 'rgba(16,185,129,0.15)', 
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0
+                    }}>{f.icon}</div>
+                    <div>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 6 }}>{f.title}</h3>
+                      <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.5, marginBottom: 12 }}>{f.desc}</p>
+                      <span style={{ 
+                        fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 6, 
+                        background: 'rgba(255,255,255,0.06)', color: '#34d399' 
+                      }}>{f.badge}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Right side: Mock AI chatbot and ticket simulation */}
+            <div style={{ flex: 1, minWidth: 320 }}>
+              <div style={{ 
+                background: 'rgba(30, 41, 59, 0.75)', borderRadius: 24, padding: 28, 
+                border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
+                backdropFilter: 'blur(16px)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 16, marginBottom: 20 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🐍</div>
+                  <div>
+                    <h4 style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0 }}>Catarina — IA Cobrinha</h4>
+                    <span style={{ fontSize: 10, color: '#34d399', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} /> Online e pronta
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div style={{ 
+                    alignSelf: 'flex-end', background: '#059669', borderRadius: '16px 16px 2px 16px', 
+                    padding: '10px 14px', fontSize: 13, color: '#fff', maxWidth: '85%' 
+                  }}>
+                    Catarina, pode abrir um chamado de cancelamento de assinatura para mim?
+                  </div>
+                  
+                  <div style={{ 
+                    alignSelf: 'flex-start', background: 'rgba(255,255,255,0.05)', borderRadius: '16px 16px 16px 2px', 
+                    padding: '10px 14px', fontSize: 13, color: '#cbd5e1', maxWidth: '85%',
+                    border: '1px solid rgba(255,255,255,0.04)'
+                  }}>
+                    Entendo perfeitamente, Marina. Como assistente virtual, eu não consigo alterar assinaturas de forma direta. 
+                    Por isso, **acabo de abrir um chamado prioritário** para a nossa equipe no e-mail **suporte@cobbra.com.br**. Eles vão resolver isso para você o mais rápido possível! 🐍
+                    
+                    <div style={{ 
+                      marginTop: 10, padding: '8px 12px', background: 'rgba(245,158,11,0.15)', 
+                      border: '1px solid rgba(245,158,11,0.25)', borderRadius: 8, fontSize: 11, 
+                      color: '#f59e0b', fontWeight: 600 
+                    }}>
+                      🎫 Chamado prioritário aberto para suporte@cobbra.com.br
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ 
+                  marginTop: 24, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16,
+                  display: 'flex', gap: 10, alignItems: 'center'
+                }}>
+                  <div style={{ 
+                    flex: 1, background: 'rgba(255,255,255,0.05)', borderRadius: 10, 
+                    padding: '10px 14px', fontSize: 12, color: '#64748b' 
+                  }}>
+                    Escreva sua dúvida aqui...
+                  </div>
+                  <div style={{ 
+                    padding: '10px 16px', borderRadius: 10, background: '#059669', 
+                    color: '#fff', fontSize: 12, fontWeight: 700 
+                  }}>
+                    Enviar
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
       {/* ===== SAVINGS CALCULATOR ===== */}
       <section style={{ padding: '70px 0', background: 'linear-gradient(135deg, #0f172a, #1e293b)' }}>
         <div style={{ maxWidth: 700, margin: '0 auto', padding: '0 24px' }}>
