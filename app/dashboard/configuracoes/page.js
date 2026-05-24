@@ -461,18 +461,16 @@ export default function ConfiguracoesPage() {
                   </div>
                 </div>
 
-                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(5,150,105,0.25)', borderRadius: 12, padding: 18, marginBottom: 20, lineHeight: 1.6 }}>
-                  <p style={{ fontSize: 13, color: '#e2e8f0', margin: '0 0 10px 0', fontWeight: 600 }}>⚙️ Configuração do Google Gemini</p>
+                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(5,150,105,0.15)', borderRadius: 12, padding: 18, marginBottom: 20, lineHeight: 1.6 }}>
+                  <p style={{ fontSize: 13, color: '#e2e8f0', margin: '0 0 10px 0', fontWeight: 600 }}>✨ Inteligência Artificial Integrada</p>
                   <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>
-                    Para habilitar o suporte interativo da assistente Catarina, copywriting de cobranças e relatórios de insights, associe sua credencial do <strong>Google Gemini</strong>:
+                    Sua conta conta com a assistente inteligente <strong>Catarina AI</strong> ativa por padrão. Ela automatiza e refina seu fluxo financeiro diariamente:
                   </p>
                   <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: '#cbd5e1' }}>
-                    <div>1. Gere uma chave de API no console do <strong>Google AI Studio</strong>.</div>
-                    <div>2. Adicione a chave nas variáveis do Railway com o nome <strong>GEMINI_API_KEY</strong>.</div>
+                    <div>• <strong>Redação Inteligente:</strong> Escreve mensagens de cobrança personalizadas com base no humor selecionado (Gentil, Firme, Urgente, etc.).</div>
+                    <div>• <strong>Comandos Copilot:</strong> Entende instruções de linguagem natural no topo do dashboard (ex: <em>"Cobre R$ 150 do Gustavo amanhã"</em>) para lançamentos rápidos.</div>
+                    <div>• <strong>Insights Financeiros:</strong> Analisa seus dados de caixa e gera dicas de negócios automáticas na tela inicial.</div>
                   </div>
-                  <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 13, color: '#10b981', fontWeight: 700, marginTop: 14, textDecoration: 'none' }}>
-                    Acessar o Google AI Studio →
-                  </a>
                 </div>
 
                 <h4 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 12 }}>Limites diários do seu plano:</h4>
