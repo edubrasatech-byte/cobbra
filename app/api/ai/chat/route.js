@@ -1,5 +1,7 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { run, generateId, queryOne } from '@/lib/db';
+import { sendEmail } from '@/lib/mailer';
+
 
 export async function POST(request) {
   let user = null;
@@ -174,7 +176,66 @@ Plano ativo: ${user.plan || 'trial'}`;
             [generateId(), user.id, 'warning', '🎫 Suporte Acionado', 'Catarina abriu um ticket prioritário para suporte@cobbra.com.br. Nossa equipe já está resolvendo!', 'user', user.id]
           );
           
-          console.warn(`[SUPPORT TICKET] Real-time email alert simulated: Sent ticket to suporte@cobbra.com.br for user ${user.email}`);
+          // Send real support ticket notification email to suporte@cobbra.com.br
+          try {
+            const ticketHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03); }
+    .header { background: #ea580c; padding: 24px; text-align: center; }
+    .title { color: #ffffff; font-size: 20px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+    .content { padding: 32px; line-height: 1.6; font-size: 14.5px; }
+    .ticket-card { background: #fffbeb; border: 1px solid #fef3c7; border-radius: 12px; padding: 20px; margin: 20px 0; }
+    .ticket-label { color: #b45309; font-weight: 700; font-size: 11px; text-transform: uppercase; margin-bottom: 4px; display: block; }
+    .ticket-value { color: #78350f; font-size: 14px; margin: 0; }
+    .footer { padding: 20px 32px; text-align: center; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 11.5px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 class="title">🎫 Novo Chamado de Suporte — Cobbra</h1>
+    </div>
+    <div class="content">
+      <p style="margin-top: 0;">A Catarina AI abriu automaticamente um ticket de suporte prioritário para um assinante:</p>
+      
+      <div class="ticket-card">
+        <span class="ticket-label">Assinante Emissor</span>
+        <p class="ticket-value"><strong>${user.name}</strong> (${user.email})</p>
+        <p class="ticket-value" style="margin-top: 6px;">Plano: <strong>${user.plan?.toUpperCase() || 'TRIAL'}</strong></p>
+      </div>
+
+      <div class="ticket-card" style="background: #f8fafc; border-color: #e2e8f0;">
+        <span class="ticket-label" style="color: #64748b;">Mensagem Solicitante</span>
+        <p class="ticket-value" style="color: #334155; font-style: italic;">"${message}"</p>
+      </div>
+
+      <p style="font-size: 13.5px; color: #475569;">
+        Por favor, acesse o painel administrativo do Cobbra ou envie uma resposta diretamente para o e-mail do assinante (<a href="mailto:${user.email}" style="color: #ea580c; text-decoration: none;">${user.email}</a>) para resolver a solicitação.
+      </p>
+    </div>
+    <div class="footer">
+      <p style="margin: 0;">Cobbra AI Platform — Catarina Auto-Ticket Generator 🐍</p>
+    </div>
+  </div>
+</body>
+</html>
+            `;
+            
+            sendEmail({
+              to: 'suporte@cobbra.com.br',
+              subject: `🎫 Novo Chamado [Suporte] — ${user.name}`,
+              html: ticketHtml
+            }).catch(err => console.error('[SMTP SUPPORT EMAIL DISPATCH ERROR]', err));
+          } catch (emailErr) {
+            console.error('[SMTP SUPPORT EMAIL INITIATION ERROR]', emailErr);
+          }
+          
+          console.warn(`[SUPPORT TICKET] Real-time email alert dispatched to suporte@cobbra.com.br for user ${user.email}`);
         } catch (dbTicketError) {
           console.error('[GEMINI CHAT TICKET DB EXCEPTION] Failed to record ticket in database:', dbTicketError);
         }
