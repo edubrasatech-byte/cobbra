@@ -193,6 +193,13 @@ export default function CobrancasPage() {
       triggerToast('Este cliente não possui e-mail cadastrado para receber lembretes.', 'error');
       return;
     }
+
+    if (!user?.pix_key) {
+      if (!confirm('Atenção: Você ainda não cadastrou sua Chave Pix nas Configurações do seu perfil! O lembrete será enviado, mas sem o QR Code e código Copia e Cola para pagamento imediato. Deseja enviar assim mesmo?')) {
+        return;
+      }
+    }
+
     
     triggerToast(`Enviando cobrança avulsa via ${channel === 'whatsapp' ? 'WhatsApp' : 'E-mail'}... 🚀`, 'loading');
     
