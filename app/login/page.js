@@ -298,13 +298,13 @@ export default function LoginPage() {
       }}>
         <div style={{ width: '100%', maxWidth: 360 }}>
           
-          {/* Mobile Branding Header (Visible ONLY on screens under 900px) */}
-          <div className="mobile-branding-header" style={{
-            display: 'none',
+          {/* Unified Branding Header (Visible on Desktop and Mobile) */}
+          <div className="form-branding-header" style={{
+            display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             textAlign: 'center',
-            marginBottom: 28,
+            marginBottom: 20,
             animation: 'float-slow 6s ease-in-out infinite'
           }}>
             <div style={{
@@ -347,7 +347,7 @@ export default function LoginPage() {
           </div>
 
           {/* Form Header */}
-          <div style={{ marginBottom: 24 }}>
+          <div style={{ marginBottom: 20 }}>
             <h2 style={{ fontSize: 25, fontWeight: 800, color: '#ffffff', letterSpacing: '-0.5px', marginBottom: 8 }}>Entrar na sua conta</h2>
             <p style={{ fontSize: 13.5, color: '#64748b', margin: 0 }}>Acesse seu painel e continue recebendo em dia com a Catarina AI.</p>
           </div>
@@ -440,9 +440,6 @@ export default function LoginPage() {
         @media (max-width: 900px) {
           .desktop-branding-section {
             display: none !important;
-          }
-          .mobile-branding-header {
-            display: flex !important;
           }
         }
       `}</style>

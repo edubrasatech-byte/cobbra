@@ -47,7 +47,7 @@ try {
       'email',
       'Cobbra Demo Pay',
       'Plataforma de Cobrança e Gestão de Pagamentos Inteligentes',
-      'cobra_pro',
+      'pro',
       '2028-12-31T23:59:59.000Z',
       'active',
       1, // onboarding concluído
@@ -231,7 +231,7 @@ try {
     );
     console.log(`📅 Faturamento diário recorrente cadastrado para simulação!`);
 
-  });
+  })();
 
   console.log('🎉 SUCESSO! A conta demo@cobbra.com.br foi completamente populada com dados de demonstração de alta fidelidade!');
 } catch (err) {
