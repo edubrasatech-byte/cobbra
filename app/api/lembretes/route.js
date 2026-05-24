@@ -77,8 +77,12 @@ export async function POST(request) {
           const waNumber = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
           
           try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 seconds timeout
+            
             await fetch(`${evoUrl}/message/sendText/${instance}`, {
               method: 'POST',
+              signal: controller.signal,
               headers: { 
                 'Content-Type': 'application/json',
                 'apikey': evoToken
@@ -89,9 +93,11 @@ export async function POST(request) {
                 textMessage: { text: message }
               })
             });
+            clearTimeout(timeoutId);
             console.log(`[EVOLUTION API] Successfully sent WhatsApp message to ${waNumber} via instance ${instance}`);
           } catch (e) {
-            console.error("[EVOLUTION API] Connection failed to send message:", e);
+            console.error("[EVOLUTION API] Connection failed or timed out to send message:", e);
+            throw new Error(`Falha no WhatsApp: ${e.message || 'Sem conexão com a Evolution API.'}`);
           }
         }
       }
@@ -181,6 +187,7 @@ export async function POST(request) {
         console.log(`[SMTP MAILER] Successfully dispatched reminder email to client ${client.email}`);
       } catch (err) {
         console.error("[SMTP MAILER EXCEPTION] Failed to dispatch email reminder:", err);
+        throw new Error(`Falha no E-mail (SMTP): ${err.message || 'Erro de conexão ou credenciais inválidas com a Hostinger.'}`);
       }
     }
 
