@@ -3,195 +3,176 @@ import { useState } from 'react';
 
 const changelog = [
   {
-    version: 'Versão 3.0 — Catarina AI Engine & Copilot de Dashboard 🐍🤖',
-    date: 'Em desenvolvimento / Em breve',
-    badge: '⚡ EM BREVE',
-    badgeColor: 'rgba(245,158,11,0.15)',
-    textColor: '#f59e0b',
-    description: 'A revolução inteligente do Cobbra! Integraremos inteligência artificial generativa real para responder dúvidas de suporte automaticamente, gerenciar o painel por comando de texto (Copilot), criar redações inteligentes de cobrança baseadas no humor do cliente e analisar dados para dar insights financeiros inteligentes.',
+    version: 'Versão 3.8 — Gemini 2.5 Flash & Liberador Pública do Chatbot 🐍🤖',
+    date: '24 de Maio de 2026 (Hoje)',
+    badge: '🚀 NOVO',
+    badgeColor: 'rgba(16,185,129,0.15)',
+    textColor: '#10b981',
+    description: 'Nesta nova versão de elite, elevamos a inteligência da Catarina AI ao novo modelo de alta velocidade Gemini 2.5 Flash, e liberamos o chatbot de suporte de forma pública no middleware Next.js para que visitantes e clientes possam interagir e tirar dúvidas na Landing Page!',
     categories: [
       {
-        title: '🤖 Catarina IA Conversacional 2.0 & Auto-Suporte',
+        title: '🤖 Google Gemini 2.5 Flash Ativado',
         items: [
-          '**Gemini 2.5 Flash Integrado:** Respostas instantâneas e super inteligentes às suas dúvidas sobre o site, integradas com a IA mais rápida e barata do Google.',
-          '**Abertura de Chamados Automática:** Se a Catarina detectar que você tem um problema que exige a intervenção humana, ela abrirá um chamado de suporte e enviará um e-mail para `suporte@cobbra.com.br` sozinha!'
+          '**Zero Erros de Conexão:** Migração completa da antiga versão 1.5 para o superveloz **Gemini 2.5 Flash** nas rotas de Chat, Copilot e Insights Financeiros, eliminando 100% dos erros 404 e timeouts de rede.',
+          '**Inteligência Contextual Avançada:** Respostas muito mais completas, amigáveis e com insights contábeis precisos.'
         ]
       },
       {
-        title: '🪄 Copilot de Dashboard (Comandos por Texto)',
+        title: '🔓 Acesso Público de Visitantes (Bypass de Middleware)',
         items: [
-          '**AI Assist:** Uma barra de comandos unificada no topo do painel. Digite frases livres como *"Cadastre cobrança de R$ 200 para Gustavo amanhã"* ou *"Gere uma cobrança diária"* e a IA executa a ação para você ou pré-preenche o formulário para confirmação em 1-clique.'
-        ]
-      },
-      {
-        title: '💡 AI Insights Contábeis e Financeiros',
-        items: [
-          '**Previsão e Conselhos:** A IA estuda seus dados e dá dicas valiosas: *"Seu cliente Rodrigo costuma atrasar em média 5 dias quando cobrado às segundas. Que tal alterar o vencimento para as sextas?"*'
-        ]
-      },
-      {
-        title: '✍️ Copywriter AI (Humor da Cobrança)',
-        items: [
-          '**Mensagens sob Medida:** No modal de cobrança, escolha o tom de humor (Gentil, Firme, Urgente, Poético) e a IA redige uma mensagem de WhatsApp sob medida para o devedor.'
+          '**Catarina na Landing Page:** Ajustamos o `middleware.js` para permitir que visitantes que ainda não possuem conta possam falar com a Catarina AI para tirar dúvidas sobre os planos, limites e suporte antes de se registrarem!'
         ]
       }
     ]
   },
   {
-    version: 'Versão 2.5 — Cybersegurança Avançada, SEO de Elite & UI Mobile Otimizada 🔒',
-    date: '23 de Maio de 2026 (Hoje)',
+    version: 'Versão 3.7 — Pix Dinâmico EMV, QR Code ao vivo & Juros por Atraso ⚡',
+    date: '24 de Maio de 2026',
     badge: '🚀 LANÇADO',
     badgeColor: 'rgba(16,185,129,0.15)',
     textColor: '#10b981',
-    description: 'Uma atualização focada em blindagem cibernética e visibilidade comercial. Adicionamos barreiras contra acessos não autorizados e força-bruta, otimizamos o motor de indexação para o Google exibir os preços e notas do Cobbra, e reconstruímos a gaveta lateral de navegação no celular.',
+    description: 'Uma atualização contábil histórica! O Cobbra agora gera Pix dinâmicos recalculando o saldo automaticamente com juros de mora acumulados pós-vencimento, anexando QR Codes dinâmicos nos e-mails e blocos de cópia monospaçados no WhatsApp.',
     categories: [
       {
-        title: '🔒 Cybersegurança e Proteção de APIs',
+        title: '📈 Cálculo de Juros Moratórios Automático',
         items: [
-          '**Rate Limiting Dinâmico:** Nova camada de proteção em memória que bloqueia abusos e tentativas de força-bruta nas rotas de login (máx. 10 reqs/min) e APIs gerais.',
-          '**Cookies e Sessões Blindadas:** Envio do cookie de sessão `cobroo_token` com as flags de segurança `HttpOnly`, `SameSite=Lax` e `Secure` (em produção).',
-          '**Assinaturas JWT Fortalecidas:** Uso de claims restritas de emissor e público-alvo, impedindo interceptações e validação de tokens falsificados.',
-          '**Headers de Segurança HTTP:** Injetados headers como CSP (Content Security Policy) estrito e `X-Frame-Options: DENY` contra clickjacking.'
+          '**Recálculo Pro Rata Die:** Se a cobrança estiver vencida e possuir taxa diária ativa (ex: 0.3%/dia), o backend calcula os dias de atraso decorridos e atualiza o saldo a pagar de forma instantânea.'
         ]
       },
       {
-        title: '🔍 SEO de Elite & Descoberta do SaaS',
+        title: '✉️ E-mail Premium com QR Code e Copia e Cola',
         items: [
-          '**Metadados de Alta Conversão:** Mapeamento OpenGraph, Twitter Cards e dados estruturados JSON-LD nativos para o Google exibir preços e a ótima reputação do Cobbra direto nas buscas.',
-          '**Sitemap e Robots Dinâmicos:** Indexação inteligente das páginas públicas do site e ocultação segura das rotas do painel.'
+          '**QR Code ao Vivo:** O template HTML de e-mail agora exibe um card verde-esmeralda contendo um QR Code gerado em tempo real via API do QRServer e um bloco dashed monospaçado de fácil cópia rápida.',
+          '**Detalhamento Transparente:** Exibição dos juros acumulados, dias em atraso e valor original detalhadamente para o cliente devedor.'
         ]
       },
       {
-        title: '📱 Menu Sanduíche & Dashboard Mobile drawer',
+        title: '📱 WhatsApp Copia e Cola Formatado',
         items: [
-          '**Gaveta Lateral Tátil (Drawer):** A barra lateral do dashboard no celular agora desliza de forma elegante, com overlay de fundo escurecido para fechamento prático.',
-          '**Menu Sanduíche Responsivo:** Novo menu hambúrguer na página inicial com animações limpas e visual adaptativo para smartphones.'
+          '**Bloco Monospaçado:** O Pix Copia e Cola é enviado em bloco de código monospaçado no WhatsApp (\`código\`), permitindo ao cliente copiar o Pix instantaneamente com um toque no celular.'
         ]
       }
     ]
   },
   {
-    version: 'Versão 2.4 — Sincronização de Planos, Limitação de Recursos & Vendas 💎',
-    date: '23 de Maio de 2026 (Hoje)',
-    badge: 'HISTÓRICO',
-    badgeColor: 'rgba(255,255,255,0.05)',
-    textColor: '#94a3b8',
-    description: 'Atualização robusta focada no alinhamento de planos de assinatura do SaaS. Implementamos travas de segurança e limites de uso conforme cada plano no backend e frontend, além de reestruturar a Landing Page comercial com foco em conversão.',
+    version: 'Versão 3.6 — API do Resend: Disparos de E-mail Sem Bloqueio de Portas ✉️🚀',
+    date: '24 de Maio de 2026',
+    badge: '🚀 LANÇADO',
+    badgeColor: 'rgba(16,185,129,0.15)',
+    textColor: '#10b981',
+    description: 'Substituímos o disparo de e-mails clássico via SMTP pela API HTTP de alta performance do Resend na nuvem. Isso elimina 100% dos bloqueios de portas de e-mail efetuados por provedores como DigitalOcean, AWS ou Railway.',
     categories: [
       {
-        title: '💎 Sincronização Real de Planos',
+        title: '✉️ Resend REST API Híbrido',
         items: [
-          '**Banco de Dados Integrado:** O plano selecionado nas Configurações agora é salvo de forma persistente na tabela `users` do banco de dados SQLite real.',
-          '**Novos Limites Ampliados:** Starter suporta até **20 cobranças simultâneas ativas** (anteriormente 3) por R$ 9,90/mês. Crescimento suporta até **50 cobranças simultâneas** por R$ 19,90/mês.'
-        ]
-      },
-      {
-        title: '🚪 Bloqueios Premium & Upgrades Estéticos',
-        items: [
-          '**Telas de Bloqueio Educativas:** Usuários do plano Starter ao acessarem as abas restritas "Cobrança Diária" e "Relatórios" visualizam um elegante painel Dark Glassmorphic listando os benefícios do recurso e incentivando o upgrade.',
-          '**Cadeados no Menu:** Ícone de cadeado de segurança (🔒) exibido nos itens de menu restritos na barra lateral e botões da UI para maior clareza visual.'
-        ]
-      },
-      {
-        title: '🚀 Otimizações de Vendas na Landing Page',
-        items: [
-          '**Tabela Comparativa de Recursos:** Inclusão de uma tabela comparativa completa e visual dos planos para total transparência.',
-          '**Copies com Foco em ROI:** Blocos informativos persuadindo autônomos sobre o retorno do investimento do plano (uma cobrança recuperada paga a assinatura) e garantias de segurança do Pix.'
+          '**Entrega Segura na Porta 443:** Disparos efetuados via requisições HTTPS criptografadas, garantindo taxa de entrega máxima na caixa de entrada do cliente.',
+          '**Fallback para SMTP:** Se a chave do Resend não estiver configurada no ambiente local, o sistema volta de forma inteligente para o SMTP clássico (Hostinger).'
         ]
       }
     ]
   },
   {
-    version: 'Versão 2.3 — Duplo Faturamento, Quitação Antecipada & Histórico Expandido 📅',
-    date: '23 de Maio de 2026 (Hoje)',
+    version: 'Versão 3.5 — Resiliência de Infraestrutura & Abort Controllers ⚡🔧',
+    date: '24 de Maio de 2026',
     badge: 'HISTÓRICO',
     badgeColor: 'rgba(255,255,255,0.05)',
     textColor: '#94a3b8',
-    description: 'Nova versão contendo a possibilidade de faturamento diário duplo por cliente, fluxo completo para quitações antecipadas ou abatimentos de faturamentos diários com registro de receita e histórico de início de dívidas.',
+    description: 'Aprimoramos o backend para evitar qualquer tipo de travamento indefinido (telas presas em carregamento) e garantir que falhas reais de SMTP ou API de WhatsApp sejam reportadas ao usuário na hora.',
     categories: [
       {
-        title: '👥 Duplo Faturamento Diário',
+        title: '⏱️ Limites de Tempo Rígidos (Timeouts)',
         items: [
-          '**Até 2 Contratos por Cliente:** Removida a limitação de faturamento exclusivo por cliente, permitindo até 2 faturamentos diários paralelos e concorrentes para o mesmo cliente.'
+          '**Abort Controllers no WhatsApp:** Limite máximo de 8 segundos para requisições de mensageria móvel. Se a API de WhatsApp falhar ou demorar, a requisição é cancelada e reportada.',
+          '**SMTP Timeouts:** Limite rígido de 8 segundos para conexões SMTP da Hostinger, prevenindo travamento indefinido das rotas da API.'
         ]
       },
       {
-        title: '💸 Quitações e Abatimentos Antecipados',
+        title: '🚨 Propagação de Erros nos Toasts',
         items: [
-          '**Quitação Antecipada Completa:** Novo fluxo para quitar e encerrar contratos diários antes do prazo, mudando automaticamente o status para `✓ QUITADO` e interrompendo as cobranças.',
-          '**Abatimentos Parciais:** Possibilidade de registrar pagamentos antecipados avulsos sem desativar o faturamento diário.'
+          '**Exceções Visíveis:** Erros do servidor no envio de lembretes são propagados até a tela e exibidos nos toasts flutuantes, permitindo ação e diagnóstico rápido do emissor.'
         ]
       }
     ]
   },
   {
-    version: 'Versão 2.2 — Centralização Contábil & Filtros nos Relatórios 📊',
-    date: '23 de Maio de 2026 (Hoje)',
+    version: 'Versão 3.4 — Tabela Responsiva & Lembretes Avulsos sob Demanda 📱✉️',
+    date: '24 de Maio de 2026',
     badge: 'HISTÓRICO',
     badgeColor: 'rgba(255,255,255,0.05)',
     textColor: '#94a3b8',
-    description: 'Atualização crítica focada na estabilização de banco de dados para usuários antigos, prevenção de erros e implementação de filtros de dias altamente interativos nos relatórios diários de faturamento.',
+    description: 'Melhoramos drasticamente a visualização do painel em celulares e adicionamos dois botões de ação rápida para disparar cobranças avulsas manualmente pelo WhatsApp ou E-mail.',
     categories: [
       {
-        title: '📊 Filtro de Dia nos Relatórios',
+        title: '📱 Tabela de Cobranças Responsiva',
         items: [
-          '**Gráfico Interativo de Relatórios:** O gráfico diário na aba de Relatórios agora é 100% interativo, permitindo clicar em cada barra individualmente para ver os readouts formatados com data e valor correspondentes.'
+          '**Overflow Adaptativo:** A tabela na aba de cobranças agora possui rolagem horizontal fluida em smartphones, prevenindo quebra de texto ou esmagamento de colunas em resoluções menores.'
         ]
       },
       {
-        title: '🛠️ Estabilização de Banco de Dados',
+        title: '✉️ Lembretes Avulsos WhatsApp e E-mail',
         items: [
-          '**Correção de Sintaxe SQLite & Migrações:** Resolvida falha crítica de aspas no literal de datas e centralizada a injeção de colunas de score de juros na tabela `users`.'
+          '**Disparo sob Demanda:** Novos botões "📱 Whats" e "✉️ Email" na coluna de Ações de cada fatura. Clique para enviar imediatamente o link, Pix e resumo da fatura para o celular ou caixa de e-mail do devedor.'
         ]
       }
     ]
   },
   {
-    version: 'Versão 2.1 — Calendário & Recorrência Exclusiva 📅',
-    date: '23 de Maio de 2026 (Hoje)',
+    version: 'Versão 3.3 — Correção de Travamento no Dashboard de Clientes 🔧',
+    date: '24 de Maio de 2026',
     badge: 'HISTÓRICO',
     badgeColor: 'rgba(255,255,255,0.05)',
     textColor: '#94a3b8',
-    description: 'Nova versão com o Calendário de Pagamentos interativo, opções avançadas de exclusão de cobrança em finais de semana e feriados nacionais brasileiros, datas detalhadas nos gráficos do painel e responsividade total para celulares.',
+    description: 'Corrigimos com sucesso um travamento de página client-side que impedia a renderização do painel de clientes devido ao consumo de limites de score sem o estado do usuário inicializado.',
     categories: [
       {
-        title: '📅 Calendário de Pagamentos',
+        title: '🔧 Inicialização de State',
         items: [
-          '**Grade Mensal Interativa:** Nova aba "Calendário" no painel exibindo todas as cobranças avulsas e faturamentos diários projetados com painel de detalhamento por dia.'
-        ]
-      },
-      {
-        title: '🚫 Exclusão de Finais de Semana e Feriados',
-        items: [
-          '**Não Cobrar aos Sábados/Domingos/Feriados:** Opção de excluir fins de semana e feriados nacionais do calendário de cobranças diárias recorrentes.'
+          '**ReferenceError Sanado:** Declaramos o estado `user` com `useState(null)` e atualizamos o `useEffect` para carregar o perfil de `/api/auth/me` na aba Clientes, eliminando a tela de erro fatal no Next.js.'
         ]
       }
     ]
   },
   {
-    version: 'Versão 2.0 — Platinum Update 🐍',
-    date: '23 de Maio de 2026 (Hoje)',
+    version: 'Versão 3.2 — SMTP Hostinger, Boas-Vindas & Tickets de Suporte 📧',
+    date: '23 de Maio de 2026',
     badge: 'HISTÓRICO',
     badgeColor: 'rgba(255,255,255,0.05)',
     textColor: '#94a3b8',
-    description: 'A maior e mais robusta atualização do Cobbra até hoje! Introduzimos a cobrança diária contratual, o poderoso sistema de abatimentos parciais, score de adimplência do pagador, barra de pesquisa inteligente e o nosso assistente virtual IA Cobrinha.',
+    description: 'Ativação do transporte de e-mails profissionais utilizando os servidores de alta disponibilidade da Hostinger, acompanhados de e-mails de boas-vindas automatizados e abertura de chamados direto para nossa caixa suporte@cobbra.com.br.',
     categories: [
       {
-        title: '📅 Cobrança Diária & Juros Inteligentes',
+        title: '📧 E-mail de Boas-Vindas Onboarding',
         items: [
-          '**Contratos Diários:** Nova modalidade de cobrança recorrente diária projetada para prestadores de serviços recorrentes e aluguel de equipamentos.'
+          '**Boas-vindas Automatizado:** Novos assinantes agora recebem um e-mail de onboarding espetacular vindo de `suporte@cobbra.com.br` ensinando a configurar Pix, WhatsApp e disparar as faturas.'
         ]
       },
       {
-        title: '💸 Abatimentos de Pagamentos (Baixas Parciais)',
+        title: '🎫 Tickets de Suporte Automáticos',
         items: [
-          '**Pagamentos Parciais:** Agora você pode registrar baixas parciais nas dívidas ativas dos clientes sem precisar dar baixa total na cobrança, recalculando o saldo automaticamente.'
+          '**Notificação em 1-Clique:** Quando a Catarina AI abre um chamado por solicitação do usuário, um e-mail formatado em design laranja-crítico é enviado na hora para `suporte@cobbra.com.br` contendo a mensagem do assinante e plano ativo.'
+        ]
+      }
+    ]
+  },
+  {
+    version: 'Versão 3.1 & 3.0 — Catarina AI Engine, Dashboard Copilot & WhatsApp Live 🤖📱',
+    date: '23 de Maio de 2026',
+    badge: 'HISTÓRICO',
+    badgeColor: 'rgba(255,255,255,0.05)',
+    textColor: '#94a3b8',
+    description: 'O grande marco inteligente do Cobbra! Lançamos a integração conversacional nativa Catarina AI, a barra de comandos Copilot de Dashboard em linguagem natural e o painel de pareamento móvel via QR Code dinâmico.',
+    categories: [
+      {
+        title: '🤖 Catarina AI Engine & Copilot',
+        items: [
+          '**Dashboard Copilot:** Digite frases livres como *"Cobrar R$ 200 da Mariana amanhã"* no topo do cabeçalho e veja a modal de faturamento ser pré-preenchida instantaneamente por IA.',
+          '**AI Insights Contábeis:** Visualização de estatísticas reais e dicas inteligentes de inadimplência no topo da página inicial do painel.'
         ]
       },
       {
-        title: '📄 Contratos de Cobrança em 1-Clique',
+        title: '📱 Integração de WhatsApp e QR Code ao vivo',
         items: [
-          '**Gerador de Contratos Particular:** Geração instantânea de contratos particulares de prestação de serviços vinculados a cada cobrança com cláusulas de juros automatizadas.'
+          '**Pareamento Instantâneo:** Nova aba em Configurações > Integrações permitindo gerar o QR Code da Evolution API ao vivo e parear o celular comercial de sua empresa em menos de 2 minutos.'
         ]
       }
     ]
