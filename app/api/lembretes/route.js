@@ -1,6 +1,8 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { query, queryOne, run, generateId } from '@/lib/db';
 import { sendEmail } from '@/lib/mailer';
+import { generateStaticPix } from '@/lib/pix';
+
 
 // GET /api/lembretes - List reminders
 export async function GET(request) {
@@ -54,11 +56,55 @@ export async function POST(request) {
       return Response.json({ error: 'O cliente não possui e-mail cadastrado para envio.' }, { status: 400 });
     }
 
+    // Calculate updated debt value with daily interest if overdue
+    let updatedAmount = charge.amount;
+    let delayDays = 0;
+    let interestApplied = 0;
+
+    if (charge.status !== 'paid' && charge.status !== 'cancelled') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const due = new Date(charge.due_date + 'T00:00:00');
+      
+      if (today > due) {
+        const timeDiff = today.getTime() - due.getTime();
+        delayDays = Math.max(0, Math.floor(timeDiff / (1000 * 60 * 60 * 24)));
+        
+        if (charge.daily_interest_rate > 0) {
+          // daily_interest_rate is stored as percentage, e.g. 0.3% per day
+          interestApplied = charge.amount * (charge.daily_interest_rate / 100) * delayDays;
+          updatedAmount += interestApplied;
+        }
+      }
+    }
+
+    // Generate Pix code if the subscriber has a configured key
+    const pixCode = user.pix_key ? generateStaticPix({
+      key: user.pix_key,
+      amount: updatedAmount,
+      name: user.business_name || user.name
+    }) : '';
+
+    // Format WhatsApp message with Pix and updated debt summary if applicable
+    let finalMessage = message;
+    if (pixCode) {
+      finalMessage += `\n\n💵 *Resumo do Pagamento Atualizado:*\n`;
+      if (delayDays > 0 && interestApplied > 0) {
+        finalMessage += `• Valor original: R$ ${charge.amount.toFixed(2).replace('.', ',')}\n`;
+        finalMessage += `• Juros por atraso (${delayDays} dias): R$ ${interestApplied.toFixed(2).replace('.', ',')}\n`;
+        finalMessage += `• *Valor Total Atualizado:* R$ ${updatedAmount.toFixed(2).replace('.', ',')}\n\n`;
+      } else {
+        finalMessage += `• *Valor Total:* R$ ${updatedAmount.toFixed(2).replace('.', ',')}\n\n`;
+      }
+      finalMessage += `🔑 *Pix Copia e Cola (toque para copiar):*\n\`${pixCode}\``;
+    }
+
     const id = generateId();
     run(
       `INSERT INTO reminders (id, charge_id, user_id, client_id, channel, message, status)
        VALUES (?, ?, ?, ?, ?, ?, 'sent')`,
-      [id, charge_id, user.id, charge.client_id, finalChannel, message]
+      [id, charge_id, user.id, charge.client_id, finalChannel, finalMessage]
     );
 
     // 1. Dynamic Real Dispatches via central Evolution API for WhatsApp
@@ -90,7 +136,7 @@ export async function POST(request) {
               body: JSON.stringify({
                 number: waNumber,
                 options: { delay: 1200, linkPreview: true },
-                textMessage: { text: message }
+                textMessage: { text: finalMessage }
               })
             });
             clearTimeout(timeoutId);
@@ -152,16 +198,36 @@ export async function POST(request) {
             <td class="invoice-label">Vencimento:</td>
             <td class="invoice-value">${formattedDate}</td>
           </tr>
+          ${delayDays > 0 && interestApplied > 0 ? `
           <tr>
-            <td class="invoice-label" style="border-top: 1px dashed #e2e8f0; padding-top: 10px;">Valor Total:</td>
-            <td class="invoice-value" style="border-top: 1px dashed #e2e8f0; padding-top: 10px; color: #10b981; font-size: 17px; font-weight: 800;">R$ ${charge.amount.toFixed(2).replace('.', ',')}</td>
+            <td class="invoice-label">Valor Original:</td>
+            <td class="invoice-value">R$ ${charge.amount.toFixed(2).replace('.', ',')}</td>
+          </tr>
+          <tr>
+            <td class="invoice-label">Juros por Atraso (${delayDays} dias):</td>
+            <td class="invoice-value" style="color: #ef4444;">+ R$ ${interestApplied.toFixed(2).replace('.', ',')}</td>
+          </tr>
+          ` : ''}
+          <tr>
+            <td class="invoice-label" style="border-top: 1px dashed #e2e8f0; padding-top: 10px;">Valor Total Atualizado:</td>
+            <td class="invoice-value" style="border-top: 1px dashed #e2e8f0; padding-top: 10px; color: #10b981; font-size: 17px; font-weight: 800;">R$ ${updatedAmount.toFixed(2).replace('.', ',')}</td>
           </tr>
         </table>
         
-        ${user.pix_key ? `
-        <div class="pix-box">
-          <div class="pix-title">Chave Pix para Pagamento (${user.pix_key_type?.toUpperCase()})</div>
-          <div class="pix-key">${user.pix_key}</div>
+        ${pixCode ? `
+        <div class="pix-box" style="margin-top: 24px; padding: 20px; background-color: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 12px; text-align: center;">
+          <div class="pix-title" style="font-size: 13px; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Pagar via Pix (Liberação Imediata)</div>
+          
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(pixCode)}" alt="QR Code Pix" style="margin: 12px auto; display: block; border: 4px solid #ffffff; box-shadow: 0 4px 12px rgba(22, 101, 52, 0.08); width: 180px; height: 180px; border-radius: 8px;" />
+          
+          <p style="font-size: 12px; color: #15803d; margin: 12px 0 6px 0; font-weight: 600;">Código Pix Copia e Cola:</p>
+          <div style="font-family: monospace; font-size: 11.5px; color: #166534; background: #ffffff; border: 1px dashed #86efac; border-radius: 8px; padding: 12px; word-break: break-all; text-align: center; line-height: 1.4; user-select: all;" title="Clique para selecionar e copiar">${pixCode}</div>
+          <p style="font-size: 11px; color: #15803d; margin: 6px 0 0 0; font-style: italic; opacity: 0.8;">Dica: Toque/clique no código acima para selecionar e copiar no seu celular</p>
+        </div>
+        ` : user.pix_key ? `
+        <div class="pix-box" style="margin-top: 24px; padding: 16px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; text-align: center;">
+          <div class="pix-title" style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Chave Pix para Pagamento (${user.pix_key_type?.toUpperCase()})</div>
+          <div class="pix-key" style="font-family: monospace; font-size: 14px; color: #0f172a; word-break: break-all; font-weight: bold;">${user.pix_key}</div>
         </div>
         ` : ''}
       </div>
