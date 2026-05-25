@@ -1065,7 +1065,7 @@ export default function HomePage() {
             </h2>
             <p style={{ fontSize: 18, color: '#94a3b8', marginBottom: 24 }}>Resultados reais de profissionais como você</p>
             {/* Filtros de persona */}
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div className="faq-filters" style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
               {[['todos','🐍 Todos'],['trainer','🏋️ Personal Trainer'],['freelancer','🎨 Freelancer'],['saude','🥗 Saúde'],['locacao','🚗 Locação']].map(([val, label]) => (
                 <button key={val} onClick={() => setTestimonialFilter(val)} style={{
                   padding: '8px 18px', borderRadius: 100, border: 'none', cursor: 'pointer', fontFamily: 'Inter',
@@ -1081,7 +1081,7 @@ export default function HomePage() {
 
           {/* Featured testimonial - sempre visível no filtro 'todos' e 'trainer' */}
           {(testimonialFilter === 'todos' || testimonialFilter === 'trainer') && (
-          <div className="featured-testimonial" style={{ background: 'linear-gradient(135deg, #0c0e1a, #070913)', borderRadius: 24, padding: 48, marginBottom: 32, display: 'flex', gap: 40, alignItems: 'center', color: '#fff', border: '1px solid rgba(16,185,129,0.3)', boxShadow: '0 8px 30px rgba(16,185,129,0.05)' }}>
+          <div className="featured-testimonial desktop-only" style={{ background: 'linear-gradient(135deg, #0c0e1a, #070913)', borderRadius: 24, padding: 48, marginBottom: 32, display: 'flex', gap: 40, alignItems: 'center', color: '#fff', border: '1px solid rgba(16,185,129,0.3)', boxShadow: '0 8px 30px rgba(16,185,129,0.05)' }}>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
                 {[1,2,3,4,5].map(s => <span key={s} style={{ fontSize: 20, color: '#f59e0b' }}>★</span>)}
@@ -1152,6 +1152,7 @@ export default function HomePage() {
           <div className="mobile-testimonials" style={{ display: 'none', flexDirection: 'column', gap: 16 }}>
             {(() => {
               const activeList = [
+                { name: 'Marina Oliveira', role: 'Personal Trainer', location: 'São Paulo, SP', time: 'Usa há 3 meses', quote: 'Em 3 meses usando o Cobbra, minha inadimplência caiu de 35% para 6%. Recuperei R$ 4.200 que estavam parados. A mensagem pelo WhatsApp é tão gentil que meus alunos até agradecem o lembrete. Sério.', result: 'Inadimplência: 35% → 6% · R$ 4.200 recuperados', initials: 'MO', color: '#10b981', stars: 5, persona: 'trainer' },
                 { name: 'Rafael Costa', role: 'Designer Freelancer', location: 'Rio de Janeiro, RJ', time: 'Usa há 5 meses', quote: 'Tinha um cliente que me devia R$ 7.500 há 4 meses. Cadastrei no Cobbra e em 3 lembretes ele pagou tudo. A mensagem é tão profissional que ele nem percebeu que era automática. Agora cobro todos meus freelas assim.', result: 'Recuperou R$ 7.500 em dívidas', initials: 'RC', color: '#0891b2', stars: 5, persona: 'freelancer' },
                 { name: 'Dra. Camila Ferreira', role: 'Nutricionista', location: 'Belo Horizonte, MG', time: 'Usa há 8 meses', quote: 'Minha secretária gastava 3 horas por semana cobrando pacientes. Com o Cobbra, ela não faz mais nada disso. A taxa de pagamento em dia subiu de 60% para 91%. Economizei tempo e dinheiro.', result: 'Taxa de pagamento: 60% → 91%', initials: 'CF', color: '#7c3aed', stars: 5, persona: 'saude' },
                 { name: 'Gustavo Carvalho', role: 'Locadora Rent-a-Car', location: 'Curitiba, PR', time: 'Usa há 2 meses', quote: 'Eu alugo carros e antes os clientes atrasavam semanas. Com a opção de juros diários pós-vencimento do Cobbra, a conversa mudou! Cadastrei 0.5% de juros ao dia e agora todos pagam rigorosamente na data. Facilitou minha vida e aumentou meus lucros!', result: 'Inadimplência zero com juros diários', initials: 'GC', color: '#e11d48', stars: 5, persona: 'locacao' }
