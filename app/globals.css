@@ -257,6 +257,16 @@ img {
   letter-spacing: -0.02em !important;
 }
 
+/* Calculator Card Responsive Styling */
+.calc-card {
+  padding: 32px 40px !important;
+}
+@media (max-width: 768px) {
+  .calc-card {
+    padding: 24px 16px !important;
+  }
+}
+
 /* Mobile-only / Desktop-only helper classes */
 .mobile-only {
   display: none !important;

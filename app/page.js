@@ -483,8 +483,8 @@ export default function HomePage() {
               onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.color = '#10b981'; }}
             >Entrar</a>
             <a href="/cadastro" style={{
-              fontSize: 14, fontWeight: 600, color: '#070913', padding: '10px 24px', borderRadius: 8,
-              background: '#10b981', boxShadow: '0 4px 14px rgba(16,185,129,0.3)',
+              fontSize: 13, fontWeight: 600, color: '#070913', padding: '8px 18px', borderRadius: 8,
+              background: '#10b981', boxShadow: '0 4px 12px rgba(16,185,129,0.25)',
               transition: 'all 0.2s', transform: 'translateY(0)', textDecoration: 'none'
             }}
               onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 6px 20px rgba(16,185,129,0.5)'; }}
@@ -558,18 +558,18 @@ export default function HomePage() {
 
             <div className="hero-cta" style={{ display: 'flex', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
               <a href="/cadastro" style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 32px', borderRadius: 12,
-                background: '#10b981', color: '#070913', fontSize: 17, fontWeight: 700,
-                boxShadow: '0 4px 14px rgba(16,185,129,0.4)', transition: 'all 0.3s', transform: 'translateY(0)', textDecoration: 'none'
+                display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 10,
+                background: '#10b981', color: '#070913', fontSize: 14, fontWeight: 700,
+                boxShadow: '0 4px 12px rgba(16,185,129,0.3)', transition: 'all 0.3s', transform: 'translateY(0)', textDecoration: 'none'
               }}
                 onMouseEnter={e => { e.target.style.transform = 'translateY(-3px)'; e.target.style.boxShadow = '0 8px 25px rgba(16,185,129,0.5)'; }}
-                onMouseLeave={e => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 4px 14px rgba(16,185,129,0.4)'; }}
+                onMouseLeave={e => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 4px 12px rgba(16,185,129,0.3)'; }}
               >
                 Parar de perder dinheiro — Começar grátis →
               </a>
               <a href="#como-funciona" style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 28px', borderRadius: 12,
-                border: '2px solid rgba(255,255,255,0.1)', color: '#cbd5e1', fontSize: 16, fontWeight: 600,
+                display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 12,
+                border: '2px solid rgba(255,255,255,0.1)', color: '#cbd5e1', fontSize: 14, fontWeight: 600,
                 transition: 'all 0.2s', textDecoration: 'none'
               }}
                 onMouseEnter={e => { e.target.style.borderColor = '#10b981'; e.target.style.color = '#10b981'; }}
@@ -832,87 +832,8 @@ export default function HomePage() {
 
           <div className="hero-grid" style={{ display: 'flex', alignItems: 'center', gap: 60, flexWrap: 'wrap' }}>
             
-            {/* Mobile-Only Feature Selector Tabs */}
-            <div className="mobile-only" style={{ display: 'none', flexDirection: 'column', gap: 12, width: '100%' }}>
-              <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 8, width: '100%', WebkitOverflowScrolling: 'touch' }}>
-                {[
-                  { icon: '🪄', tabTitle: 'Copilot' },
-                  { icon: '😇', tabTitle: 'Humores' },
-                  { icon: '📈', tabTitle: 'Insights' }
-                ].map((tab, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveFeature(idx)}
-                    style={{
-                      flexShrink: 0,
-                      padding: '12px 18px',
-                      borderRadius: 100,
-                      background: activeFeature === idx ? '#10b981' : '#0c0e1a',
-                      color: activeFeature === idx ? '#070913' : '#cbd5e1',
-                      fontSize: 13,
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      border: activeFeature === idx ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                      transition: 'all 0.2s',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6
-                    }}
-                  >
-                    <span>{tab.icon}</span>
-                    <span>{tab.tabTitle}</span>
-                  </button>
-                ))}
-              </div>
-              
-              {/* Active Mobile Feature Card */}
-              {(() => {
-                const f = [
-                  {
-                    icon: '🪄',
-                    title: 'Dashboard Copilot (Linguagem Natural)',
-                    desc: 'Comande a plataforma conversando de forma natural. Catarina traduz frases livres em lançamentos e ações financeiras estruturadas de banco de dados.',
-                    badge: '“Cobre R$ 150 do Gustavo amanhã”'
-                  },
-                  {
-                    icon: '😇',
-                    title: 'Copywriter de Lembretes (Humor da IA)',
-                    desc: 'Redija mensagens perfeitas para seu WhatsApp com um clique. Escolha o tom de abordagem (Gentil 😇, Firme 👔, Urgente 🚨 ou Divertido 🐍) e evite desgastes comerciais.',
-                    badge: 'Livre-se de textos robóticos'
-                  },
-                  {
-                    icon: '📈',
-                    title: 'Insights Financeiros Inteligentes',
-                    desc: 'A IA analisa de forma 100% anônima e segura seu histórico financeiro e gera automaticamente 3 conselhos de negócios práticos para otimizar suas datas de recebimento e fluxo de caixa.',
-                    badge: 'Decisões orientadas a dados'
-                  }
-                ][activeFeature];
-                return (
-                  <div style={{ 
-                    background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: 20, 
-                    border: '1px solid rgba(16,185,129,0.25)', transition: 'all 0.3s', marginBottom: 12
-                  }}>
-                    <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                      <div style={{ 
-                        width: 38, height: 38, borderRadius: 10, background: 'rgba(16,185,129,0.15)', 
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0
-                      }}>{f.icon}</div>
-                      <div>
-                        <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 4 }}>{f.title}</h3>
-                        <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.4, marginBottom: 8 }}>{f.desc}</p>
-                        <span style={{ 
-                          fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 6, 
-                          background: 'rgba(255,255,255,0.04)', color: '#34d399' 
-                        }}>{f.badge}</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-            </div>
-
-            {/* Left side: Features grid (Desktop only) */}
-            <div className="desktop-only" style={{ flex: 1.2, display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {/* Left side: Features grid - fully responsive, stacked on mobile */}
+            <div style={{ flex: 1.2, display: 'flex', flexDirection: 'column', gap: 20, width: '100%' }}>
               {[
                 {
                   icon: '🪄',
@@ -935,13 +856,19 @@ export default function HomePage() {
               ].map((f, i) => (
                 <div 
                   key={i} 
-                  onClick={() => setActiveFeature(i)}
                   style={{ 
-                    background: activeFeature === i ? 'rgba(16,185,129,0.08)' : 'rgba(255,255,255,0.02)', 
+                    background: 'rgba(255,255,255,0.02)', 
                     borderRadius: 16, padding: 24, 
-                    border: activeFeature === i ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.05)', 
-                    transition: 'all 0.3s',
-                    cursor: 'pointer'
+                    border: '1px solid rgba(255,255,255,0.05)', 
+                    transition: 'all 0.3s'
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = 'rgba(16,185,129,0.06)';
+                    e.currentTarget.style.borderColor = 'rgba(16,185,129,0.25)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
                   }}
                 >
                   <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
@@ -962,7 +889,7 @@ export default function HomePage() {
               ))}
             </div>
 
-            {/* Right side: Mock AI chatbot and ticket simulation */}
+            {/* Right side: Mock AI chatbot and ticket simulation (static and high-fidelity) */}
             <div style={{ flex: 1, minWidth: 320, width: '100%' }}>
               <div style={{ 
                 background: '#0c0e1a', borderRadius: 24, padding: 24, 
@@ -979,94 +906,28 @@ export default function HomePage() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minHeight: 220, justifyContent: 'center' }}>
-                  {activeFeature === 0 && (
-                    <>
-                      <div className="animate-fadeIn" style={{ 
-                        alignSelf: 'flex-end', background: '#10b981', borderRadius: '16px 16px 2px 16px', 
-                        padding: '10px 14px', fontSize: 13, color: '#070913', fontWeight: 600, maxWidth: '85%' 
-                      }}>
-                        Cobre R$ 150 do Gustavo amanhã
-                      </div>
-                      
-                      <div className="animate-fadeIn" style={{ 
-                        alignSelf: 'flex-start', background: 'rgba(255,255,255,0.03)', borderRadius: '16px 16px 16px 2px', 
-                        padding: '10px 14px', fontSize: 13, color: '#cbd5e1', maxWidth: '85%',
-                        border: '1px solid rgba(255,255,255,0.04)'
-                      }}>
-                        Com certeza! Cadastrei a cobrança de **R$ 150,00** para **Gustavo** com vencimento para amanhã. Ele receberá o lembrete gentil com o Pix copia e cola às 09:00 no WhatsApp. 🐍
-                        
-                        <div style={{ 
-                          marginTop: 10, padding: '8px 12px', background: 'rgba(16,185,129,0.1)', 
-                          border: '1px solid rgba(16,185,129,0.2)', borderRadius: 8, fontSize: 11, 
-                          color: '#10b981', fontWeight: 600 
-                        }}>
-                          📅 Cobrança agendada: Gustavo · R$ 150,00 · Vence Amanhã
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {activeFeature === 1 && (
-                    <>
-                      <div className="animate-fadeIn" style={{ 
-                        alignSelf: 'flex-end', background: '#10b981', borderRadius: '16px 16px 2px 16px', 
-                        padding: '10px 14px', fontSize: 13, color: '#070913', fontWeight: 600, maxWidth: '85%' 
-                      }}>
-                        Catarina, mude o tom do Pedro para abordagem Firme (👔)
-                      </div>
-                      
-                      <div className="animate-fadeIn" style={{ 
-                        alignSelf: 'flex-start', background: 'rgba(255,255,255,0.03)', borderRadius: '16px 16px 16px 2px', 
-                        padding: '10px 14px', fontSize: 13, color: '#cbd5e1', maxWidth: '85%',
-                        border: '1px solid rgba(255,255,255,0.04)'
-                      }}>
-                        Tom atualizado para Firme (👔)! Nova abordagem gerada para o WhatsApp do Pedro:
-                        
-                        <em style={{ display: 'block', margin: '8px 0', color: '#94a3b8', fontSize: 12 }}>&ldquo;Prezado Pedro, consta em nosso sistema que a mensalidade de R$ 300,00 ainda não foi paga. Solicitamos a regularização via Pix copia e cola no link a seguir.&rdquo;</em>
-                        
-                        <div style={{ 
-                          marginTop: 10, padding: '8px 12px', background: 'rgba(14,165,233,0.1)', 
-                          border: '1px solid rgba(14,165,233,0.2)', borderRadius: 8, fontSize: 11, 
-                          color: '#38bdf8', fontWeight: 600 
-                        }}>
-                          👔 Abordagem ajustada para Firme (Pedro Costa)
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {activeFeature === 2 && (
-                    <>
-                      <div className="animate-fadeIn" style={{ 
-                        alignSelf: 'flex-end', background: '#10b981', borderRadius: '16px 16px 2px 16px', 
-                        padding: '10px 14px', fontSize: 13, color: '#070913', fontWeight: 600, maxWidth: '85%' 
-                      }}>
-                        Como otimizar meu caixa esta semana?
-                      </div>
-                      
-                      <div className="animate-fadeIn" style={{ 
-                        alignSelf: 'flex-start', background: 'rgba(255,255,255,0.03)', borderRadius: '16px 16px 16px 2px', 
-                        padding: '10px 14px', fontSize: 13, color: '#cbd5e1', maxWidth: '85%',
-                        border: '1px solid rgba(255,255,255,0.04)'
-                      }}>
-                        Analisei seu histórico de 20 clientes e encontrei 3 oportunidades excelentes:
-                        
-                        <ol style={{ margin: '8px 0', paddingLeft: 16, color: '#94a3b8', display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12 }}>
-                          <li>📈 <strong>Desconto de Antecipação:</strong> Ofereça 5% para quem pagar 3 dias antes.</li>
-                          <li>⚡ <strong>Multa Automática:</strong> Configure 2% de multa para reduzir atrasos.</li>
-                          <li>📅 <strong>Ajuste de Fluxo:</strong> Mude o vencimento do Lucas do dia 10 para o dia 05.</li>
-                        </ol>
-                        
-                        <div style={{ 
-                          marginTop: 10, padding: '8px 12px', background: 'rgba(245,158,11,0.1)', 
-                          border: '1px solid rgba(245,158,11,0.2)', borderRadius: 8, fontSize: 11, 
-                          color: '#f59e0b', fontWeight: 600 
-                        }}>
-                          📈 3 conselhos de caixa gerados com sucesso
-                        </div>
-                      </div>
-                    </>
-                  )}
+                  <div style={{ 
+                    alignSelf: 'flex-end', background: '#10b981', borderRadius: '16px 16px 2px 16px', 
+                    padding: '10px 14px', fontSize: 13, color: '#070913', fontWeight: 600, maxWidth: '85%' 
+                  }}>
+                    Cobre R$ 150 do Gustavo amanhã
+                  </div>
+                  
+                  <div style={{ 
+                    alignSelf: 'flex-start', background: 'rgba(255,255,255,0.03)', borderRadius: '16px 16px 16px 2px', 
+                    padding: '10px 14px', fontSize: 13, color: '#cbd5e1', maxWidth: '85%',
+                    border: '1px solid rgba(255,255,255,0.04)'
+                  }}>
+                    Com certeza! Cadastrei a cobrança de **R$ 150,00** para **Gustavo** com vencimento para amanhã. Ele receberá o lembrete gentil com o Pix copia e cola às 09:00 no WhatsApp. 🐍
+                    
+                    <div style={{ 
+                      marginTop: 10, padding: '8px 12px', background: 'rgba(16,185,129,0.1)', 
+                      border: '1px solid rgba(16,185,129,0.2)', borderRadius: 8, fontSize: 11, 
+                      color: '#10b981', fontWeight: 600 
+                    }}>
+                      📅 Cobrança agendada: Gustavo · R$ 150,00 · Vence Amanhã
+                    </div>
+                  </div>
                 </div>
 
                 <div style={{ 
@@ -1096,16 +957,16 @@ export default function HomePage() {
       </section>
 
       {/* ===== SAVINGS CALCULATOR ===== */}
-      <section style={{ padding: '70px 0', background: '#070913' }}>
+      <section className="section-pad" style={{ padding: '60px 0', background: '#070913' }}>
         <div style={{ maxWidth: 700, margin: '0 auto', padding: '0 24px' }}>
           <h2 className="section-title" style={{ textAlign: 'center', marginBottom: 8, color: '#fff' }}>
             🧮 Quanto você <span style={{ color: '#10b981' }}>perde</span> por mês?
           </h2>
-          <p style={{ textAlign: 'center', color: '#94a3b8', marginBottom: 48, fontSize: 16 }}>
+          <p style={{ textAlign: 'center', color: '#94a3b8', marginBottom: 36, fontSize: 16 }}>
             Descubra quanto o Cobbra pode recuperar para você.
           </p>
-          <div style={{ background: '#0c0e1a', borderRadius: 20, padding: 40, border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div style={{ marginBottom: 28 }}>
+          <div className="calc-card" style={{ background: '#0c0e1a', borderRadius: 20, border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ marginBottom: 18 }}>
               <label style={{ fontSize: 14, fontWeight: 600, color: '#e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
                 <span>Quantos clientes você tem?</span>
                 <span style={{ color: '#10b981', fontWeight: 800 }}>{calcClients}</span>
@@ -1113,7 +974,7 @@ export default function HomePage() {
               <input type="range" min="1" max="100" value={calcClients} onChange={e => setCalcClients(+e.target.value)}
                 style={{ width: '100%', marginTop: 12, accentColor: '#10b981', height: 6 }} />
             </div>
-            <div style={{ marginBottom: 28 }}>
+            <div style={{ marginBottom: 18 }}>
               <label style={{ fontSize: 14, fontWeight: 600, color: '#e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
                 <span>Valor médio da cobrança</span>
                 <span style={{ color: '#10b981', fontWeight: 800 }}>R$ {calcAmount}</span>
@@ -1121,7 +982,7 @@ export default function HomePage() {
               <input type="range" min="50" max="2000" step="50" value={calcAmount} onChange={e => setCalcAmount(+e.target.value)}
                 style={{ width: '100%', marginTop: 12, accentColor: '#10b981' }} />
             </div>
-            <div style={{ marginBottom: 36 }}>
+            <div style={{ marginBottom: 22 }}>
               <label style={{ fontSize: 14, fontWeight: 600, color: '#e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
                 <span>Percentual de inadimplência</span>
                 <span style={{ color: '#f59e0b', fontWeight: 800 }}>{calcLatePercent}%</span>
@@ -1131,10 +992,10 @@ export default function HomePage() {
             </div>
 
             {/* Dynamic SVG Comparison Chart */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28, background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 16, padding: 20 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18, background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 14, padding: '16px 18px' }}>
               <p style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4, textAlign: 'center', margin: 0 }}>Projeção Visual Financeira Mensal</p>
               
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {/* Bar 1: Lost Money */}
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
@@ -1173,18 +1034,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="calc-results" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-              <div style={{ background: 'rgba(239,68,68,0.08)', borderRadius: 16, padding: 24, textAlign: 'center', border: '1px solid rgba(239,68,68,0.15)' }}>
-                <p style={{ fontSize: 13, color: '#fca5a5', marginBottom: 8 }}>Você perde por mês</p>
-                <p style={{ fontSize: 32, fontWeight: 800, color: '#ef4444' }}>R$ {lostPerMonth.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</p>
-              </div>
-              <div style={{ background: 'rgba(16,185,129,0.08)', borderRadius: 16, padding: 24, textAlign: 'center', border: '1px solid rgba(16,185,129,0.15)' }}>
-                <p style={{ fontSize: 13, color: '#a7f3d0', marginBottom: 8 }}>Cobbra recupera até</p>
-                <p style={{ fontSize: 32, fontWeight: 800, color: '#10b981' }}>R$ {recoveredWithCobbra.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</p>
-              </div>
-            </div>
             {/* ROI dinâmico integrado à calculadora */}
-            <div style={{ marginTop: 20, padding: 20, background: 'rgba(16,185,129,0.08)', borderRadius: 14, border: '1px solid rgba(16,185,129,0.15)', textAlign: 'center' }}>
+            <div style={{ marginTop: 16, padding: '12px 16px', background: 'rgba(16,185,129,0.08)', borderRadius: 12, border: '1px solid rgba(16,185,129,0.15)', textAlign: 'center' }}>
               <p style={{ color: '#a7f3d0', fontSize: 14, lineHeight: 1.6 }}>
                 💡 Com o plano <strong>Crescimento ({billingCycle === 'anual' ? 'R$ 15,90/mês' : 'R$ 19,90/mês'})</strong>, seu ROI seria de{' '}
                 <strong style={{ color: '#10b981', fontSize: 17 }}>
@@ -1192,10 +1043,10 @@ export default function HomePage() {
                 </strong>{' '}já no 1º mês.
               </p>
             </div>
-            <div style={{ textAlign: 'center', marginTop: 24 }}>
+            <div style={{ textAlign: 'center', marginTop: 18 }}>
               <a href={`/cadastro?plan=crescimento&cycle=${billingCycle}`} style={{
-                display: 'inline-block', padding: '14px 36px', borderRadius: 12,
-                background: '#10b981', color: '#070913', fontSize: 16, fontWeight: 700,
+                display: 'inline-block', padding: '10px 22px', borderRadius: 10,
+                background: '#10b981', color: '#070913', fontSize: 14, fontWeight: 700,
                 boxShadow: '0 4px 14px rgba(16,185,129,0.4)', transition: 'all 0.3s', textDecoration: 'none'
               }}>
                 {recoveredWithCobbra < 100 ? 'Começar com o plano gratuito →' : recoveredWithCobbra < 500 ? 'Ver plano Crescimento →' : 'Recuperar meu dinheiro agora →'}
@@ -1441,8 +1292,8 @@ export default function HomePage() {
                 ))}
               </div>
               <a href={`/cadastro?plan=starter&cycle=${billingCycle}`} style={{
-                display: 'block', padding: '14px', borderRadius: 12, marginTop: 24,
-                border: '2px solid rgba(255,255,255,0.1)', color: '#ffffff', fontSize: 15, fontWeight: 700,
+                display: 'block', padding: '11px', borderRadius: 10, marginTop: 20,
+                border: '2px solid rgba(255,255,255,0.1)', color: '#ffffff', fontSize: 14, fontWeight: 700,
                 textAlign: 'center', transition: 'all 0.3s', textDecoration: 'none', background: '#0c0e1a'
               }}
                 onMouseEnter={e => { e.target.style.borderColor = '#10b981'; e.target.style.color = '#10b981'; }}
@@ -1482,9 +1333,9 @@ export default function HomePage() {
                 ))}
               </div>
               <a href={`/cadastro?plan=crescimento&cycle=${billingCycle}`} style={{
-                display: 'block', padding: '16px', borderRadius: 14, marginTop: 28,
-                background: '#10b981', color: '#070913', fontSize: 16, fontWeight: 800,
-                textAlign: 'center', boxShadow: '0 4px 20px rgba(16,185,129,0.4)', transition: 'all 0.3s', textDecoration: 'none'
+                display: 'block', padding: '11px', borderRadius: 10, marginTop: 20,
+                background: '#10b981', color: '#070913', fontSize: 14, fontWeight: 800,
+                textAlign: 'center', boxShadow: '0 4px 14px rgba(16,185,129,0.4)', transition: 'all 0.3s', textDecoration: 'none'
               }}>Assinar agora — Começar a recuperar →</a>
             </GlowCard>
 
@@ -1506,9 +1357,9 @@ export default function HomePage() {
                 ))}
               </div>
               <a href={`/cadastro?plan=cobrapro&cycle=${billingCycle}`} style={{
-                display: 'block', padding: '14px', borderRadius: 12, marginTop: 24,
-                background: '#10b981', color: '#070913', fontSize: 15, fontWeight: 700,
-                textAlign: 'center', boxShadow: '0 4px 14px rgba(16,185,129,0.3)', transition: 'all 0.3s', textDecoration: 'none'
+                display: 'block', padding: '11px', borderRadius: 10, marginTop: 20,
+                background: '#10b981', color: '#070913', fontSize: 14, fontWeight: 700,
+                textAlign: 'center', boxShadow: '0 4px 12px rgba(16,185,129,0.3)', transition: 'all 0.3s', textDecoration: 'none'
               }}>Assinar Cobra Pro →</a>
             </GlowCard>
           </div>
@@ -1602,12 +1453,12 @@ export default function HomePage() {
             Você fica o bonzinho. A cobra faz o serviço sujo.
           </p>
           <a href="/cadastro" style={{
-            display: 'inline-block', padding: '20px 56px', borderRadius: 16,
-            background: '#10b981', color: '#070913', fontSize: 19, fontWeight: 800,
-            boxShadow: '0 8px 30px rgba(16,185,129,0.3)', transition: 'all 0.3s', textDecoration: 'none'
+            display: 'inline-block', padding: '12px 28px', borderRadius: 10,
+            background: '#10b981', color: '#070913', fontSize: 15, fontWeight: 800,
+            boxShadow: '0 6px 20px rgba(16,185,129,0.3)', transition: 'all 0.3s', textDecoration: 'none'
           }}
             onMouseEnter={e => { e.target.style.transform = 'translateY(-3px) scale(1.03)'; e.target.style.boxShadow = '0 14px 40px rgba(16,185,129,0.5)'; }}
-            onMouseLeave={e => { e.target.style.transform = 'translateY(0) scale(1)'; e.target.style.boxShadow = '0 8px 30px rgba(16,185,129,0.3)'; }}
+            onMouseLeave={e => { e.target.style.transform = 'translateY(0) scale(1)'; e.target.style.boxShadow = '0 6px 20px rgba(16,185,129,0.3)'; }}
           >Começar grátis agora →</a>
           {/* Garantia explícita */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 24, flexWrap: 'wrap' }}>
