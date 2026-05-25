@@ -7,6 +7,14 @@ export default function LembretesPage() {
   const [activeTab, setActiveTab] = useState('history');
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Daily template state
   const [dailyTemplate, setDailyTemplate] = useState(
@@ -21,8 +29,24 @@ export default function LembretesPage() {
 
   const statusConfig = { pending: { l: 'Pendente', c: '#f59e0b' }, sent: { l: 'Enviado', c: '#3b82f6' }, delivered: { l: 'Entregue', c: '#8b5cf6' }, read: { l: 'Lido', c: '#10b981' }, failed: { l: 'Falhou', c: '#ef4444' } };
   const toneConfig = { gentle: { l: 'Gentil 💚', c: '#10b981' }, neutral: { l: 'Neutro 📋', c: '#3b82f6' }, firm: { l: 'Firme ⚡', c: '#f59e0b' } };
-  const cardS = { background: '#1e293b', borderRadius: 16, padding: 24, border: '1px solid rgba(255,255,255,0.06)' };
-  const inputS = { width: '100%', padding: '12px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', fontSize: 14, outline: 'none', fontFamily: 'Inter,sans-serif' };
+  const inputS = { 
+    width: '100%', 
+    padding: '10px 14px', 
+    borderRadius: 12, 
+    border: '1px solid rgba(255,255,255,0.08)', 
+    background: '#020617', 
+    color: '#f8fafc', 
+    fontSize: 13, 
+    outline: 'none', 
+    fontFamily: 'Inter,sans-serif',
+    transition: 'all 0.2s'
+  };
+  const cardS = { 
+    background: '#0C0E1A', 
+    borderRadius: 20, 
+    padding: isMobile ? '16px' : '24px', 
+    border: '1px solid rgba(255,255,255,0.04)' 
+  };
 
   function handleSaveDailyTemplate() {
     setMsg('Salvando template diário...');

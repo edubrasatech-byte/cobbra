@@ -7,6 +7,14 @@ export default function RelatoriosPage() {
   const [data, setData] = useState(null);
   const [selectedBarIndex, setSelectedBarIndex] = useState(null);
   const [user, setUser] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const loadData = () => {
     setData(null);
@@ -70,7 +78,12 @@ export default function RelatoriosPage() {
     { key: 'reminders', label: '🔔 Lembretes', desc: 'Efetividade dos lembretes' },
   ];
 
-  const cardS = { background: '#1e293b', borderRadius: 16, padding: 24, border: '1px solid rgba(255,255,255,0.06)' };
+  const cardS = { 
+    background: '#0C0E1A', 
+    borderRadius: 20, 
+    padding: isMobile ? '16px' : '24px', 
+    border: '1px solid rgba(255,255,255,0.04)' 
+  };
 
   return (
     <div className="pb-24 px-4 lg:px-0">

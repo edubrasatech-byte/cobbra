@@ -14,6 +14,14 @@ export default function CobrancaDiariaPage() {
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
   const [user, setUser] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -232,8 +240,25 @@ export default function CobrancaDiariaPage() {
   const projectedMonthly = totalDaily * 30;
 
   const fmt = v => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-  const inputS = { width: '100%', padding: '12px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', fontSize: 14, outline: 'none', fontFamily: 'Inter,sans-serif' };
-  const cardS = { background: '#1e293b', borderRadius: 16, padding: 24, border: '1px solid rgba(255,255,255,0.06)', transition: 'all 0.3s' };
+  const inputS = { 
+    width: '100%', 
+    padding: '10px 14px', 
+    borderRadius: 12, 
+    border: '1px solid rgba(255,255,255,0.08)', 
+    background: '#020617', 
+    color: '#f8fafc', 
+    fontSize: 13, 
+    outline: 'none', 
+    fontFamily: 'Inter,sans-serif',
+    transition: 'all 0.2s'
+  };
+  const cardS = { 
+    background: '#0C0E1A', 
+    borderRadius: 20, 
+    padding: isMobile ? '16px' : '24px', 
+    border: '1px solid rgba(255,255,255,0.04)', 
+    transition: 'all 0.3s'
+  };
 
   // Clients configured less than 2 times
   const unconfiguredClients = clients.filter(c => dailyBills.filter(b => b.client_id === c.id).length < 2);

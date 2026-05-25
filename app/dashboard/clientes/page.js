@@ -19,6 +19,14 @@ export default function ClientesPage() {
   const [clients, setClients] = useState([]);
   const [search, setSearch] = useState('');
   const [healthFilter, setHealthFilter] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ 
     name: '', 
@@ -216,7 +224,29 @@ export default function ClientesPage() {
   };
 
   const fmt = v => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-  const inputS = { width: '100%', padding: '12px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', fontSize: 14, outline: 'none', fontFamily: 'Inter,sans-serif' };
+  const inputS = { 
+    width: '100%', 
+    padding: '10px 14px', 
+    borderRadius: 12, 
+    border: '1px solid rgba(255,255,255,0.08)', 
+    background: '#020617', 
+    color: '#f8fafc', 
+    fontSize: 13, 
+    outline: 'none', 
+    fontFamily: 'Inter,sans-serif',
+    transition: 'all 0.2s'
+  };
+  const cardS = {
+    background: '#0C0E1A',
+    borderRadius: 20,
+    padding: isMobile ? '16px' : '24px',
+    border: '1px solid rgba(255,255,255,0.04)',
+    transition: 'all 0.3s',
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+  };
 
   return (
     <div>
@@ -244,9 +274,9 @@ export default function ClientesPage() {
           const h = HEALTH[c.health_score] || HEALTH.good;
           const score = getPayerScore(c);
           return (
-            <div key={c.id} onClick={() => setSelectedClient(c)} style={{ background: '#1e293b', borderRadius: 16, padding: 24, border: '1px solid rgba(255,255,255,0.06)', transition: 'all 0.3s', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+            <div key={c.id} onClick={() => setSelectedClient(c)} style={cardS}
               onMouseEnter={e => e.currentTarget.style.borderColor = '#059669'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'}>
+              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)'}>
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

@@ -1,8 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 
-export default function Chatbot() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function Chatbot({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('chat'); // 'chat' | 'history'
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -175,40 +174,7 @@ export default function Chatbot() {
         }
       `}</style>
 
-      {/* Floating Action Circle Button */}
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        style={{
-          position: 'fixed', bottom: 30, right: 30, zIndex: 9999,
-          width: 64, height: 64, borderRadius: '50%', 
-          background: 'linear-gradient(135deg, #10b981, #059669)', 
-          border: '2px solid rgba(255, 255, 255, 0.8)', cursor: 'pointer', display: 'flex', 
-          alignItems: 'center', justifyContent: 'center', fontSize: 30,
-          boxShadow: '0 8px 30px rgba(16,185,129,0.4)', transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-          outline: 'none',
-          animation: isOpen ? 'none' : 'chat-float 4s ease-in-out infinite, chat-glow 3s ease-in-out infinite'
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.transform = 'scale(1.08) rotate(3deg)';
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.transform = 'none';
-        }}
-      >
-        {isOpen ? (
-          <span style={{ fontSize: 24, color: '#fff', fontWeight: 300, display: 'block' }}>✕</span>
-        ) : (
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span>🐍</span>
-            {/* Pulsing indicator dot */}
-            <span style={{
-              position: 'absolute', top: -2, right: -2, width: 10, height: 10, borderRadius: '50%',
-              background: '#34d399', border: '2px solid #fff',
-              boxShadow: '0 0 6px #34d399'
-            }} />
-          </div>
-        )}
-      </button>
+
 
       {/* Slide-out Sidebar Drawer (Hostinger style) */}
       <div 
@@ -268,7 +234,7 @@ export default function Chatbot() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
               </button>
               <button 
-                onClick={() => setIsOpen(false)}
+                onClick={onClose}
                 title="Minimizar chat"
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, borderRadius: 8, color: '#94a3b8', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 onMouseEnter={e => { e.currentTarget.style.color = '#0f172a'; e.currentTarget.style.background = '#f1f5f9'; }}

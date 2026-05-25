@@ -7,6 +7,14 @@ export default function ConfiguracoesPage() {
   const [pwForm, setPwForm] = useState({ current: '', newPw: '', confirm: '' });
   const [msg, setMsg] = useState('');
   const [activeTab, setActiveTab] = useState('profile');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Score rates states
   const [scoreRates, setScoreRates] = useState({ excellent: 0.1, regular: 0.3, risk: 0.5 });
@@ -312,8 +320,26 @@ export default function ConfiguracoesPage() {
   };
 
 
-  const inputS = { width: '100%', padding: '12px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', fontSize: 14, outline: 'none', fontFamily: 'Inter,sans-serif' };
-  const cardS = { background: '#1e293b', borderRadius: 16, padding: 28, border: '1px solid rgba(255,255,255,0.06)', marginBottom: 20 };
+  const inputS = { 
+    width: '100%', 
+    padding: '10px 14px', 
+    borderRadius: 12, 
+    border: '1px solid rgba(255,255,255,0.08)', 
+    background: '#020617', 
+    color: '#f8fafc', 
+    fontSize: 13, 
+    outline: 'none', 
+    fontFamily: 'Inter,sans-serif',
+    transition: 'all 0.2s'
+  };
+  const cardS = { 
+    background: '#0C0E1A', 
+    borderRadius: 20, 
+    padding: isMobile ? '16px' : '28px', 
+    border: '1px solid rgba(255,255,255,0.04)', 
+    marginBottom: 20,
+    transition: 'all 0.3s'
+  };
   const tabs = [
     { key: 'profile', label: '👤 Perfil' },
     { key: 'pix', label: '💰 Chave Pix' },
@@ -329,16 +355,16 @@ export default function ConfiguracoesPage() {
       {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
 
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Sidebar */}
-        <div className="w-full lg:w-[220px] flex lg:flex-col overflow-x-auto lg:overflow-x-visible pb-3 lg:pb-0 gap-2 lg:gap-1 scrollbar-none shrink-0">
+        {/* Sidebar Tabs */}
+        <div className="w-full lg:w-60 flex lg:flex-col overflow-x-auto lg:overflow-x-visible pb-2.5 lg:pb-0 gap-2 lg:gap-1 scrollbar-none shrink-0 border-b border-slate-800/40 lg:border-b-0 mb-5 lg:mb-0 px-2 lg:px-0">
           {tabs.map(t => (
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key)}
-              className={`whitespace-nowrap px-4 py-2.5 lg:px-4 lg:py-3 rounded-xl border-none cursor-pointer font-sans text-sm font-semibold transition-all shrink-0 w-auto lg:w-full text-center lg:text-left ${
+              className={`whitespace-nowrap px-4 py-2.5 rounded-xl text-xs lg:text-sm font-semibold transition-all duration-200 cursor-pointer text-center lg:text-left shrink-0 ${
                 activeTab === t.key
-                  ? 'bg-[rgba(5,150,105,0.15)] text-[#10b981]'
-                  : 'bg-transparent text-[#94a3b8] hover:text-[#e2e8f0] hover:bg-white/5'
+                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm shadow-emerald-500/5'
+                  : 'bg-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 border border-transparent'
               }`}
             >
               {t.label}

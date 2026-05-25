@@ -21,6 +21,7 @@ export default function DashboardLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState(null);
+  const [chatbotOpen, setChatbotOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -615,6 +616,19 @@ export default function DashboardLayout({ children }) {
               🪄
             </button>
 
+            {/* Catarina AI Chatbot Toggle Button */}
+            <button 
+              onClick={() => setChatbotOpen(!chatbotOpen)}
+              className={`w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center text-sm cursor-pointer transition-all relative ${
+                chatbotOpen ? 'border-emerald-500/60 ring-1 ring-emerald-500/10' : ''
+              }`}
+              title="Conversar com a Catarina"
+              aria-label="Conversar com a Catarina"
+            >
+              💬
+              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-slate-950 animate-pulse" />
+            </button>
+
             <div className="relative">
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
@@ -1101,17 +1115,8 @@ export default function DashboardLayout({ children }) {
         </div>
       )}
 
-      {/* Mobile Glowing AI Floating Action Button (FAB) */}
-      <button
-        onClick={() => setShowCopilotModal(true)}
-        className="fixed bottom-20 right-6 w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white flex items-center justify-center text-xl shadow-lg shadow-emerald-500/20 border border-emerald-400/20 md:hidden active:scale-90 transition-all z-40 animate-pulse cursor-pointer"
-        aria-label="Catarina AI Copilot"
-      >
-        🪄
-      </button>
-
       {/* Floating support chatbot */}
-      <Chatbot />
+      <Chatbot isOpen={chatbotOpen} onClose={() => setChatbotOpen(false)} />
     </div>
   );
 }
