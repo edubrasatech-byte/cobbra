@@ -17,6 +17,75 @@ const NAV_ITEMS = [
 
 const ADMIN_ITEM = { href: '/dashboard/admin', icon: '🛡️', label: 'Admin' };
 
+const NAV_ICONS = {
+  '/dashboard': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="9" rx="1.5" />
+      <rect x="14" y="3" width="7" height="5" rx="1.5" />
+      <rect x="14" y="12" width="7" height="9" rx="1.5" />
+      <rect x="3" y="16" width="7" height="5" rx="1.5" />
+    </svg>
+  ),
+  '/dashboard/cobrancas': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <line x1="2" y1="10" x2="22" y2="10" />
+    </svg>
+  ),
+  '/dashboard/cobranca-diaria': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21.5 2v6h-6" />
+      <path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+    </svg>
+  ),
+  '/dashboard/calendario': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+  ),
+  '/dashboard/clientes': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  ),
+  '/dashboard/relatorios': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10" />
+      <line x1="12" y1="20" x2="12" y2="4" />
+      <line x1="6" y1="20" x2="6" y2="14" />
+    </svg>
+  ),
+  '/dashboard/lembretes': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+    </svg>
+  ),
+  '/dashboard/configuracoes': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  ),
+  '/dashboard/atualizacoes': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21.5 2v6h-6" />
+      <path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+    </svg>
+  ),
+  '/dashboard/admin': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  )
+};
+
 export default function DashboardLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -430,6 +499,16 @@ export default function DashboardLayout({ children }) {
       </div>
     );
   }
+const NAV_ICONS = {
+  '/dashboard': (className) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="9" /><rect x="14" y="3" width="7" height="5" /><rect x="14" y="12" width="7" height="9" /><rect x="3" y="16" width="7" height="5" /></svg>,
+  '/dashboard/cobrancas': (className) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>,
+  '/dashboard/clientes': (className) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>,
+  '/dashboard/cobranca-diaria': (className) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>,
+  '/dashboard/relatorios': (className) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>,
+  '/dashboard/admin': (className) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></svg>
+};
+
+// ... (rest of the file content kept as original except the sidebar/nav section replaced as per instructions)
 
   return (
     <div className="flex min-h-screen bg-[#070913] text-slate-100 font-sans antialiased overflow-x-hidden">
@@ -440,40 +519,50 @@ export default function DashboardLayout({ children }) {
         {/* Sidebar Brand Header */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800/40">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-10 h-10 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center text-xl flex-shrink-0 shadow-lg shadow-emerald-500/10 select-none">🐍</div>
-            {!sidebarCollapsed && <span className="font-extrabold text-lg bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent tracking-tight">Cobbra</span>}
+            <div className="w-10 h-10 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/10 select-none">
+              <svg className="w-6 h-6 text-[#10B981] filter drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5.5 1.5 1.5 1.5 2.5 0 1.5-.5 2-1 3-1.072 2.143-.224 4.054 2 6 .5.5 1 1 1 2a2.5 2.5 0 0 1-5 0z" />
+              </svg>
+            </div>
+            {!sidebarCollapsed && (
+              <span className="font-extrabold text-lg bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent tracking-tight">
+                Cobbra<span className="text-[#10B981] text-xs font-bold">.ai</span>
+              </span>
+            )}
           </div>
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 py-6 px-3 space-y-1.5 overflow-y-auto">
           {navItems.map(item => {
             const isActive = pathname === item.href;
             const isRestricted = user?.plan === 'starter' && 
               (item.href === '/dashboard/cobranca-diaria' || item.href === '/dashboard/relatorios');
             
-            const displayIcon = isRestricted ? '🔒' : item.icon;
             const displayLabel = isRestricted ? `${item.label} (Pro)` : item.label;
 
             return (
               <a 
                 key={item.href} 
                 href={item.href} 
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200 group relative ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 group relative ${
                   isActive 
-                    ? 'bg-emerald-500/10 text-emerald-400 font-semibold border-l-2 border-emerald-500' 
+                    ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-500/[0.02] text-emerald-400 font-extrabold shadow-sm' 
                     : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-200'
                 } ${sidebarCollapsed ? 'justify-center' : 'justify-start'} ${isRestricted ? 'opacity-60' : ''}`}
               >
-                <span className="text-lg flex-shrink-0">{displayIcon}</span>
+                {isActive && <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-[#10B981] rounded-full" />}
+                <span className="flex-shrink-0">
+                  {isRestricted ? (
+                    <svg className="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                  ) : (
+                    NAV_ICONS[item.href] ? NAV_ICONS[item.href](isActive ? 'w-4 h-4 text-emerald-400 filter drop-shadow-[0_0_4px_rgba(16,185,129,0.4)]' : 'w-4 h-4 text-slate-400 group-hover:text-slate-200') : null
+                  )}
+                </span>
                 {!sidebarCollapsed && <span className="truncate">{displayLabel}</span>}
-                
-                {/* Tooltip for collapsed sidebar */}
-                {sidebarCollapsed && (
-                  <div className="absolute left-20 ml-2 px-2 py-1 bg-slate-900 border border-slate-800 text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                    {displayLabel}
-                  </div>
-                )}
               </a>
             );
           })}
@@ -482,13 +571,13 @@ export default function DashboardLayout({ children }) {
         {/* User profile & logout block */}
         <div className="p-4 border-t border-slate-800/40 bg-slate-950/20">
           {!sidebarCollapsed && user && (
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white font-bold text-xs shadow-md">
+            <div className="bg-slate-900/50 border border-slate-800/30 rounded-2xl p-3 mb-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white font-extrabold text-xs shadow-md shadow-emerald-500/10">
                 {user.name?.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase()}
               </div>
               <div className="overflow-hidden">
-                <p className="text-xs font-semibold text-slate-200 truncate leading-none mb-1">{user.name}</p>
-                <span className="inline-block text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 uppercase tracking-wider scale-90 origin-left">
+                <p className="text-[11px] font-bold text-slate-200 truncate leading-none mb-1" title={user.name}>{user.name}</p>
+                <span className="inline-block text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 uppercase tracking-wider scale-90 origin-left">
                   {user.role === 'admin_senior' ? 'Senior' : user.role}
                 </span>
               </div>
@@ -496,9 +585,14 @@ export default function DashboardLayout({ children }) {
           )}
           <button 
             onClick={handleLogout} 
-            className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/10 hover:border-rose-500/20 text-rose-400 text-xs font-medium transition-all duration-200"
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/10 hover:border-rose-500/20 text-rose-400 text-xs font-bold transition-all duration-200 cursor-pointer"
           >
-            {sidebarCollapsed ? '🚪' : '🚪 Sair'}
+            <svg className="w-3.5 h-3.5 text-rose-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            {!sidebarCollapsed && <span>Sair</span>}
           </button>
         </div>
       </aside>
@@ -512,42 +606,65 @@ export default function DashboardLayout({ children }) {
       )}
 
       {/* 📱 Mobile Side Navigation Drawer (Fallback to side menu) */}
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-[#0C0E1A]/90 backdrop-blur-lg border-r border-slate-800/60 z-50 transform md:hidden transition-transform duration-300 flex flex-col ${
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-[#0C0E1A]/95 backdrop-blur-lg border-r border-slate-800/60 z-50 transform md:hidden transition-transform duration-300 flex flex-col ${
         mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800/40">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center text-lg flex-shrink-0 shadow shadow-emerald-500/10 select-none">🐍</div>
-            <span className="font-extrabold text-base text-slate-100">Cobbra</span>
+            <div className="w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center flex-shrink-0 shadow shadow-emerald-500/10 select-none">
+              <svg className="w-5 h-5 text-[#10B981] filter drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5.5 1.5 1.5 1.5 2.5 0 1.5-.5 2-1 3-1.072 2.143-.224 4.054 2 6 .5.5 1 1 1 2a2.5 2.5 0 0 1-5 0z" />
+              </svg>
+            </div>
+            <span className="font-extrabold text-base text-slate-100">Cobbra<span className="text-[#10B981] text-[10px] font-bold">.ai</span></span>
           </div>
           <button onClick={() => setMobileSidebarOpen(false)} className="text-slate-400 text-xl font-light">×</button>
         </div>
-        <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 py-4 px-3 space-y-1.5 overflow-y-auto">
           {navItems.map(item => {
             const isActive = pathname === item.href;
             const isRestricted = user?.plan === 'starter' && 
               (item.href === '/dashboard/cobranca-diaria' || item.href === '/dashboard/relatorios');
-            
+            const displayLabel = isRestricted ? `${item.label} (Pro)` : item.label;
+
             return (
               <a 
                 key={item.href} 
                 href={item.href} 
                 onClick={() => setMobileSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 group relative ${
                   isActive 
-                    ? 'bg-emerald-500/10 text-emerald-400 font-semibold border-l-2 border-emerald-500' 
+                    ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-500/[0.02] text-emerald-400 font-bold' 
                     : 'text-slate-400'
                 }`}
               >
-                <span>{isRestricted ? '🔒' : item.icon}</span>
-                <span>{isRestricted ? `${item.label} (Pro)` : item.label}</span>
+                {isActive && <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-[#10B981] rounded-full" />}
+                <span className="flex-shrink-0">
+                  {isRestricted ? (
+                    <svg className="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                  ) : (
+                    NAV_ICONS[item.href] ? NAV_ICONS[item.href](isActive ? 'w-4 h-4 text-emerald-400' : 'w-4 h-4 text-slate-400') : null
+                  )}
+                </span>
+                <span>{displayLabel}</span>
               </a>
             );
           })}
         </nav>
-        <div className="p-4 border-t border-slate-800/40">
-          <button onClick={handleLogout} className="w-full py-2.5 rounded-lg bg-rose-500/10 text-rose-400 text-xs font-semibold">
-            🚪 Desconectar
+        <div className="p-4 border-t border-slate-800/40 bg-slate-950/20">
+          <button 
+            onClick={handleLogout} 
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-500/10 text-rose-400 text-xs font-bold transition-all cursor-pointer"
+          >
+            <svg className="w-3.5 h-3.5 text-rose-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            <span>Desconectar</span>
           </button>
         </div>
       </aside>
@@ -633,7 +750,16 @@ export default function DashboardLayout({ children }) {
             {/* Mobile AI Command Trigger Icon */}
             <button 
               onClick={() => setShowCopilotModal(true)}
-              className="md:hidden w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-cent            {/* Catarina AI Chatbot Toggle Button */}
+              className="md:hidden w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center cursor-pointer transition-all"
+              title="Catarina AI Copilot"
+              aria-label="Catarina AI Copilot"
+            >
+              <svg className="w-4 h-4 text-slate-400 hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l5.904-.813a2 2 0 001.272-.73L21 14.5a2 2 0 000-2.828l-2.672-2.672a2 2 0 00-2.828 0l-4.956 4.956a2 2 0 00-.73 1.272z" />
+              </svg>
+            </button>
+
+            {/* Catarina AI Chatbot Toggle Button */}
             <button 
               onClick={() => setChatbotOpen(!chatbotOpen)}
               className={`w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center cursor-pointer transition-all relative ${
@@ -666,8 +792,6 @@ export default function DashboardLayout({ children }) {
                 </svg>
                 {unreadCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center animate-pulse">{unreadCount}</span>
-                )}
-              </button> rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center animate-pulse">{unreadCount}</span>
                 )}
               </button>
 
@@ -746,10 +870,10 @@ export default function DashboardLayout({ children }) {
       {/* 📱 Mobile Bottom Navigation Bar (Nubank/Revolut Style) */}
       <nav className="fixed bottom-0 left-0 right-0 h-16 bg-[#0C0E1A]/95 border-t border-slate-800/40 z-40 flex items-center justify-around md:hidden shadow-2xl">
         {[
-          { href: '/dashboard', icon: '📊', label: 'Início' },
-          { href: '/dashboard/cobrancas', icon: '💰', label: 'Cobranças' },
-          { href: '/dashboard/clientes', icon: '👥', label: 'Clientes' },
-          { href: '/dashboard/configuracoes', icon: '⚙️', label: 'Ajustes' },
+          { href: '/dashboard', label: 'Início' },
+          { href: '/dashboard/cobrancas', label: 'Cobranças' },
+          { href: '/dashboard/clientes', label: 'Clientes' },
+          { href: '/dashboard/configuracoes', label: 'Ajustes' },
         ].map(item => {
           const isActive = pathname === item.href;
           return (
@@ -757,11 +881,13 @@ export default function DashboardLayout({ children }) {
               key={item.href} 
               href={item.href} 
               className={`flex flex-col items-center justify-center flex-1 h-full py-1 text-center transition-colors relative ${
-                isActive ? 'text-emerald-400 font-semibold' : 'text-slate-500 hover:text-slate-300'
+                isActive ? 'text-emerald-400 font-bold' : 'text-slate-500 hover:text-slate-300'
               }`}
             >
-              <span className="text-xl mb-0.5">{item.icon}</span>
-              <span className="text-[9px] uppercase tracking-wider">{item.label}</span>
+              <span className="mb-1 flex items-center justify-center">
+                {NAV_ICONS[item.href] ? NAV_ICONS[item.href](isActive ? 'w-4.5 h-4.5 text-emerald-400' : 'w-4.5 h-4.5 text-slate-500') : null}
+              </span>
+              <span className="text-[8px] uppercase tracking-wider font-semibold">{item.label}</span>
               {isActive && <span className="absolute bottom-0 w-6 h-0.5 bg-emerald-400 rounded-full" />}
             </a>
           );

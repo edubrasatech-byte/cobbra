@@ -271,7 +271,24 @@ export default function DashboardHome() {
   return (
     <div className="flex flex-col gap-6 text-left">
       
-      {/* 📱 Mobile Only: Resumo Financeiro Diário at the top */}
+      {/* 🔄 Top Floating Sync/Reload Header */}
+      <div className="flex justify-between items-center border-b border-slate-900/60 pb-4">
+        <div>
+          <h2 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Visão Geral das Operações</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Visão unificada das cobranças e fluxos ativos</p>
+        </div>
+        <button 
+          onClick={loadStats}
+          className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-emerald-500/30 text-slate-300 hover:text-emerald-400 text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 cursor-pointer shadow-sm shadow-black/10 group"
+        >
+          <svg className="w-3 h-3 text-slate-400 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+          </svg>
+          Recarregar Dados
+        </button>
+      </div>
+
+      {/* 📱 Mobile Only: Resumo Financeiro Diário below the header */}
       <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-5 animate-fadeInUp">
         <h3 className="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-4 flex items-center gap-2">
           <span>📅</span> Resumo Financeiro Diário
@@ -304,23 +321,6 @@ export default function DashboardHome() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* 🔄 Top Floating Sync/Reload Header */}
-      <div className="flex justify-between items-center border-b border-slate-900/60 pb-4">
-        <div>
-          <h2 className="text-sm font-bold text-slate-300 uppercase tracking-wider">Visão Geral das Operações</h2>
-          <p className="text-xs text-slate-500 mt-0.5">Visão unificada das cobranças e fluxos ativos</p>
-        </div>
-        <button 
-          onClick={loadStats}
-          className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-emerald-500/30 text-slate-300 hover:text-emerald-400 text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 cursor-pointer shadow-sm shadow-black/10 group"
-        >
-          <svg className="w-3 h-3 text-slate-400 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
-          </svg>
-          Recarregar Dados
-        </button>
       </div>
 
       {/* 📊 Exactly 3 Stat Cards Row */}
@@ -581,7 +581,8 @@ export default function DashboardHome() {
               return (
                 <div 
                   key={idx} 
-                  className={`border ${borderColors[insight.type] || 'border-slate-800/40'} ${bgColors[insight.type] || 'bg-slate-900/10'} rounded-xl p-4 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg hover:shadow-black/5`}
+                  className={`border ${borderColors[insight.type] || 'border-slate-800/40'} ${bgColors[insight.type] || 'bg-slate-900/10'} transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg hover:shadow-black/5`}
+                  style={{ borderRadius: '16px', padding: '24px' }}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h4 className="text-xs font-bold text-slate-200">{insight.title}</h4>
