@@ -25,6 +25,14 @@ export default function DashboardLayout({ children }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -420,7 +428,7 @@ export default function DashboardLayout({ children }) {
     <div className="flex min-h-screen bg-[#070913] text-slate-100 font-sans antialiased overflow-x-hidden">
       
       {/* 🖥️ Desktop Collapsible Slim Sidebar */}
-      <aside className={`hidden md:flex flex-col h-screen sticky top-0 bg-[#0C0E1A] border-r border-slate-800/40 transition-all duration-300 overflow-hidden flex-shrink-0 z-30 ${sidebarCollapsed ? 'w-20' : 'w-64'}`}>
+      <aside className={`hidden md:flex flex-col h-screen sticky top-0 bg-[#0C0E1A] border-r border-slate-800/40 transition-all duration-300 overflow-hidden flex-shrink-0 z-30 ${sidebarCollapsed ? 'w-20' : 'w-52'}`}>
         
         {/* Sidebar Brand Header */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800/40">
@@ -541,7 +549,7 @@ export default function DashboardLayout({ children }) {
       <div className="flex-1 flex flex-col min-w-0 max-w-full overflow-hidden pb-20 md:pb-0">
         
         {/* 🧼 Minimalist Flat Header */}
-        <header className="h-16 flex items-center justify-between px-6 md:px-12 border-b border-slate-800/20 bg-[#0C0E1A]/85 backdrop-blur-md sticky top-0 z-40">
+        <header className="h-16 flex items-center justify-between border-b border-slate-800/20 bg-[#0C0E1A]/85 backdrop-blur-md sticky top-0 z-40" style={{ paddingLeft: isDesktop ? '36px' : '20px', paddingRight: isDesktop ? '36px' : '20px' }}>
           
           {/* Left info / Mobile trigger */}
           <div className="flex items-center gap-4 flex-shrink-0 min-w-[140px]">
@@ -556,7 +564,7 @@ export default function DashboardLayout({ children }) {
             <span className="sm:hidden w-8 h-8 rounded-lg bg-gradient-to-tr from-[#10B981] to-[#059669] flex items-center justify-center text-base shadow">🐍</span>
           </div>
 
-          {/* 🪄 Catarina AI Engine: Flat Command Bar Widget */}
+          {/* 🔍 Catarina AI Engine: Flat Command Bar Widget */}
           <div className="hidden md:block flex-1 max-w-xs lg:max-w-md mx-4 relative flex-shrink">
             <div className="relative group">
               <input 
@@ -573,12 +581,16 @@ export default function DashboardLayout({ children }) {
                 }}
                 className="w-full py-1.5 pl-9 pr-14 text-xs bg-slate-900/60 hover:bg-slate-900 border border-slate-800/60 hover:border-emerald-500/40 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 text-slate-200 placeholder-slate-500 rounded-lg transition-all duration-200 outline-none"
               />
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-500 group-hover:text-emerald-400 transition-colors">🪄</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+                <svg className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </span>
               
               {/* Keyboard badge shortcut */}
-              <kbd className="hidden md:inline-flex absolute right-3 top-1/2 -translate-y-1/2 items-center gap-0.5 px-1.5 py-0.5 border border-slate-800 bg-slate-950 text-[9px] font-mono text-slate-500 rounded pointer-events-none">
+              <span className="hidden md:inline-block absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 bg-slate-950 border border-slate-800/60 text-[9px] font-sans font-semibold text-slate-400 rounded select-none pointer-events-none">
                 Ctrl K
-              </kbd>
+              </span>
             </div>
 
             {/* Quick Search Popover Result (Stripe style) */}
@@ -700,7 +712,15 @@ export default function DashboardLayout({ children }) {
         </header>
 
         {/* 📋 Main Scrollable Content Area */}
-        <main className="flex-1 w-full max-w-full px-6 md:px-12 py-6 overflow-y-auto overflow-x-hidden">
+        <main 
+          className="flex-1 w-full max-w-full overflow-y-auto overflow-x-hidden"
+          style={{ 
+            paddingLeft: isDesktop ? '36px' : '20px', 
+            paddingRight: isDesktop ? '36px' : '20px',
+            paddingTop: '24px',
+            paddingBottom: isDesktop ? '32px' : '96px' 
+          }}
+        >
           {children}
         </main>
       </div>

@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 function StatCard({ icon, label, value, subValue, subLabel, color, bg }) {
   return (
     <div 
-      className="bg-[#0C0E1A] rounded-2xl p-6 border border-slate-800/40 transition-all duration-300 hover:border-[#10B981]/40 group relative overflow-hidden"
+      className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40 transition-all duration-300 hover:border-[#10B981]/40 group relative overflow-hidden"
+      style={{ padding: '24px' }}
     >
       {/* Top row */}
       <div className="flex justify-between items-start mb-4">
@@ -319,7 +320,7 @@ export default function DashboardHome() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Revolut-style Area/Line Chart for Revenue */}
-        <div className="lg:col-span-2 bg-[#0C0E1A] rounded-2xl p-6 border border-slate-800/40">
+        <div className="lg:col-span-2 bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '24px' }}>
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Histórico de Receita</h3>
@@ -364,7 +365,7 @@ export default function DashboardHome() {
         </div>
 
         {/* Status Distribution */}
-        <div className="bg-[#0C0E1A] rounded-2xl p-6 border border-slate-800/40">
+        <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '24px' }}>
           <div className="mb-6">
             <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Status das Cobranças</h3>
             <p className="text-[11px] text-slate-500 mt-0.5">Distribuição geral de títulos e quitações</p>
@@ -384,7 +385,7 @@ export default function DashboardHome() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* 1. Atividade Recente */}
-        <div className="bg-[#0C0E1A] rounded-2xl p-6 border border-slate-800/40 flex flex-col">
+        <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40 flex flex-col" style={{ padding: '24px' }}>
           <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4">Atividade Recente</h3>
           <div className="space-y-3 flex-1 overflow-y-auto max-h-[300px] pr-1">
             {(stats.recentActivity || []).slice(0, 6).map((a, i) => (
@@ -414,7 +415,7 @@ export default function DashboardHome() {
         </div>
 
         {/* 2. Resumo Diário */}
-        <div className="bg-[#0C0E1A] rounded-2xl p-6 border border-slate-800/40">
+        <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '24px' }}>
           <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4">Resumo Financeiro Diário</h3>
           <div className="space-y-3">
             <div className="bg-[#0F111E] rounded-xl p-3.5 border border-slate-900">
@@ -447,7 +448,7 @@ export default function DashboardHome() {
         </div>
 
         {/* 3. Clientes em Risco */}
-        <div className="bg-[#0C0E1A] rounded-2xl p-6 border border-slate-800/40">
+        <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '24px' }}>
           <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4">Alertas de Clientes em Risco</h3>
           <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
             {(stats.atRiskClients || []).map((c, i) => {
@@ -499,7 +500,7 @@ export default function DashboardHome() {
       </div>
 
       {/* 🪄 Catarina AI Insights Premium Banner (Relocated to the bottom of the page) */}
-      <div className="bg-[#0C0E1A]/80 backdrop-blur-lg border border-slate-800/40 rounded-2xl p-6 relative overflow-hidden">
+      <div className="bg-[#0C0E1A]/80 backdrop-blur-lg border border-slate-800/40 rounded-2xl relative overflow-hidden" style={{ padding: '24px' }}>
         {/* Decorative elements */}
         <div className="absolute -right-20 -top-20 w-44 h-44 rounded-full bg-[#10B981]/5 blur-3xl pointer-events-none"></div>
         <div className="absolute -left-20 -bottom-20 w-44 h-44 rounded-full bg-teal-500/5 blur-3xl pointer-events-none"></div>
