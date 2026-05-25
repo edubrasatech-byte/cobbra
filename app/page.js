@@ -273,7 +273,7 @@ export default function HomePage() {
 
       {/* ===== HERO ===== */}
       <section style={{
-        paddingTop: 120, paddingBottom: 60, background: '#070913',
+        paddingTop: 95, paddingBottom: 60, background: '#070913',
         position: 'relative', overflow: 'hidden'
       }}>
         {/* Decorative Neon Halos */}
