@@ -440,7 +440,7 @@ export default function DashboardLayout({ children }) {
         {/* Sidebar Brand Header */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800/40">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-[#10B981] to-[#059669] flex items-center justify-center text-xl flex-shrink-0 shadow-lg shadow-emerald-500/10">🐍</div>
+            <div className="w-10 h-10 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center text-xl flex-shrink-0 shadow-lg shadow-emerald-500/10 select-none">🐍</div>
             {!sidebarCollapsed && <span className="font-extrabold text-lg bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent tracking-tight">Cobbra</span>}
           </div>
         </div>
@@ -517,7 +517,7 @@ export default function DashboardLayout({ children }) {
       }`}>
         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800/40">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#10B981] to-[#059669] flex items-center justify-center text-lg">🐍</div>
+            <div className="w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center text-lg flex-shrink-0 shadow shadow-emerald-500/10 select-none">🐍</div>
             <span className="font-extrabold text-base text-slate-100">Cobbra</span>
           </div>
           <button onClick={() => setMobileSidebarOpen(false)} className="text-slate-400 text-xl font-light">×</button>
@@ -571,7 +571,7 @@ export default function DashboardLayout({ children }) {
               ☰
             </button>
             <h1 className="text-base md:text-lg font-bold text-slate-100 tracking-tight hidden sm:block">{pageTitle}</h1>
-            <span className="sm:hidden w-8 h-8 rounded-lg bg-gradient-to-tr from-[#10B981] to-[#059669] flex items-center justify-center text-base shadow">🐍</span>
+            <span className="sm:hidden w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center text-lg shadow shadow-emerald-500/10 select-none">🐍</span>
           </div>
 
           {/* 🔍 Catarina AI Engine: Flat Command Bar Widget */}

@@ -445,19 +445,40 @@ export default function ConfiguracoesPage() {
               <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 24 }}>Defina o limite de inadimplência (proporção de cobranças vencidas sobre o faturado total) para classificar o score de risco do cliente.</p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div style={{ backgroundColor: 'rgba(16, 185, 129, 0.05)', borderColor: 'rgba(16, 185, 129, 0.2)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <label className="block text-xs font-semibold text-[#6ee7b7]">😊 Limite Máximo Score Bom (% de inadimplência)</label>
-                  <input type="number" min="1" max="99" value={scoreThresholds.good} onChange={e => setScoreThresholds({ ...scoreThresholds, good: parseInt(e.target.value) || 0 })} style={inputS} />
-                  <span style={{ display: 'block', fontSize: 11, color: '#64748b', lineHeight: '1.4' }}>Clientes abaixo deste percentual de dívidas vencidas serão considerados <strong>Bons pagadores</strong>.</span>
+                <div style={{ backgroundColor: 'rgba(16, 185, 129, 0.05)', borderColor: 'rgba(16, 185, 129, 0.2)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px', height: '100%', justifyContent: 'space-between' }}>
+                  <div>
+                    <label className="block text-xs font-semibold text-[#6ee7b7] mb-2">😊 Limite Máximo Score Bom (% de inadimplência)</label>
+                    <input type="number" min="1" max="99" value={scoreThresholds.good} onChange={e => setScoreThresholds({ ...scoreThresholds, good: parseInt(e.target.value) || 0 })} style={inputS} />
+                  </div>
+                  <span style={{ display: 'block', fontSize: 11, color: '#64748b', lineHeight: '1.4', marginTop: '12px' }}>Clientes abaixo deste percentual de dívidas vencidas serão considerados <strong>Bons pagadores</strong>.</span>
                 </div>
-                <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.05)', borderColor: 'rgba(245, 158, 11, 0.2)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <label className="block text-xs font-semibold text-[#f59e0b]">⚠️ Limite Máximo Score Regular (% de inadimplência)</label>
-                  <input type="number" min="2" max="100" value={scoreThresholds.regular} onChange={e => setScoreThresholds({ ...scoreThresholds, regular: parseInt(e.target.value) || 0 })} style={inputS} />
-                  <span style={{ display: 'block', fontSize: 11, color: '#64748b', lineHeight: '1.4' }}>Clientes entre o limite Bom e este serão classificados como <strong>Regulares</strong>. Acima deste serão de <strong>Alto Risco</strong>.</span>
+                <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.05)', borderColor: 'rgba(245, 158, 11, 0.2)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px', height: '100%', justifyContent: 'space-between' }}>
+                  <div>
+                    <label className="block text-xs font-semibold text-[#f59e0b] mb-2">⚠️ Limite Máximo Score Regular (% de inadimplência)</label>
+                    <input type="number" min="2" max="100" value={scoreThresholds.regular} onChange={e => setScoreThresholds({ ...scoreThresholds, regular: parseInt(e.target.value) || 0 })} style={inputS} />
+                  </div>
+                  <span style={{ display: 'block', fontSize: 11, color: '#64748b', lineHeight: '1.4', marginTop: '12px' }}>Clientes entre o limite Bom e este serão classificados como <strong>Regulares</strong>. Acima deste serão de <strong>Alto Risco</strong>.</span>
                 </div>
               </div>
               
-              <button onClick={handleSaveScoreRates} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter' }}>Salvar Configurações</button>
+              <button 
+                onClick={handleSaveScoreRates} 
+                style={{ 
+                  padding: '12px 24px', 
+                  borderRadius: 10, 
+                  background: 'linear-gradient(135deg,#059669,#0d9488)', 
+                  color: '#fff', 
+                  fontSize: 14, 
+                  fontWeight: 700, 
+                  cursor: 'pointer', 
+                  border: 'none', 
+                  fontFamily: 'Inter',
+                  marginTop: '16px',
+                  display: 'inline-block'
+                }}
+              >
+                Salvar Configurações
+              </button>
             </div>
           )}
 
