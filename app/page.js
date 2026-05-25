@@ -1,19 +1,23 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useId } from 'react';
 import Chatbot from './components/Chatbot';
 
 // ========== SNAKE MASCOT SVG ==========
 function SnakeMascot({ size = 120, style = {} }) {
+  const id = useId();
+  const uniqueId = id.replace(/:/g, '');
+  const snakeGradId = `snakeGrad-${uniqueId}`;
+  const headGradId = `headGrad-${uniqueId}`;
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" style={style}>
       {/* Body coil */}
-      <ellipse cx="100" cy="120" rx="55" ry="40" fill="url(#snakeGrad)" opacity="0.3" />
-      <path d="M70 140 C40 140, 30 110, 50 90 C70 70, 100 65, 120 80 C140 95, 155 80, 155 60 C155 40, 140 30, 125 35" stroke="url(#snakeGrad)" strokeWidth="18" strokeLinecap="round" fill="none" />
+      <ellipse cx="100" cy="120" rx="55" ry="40" fill={`url(#${snakeGradId})`} opacity="0.3" />
+      <path d="M70 140 C40 140, 30 110, 50 90 C70 70, 100 65, 120 80 C140 95, 155 80, 155 60 C155 40, 140 30, 125 35" stroke={`url(#${snakeGradId})`} strokeWidth="18" strokeLinecap="round" fill="none" />
       {/* Body pattern */}
       <path d="M70 140 C40 140, 30 110, 50 90 C70 70, 100 65, 120 80 C140 95, 155 80, 155 60 C155 40, 140 30, 125 35" stroke="rgba(255,255,255,0.15)" strokeWidth="8" strokeLinecap="round" fill="none" strokeDasharray="4 12" />
       {/* Head */}
-      <circle cx="120" cy="32" r="22" fill="url(#snakeGrad)" />
-      <circle cx="120" cy="32" r="20" fill="url(#headGrad)" />
+      <circle cx="120" cy="32" r="22" fill={`url(#${snakeGradId})`} />
+      <circle cx="120" cy="32" r="20" fill={`url(#${headGradId})`} />
       {/* Eyes */}
       <ellipse cx="112" cy="28" rx="6" ry="7" fill="white" />
       <ellipse cx="130" cy="28" rx="6" ry="7" fill="white" />
@@ -34,13 +38,13 @@ function SnakeMascot({ size = 120, style = {} }) {
       <path d="M75 100 Q85 93 95 100" stroke="rgba(255,255,255,0.2)" strokeWidth="2" fill="none" />
       <path d="M100 92 Q110 85 120 92" stroke="rgba(255,255,255,0.2)" strokeWidth="2" fill="none" />
       {/* Tail */}
-      <path d="M70 140 C65 150, 75 155, 85 148" stroke="url(#snakeGrad)" strokeWidth="10" strokeLinecap="round" fill="none" />
+      <path d="M70 140 C65 150, 75 155, 85 148" stroke={`url(#${snakeGradId})`} strokeWidth="10" strokeLinecap="round" fill="none" />
       <defs>
-        <linearGradient id="snakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id={snakeGradId} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#059669" />
           <stop offset="100%" stopColor="#0d9488" />
         </linearGradient>
-        <linearGradient id="headGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id={headGradId} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#10b981" />
           <stop offset="100%" stopColor="#059669" />
         </linearGradient>
@@ -51,16 +55,21 @@ function SnakeMascot({ size = 120, style = {} }) {
 
 // ========== MINI SNAKE (for decorations) ==========
 function MiniSnake({ size = 40, style = {} }) {
+  const id = useId();
+  const uniqueId = id.replace(/:/g, '');
+  const miniGradId = `miniGrad-${uniqueId}`;
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" fill="none" style={style}>
-      <path d="M8 30 C4 28, 3 22, 8 18 C13 14, 20 13, 25 17 C30 21, 33 18, 33 13 C33 9, 29 7, 26 9" stroke="url(#miniGrad)" strokeWidth="4" strokeLinecap="round" fill="none" />
-      <circle cx="24" cy="8" r="5" fill="url(#miniGrad)" />
-      <circle cx="23" cy="7" r="1.2" fill="white" />
-      <circle cx="26" cy="7" r="1.2" fill="white" />
-      <circle cx="23.2" cy="7.3" r="0.7" fill="#0f172a" />
-      <circle cx="26.2" cy="7.3" r="0.7" fill="#0f172a" />
+      <g transform="translate(1.5, 1.5)">
+        <path d="M8 30 C4 28, 3 22, 8 18 C13 14, 20 13, 25 17 C30 21, 33 18, 33 13 C33 9, 29 7, 26 9" stroke={`url(#${miniGradId})`} strokeWidth="4" strokeLinecap="round" fill="none" />
+        <circle cx="24" cy="8" r="5" fill={`url(#${miniGradId})`} />
+        <circle cx="23" cy="7" r="1.2" fill="white" />
+        <circle cx="26" cy="7" r="1.2" fill="white" />
+        <circle cx="23.2" cy="7.3" r="0.7" fill="#070913" />
+        <circle cx="26.2" cy="7.3" r="0.7" fill="#070913" />
+      </g>
       <defs>
-        <linearGradient id="miniGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id={miniGradId} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#10b981" />
           <stop offset="100%" stopColor="#0d9488" />
         </linearGradient>
@@ -101,23 +110,24 @@ function FaqItem({ question, answer, category }) {
   const [open, setOpen] = useState(false);
   return (
     <div style={{
-      border: '1px solid #e2e8f0', borderRadius: 12, marginBottom: 12, overflow: 'hidden',
-      background: open ? '#f0fdf4' : '#fff', transition: 'all 0.3s ease'
+      border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, marginBottom: 12, overflow: 'hidden',
+      background: open ? 'rgba(16,185,129,0.05)' : '#0c0e1a', transition: 'all 0.3s ease',
+      boxShadow: open ? '0 4px 20px rgba(16,185,129,0.05)' : 'none'
     }}>
       <button onClick={() => setOpen(!open)} style={{
         width: '100%', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        fontSize: 16, fontWeight: 600, color: '#0f172a', textAlign: 'left', cursor: 'pointer',
+        fontSize: 16, fontWeight: 600, color: '#ffffff', textAlign: 'left', cursor: 'pointer',
         background: 'none', border: 'none', fontFamily: 'Inter, sans-serif'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {category && <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'rgba(5,150,105,0.1)', color: '#059669', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>{category}</span>}
+          {category && <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'rgba(16,185,129,0.15)', color: '#34d399', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>{category}</span>}
           {question}
         </div>
-        <span style={{ fontSize: 24, transform: open ? 'rotate(45deg)' : 'rotate(0)', transition: 'transform 0.3s', color: '#059669', flexShrink: 0, marginLeft: 12 }}>+</span>
+        <span style={{ fontSize: 24, transform: open ? 'rotate(45deg)' : 'rotate(0)', transition: 'transform 0.3s', color: '#10b981', flexShrink: 0, marginLeft: 12 }}>+</span>
       </button>
       <div style={{
         maxHeight: open ? 300 : 0, overflow: 'hidden', transition: 'max-height 0.4s ease',
-        padding: open ? '0 24px 20px' : '0 24px', color: '#475569', fontSize: 15, lineHeight: 1.7
+        padding: open ? '0 24px 20px' : '0 24px', color: '#94a3b8', fontSize: 15, lineHeight: 1.7
       }}>
         {answer}
       </div>
@@ -160,8 +170,8 @@ export default function HomePage() {
   const lostPerMonth = (calcClients * calcAmount * calcLatePercent) / 100;
   const recoveredWithCobbra = lostPerMonth * 0.94;
 
-  const headerBg = scrollY > 50 ? '#ffffff' : 'transparent';
-  const headerShadow = scrollY > 50 ? '0 1px 10px rgba(0,0,0,0.08)' : 'none';
+  const headerBg = scrollY > 50 ? 'rgba(12, 14, 26, 0.9)' : 'transparent';
+  const headerShadow = scrollY > 50 ? '0 4px 30px rgba(0,0,0,0.3)' : 'none';
 
   const faqs = [
     { cat: 'Conta', q: 'Preciso pagar para começar?', a: 'O plano Starter é 100% gratuito e permite até 3 cobranças simultâneas. Perfeito para testar a plataforma sem compromisso. Quando precisar de mais, é só fazer upgrade.' },
@@ -182,27 +192,28 @@ export default function HomePage() {
   const faqCategories = ['all', ...new Set(faqs.map(f => f.cat))];
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif", color: '#0f172a' }}>
+    <div style={{ fontFamily: "'Inter', sans-serif", color: '#fff', background: '#070913' }}>
       {/* ===== HEADER ===== */}
       <header style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
         background: headerBg, boxShadow: headerShadow,
-        transition: 'all 0.3s ease', borderBottom: scrollY > 50 ? '1px solid #e2e8f0' : 'none'
+        transition: 'all 0.3s ease', borderBottom: scrollY > 50 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+        backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)'
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo with Snake */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <MiniSnake size={38} />
-            <span style={{ fontSize: 30, fontWeight: 900, background: 'linear-gradient(135deg, #059669, #0d9488)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: -1 }}>
+            <span style={{ fontSize: 30, fontWeight: 900, background: 'linear-gradient(135deg, #ffffff, #cbd5e1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: -1 }}>
               Cobbra
             </span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', marginTop: -8, marginLeft: -2 }}>.ai</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#10b981', marginTop: -8, marginLeft: -2 }}>.ai</span>
           </div>
 
           {/* Hamburger Button */}
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            style={{ display: 'none', fontSize: 24, color: '#0f172a', background: 'none', border: 'none', cursor: 'pointer' }}
+            style={{ display: 'none', fontSize: 24, color: '#ffffff', background: 'none', border: 'none', cursor: 'pointer' }}
             className="mobile-hamburger"
             aria-label="Menu"
           >
@@ -213,25 +224,25 @@ export default function HomePage() {
           <nav className="landing-nav" style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
             {['Benefícios', 'Como funciona', 'Depoimentos', 'Preços', 'FAQ'].map(item => (
               <a key={item} href={`#${item.toLowerCase().replace(/ /g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`}
-                style={{ fontSize: 14, fontWeight: 500, color: '#475569', transition: 'color 0.2s', textDecoration: 'none' }}
-                onMouseEnter={e => e.target.style.color = '#059669'}
-                onMouseLeave={e => e.target.style.color = '#475569'}
+                style={{ fontSize: 14, fontWeight: 500, color: '#94a3b8', transition: 'color 0.2s', textDecoration: 'none' }}
+                onMouseEnter={e => e.target.style.color = '#10b981'}
+                onMouseLeave={e => e.target.style.color = '#94a3b8'}
               >{item}</a>
             ))}
             <a href="/login" style={{
-              fontSize: 14, fontWeight: 600, color: '#059669', padding: '8px 20px', borderRadius: 8,
-              border: '2px solid #059669', transition: 'all 0.2s', textDecoration: 'none'
+              fontSize: 14, fontWeight: 600, color: '#10b981', padding: '8px 20px', borderRadius: 8,
+              border: '2px solid #10b981', transition: 'all 0.2s', textDecoration: 'none'
             }}
-              onMouseEnter={e => { e.target.style.background = '#059669'; e.target.style.color = '#fff'; }}
-              onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.color = '#059669'; }}
+              onMouseEnter={e => { e.target.style.background = '#10b981'; e.target.style.color = '#070913'; }}
+              onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.color = '#10b981'; }}
             >Entrar</a>
             <a href="/cadastro" style={{
-              fontSize: 14, fontWeight: 600, color: '#fff', padding: '10px 24px', borderRadius: 8,
-              background: 'linear-gradient(135deg, #059669, #0d9488)', boxShadow: '0 4px 14px rgba(5,150,105,0.3)',
+              fontSize: 14, fontWeight: 600, color: '#070913', padding: '10px 24px', borderRadius: 8,
+              background: '#10b981', boxShadow: '0 4px 14px rgba(16,185,129,0.3)',
               transition: 'all 0.2s', transform: 'translateY(0)', textDecoration: 'none'
             }}
-              onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 6px 20px rgba(5,150,105,0.4)'; }}
-              onMouseLeave={e => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 4px 14px rgba(5,150,105,0.3)'; }}
+              onMouseEnter={e => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 6px 20px rgba(16,185,129,0.5)'; }}
+              onMouseLeave={e => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 4px 14px rgba(16,185,129,0.3)'; }}
             >Começar grátis</a>
           </nav>
         </div>
@@ -239,22 +250,22 @@ export default function HomePage() {
         {/* Mobile Navigation Dropdown */}
         {mobileMenuOpen && (
           <div className="landing-nav-mobile" style={{
-            position: 'fixed', top: 60, left: 0, right: 0, background: '#fff',
-            borderBottom: '1px solid #e2e8f0', padding: '16px 24px', zIndex: 999,
-            display: 'none', flexDirection: 'column', gap: 4, boxShadow: '0 8px 20px rgba(0,0,0,0.1)'
+            position: 'fixed', top: 60, left: 0, right: 0, background: '#0C0E1A',
+            borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '16px 24px', zIndex: 999,
+            display: 'none', flexDirection: 'column', gap: 4, boxShadow: '0 8px 30px rgba(0,0,0,0.5)'
           }}>
             {['Benefícios#beneficios','Como funciona#como-funciona','Depoimentos#depoimentos','Preços#precos','FAQ#faq'].map(item => {
               const [label, hash] = item.split('#');
               return (
                 <a key={hash} href={`#${hash}`} onClick={() => setMobileMenuOpen(false)} style={{
-                  padding: '12px 0', fontSize: 16, fontWeight: 500, color: '#0f172a',
-                  borderBottom: '1px solid #f1f5f9', textDecoration: 'none'
+                  padding: '12px 0', fontSize: 16, fontWeight: 500, color: '#ffffff',
+                  borderBottom: '1px solid rgba(255,255,255,0.04)', textDecoration: 'none'
                 }}>{label}</a>
               );
             })}
             <div style={{ display: 'flex', gap: 12, paddingTop: 12 }}>
-              <a href="/login" style={{ flex: 1, textAlign: 'center', padding: '10px', border: '2px solid #059669', borderRadius: 8, color: '#059669', fontWeight: 600, textDecoration: 'none' }}>Entrar</a>
-              <a href="/cadastro" style={{ flex: 1, textAlign: 'center', padding: '10px', background: 'linear-gradient(135deg,#059669,#0d9488)', borderRadius: 8, color: '#fff', fontWeight: 600, textDecoration: 'none' }}>Começar grátis</a>
+              <a href="/login" style={{ flex: 1, textAlign: 'center', padding: '10px', border: '2px solid #10b981', borderRadius: 8, color: '#10b981', fontWeight: 600, textDecoration: 'none' }}>Entrar</a>
+              <a href="/cadastro" style={{ flex: 1, textAlign: 'center', padding: '10px', background: '#10b981', borderRadius: 8, color: '#070913', fontWeight: 600, textDecoration: 'none' }}>Começar grátis</a>
             </div>
           </div>
         )}
@@ -262,39 +273,39 @@ export default function HomePage() {
 
       {/* ===== HERO ===== */}
       <section style={{
-        paddingTop: 120, paddingBottom: 60, background: 'linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 30%, #f8fafc 100%)',
+        paddingTop: 120, paddingBottom: 60, background: '#070913',
         position: 'relative', overflow: 'hidden'
       }}>
-        {/* Decorative */}
-        <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, borderRadius: '50%', background: 'rgba(5,150,105,0.05)' }} />
-        <div style={{ position: 'absolute', bottom: -50, left: -50, width: 300, height: 300, borderRadius: '50%', background: 'rgba(13,148,136,0.05)' }} />
+        {/* Decorative Neon Halos */}
+        <div style={{ position: 'absolute', top: -150, right: -150, width: 400, height: 400, borderRadius: '50%', background: 'rgba(16,185,129,0.03)', filter: 'blur(80px)' }} />
+        <div style={{ position: 'absolute', bottom: -100, left: -100, width: 300, height: 300, borderRadius: '50%', background: 'rgba(13,148,136,0.02)', filter: 'blur(60px)' }} />
 
         <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', gap: 60, position: 'relative' }}>
           {/* Left Content */}
           <div style={{ flex: 1, animation: 'fadeInUp 0.8s ease' }}>
             {/* Mini social proof acima do fold */}
             <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 10, background: '#fff', padding: '10px 18px',
-              borderRadius: 100, fontSize: 13, fontWeight: 500, color: '#475569', marginBottom: 24,
-              border: '1px solid #d1fae5', boxShadow: '0 2px 12px rgba(5,150,105,0.1)', maxWidth: 520
+              display: 'inline-flex', alignItems: 'center', gap: 10, background: '#0c0e1a', padding: '10px 18px',
+              borderRadius: 100, fontSize: 13, fontWeight: 500, color: '#94a3b8', marginBottom: 24,
+              border: '1px solid rgba(16,185,129,0.2)', boxShadow: '0 4px 20px rgba(16,185,129,0.05)', maxWidth: 520
             }}>
               <div style={{ display: 'flex' }}>
                 {['MO','RC','CF'].map((i, idx) => (
-                  <div key={i} style={{ width: 26, height: 26, borderRadius: '50%', background: ['#059669','#0891b2','#7c3aed'][idx], display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 9, fontWeight: 800, marginLeft: idx > 0 ? -6 : 0, border: '2px solid #fff' }}>{i}</div>
+                  <div key={i} style={{ width: 26, height: 26, borderRadius: '50%', background: ['#10b981','#0891b2','#7c3aed'][idx], display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#070913', fontSize: 9, fontWeight: 800, marginLeft: idx > 0 ? -6 : 0, border: '2px solid #0c0e1a' }}>{i}</div>
                 ))}
               </div>
-              <span><strong style={{ color: '#059669' }}>&ldquo;Minha inadimplência caiu de 35% para 6%&rdquo;</strong> — Marina O., Personal Trainer</span>
+              <span><strong style={{ color: '#10b981' }}>&ldquo;Minha inadimplência caiu de 35% para 6%&rdquo;</strong> — Marina O.</span>
             </div>
 
-            <h1 className="hero-h1" style={{ fontSize: 52, fontWeight: 900, lineHeight: 1.1, marginBottom: 24, letterSpacing: -1 }}>
+            <h1 className="hero-h1" style={{ fontSize: 52, fontWeight: 900, lineHeight: 1.1, marginBottom: 24, letterSpacing: -1, color: '#ffffff' }}>
               Seu Funcionário{' '}
-              <span style={{ background: 'linear-gradient(135deg, #059669, #0891b2)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <span style={{ background: 'linear-gradient(135deg, #10b981, #0d9488)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 Financeiro
               </span>{' '}
               Mais Barato do Brasil
             </h1>
 
-            <p className="hero-sub" style={{ fontSize: 19, color: '#475569', lineHeight: 1.7, marginBottom: 32, maxWidth: 520 }}>
+            <p className="hero-sub" style={{ fontSize: 19, color: '#cbd5e1', lineHeight: 1.7, marginBottom: 32, maxWidth: 520 }}>
               Você avisa uma vez. A cobra cobra no WhatsApp toda semana — até o dinheiro entrar direto no seu Pix.
               Sem constrangimento. Sem taxas. Sem você precisar fazer nada.
             </p>
@@ -302,26 +313,26 @@ export default function HomePage() {
             <div className="hero-cta" style={{ display: 'flex', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
               <a href="/cadastro" style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 32px', borderRadius: 12,
-                background: 'linear-gradient(135deg, #059669, #0d9488)', color: '#fff', fontSize: 17, fontWeight: 700,
-                boxShadow: '0 4px 14px rgba(5,150,105,0.4)', transition: 'all 0.3s', transform: 'translateY(0)', textDecoration: 'none'
+                background: '#10b981', color: '#070913', fontSize: 17, fontWeight: 700,
+                boxShadow: '0 4px 14px rgba(16,185,129,0.4)', transition: 'all 0.3s', transform: 'translateY(0)', textDecoration: 'none'
               }}
-                onMouseEnter={e => { e.target.style.transform = 'translateY(-3px)'; e.target.style.boxShadow = '0 8px 25px rgba(5,150,105,0.5)'; }}
-                onMouseLeave={e => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 4px 14px rgba(5,150,105,0.4)'; }}
+                onMouseEnter={e => { e.target.style.transform = 'translateY(-3px)'; e.target.style.boxShadow = '0 8px 25px rgba(16,185,129,0.5)'; }}
+                onMouseLeave={e => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 4px 14px rgba(16,185,129,0.4)'; }}
               >
                 Parar de perder dinheiro — Começar grátis →
               </a>
               <a href="#como-funciona" style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 28px', borderRadius: 12,
-                border: '2px solid #e2e8f0', color: '#475569', fontSize: 16, fontWeight: 600,
+                border: '2px solid rgba(255,255,255,0.1)', color: '#cbd5e1', fontSize: 16, fontWeight: 600,
                 transition: 'all 0.2s', textDecoration: 'none'
               }}
-                onMouseEnter={e => { e.target.style.borderColor = '#059669'; e.target.style.color = '#059669'; }}
-                onMouseLeave={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.color = '#475569'; }}
+                onMouseEnter={e => { e.target.style.borderColor = '#10b981'; e.target.style.color = '#10b981'; }}
+                onMouseLeave={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; e.target.style.color = '#cbd5e1'; }}
               >
                 ▶ Ver como funciona
               </a>
             </div>
-            <p style={{ fontSize: 13, color: '#94a3b8' }}>Sem cartão · Ativo em 2 minutos · Cancele quando quiser — <strong style={{color:'#64748b'}}>Não tem pegadinha.</strong></p>
+            <p style={{ fontSize: 13, color: '#64748b' }}>Sem cartão · Ativo em 2 minutos · Cancele quando quiser — <strong style={{color:'#94a3b8'}}>Não tem pegadinha.</strong></p>
 
             {/* Trust Badges — com números concretos */}
             <div style={{ display: 'flex', gap: 24, marginTop: 32, flexWrap: 'wrap' }}>
@@ -330,9 +341,9 @@ export default function HomePage() {
                 { icon: '💰', label: 'R$ 1,2 mi', text: 'movimentados sem taxas' },
                 { icon: '⚡', label: '2 min', text: 'para 1ª cobrança ir' }
               ].map(badge => (
-                <div key={badge.text} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#64748b' }}>
+                <div key={badge.text} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#94a3b8' }}>
                   <span>{badge.icon}</span>
-                  <strong style={{ color: '#0f172a', fontSize: 14 }}>{badge.label}</strong>
+                  <strong style={{ color: '#ffffff', fontSize: 14 }}>{badge.label}</strong>
                   <span>{badge.text}</span>
                 </div>
               ))}
@@ -347,16 +358,17 @@ export default function HomePage() {
             </div>
             {/* Speech bubble */}
             <div style={{
-              position: 'absolute', top: -20, right: 140, background: '#fff', borderRadius: 12, padding: '8px 14px',
-              fontSize: 12, fontWeight: 600, color: '#059669', boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-              border: '1px solid #d1fae5', zIndex: 3
+              position: 'absolute', top: -20, right: 140, background: '#0c0e1a', borderRadius: 12, padding: '8px 14px',
+              fontSize: 12, fontWeight: 600, color: '#10b981', boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+              border: '1px solid rgba(16,185,129,0.2)', zIndex: 3
             }}>
               Psst... pode deixar comigo! 🐍
-              <div style={{ position: 'absolute', bottom: -6, right: 20, width: 12, height: 12, background: '#fff', border: '1px solid #d1fae5', borderTop: 'none', borderLeft: 'none', transform: 'rotate(45deg)' }} />
+              <div style={{ position: 'absolute', bottom: -6, right: 20, width: 12, height: 12, background: '#0c0e1a', border: '1px solid rgba(16,185,129,0.2)', borderTop: 'none', borderLeft: 'none', transform: 'rotate(45deg)' }} />
             </div>
 
             <div style={{
-              background: '#0f172a', borderRadius: 20, padding: 28, boxShadow: '0 25px 60px rgba(0,0,0,0.15)',
+              background: '#0c0e1a', borderRadius: 20, padding: 28, boxShadow: '0 25px 60px rgba(0,0,0,0.5)',
+              border: '1px solid rgba(255,255,255,0.06)',
               transform: 'perspective(1000px) rotateY(-5deg) rotateX(2deg)', transition: 'transform 0.5s'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
@@ -371,7 +383,7 @@ export default function HomePage() {
               {/* Mini chart bars */}
               <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end', height: 60, marginBottom: 20 }}>
                 {[40, 65, 45, 80, 55, 70, 90, 60, 75, 85, 95, 50, 70, 88].map((h, i) => (
-                  <div key={i} style={{ flex: 1, height: `${h}%`, background: `linear-gradient(to top, #059669, #34d399)`, borderRadius: 3, opacity: 0.8 + (i * 0.01) }} />
+                  <div key={i} style={{ flex: 1, height: `${h}%`, background: `linear-gradient(to top, #10b981, #0d9488)`, borderRadius: 3, opacity: 0.8 + (i * 0.01) }} />
                 ))}
               </div>
               {/* Client list */}
@@ -386,7 +398,7 @@ export default function HomePage() {
                   borderBottom: '1px solid rgba(255,255,255,0.06)'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(5,150,105,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#34d399', fontWeight: 700 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#10b981', fontWeight: 700 }}>
                       {item.name.split(' ').map(n => n[0]).join('')}
                     </div>
                     <span style={{ color: '#e2e8f0', fontSize: 14 }}>{item.name}</span>
@@ -397,7 +409,7 @@ export default function HomePage() {
                 </div>
               ))}
               {/* WhatsApp preview */}
-              <div style={{ marginTop: 16, background: 'rgba(37,211,102,0.1)', borderRadius: 12, padding: 14, border: '1px solid rgba(37,211,102,0.2)' }}>
+              <div style={{ marginTop: 16, background: 'rgba(37,211,102,0.05)', borderRadius: 12, padding: 14, border: '1px solid rgba(37,211,102,0.15)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                   <span style={{ fontSize: 16 }}>💬</span>
                   <span style={{ fontSize: 11, color: '#25d366', fontWeight: 600 }}>WhatsApp · agora</span>
@@ -411,16 +423,14 @@ export default function HomePage() {
         </div>
       </section>
 
-
-
       {/* ===== HOW IT WORKS ===== */}
-      <section id="como-funciona" style={{ padding: '70px 0', background: 'linear-gradient(135deg, #f0fdf4, #ecfdf5, #f8fafc)' }}>
+      <section id="como-funciona" style={{ padding: '70px 0', background: '#070913', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 40, fontWeight: 800, marginBottom: 16 }}>Nunca mais você vai precisar<br /><span style={{ color: '#059669' }}>fingir que esqueceu de cobrar.</span></h2>
-          <p style={{ fontSize: 18, color: '#64748b', marginBottom: 40 }}>O Cobbra faz o papel chato por você — e o cliente nem percebe que é automático.</p>
+          <h2 style={{ fontSize: 40, fontWeight: 800, marginBottom: 16, color: '#ffffff' }}>Nunca mais você vai precisar<br /><span style={{ color: '#10b981' }}>fingir que esqueceu de cobrar.</span></h2>
+          <p style={{ fontSize: 18, color: '#94a3b8', marginBottom: 40 }}>O Cobbra faz o papel chato por você — e o cliente nem percebe que é automático.</p>
           <div className="how-it-works-steps" style={{ display: 'flex', gap: 40, justifyContent: 'center', position: 'relative' }}>
             {/* Connection line */}
-            <div className="how-it-works-line" style={{ position: 'absolute', top: 35, left: '20%', right: '20%', height: 2, background: 'linear-gradient(to right, #d1fae5, #059669, #d1fae5)', zIndex: 0 }} />
+            <div className="how-it-works-line" style={{ position: 'absolute', top: 35, left: '20%', right: '20%', height: 2, background: 'linear-gradient(to right, rgba(16,185,129,0.05), #10b981, rgba(16,185,129,0.05))', zIndex: 0 }} />
             {[
               { step: '1', title: 'Cadastre a cobrança', desc: 'Insira valor, vencimento e o contato do cliente em 30 segundos.', icon: '📝' },
               { step: '2', title: 'A cobra notifica', desc: 'Lembretes gentis disparados no WhatsApp e e-mail no momento certo.', icon: '🐍' },
@@ -428,17 +438,17 @@ export default function HomePage() {
             ].map((item, i) => (
               <div key={i} style={{ flex: 1, position: 'relative', zIndex: 1 }}>
                 <div style={{
-                  width: 70, height: 70, borderRadius: '50%', background: 'linear-gradient(135deg, #059669, #0d9488)',
+                  width: 70, height: 70, borderRadius: '50%', background: 'linear-gradient(135deg, #10b981, #0d9488)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px',
-                  fontSize: 30, boxShadow: '0 8px 20px rgba(5,150,105,0.3)'
+                  fontSize: 30, boxShadow: '0 8px 20px rgba(16,185,129,0.2)'
                 }}>{item.icon}</div>
                 <div style={{
                   position: 'absolute', top: -8, width: 30, height: 30, borderRadius: '50%',
-                  background: '#0f172a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 14, fontWeight: 800, left: '50%', marginLeft: 20
+                  background: '#070913', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 14, fontWeight: 800, left: '50%', marginLeft: 20, border: '1px solid rgba(255,255,255,0.1)'
                 }}>{item.step}</div>
-                <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>{item.title}</h3>
-                <p style={{ fontSize: 15, color: '#64748b', lineHeight: 1.6 }}>{item.desc}</p>
+                <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 10, color: '#ffffff' }}>{item.title}</h3>
+                <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.6 }}>{item.desc}</p>
               </div>
             ))}
           </div>
@@ -446,16 +456,16 @@ export default function HomePage() {
       </section>
 
       {/* ===== BEFORE VS AFTER ===== */}
-      <section style={{ padding: '70px 0', background: '#fff' }}>
+      <section style={{ padding: '70px 0', background: '#070913' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px' }}>
-          <h2 style={{ fontSize: 40, fontWeight: 800, textAlign: 'center', marginBottom: 12 }}>
-            Você fica o bonzinho.<br /><span style={{ color: '#059669' }}>A cobra faz o serviço sujo.</span>
+          <h2 style={{ fontSize: 40, fontWeight: 800, textAlign: 'center', marginBottom: 12, color: '#ffffff' }}>
+            Você fica o bonzinho.<br /><span style={{ color: '#10b981' }}>A cobra faz o serviço sujo.</span>
           </h2>
-          <p style={{ textAlign: 'center', color: '#64748b', fontSize: 17, marginBottom: 48 }}>Pare de perder amizades (e dinheiro) por não cobrar.</p>
+          <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: 17, marginBottom: 48 }}>Pare de perder amizades (e dinheiro) por não cobrar.</p>
           <div className="before-after-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1fr', gap: 0, alignItems: 'stretch' }}>
             {/* Before */}
-            <div className="before-panel" style={{ background: '#fef2f2', border: '2px solid #fecaca', borderRadius: '20px 0 0 20px', padding: 40 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#ef4444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 28 }}>
+            <div className="before-panel" style={{ background: 'rgba(239, 68, 68, 0.02)', border: '2px solid rgba(239, 68, 68, 0.15)', borderRadius: '20px 0 0 20px', padding: 40 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#f87171', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 28 }}>
                 ❌ Sem o Cobbra
               </div>
               {[
@@ -465,19 +475,19 @@ export default function HomePage() {
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 20 }}>
                   <span style={{ fontSize: 24, flexShrink: 0 }}>{item.emoji}</span>
-                  <span style={{ fontSize: 15, color: '#7f1d1d', lineHeight: 1.5 }}>{item.text}</span>
+                  <span style={{ fontSize: 15, color: '#fca5a5', lineHeight: 1.5 }}>{item.text}</span>
                 </div>
               ))}
             </div>
             {/* VS divider */}
-            <div className="before-after-divider" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(to bottom, #fef2f2, #f0fdf4)', position: 'relative' }}>
-              <div style={{ width: 50, height: 50, borderRadius: '50%', background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
+            <div className="before-after-divider" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(to bottom, rgba(239, 68, 68, 0.08), rgba(16, 185, 129, 0.08))', position: 'relative' }}>
+              <div style={{ width: 50, height: 50, borderRadius: '50%', background: '#070913', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, border: '1px solid rgba(255,255,255,0.08)' }}>
                 <MiniSnake size={32} />
               </div>
             </div>
             {/* After */}
-            <div className="after-panel" style={{ background: '#f0fdf4', border: '2px solid #a7f3d0', borderRadius: '0 20px 20px 0', padding: 40 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 28 }}>
+            <div className="after-panel" style={{ background: 'rgba(16, 185, 129, 0.02)', border: '2px solid rgba(16, 185, 129, 0.15)', borderRadius: '0 20px 20px 0', padding: 40 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#10b981', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 28 }}>
                 ✅ Com o Cobbra
               </div>
               {[
@@ -487,7 +497,7 @@ export default function HomePage() {
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 20 }}>
                   <span style={{ fontSize: 24, flexShrink: 0 }}>{item.emoji}</span>
-                  <span style={{ fontSize: 15, color: '#064e3b', lineHeight: 1.5 }}>{item.text}</span>
+                  <span style={{ fontSize: 15, color: '#a7f3d0', lineHeight: 1.5 }}>{item.text}</span>
                 </div>
               ))}
             </div>
@@ -498,16 +508,16 @@ export default function HomePage() {
       {/* ===== CATARINA AI ENGINE V3.0 ===== */}
       <section style={{ 
         padding: '85px 0', 
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
+        background: '#070913', 
         color: '#fff', 
         position: 'relative', 
         overflow: 'hidden',
-        borderTop: '1px solid rgba(5,150,105,0.2)',
-        borderBottom: '1px solid rgba(5,150,105,0.2)'
+        borderTop: '1px solid rgba(16,185,129,0.1)',
+        borderBottom: '1px solid rgba(16,185,129,0.1)'
       }}>
         {/* Glow Effects */}
-        <div style={{ position: 'absolute', top: -150, left: -150, width: 350, height: 350, borderRadius: '50%', background: 'rgba(16,185,129,0.06)', filter: 'blur(80px)' }} />
-        <div style={{ position: 'absolute', bottom: -150, right: -150, width: 350, height: 350, borderRadius: '50%', background: 'rgba(13,148,136,0.06)', filter: 'blur(80px)' }} />
+        <div style={{ position: 'absolute', top: -150, left: -150, width: 350, height: 350, borderRadius: '50%', background: 'rgba(16,185,129,0.03)', filter: 'blur(80px)' }} />
+        <div style={{ position: 'absolute', bottom: -150, right: -150, width: 350, height: 350, borderRadius: '50%', background: 'rgba(13,148,136,0.02)', filter: 'blur(80px)' }} />
 
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative' }}>
           
@@ -554,16 +564,16 @@ export default function HomePage() {
                 <div 
                   key={i} 
                   style={{ 
-                    background: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: 24, 
-                    border: '1px solid rgba(255,255,255,0.06)', transition: 'all 0.3s' 
+                    background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: 24, 
+                    border: '1px solid rgba(255,255,255,0.05)', transition: 'all 0.3s' 
                   }}
                   onMouseEnter={e => {
-                    e.currentTarget.style.background = 'rgba(5,150,105,0.08)';
-                    e.currentTarget.style.borderColor = 'rgba(5,150,105,0.3)';
+                    e.currentTarget.style.background = 'rgba(16,185,129,0.06)';
+                    e.currentTarget.style.borderColor = 'rgba(16,185,129,0.25)';
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
                   }}
                 >
                   <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
@@ -576,7 +586,7 @@ export default function HomePage() {
                       <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.5, marginBottom: 12 }}>{f.desc}</p>
                       <span style={{ 
                         fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 6, 
-                        background: 'rgba(255,255,255,0.06)', color: '#34d399' 
+                        background: 'rgba(255,255,255,0.04)', color: '#34d399' 
                       }}>{f.badge}</span>
                     </div>
                   </div>
@@ -587,10 +597,10 @@ export default function HomePage() {
             {/* Right side: Mock AI chatbot and ticket simulation */}
             <div style={{ flex: 1, minWidth: 320 }}>
               <div style={{ 
-                background: 'rgba(30, 41, 59, 0.96)', borderRadius: 24, padding: 28, 
-                border: '1px solid rgba(255, 255, 255, 0.08)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
+                background: '#0c0e1a', borderRadius: 24, padding: 28, 
+                border: '1px solid rgba(255, 255, 255, 0.06)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 16, marginBottom: 20 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 16, marginBottom: 20 }}>
                   <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🐍</div>
                   <div>
                     <h4 style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0 }}>Catarina — IA Cobrinha</h4>
@@ -602,14 +612,14 @@ export default function HomePage() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   <div style={{ 
-                    alignSelf: 'flex-end', background: '#059669', borderRadius: '16px 16px 2px 16px', 
-                    padding: '10px 14px', fontSize: 13, color: '#fff', maxWidth: '85%' 
+                    alignSelf: 'flex-end', background: '#10b981', borderRadius: '16px 16px 2px 16px', 
+                    padding: '10px 14px', fontSize: 13, color: '#070913', fontWeight: 600, maxWidth: '85%' 
                   }}>
                     Catarina, pode abrir um chamado de cancelamento de assinatura para mim?
                   </div>
                   
                   <div style={{ 
-                    alignSelf: 'flex-start', background: 'rgba(255,255,255,0.05)', borderRadius: '16px 16px 16px 2px', 
+                    alignSelf: 'flex-start', background: 'rgba(255,255,255,0.03)', borderRadius: '16px 16px 16px 2px', 
                     padding: '10px 14px', fontSize: 13, color: '#cbd5e1', maxWidth: '85%',
                     border: '1px solid rgba(255,255,255,0.04)'
                   }}>
@@ -617,8 +627,8 @@ export default function HomePage() {
                     Por isso, **acabo de abrir um chamado prioritário** para a nossa equipe no e-mail **suporte@cobbra.com.br**. Eles vão resolver isso para você o mais rápido possível! 🐍
                     
                     <div style={{ 
-                      marginTop: 10, padding: '8px 12px', background: 'rgba(245,158,11,0.15)', 
-                      border: '1px solid rgba(245,158,11,0.25)', borderRadius: 8, fontSize: 11, 
+                      marginTop: 10, padding: '8px 12px', background: 'rgba(245,158,11,0.1)', 
+                      border: '1px solid rgba(245,158,11,0.2)', borderRadius: 8, fontSize: 11, 
                       color: '#f59e0b', fontWeight: 600 
                     }}>
                       🎫 Chamado prioritário aberto para suporte@cobbra.com.br
@@ -631,14 +641,14 @@ export default function HomePage() {
                   display: 'flex', gap: 10, alignItems: 'center'
                 }}>
                   <div style={{ 
-                    flex: 1, background: 'rgba(255,255,255,0.05)', borderRadius: 10, 
+                    flex: 1, background: 'rgba(255,255,255,0.03)', borderRadius: 10, 
                     padding: '10px 14px', fontSize: 12, color: '#64748b' 
                   }}>
                     Escreva sua dúvida aqui...
                   </div>
                   <div style={{ 
-                    padding: '10px 16px', borderRadius: 10, background: '#059669', 
-                    color: '#fff', fontSize: 12, fontWeight: 700 
+                    padding: '10px 16px', borderRadius: 10, background: '#10b981', 
+                    color: '#070913', fontSize: 12, fontWeight: 700, cursor: 'pointer'
                   }}>
                     Enviar
                   </div>
@@ -653,30 +663,30 @@ export default function HomePage() {
       </section>
 
       {/* ===== SAVINGS CALCULATOR ===== */}
-      <section style={{ padding: '70px 0', background: 'linear-gradient(135deg, #0f172a, #1e293b)' }}>
+      <section style={{ padding: '70px 0', background: '#070913' }}>
         <div style={{ maxWidth: 700, margin: '0 auto', padding: '0 24px' }}>
           <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 8, color: '#fff' }}>
-            🧮 Quanto você <span style={{ color: '#34d399' }}>perde</span> por mês?
+            🧮 Quanto você <span style={{ color: '#10b981' }}>perde</span> por mês?
           </h2>
           <p style={{ textAlign: 'center', color: '#94a3b8', marginBottom: 48, fontSize: 16 }}>
             Descubra quanto o Cobbra pode recuperar para você.
           </p>
-          <div style={{ background: 'rgba(25, 30, 50, 0.85)', borderRadius: 20, padding: 40, border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div style={{ background: '#0c0e1a', borderRadius: 20, padding: 40, border: '1px solid rgba(255,255,255,0.06)' }}>
             <div style={{ marginBottom: 28 }}>
               <label style={{ fontSize: 14, fontWeight: 600, color: '#e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
                 <span>Quantos clientes você tem?</span>
-                <span style={{ color: '#34d399', fontWeight: 800 }}>{calcClients}</span>
+                <span style={{ color: '#10b981', fontWeight: 800 }}>{calcClients}</span>
               </label>
               <input type="range" min="1" max="100" value={calcClients} onChange={e => setCalcClients(+e.target.value)}
-                style={{ width: '100%', marginTop: 12, accentColor: '#059669', height: 6 }} />
+                style={{ width: '100%', marginTop: 12, accentColor: '#10b981', height: 6 }} />
             </div>
             <div style={{ marginBottom: 28 }}>
               <label style={{ fontSize: 14, fontWeight: 600, color: '#e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
                 <span>Valor médio da cobrança</span>
-                <span style={{ color: '#34d399', fontWeight: 800 }}>R$ {calcAmount}</span>
+                <span style={{ color: '#10b981', fontWeight: 800 }}>R$ {calcAmount}</span>
               </label>
               <input type="range" min="50" max="2000" step="50" value={calcAmount} onChange={e => setCalcAmount(+e.target.value)}
-                style={{ width: '100%', marginTop: 12, accentColor: '#059669' }} />
+                style={{ width: '100%', marginTop: 12, accentColor: '#10b981' }} />
             </div>
             <div style={{ marginBottom: 36 }}>
               <label style={{ fontSize: 14, fontWeight: 600, color: '#e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
@@ -687,20 +697,20 @@ export default function HomePage() {
                 style={{ width: '100%', marginTop: 12, accentColor: '#f59e0b' }} />
             </div>
             <div className="calc-results" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-              <div style={{ background: 'rgba(239,68,68,0.1)', borderRadius: 16, padding: 24, textAlign: 'center', border: '1px solid rgba(239,68,68,0.2)' }}>
+              <div style={{ background: 'rgba(239,68,68,0.08)', borderRadius: 16, padding: 24, textAlign: 'center', border: '1px solid rgba(239,68,68,0.15)' }}>
                 <p style={{ fontSize: 13, color: '#fca5a5', marginBottom: 8 }}>Você perde por mês</p>
                 <p style={{ fontSize: 32, fontWeight: 800, color: '#ef4444' }}>R$ {lostPerMonth.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</p>
               </div>
-              <div style={{ background: 'rgba(16,185,129,0.1)', borderRadius: 16, padding: 24, textAlign: 'center', border: '1px solid rgba(16,185,129,0.2)' }}>
-                <p style={{ fontSize: 13, color: '#6ee7b7', marginBottom: 8 }}>Cobbra recupera até</p>
+              <div style={{ background: 'rgba(16,185,129,0.08)', borderRadius: 16, padding: 24, textAlign: 'center', border: '1px solid rgba(16,185,129,0.15)' }}>
+                <p style={{ fontSize: 13, color: '#a7f3d0', marginBottom: 8 }}>Cobbra recupera até</p>
                 <p style={{ fontSize: 32, fontWeight: 800, color: '#10b981' }}>R$ {recoveredWithCobbra.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</p>
               </div>
             </div>
             {/* ROI dinâmico integrado à calculadora */}
-            <div style={{ marginTop: 20, padding: 20, background: 'rgba(5,150,105,0.12)', borderRadius: 14, border: '1px solid rgba(5,150,105,0.25)', textAlign: 'center' }}>
-              <p style={{ color: '#6ee7b7', fontSize: 14, lineHeight: 1.6 }}>
+            <div style={{ marginTop: 20, padding: 20, background: 'rgba(16,185,129,0.08)', borderRadius: 14, border: '1px solid rgba(16,185,129,0.15)', textAlign: 'center' }}>
+              <p style={{ color: '#a7f3d0', fontSize: 14, lineHeight: 1.6 }}>
                 💡 Com o plano <strong>Crescimento (R$ 19,90/mês)</strong>, seu ROI seria de{' '}
-                <strong style={{ color: '#34d399', fontSize: 17 }}>
+                <strong style={{ color: '#10b981', fontSize: 17 }}>
                   {recoveredWithCobbra > 0 ? `${Math.round((recoveredWithCobbra / 19.90) * 100 - 100).toLocaleString('pt-BR')}%` : '—'}
                 </strong>{' '}já no 1º mês.
               </p>
@@ -708,8 +718,8 @@ export default function HomePage() {
             <div style={{ textAlign: 'center', marginTop: 24 }}>
               <a href="/cadastro" style={{
                 display: 'inline-block', padding: '14px 36px', borderRadius: 12,
-                background: 'linear-gradient(135deg, #059669, #0d9488)', color: '#fff', fontSize: 16, fontWeight: 700,
-                boxShadow: '0 4px 14px rgba(5,150,105,0.4)', transition: 'all 0.3s', textDecoration: 'none'
+                background: '#10b981', color: '#070913', fontSize: 16, fontWeight: 700,
+                boxShadow: '0 4px 14px rgba(16,185,129,0.4)', transition: 'all 0.3s', textDecoration: 'none'
               }}>
                 {recoveredWithCobbra < 100 ? 'Começar com o plano gratuito →' : recoveredWithCobbra < 500 ? 'Ver plano Crescimento →' : 'Recuperar meu dinheiro agora →'}
               </a>
@@ -719,21 +729,22 @@ export default function HomePage() {
       </section>
 
       {/* ===== TESTIMONIALS ===== */}
-      <section id="depoimentos" style={{ padding: '70px 0', background: '#f8fafc' }}>
+      <section id="depoimentos" style={{ padding: '70px 0', background: '#070913', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
-            <h2 style={{ fontSize: 40, fontWeight: 800, marginBottom: 12 }}>
-              Quem usa, <span style={{ color: '#059669' }}>comprova</span>
+            <h2 style={{ fontSize: 40, fontWeight: 800, marginBottom: 12, color: '#ffffff' }}>
+              Quem usa, <span style={{ color: '#10b981' }}>comprova</span>
             </h2>
-            <p style={{ fontSize: 18, color: '#64748b', marginBottom: 24 }}>Resultados reais de profissionais como você</p>
+            <p style={{ fontSize: 18, color: '#94a3b8', marginBottom: 24 }}>Resultados reais de profissionais como você</p>
             {/* Filtros de persona */}
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
               {[['todos','🐍 Todos'],['trainer','🏋️ Personal Trainer'],['freelancer','🎨 Freelancer'],['saude','🥗 Saúde'],['locacao','🚗 Locação']].map(([val, label]) => (
                 <button key={val} onClick={() => setTestimonialFilter(val)} style={{
                   padding: '8px 18px', borderRadius: 100, border: 'none', cursor: 'pointer', fontFamily: 'Inter',
-                  background: testimonialFilter === val ? 'linear-gradient(135deg,#059669,#0d9488)' : '#fff',
-                  color: testimonialFilter === val ? '#fff' : '#64748b', fontSize: 13, fontWeight: 600,
-                  boxShadow: testimonialFilter === val ? '0 4px 12px rgba(5,150,105,0.3)' : '0 1px 3px rgba(0,0,0,0.08)',
+                  background: testimonialFilter === val ? '#10b981' : '#0c0e1a',
+                  color: testimonialFilter === val ? '#070913' : '#cbd5e1', fontSize: 13, fontWeight: 600,
+                  border: testimonialFilter === val ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                  boxShadow: testimonialFilter === val ? '0 4px 12px rgba(16,185,129,0.3)' : '0 1px 3px rgba(0,0,0,0.2)',
                   transition: 'all 0.2s'
                 }}>{label}</button>
               ))}
@@ -742,27 +753,27 @@ export default function HomePage() {
 
           {/* Featured testimonial - sempre visível no filtro 'todos' e 'trainer' */}
           {(testimonialFilter === 'todos' || testimonialFilter === 'trainer') && (
-          <div className="featured-testimonial" style={{ background: 'linear-gradient(135deg, #059669, #0d9488)', borderRadius: 24, padding: 48, marginBottom: 32, display: 'flex', gap: 40, alignItems: 'center', color: '#fff' }}>
+          <div className="featured-testimonial" style={{ background: 'linear-gradient(135deg, #0c0e1a, #070913)', borderRadius: 24, padding: 48, marginBottom: 32, display: 'flex', gap: 40, alignItems: 'center', color: '#fff', border: '1px solid rgba(16,185,129,0.3)', boxShadow: '0 8px 30px rgba(16,185,129,0.05)' }}>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
-                {[1,2,3,4,5].map(s => <span key={s} style={{ fontSize: 20 }}>★</span>)}
+                {[1,2,3,4,5].map(s => <span key={s} style={{ fontSize: 20, color: '#f59e0b' }}>★</span>)}
               </div>
-              <p style={{ fontSize: 20, lineHeight: 1.7, marginBottom: 24, fontStyle: 'italic', opacity: 0.95 }}>
+              <p style={{ fontSize: 20, lineHeight: 1.7, marginBottom: 24, fontStyle: 'italic', opacity: 0.95, color: '#e2e8f0' }}>
                 &ldquo;Em 3 meses usando o Cobbra, minha inadimplência caiu de 35% para 6%. Recuperei R$ 4.200 que estavam parados. A mensagem pelo WhatsApp é tão gentil que meus alunos até agradecem o lembrete. Sério.&rdquo;
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 18 }}>MO</div>
+                <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 18, color: '#10b981' }}>MO</div>
                 <div>
-                  <p style={{ fontWeight: 700, fontSize: 17 }}>Marina Oliveira</p>
-                  <p style={{ fontSize: 14, opacity: 0.8 }}>Personal Trainer · 32 alunos ativos · São Paulo, SP</p>
+                  <p style={{ fontWeight: 700, fontSize: 17, color: '#ffffff' }}>Marina Oliveira</p>
+                  <p style={{ fontSize: 14, opacity: 0.8, color: '#94a3b8' }}>Personal Trainer · 32 alunos ativos · São Paulo, SP</p>
                 </div>
               </div>
             </div>
             <div className="featured-stats" style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 200 }}>
               {[{ value: '-83%', label: 'inadimplência' }, { value: 'R$ 4.200', label: 'recuperados' }, { value: '3 meses', label: 'usando Cobbra' }].map((s, i) => (
-                <div key={i} style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 14, padding: '14px 20px', textAlign: 'center', backdropFilter: 'blur(10px)' }}>
-                  <p style={{ fontSize: 24, fontWeight: 800 }}>{s.value}</p>
-                  <p style={{ fontSize: 12, opacity: 0.7 }}>{s.label}</p>
+                <div key={i} style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 14, padding: '14px 20px', textAlign: 'center', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <p style={{ fontSize: 24, fontWeight: 800, color: '#10b981' }}>{s.value}</p>
+                  <p style={{ fontSize: 12, opacity: 0.7, color: '#94a3b8' }}>{s.label}</p>
                 </div>
               ))}
             </div>
@@ -777,22 +788,22 @@ export default function HomePage() {
               { name: 'Gustavo Carvalho', role: 'Locadora Rent-a-Car', location: 'Curitiba, PR', time: 'Usa há 2 meses', quote: 'Eu alugo carros e antes os clientes atrasavam semanas. Com a opção de juros diários pós-vencimento do Cobbra, a conversa mudou! Cadastrei 0.5% de juros ao dia e agora todos pagam rigorosamente na data. Facilitou minha vida e aumentou meus lucros!', result: 'Inadimplência zero com juros diários', initials: 'GC', color: '#e11d48', stars: 5, persona: 'locacao' }
             ].filter(item => testimonialFilter === 'todos' || item.persona === testimonialFilter).map((item, i) => (
               <div key={i} style={{
-                background: '#fff', borderRadius: 20, padding: 28, border: '1px solid #e2e8f0',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.04)', transition: 'all 0.3s', display: 'flex', flexDirection: 'column'
+                background: '#0c0e1a', borderRadius: 20, padding: 28, border: '1px solid rgba(255,255,255,0.06)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.1)', transition: 'all 0.3s', display: 'flex', flexDirection: 'column'
               }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(0,0,0,0.08)'; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.04)'; }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(16,185,129,0.05)'; e.currentTarget.style.borderColor = 'rgba(16,185,129,0.25)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
                   <div style={{ display: 'flex', gap: 3 }}>
                     {Array(item.stars).fill(0).map((_, s) => <span key={s} style={{ color: '#f59e0b', fontSize: 16 }}>★</span>)}
                   </div>
-                  <span style={{ fontSize: 11, color: '#94a3b8', background: '#f1f5f9', padding: '3px 8px', borderRadius: 6 }}>{item.time}</span>
+                  <span style={{ fontSize: 11, color: '#94a3b8', background: 'rgba(255,255,255,0.04)', padding: '3px 8px', borderRadius: 6 }}>{item.time}</span>
                 </div>
-                <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.7, marginBottom: 16, fontStyle: 'italic', flex: 1 }}>
+                <p style={{ fontSize: 14, color: '#cbd5e1', lineHeight: 1.7, marginBottom: 16, fontStyle: 'italic', flex: 1 }}>
                   &ldquo;{item.quote}&rdquo;
                 </p>
-                <div style={{ background: '#f0fdf4', borderRadius: 8, padding: '8px 12px', marginBottom: 16, fontSize: 13, color: '#059669', fontWeight: 600 }}>
+                <div style={{ background: 'rgba(16,185,129,0.08)', borderRadius: 8, padding: '8px 12px', marginBottom: 16, fontSize: 13, color: '#10b981', fontWeight: 600 }}>
                   📊 {item.result}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -801,7 +812,7 @@ export default function HomePage() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 14
                   }}>{item.initials}</div>
                   <div>
-                    <p style={{ fontWeight: 700, fontSize: 14 }}>{item.name}</p>
+                    <p style={{ fontWeight: 700, fontSize: 14, color: '#ffffff' }}>{item.name}</p>
                     <p style={{ fontSize: 12, color: '#94a3b8' }}>{item.role} · {item.location}</p>
                   </div>
                 </div>
@@ -811,73 +822,71 @@ export default function HomePage() {
         </div>
       </section>
 
-
-
       {/* ===== PRICING ===== */}
-      <section id="precos" style={{ padding: '70px 0', background: '#f8fafc' }}>
+      <section id="precos" style={{ padding: '70px 0', background: '#070913', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 8 }}>
-            Demita a inadimplência.<br /><span style={{ color: '#059669' }}>Planos que cabem no bolso.</span>
+          <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 8, color: '#ffffff' }}>
+            Demita a inadimplência.<br /><span style={{ color: '#10b981' }}>Planos que cabem no bolso.</span>
           </h2>
-          <p style={{ fontSize: 16, color: '#64748b', marginBottom: 32 }}>Planos acessíveis e transparentes. Faça upgrade quando precisar. Sem fidelidade.</p>
+          <p style={{ fontSize: 16, color: '#cbd5e1', marginBottom: 32 }}>Planos acessíveis e transparentes. Faça upgrade quando precisar. Sem fidelidade.</p>
 
           {/* Âncora de preço / ROI */}
           <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 12, background: '#f0fdf4', border: '1px solid #a7f3d0',
+            display: 'inline-flex', alignItems: 'center', gap: 12, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.20)',
             borderRadius: 14, padding: '16px 28px', marginBottom: 48, maxWidth: 640
           }}>
             <span style={{ fontSize: 28 }}>💡</span>
-            <p style={{ fontSize: 14, color: '#047857', lineHeight: 1.6, textAlign: 'left', margin: 0 }}>
+            <p style={{ fontSize: 14, color: '#10b981', lineHeight: 1.6, textAlign: 'left', margin: 0 }}>
               Se você tem <strong>10 clientes</strong> pagando R$ 200/mês e 20% estão atrasados, você perde
               {' '}<strong>R$ 400/mês</strong> em inadimplência. O plano Crescimento custa <strong>R$ 19,90</strong>.
-              {' '}Isso é um <strong style={{ color: '#059669', fontSize: 16 }}>ROI de 2.011%</strong> no primeiro mês.
+              {' '}Isso é um <strong style={{ color: '#10b981', fontSize: 16 }}>ROI de 2.011%</strong> no primeiro mês.
             </p>
           </div>
 
           <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, alignItems: 'stretch' }}>
             {/* Starter */}
-            <div style={{ background: '#fff', borderRadius: 24, padding: 36, border: '2px solid #e2e8f0', textAlign: 'left', transition: 'all 0.3s', display: 'flex', flexDirection: 'column' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(0,0,0,0.08)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+            <div style={{ background: '#0c0e1a', borderRadius: 24, padding: 36, border: '2px solid rgba(255,255,255,0.06)', textAlign: 'left', transition: 'all 0.3s', display: 'flex', flexDirection: 'column' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(16,185,129,0.05)'; e.currentTarget.style.borderColor = 'rgba(16,185,129,0.25)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
             >
-              <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Starter</h3>
-              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Para testar e começar a cobrar</p>
+              <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: '#ffffff' }}>Starter</h3>
+              <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20 }}>Para testar e começar a cobrar</p>
               <div style={{ marginBottom: 4 }}>
-                <span style={{ fontSize: 42, fontWeight: 900, color: '#0f172a' }}>R$ 9,90</span>
+                <span style={{ fontSize: 42, fontWeight: 900, color: '#ffffff' }}>R$ 9,90</span>
                 <span style={{ fontSize: 14, color: '#94a3b8' }}>/mês</span>
               </div>
               <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 28 }}>menos de R$ 0,33/dia</p>
               <div style={{ flex: 1 }}>
                 {['Até 20 cobranças simultâneas', 'Lembretes por e-mail', 'Dashboard básico', 'Templates padrão', '1 chave Pix'].map((f, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, fontSize: 14, color: '#334155' }}>
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, fontSize: 14, color: '#cbd5e1' }}>
                     <span style={{ color: '#10b981' }}>✓</span> {f}
                   </div>
                 ))}
                 {['WhatsApp', 'Relatórios', 'API'].map((f, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, fontSize: 14, color: '#cbd5e1' }}>
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, fontSize: 14, color: 'rgba(255,255,255,0.15)' }}>
                     <span>✗</span> {f}
                   </div>
                 ))}
               </div>
               <a href="/cadastro" style={{
                 display: 'block', padding: '14px', borderRadius: 12, marginTop: 24,
-                border: '2px solid #e2e8f0', color: '#475569', fontSize: 15, fontWeight: 700,
-                textAlign: 'center', transition: 'all 0.3s', textDecoration: 'none', background: '#fff'
+                border: '2px solid rgba(255,255,255,0.1)', color: '#ffffff', fontSize: 15, fontWeight: 700,
+                textAlign: 'center', transition: 'all 0.3s', textDecoration: 'none', background: '#0c0e1a'
               }}
-                onMouseEnter={e => { e.target.style.borderColor = '#059669'; e.target.style.color = '#059669'; }}
-                onMouseLeave={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.color = '#475569'; }}
+                onMouseEnter={e => { e.target.style.borderColor = '#10b981'; e.target.style.color = '#10b981'; }}
+                onMouseLeave={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; e.target.style.color = '#ffffff'; }}
               >Assinar Starter</a>
             </div>
 
             {/* Crescimento - POPULAR — com destaque visual forte */}
             <div className="pricing-featured" style={{
-              background: 'linear-gradient(145deg, #064e3b, #065f46)', borderRadius: 28, padding: '44px 36px',
+              background: 'linear-gradient(145deg, #0c0e1a, #070913)', borderRadius: 28, padding: '44px 36px',
               border: '3px solid #10b981', textAlign: 'left', position: 'relative',
-              boxShadow: '0 0 0 1px #059669, 0 24px 60px rgba(5,150,105,0.45)',
+              boxShadow: '0 0 0 1px #10b981, 0 24px 60px rgba(16,185,129,0.2)',
               transform: 'scale(1.05)', transition: 'all 0.3s', display: 'flex', flexDirection: 'column'
             }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.boxShadow = '0 0 0 1px #34d399, 0 30px 80px rgba(5,150,105,0.6)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 0 0 1px #059669, 0 24px 60px rgba(5,150,105,0.45)'; }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.boxShadow = '0 0 0 1px #10b981, 0 30px 80px rgba(16,185,129,0.3)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 0 0 1px #10b981, 0 24px 60px rgba(16,185,129,0.2)'; }}
             >
               <div style={{
                 position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)',
@@ -886,74 +895,75 @@ export default function HomePage() {
                 boxShadow: '0 4px 12px rgba(245,158,11,0.4)', whiteSpace: 'nowrap'
               }}>⚡ MAIS POPULAR — MELHOR CUSTO-BENEFÍCIO</div>
               <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4, color: '#fff' }}>Crescimento</h3>
-              <p style={{ fontSize: 13, color: '#6ee7b7', marginBottom: 20 }}>Para quem está crescendo e quer resultado rápido</p>
+              <p style={{ fontSize: 13, color: '#a7f3d0', marginBottom: 20 }}>Para quem está crescendo e quer resultado rápido</p>
               <div style={{ marginBottom: 4 }}>
-                <span style={{ fontSize: 48, fontWeight: 900, color: '#34d399' }}>R$ 19,90</span>
-                <span style={{ fontSize: 14, color: '#6ee7b7' }}>/mês</span>
+                <span style={{ fontSize: 48, fontWeight: 900, color: '#10b981' }}>R$ 19,90</span>
+                <span style={{ fontSize: 14, color: '#a7f3d0' }}>/mês</span>
               </div>
-              <p style={{ fontSize: 13, color: '#6ee7b7', marginBottom: 8 }}>menos de R$ 0,67/dia</p>
+              <p style={{ fontSize: 13, color: '#a7f3d0', marginBottom: 8 }}>menos de R$ 0,67/dia</p>
               <div style={{ background: 'rgba(16,185,129,0.15)', borderRadius: 8, padding: '8px 12px', marginBottom: 24, fontSize: 13, color: '#a7f3d0', fontWeight: 600 }}>
                 🔥 ROI médio de 2.000%+ no 1º mês
               </div>
               <div style={{ flex: 1 }}>
                 {['Até 50 cobranças simultâneas', 'WhatsApp + e-mail automático', 'Dashboard completo', 'Templates personalizáveis', 'Relatórios de recebimento', 'Múltiplas chaves Pix', 'Suporte e-mail + WhatsApp'].map((f, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, fontSize: 14, color: '#d1fae5' }}>
-                    <span style={{ color: '#34d399', fontWeight: 800, fontSize: 16 }}>✓</span> {f}
+                    <span style={{ color: '#10b981', fontWeight: 800, fontSize: 16 }}>✓</span> {f}
                   </div>
                 ))}
               </div>
               <a href="/cadastro" style={{
                 display: 'block', padding: '16px', borderRadius: 14, marginTop: 28,
-                background: 'linear-gradient(135deg, #34d399, #10b981)', color: '#064e3b', fontSize: 16, fontWeight: 800,
-                textAlign: 'center', boxShadow: '0 4px 20px rgba(52,211,153,0.5)', transition: 'all 0.3s', textDecoration: 'none'
+                background: '#10b981', color: '#070913', fontSize: 16, fontWeight: 800,
+                textAlign: 'center', boxShadow: '0 4px 20px rgba(16,185,129,0.4)', transition: 'all 0.3s', textDecoration: 'none'
               }}>Assinar agora — Começar a recuperar →</a>
             </div>
 
             {/* Cobra Pro */}
-            <div style={{ background: '#0f172a', borderRadius: 24, padding: 36, border: '2px solid rgba(255,255,255,0.1)', textAlign: 'left', color: '#fff', transition: 'all 0.3s', display: 'flex', flexDirection: 'column' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(0,0,0,0.3)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+            <div style={{ background: '#0c0e1a', borderRadius: 24, padding: 36, border: '2px solid rgba(255,255,255,0.06)', textAlign: 'left', color: '#fff', transition: 'all 0.3s', display: 'flex', flexDirection: 'column' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(16,185,129,0.05)'; e.currentTarget.style.borderColor = 'rgba(16,185,129,0.25)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
             >
-              <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Cobra Pro</h3>
+              <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: '#fff' }}>Cobra Pro</h3>
               <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20 }}>Para quem quer o máximo</p>
               <div style={{ marginBottom: 4 }}>
-                <span style={{ fontSize: 42, fontWeight: 900, color: '#34d399' }}>R$ 49,90</span>
+                <span style={{ fontSize: 42, fontWeight: 900, color: '#10b981' }}>R$ 49,90</span>
                 <span style={{ fontSize: 14, color: '#64748b' }}>/mês</span>
               </div>
               <p style={{ fontSize: 13, color: '#64748b', marginBottom: 28 }}>menos de R$ 1,67/dia</p>
               <div style={{ flex: 1 }}>
                 {['Cobranças ilimitadas', 'WhatsApp + e-mail', 'Dashboard completo', 'Templates ilimitados', 'Relatórios avançados', 'API para integrações', 'Webhooks em tempo real', 'Suporte prioritário WhatsApp', 'Multi-usuários'].map((f, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, fontSize: 14, color: '#e2e8f0' }}>
-                    <span style={{ color: '#34d399' }}>✓</span> {f}
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, fontSize: 14, color: '#cbd5e1' }}>
+                    <span style={{ color: '#10b981' }}>✓</span> {f}
                   </div>
                 ))}
               </div>
               <a href="/cadastro" style={{
                 display: 'block', padding: '14px', borderRadius: 12, marginTop: 24,
-                background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', fontSize: 15, fontWeight: 700,
-                textAlign: 'center', boxShadow: '0 4px 14px rgba(16,185,129,0.4)', transition: 'all 0.3s', textDecoration: 'none'
+                background: '#10b981', color: '#070913', fontSize: 15, fontWeight: 700,
+                textAlign: 'center', boxShadow: '0 4px 14px rgba(16,185,129,0.3)', transition: 'all 0.3s', textDecoration: 'none'
               }}>Assinar Cobra Pro →</a>
             </div>
           </div>
 
-          <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 40, textAlign: 'center' }}>Todos os planos: 0% sobre o valor recebido · Cancele quando quiser · Pix 100% na sua conta</p>
+          <p style={{ fontSize: 13, color: '#64748b', marginTop: 40, textAlign: 'center' }}>Todos os planos: 0% sobre o valor recebido · Cancele quando quiser · Pix 100% na sua conta</p>
         </div>
       </section>
 
       {/* ===== FAQ WITH CATEGORIES ===== */}
-      <section id="faq" style={{ padding: '70px 0', background: '#f8fafc' }}>
+      <section id="faq" style={{ padding: '70px 0', background: '#070913' }}>
         <div style={{ maxWidth: 750, margin: '0 auto', padding: '0 24px' }}>
-          <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 12 }}>Ainda em dúvida? <span style={{ color: '#059669' }}>A cobra responde.</span> 🐍</h2>
-          <p style={{ textAlign: 'center', color: '#64748b', marginBottom: 32, fontSize: 16 }}>Tudo que você precisa saber para começar hoje</p>
+          <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 12, color: '#ffffff' }}>Ainda em dúvida? <span style={{ color: '#10b981' }}>A cobra responde.</span> 🐍</h2>
+          <p style={{ textAlign: 'center', color: '#cbd5e1', marginBottom: 32, fontSize: 16 }}>Tudo que você precisa saber para começar hoje</p>
 
           {/* Category filters */}
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 32, flexWrap: 'wrap' }}>
             {faqCategories.map(cat => (
               <button key={cat} onClick={() => setFaqCategory(cat)} style={{
                 padding: '8px 18px', borderRadius: 100, border: 'none', cursor: 'pointer', fontFamily: 'Inter',
-                background: faqCategory === cat ? 'linear-gradient(135deg,#059669,#0d9488)' : '#fff',
-                color: faqCategory === cat ? '#fff' : '#64748b', fontSize: 13, fontWeight: 600,
-                boxShadow: faqCategory === cat ? '0 4px 12px rgba(5,150,105,0.3)' : '0 1px 3px rgba(0,0,0,0.08)',
+                background: faqCategory === cat ? '#10b981' : '#0c0e1a',
+                color: faqCategory === cat ? '#070913' : '#cbd5e1', fontSize: 13, fontWeight: 600,
+                border: faqCategory === cat ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                boxShadow: faqCategory === cat ? '0 4px 12px rgba(16,185,129,0.3)' : '0 1px 3px rgba(0,0,0,0.2)',
                 transition: 'all 0.2s'
               }}>
                 {cat === 'all' ? '🐍 Todas' : cat === 'Conta' ? '👤 Conta' : cat === 'Produto' ? '📦 Produto' : cat === 'Cobranças' ? '💰 Cobranças' : cat === 'Pagamento' ? '💳 Pagamento' : cat === 'Segurança' ? '🔒 Segurança' : cat === 'Integração' ? '🔗 Integração' : cat}
@@ -968,7 +978,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== FINAL CTA ===== */}
-      <section style={{ padding: '80px 0', background: 'linear-gradient(135deg, #059669, #0d9488, #0891b2)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: '80px 0', background: 'linear-gradient(135deg, #070913, #0c0e1a, #070913)', textAlign: 'center', position: 'relative', overflow: 'hidden', borderTop: '1px solid rgba(16,185,129,0.2)', borderBottom: '1px solid rgba(16,185,129,0.2)' }}>
         {/* Floating mini snakes */}
         <div style={{ position: 'absolute', top: 20, left: '10%', opacity: 0.2, animation: 'float 4s ease-in-out infinite' }}><MiniSnake size={50} /></div>
         <div style={{ position: 'absolute', bottom: 30, right: '15%', opacity: 0.15, animation: 'float 5s ease-in-out infinite 1s' }}><MiniSnake size={60} /></div>
@@ -985,11 +995,11 @@ export default function HomePage() {
           </p>
           <a href="/cadastro" style={{
             display: 'inline-block', padding: '20px 56px', borderRadius: 16,
-            background: '#fff', color: '#059669', fontSize: 19, fontWeight: 800,
-            boxShadow: '0 8px 30px rgba(0,0,0,0.2)', transition: 'all 0.3s', textDecoration: 'none'
+            background: '#10b981', color: '#070913', fontSize: 19, fontWeight: 800,
+            boxShadow: '0 8px 30px rgba(16,185,129,0.3)', transition: 'all 0.3s', textDecoration: 'none'
           }}
-            onMouseEnter={e => { e.target.style.transform = 'translateY(-3px) scale(1.03)'; e.target.style.boxShadow = '0 14px 40px rgba(0,0,0,0.25)'; }}
-            onMouseLeave={e => { e.target.style.transform = 'translateY(0) scale(1)'; e.target.style.boxShadow = '0 8px 30px rgba(0,0,0,0.2)'; }}
+            onMouseEnter={e => { e.target.style.transform = 'translateY(-3px) scale(1.03)'; e.target.style.boxShadow = '0 14px 40px rgba(16,185,129,0.5)'; }}
+            onMouseLeave={e => { e.target.style.transform = 'translateY(0) scale(1)'; e.target.style.boxShadow = '0 8px 30px rgba(16,185,129,0.3)'; }}
           >Começar grátis agora →</a>
           {/* Garantia explícita */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 24, flexWrap: 'wrap' }}>
@@ -1001,7 +1011,7 @@ export default function HomePage() {
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer style={{ padding: '60px 0 30px', background: '#0f172a', color: '#94a3b8' }}>
+      <footer style={{ padding: '60px 0 30px', background: '#0c0e1a', color: '#94a3b8', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 40 }}>
             <div>
@@ -1014,7 +1024,7 @@ export default function HomePage() {
             <div>
               <h4 style={{ color: '#fff', fontWeight: 700, marginBottom: 16, fontSize: 14 }}>Produto</h4>
               {['Benefícios', 'Como funciona', 'Preços'].map(l => (
-                <a key={l} href={`#${l.toLowerCase().replace(/ /g, '-')}`} style={{ display: 'block', fontSize: 14, marginBottom: 10, color: '#94a3b8', transition: 'color 0.2s', textDecoration: 'none' }}
+                <a key={l} href={`#${l.toLowerCase().replace(/ /g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`} style={{ display: 'block', fontSize: 14, marginBottom: 10, color: '#94a3b8', transition: 'color 0.2s', textDecoration: 'none' }}
                   onMouseEnter={e => e.target.style.color = '#10b981'} onMouseLeave={e => e.target.style.color = '#94a3b8'}
                 >{l}</a>
               ))}
@@ -1022,13 +1032,17 @@ export default function HomePage() {
             <div>
               <h4 style={{ color: '#fff', fontWeight: 700, marginBottom: 16, fontSize: 14 }}>Empresa</h4>
               {['Sobre nós', 'Blog', 'Contato'].map(l => (
-                <a key={l} href="#" style={{ display: 'block', fontSize: 14, marginBottom: 10, color: '#94a3b8', textDecoration: 'none' }}>{l}</a>
+                <a key={l} href="#" style={{ display: 'block', fontSize: 14, marginBottom: 10, color: '#94a3b8', textDecoration: 'none' }}
+                  onMouseEnter={e => e.target.style.color = '#10b981'} onMouseLeave={e => e.target.style.color = '#94a3b8'}
+                >{l}</a>
               ))}
             </div>
             <div>
               <h4 style={{ color: '#fff', fontWeight: 700, marginBottom: 16, fontSize: 14 }}>Legal</h4>
               {['Termos de uso', 'Privacidade'].map(l => (
-                <a key={l} href="#" style={{ display: 'block', fontSize: 14, marginBottom: 10, color: '#94a3b8', textDecoration: 'none' }}>{l}</a>
+                <a key={l} href="#" style={{ display: 'block', fontSize: 14, marginBottom: 10, color: '#94a3b8', textDecoration: 'none' }}
+                  onMouseEnter={e => e.target.style.color = '#10b981'} onMouseLeave={e => e.target.style.color = '#94a3b8'}
+                >{l}</a>
               ))}
             </div>
           </div>
@@ -1038,23 +1052,23 @@ export default function HomePage() {
         </div>
       </footer>
 
-      {/* ===== FLOATING URGENCY BAR — dados dinâmicos reais ===== */}
+      {/* ===== FLOATING URGENCY BAR ===== */}
       {urgencyVisible && urgencyTime && (
         <div className="urgency-bar" style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 999,
-          background: 'linear-gradient(135deg, #0f172a, #1e293b)', padding: '12px 24px',
+          background: 'linear-gradient(135deg, #070913, #0c0e1a)', padding: '12px 24px',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16,
-          borderTop: '1px solid rgba(5,150,105,0.3)'
+          borderTop: '1px solid rgba(16,185,129,0.3)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', animation: 'pulse 2s infinite' }} />
             <span style={{ fontSize: 14, color: '#e2e8f0' }}>
-              🐍 Última cobrança enviada <strong style={{ color: '#34d399' }}>{urgencyTime}</strong> em <strong style={{ color: '#34d399' }}>{urgencyCity}</strong>
+              🐍 Última cobrança enviada <strong style={{ color: '#10b981' }}>{urgencyTime}</strong> em <strong style={{ color: '#10b981' }}>{urgencyCity}</strong>
             </span>
           </div>
           <a href="/cadastro" style={{
-            padding: '8px 20px', borderRadius: 8, background: 'linear-gradient(135deg, #059669, #0d9488)',
-            color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none'
+            padding: '8px 20px', borderRadius: 8, background: '#10b981',
+            color: '#070913', fontSize: 13, fontWeight: 700, textDecoration: 'none'
           }}>Começar agora</a>
           <button onClick={() => setUrgencyVisible(false)} style={{
             color: '#64748b', fontSize: 20, cursor: 'pointer', background: 'none', border: 'none', padding: '0 4px'
