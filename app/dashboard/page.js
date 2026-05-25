@@ -289,28 +289,28 @@ export default function DashboardHome() {
       </div>
 
       {/* 📱 Mobile Only: Resumo Financeiro Diário below the header */}
-      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-5 animate-fadeInUp">
+      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-6 animate-fadeInUp">
         <h3 className="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-4 flex items-center gap-2">
           <span>📅</span> Resumo Financeiro Diário
         </h3>
         <div className="grid grid-cols-1 gap-2.5">
-          <div className="bg-[#0F111E] rounded-xl p-3 border border-slate-900 flex justify-between items-center">
+          <div className="bg-[#0F111E] rounded-xl p-4 border border-slate-900 flex justify-between items-center flex-wrap gap-y-1.5 gap-x-4">
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Pago Hoje</span>
             <p className="text-base font-black text-emerald-400">{fmt(stats.receivedToday || 0)}</p>
           </div>
           
-          <div className="bg-[#0F111E] rounded-xl p-3 border border-slate-900 flex justify-between items-center">
+          <div className="bg-[#0F111E] rounded-xl p-4 border border-slate-900 flex justify-between items-center flex-wrap gap-y-1.5 gap-x-4">
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Hoje</span>
             <p className="text-base font-black text-amber-500">{fmt(stats.dueToday || 0)}</p>
           </div>
           
-          <div className="bg-[#0F111E] rounded-xl p-3 border border-slate-900 flex justify-between items-center">
+          <div className="bg-[#0F111E] rounded-xl p-4 border border-slate-900 flex justify-between items-center flex-wrap gap-y-1.5 gap-x-4">
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Amanhã</span>
             <p className="text-base font-black text-blue-400">{fmt(stats.dueTomorrow || 0)}</p>
           </div>
           
-          <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl p-3 border border-slate-900 cursor-pointer transition-all duration-200" onClick={() => window.location.href = '/dashboard/cobranca-diaria'}>
-            <div className="flex justify-between items-center w-full">
+          <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl p-4 border border-slate-900 cursor-pointer transition-all duration-200" onClick={() => window.location.href = '/dashboard/cobranca-diaria'}>
+            <div className="flex justify-between items-center w-full flex-wrap gap-y-1.5 gap-x-4">
               <div>
                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Recorrentes Diários</span>
                 <span className="text-[9px] text-slate-500 font-semibold block mt-0.5">{stats.dailyBillingCount || 0} contratos ativos</span>
@@ -320,6 +320,59 @@ export default function DashboardHome() {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* 📱 Mobile Only: Alertas de Clientes em Risco below Resumo Financeiro */}
+      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-6 animate-fadeInUp">
+        <h3 className="text-xs font-bold text-rose-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <span>🚨</span> Alertas de Clientes em Risco
+        </h3>
+        <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
+          {(stats.atRiskClients || []).map((c, i) => {
+            const dateStr = c.oldest_overdue_date 
+              ? `Vencido desde ${new Date(c.oldest_overdue_date).toLocaleDateString('pt-BR')}` 
+              : '';
+            
+            const isCritical = c.health_score === 'critical';
+            return (
+              <div 
+                key={i} 
+                className="bg-[#0F111E] rounded-xl p-4 border border-slate-900 flex items-center justify-between gap-3 hover:border-slate-800 transition-colors flex-wrap gap-y-1.5"
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-base ${
+                    isCritical ? 'bg-rose-500/10 text-rose-400' : 'bg-amber-500/10 text-amber-400'
+                  }`}>
+                    {isCritical ? '🚨' : '⚠️'}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-slate-200 truncate">{c.name}</p>
+                    <p className={`text-[10px] font-medium leading-none mt-1 ${isCritical ? 'text-rose-400/90' : 'text-amber-400/90'}`}>
+                      Débito: {fmt(c.total_overdue)}
+                    </p>
+                    {dateStr && (
+                      <p className="text-[9px] text-slate-500 mt-0.5 truncate">{dateStr}</p>
+                    )}
+                  </div>
+                </div>
+                
+                <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded ${
+                  isCritical ? 'bg-rose-500/10 text-rose-400 border border-rose-500/10' : 'bg-amber-500/10 text-amber-400 border border-amber-500/10'
+                } flex-shrink-0 scale-90`}>
+                  {isCritical ? 'Crítico' : 'Alerta'}
+                </span>
+              </div>
+            );
+          })}
+          
+          {(!stats.atRiskClients || stats.atRiskClients.length === 0) && (
+            <div className="flex flex-col items-center justify-center py-6 text-center">
+              <span className="text-2xl mb-2">🎉</span>
+              <p className="text-emerald-400 text-xs font-bold">100% em dia!</p>
+              <p className="text-[10px] text-slate-500 mt-1">Todos os clientes ativos adimplentes.</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -487,7 +540,7 @@ export default function DashboardHome() {
         </div>
 
         {/* 3. Clientes em Risco */}
-        <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '24px' }}>
+        <div className="hidden md:block bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '24px' }}>
           <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4">Alertas de Clientes em Risco</h3>
           <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
             {(stats.atRiskClients || []).map((c, i) => {

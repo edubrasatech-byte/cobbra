@@ -523,7 +523,7 @@ export default function DashboardLayout({ children }) {
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 py-6 px-3 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 space-y-1.5 overflow-y-auto" style={{ paddingLeft: '16px', paddingRight: '16px', paddingTop: '24px', paddingBottom: '24px' }}>
           {navItems.map(item => {
             const isActive = pathname === item.href;
             const isRestricted = user?.plan === 'starter' && 
@@ -535,11 +535,12 @@ export default function DashboardLayout({ children }) {
               <a 
                 key={item.href} 
                 href={item.href} 
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 group relative ${
+                className={`flex items-center gap-3 py-3 rounded-xl text-sm transition-all duration-200 group relative ${
                   isActive 
                     ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-500/[0.02] text-emerald-400 font-extrabold shadow-sm' 
                     : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-200'
                 } ${sidebarCollapsed ? 'justify-center' : 'justify-start'} ${isRestricted ? 'opacity-60' : ''}`}
+                style={{ paddingLeft: '16px', paddingRight: '16px' }}
               >
                 {isActive && <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-[#10B981] rounded-full" />}
                 <span className="flex-shrink-0">
@@ -610,7 +611,7 @@ export default function DashboardLayout({ children }) {
           </div>
           <button onClick={() => setMobileSidebarOpen(false)} className="text-slate-400 text-xl font-light">×</button>
         </div>
-        <nav className="flex-1 py-4 px-3 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 space-y-1.5 overflow-y-auto" style={{ paddingLeft: '16px', paddingRight: '16px', paddingTop: '16px', paddingBottom: '16px' }}>
           {navItems.map(item => {
             const isActive = pathname === item.href;
             const isRestricted = user?.plan === 'starter' && 
@@ -622,11 +623,12 @@ export default function DashboardLayout({ children }) {
                 key={item.href} 
                 href={item.href} 
                 onClick={() => setMobileSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 group relative ${
+                className={`flex items-center gap-3 py-3 rounded-xl text-sm transition-all duration-200 group relative ${
                   isActive 
                     ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-500/[0.02] text-emerald-400 font-bold' 
                     : 'text-slate-400'
                 }`}
+                style={{ paddingLeft: '16px', paddingRight: '16px' }}
               >
                 {isActive && <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-[#10B981] rounded-full" />}
                 <span className="flex-shrink-0">
