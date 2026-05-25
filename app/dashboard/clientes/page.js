@@ -226,6 +226,8 @@ export default function ClientesPage() {
   const fmt = v => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
   const inputS = { 
     width: '100%', 
+    height: '44px',
+    minHeight: '44px',
     padding: '10px 14px', 
     borderRadius: 12, 
     border: '1px solid rgba(255,255,255,0.08)', 
@@ -252,24 +254,24 @@ export default function ClientesPage() {
     <div>
       {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
 
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center mb-6 px-4 md:px-0">
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center mb-6">
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-          <input placeholder="Buscar clientes..." value={search} onChange={e => setSearch(e.target.value)} className="w-full sm:w-64" style={inputS} />
-          <div className="flex gap-2">
-            <select value={healthFilter} onChange={e => setHealthFilter(e.target.value)} className="flex-1 sm:w-44" style={{ ...inputS, appearance: 'auto', color: '#e2e8f0' }}>
+          <input placeholder="Buscar clientes..." value={search} onChange={e => setSearch(e.target.value)} className="w-full sm:w-64 h-11 min-h-[44px] flex-shrink-0" style={inputS} />
+          <div className="flex gap-2 h-11 min-h-[44px] flex-shrink-0">
+            <select value={healthFilter} onChange={e => setHealthFilter(e.target.value)} className="flex-1 sm:w-44 h-11 min-h-[44px] flex-shrink-0" style={{ ...inputS, appearance: 'auto', color: '#e2e8f0' }}>
               <option style={{ color: '#0f172a' }} value="">Todos os status</option>
               {Object.entries(HEALTH).map(([k, v]) => <option style={{ color: '#0f172a' }} key={k} value={k}>{v.i} {v.l}</option>)}
             </select>
-            <button onClick={loadClients} className="px-4 rounded-xl bg-white/5 border border-white/10 text-slate-200 text-sm font-semibold flex items-center justify-center gap-1.5 hover:bg-white/10 active:scale-95 transition-all">
+            <button onClick={loadClients} className="px-4 h-11 min-h-[44px] flex-shrink-0 rounded-xl bg-white/5 border border-white/10 text-slate-200 text-sm font-semibold flex items-center justify-center gap-1.5 hover:bg-white/10 active:scale-95 transition-all">
               🔄
             </button>
           </div>
         </div>
-        <button onClick={() => setShowModal(true)} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter' }} className="w-full md:w-auto text-center">+ Novo Cliente</button>
+        <button onClick={() => setShowModal(true)} style={{ height: 44, padding: '0 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter' }} className="w-full md:w-auto text-center flex-shrink-0">+ Novo Cliente</button>
       </div>
 
       {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 md:px-0 pb-24">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-24">
         {clients.map(c => {
           const h = HEALTH[c.health_score] || HEALTH.good;
           const score = getPayerScore(c);
@@ -330,15 +332,20 @@ export default function ClientesPage() {
           );
         })}
         {clients.length === 0 && (
-          <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: 60, color: '#64748b' }}>
-            {loading ? 'Carregando...' : 'Nenhum cliente encontrado'}
+          <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '60px 20px', color: '#64748b' }} className="flex-shrink-0">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center gap-3 py-6">
+                <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin flex-shrink-0"></div>
+                <p className="text-slate-500 text-xs font-semibold">Carregando clientes...</p>
+              </div>
+            ) : 'Nenhum cliente encontrado'}
           </div>
         )}
       </div>
 
       {/* Expanded Client Details Modal */}
       {selectedClient && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999, backdropFilter: 'blur(4px)' }}
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999 }}
           onClick={() => setSelectedClient(null)}>
           <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 md:p-8 max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto border border-white/10">
             
@@ -454,7 +461,7 @@ export default function ClientesPage() {
 
       {/* Partial Abatement Modal (Modal Secundário) */}
       {abaterCharge && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1001, backdropFilter: 'blur(5px)' }} onClick={() => setAbaterCharge(null)}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1001 }} onClick={() => setAbaterCharge(null)}>
           <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 max-w-md w-full mx-4 border border-white/15">
             <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>💸 Abater Parte do Valor</h3>
             <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20 }}>
@@ -497,7 +504,7 @@ export default function ClientesPage() {
 
       {/* Create Client Modal */}
       {showModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }} onClick={() => setShowModal(false)}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setShowModal(false)}>
           <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 md:p-8 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto border border-white/10">
             <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 24 }}>Novo Cliente</h3>
             <form onSubmit={createClient}>

@@ -57,7 +57,7 @@ export default function CadastroPage() {
           <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6, maxWidth: 400 }}>
             Comece grátis com o plano Starter. Sem cartão, sem compromisso.
           </p>
-          <div style={{ marginTop: 40, background: 'rgba(255,255,255,0.1)', borderRadius: 16, padding: 24, backdropFilter: 'blur(10px)' }}>
+          <div style={{ marginTop: 40, background: 'rgba(255,255,255,0.15)', borderRadius: 16, padding: 24 }}>
             <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.9)', fontWeight: 600, marginBottom: 12 }}>✨ O que você ganha:</p>
             {['Cobranças ilimitadas', 'WhatsApp + E-mail automático', 'Dashboard completo', 'Relatórios de recebimento', 'Suporte humano'].map(f => (
               <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, fontSize: 14, color: 'rgba(255,255,255,0.85)' }}>

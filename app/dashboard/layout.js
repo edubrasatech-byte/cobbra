@@ -491,13 +491,13 @@ export default function DashboardLayout({ children }) {
       {/* 📱 Mobile Drawer Overlay (if hamburger menu is triggered) */}
       {mobileSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 md:hidden"
+          className="fixed inset-0 bg-slate-950/40 backdrop-blur-md z-40 md:hidden"
           onClick={() => setMobileSidebarOpen(false)}
         />
       )}
 
       {/* 📱 Mobile Side Navigation Drawer (Fallback to side menu) */}
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-[#0C0E1A] border-r border-slate-800/60 z-50 transform md:hidden transition-transform duration-300 flex flex-col ${
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-[#0C0E1A]/90 backdrop-blur-lg border-r border-slate-800/60 z-50 transform md:hidden transition-transform duration-300 flex flex-col ${
         mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800/40">
@@ -541,10 +541,10 @@ export default function DashboardLayout({ children }) {
       <div className="flex-1 flex flex-col min-w-0 pb-20 md:pb-0">
         
         {/* 🧼 Minimalist Flat Header */}
-        <header className="h-16 flex items-center justify-between px-6 border-b border-slate-800/20 bg-[#0C0E1A]/80 backdrop-blur-md sticky top-0 z-40">
+        <header className="h-16 flex items-center justify-between px-6 md:px-12 border-b border-slate-800/20 bg-[#0C0E1A]/85 backdrop-blur-md sticky top-0 z-40">
           
           {/* Left info / Mobile trigger */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-shrink-0 min-w-[140px]">
             <button
               onClick={() => setMobileSidebarOpen(true)}
               className="md:hidden text-slate-300 text-xl p-1 bg-slate-800/20 rounded border border-slate-800/40 flex items-center justify-center"
@@ -557,7 +557,7 @@ export default function DashboardLayout({ children }) {
           </div>
 
           {/* 🪄 Catarina AI Engine: Flat Command Bar Widget */}
-          <div className="hidden md:block flex-1 max-w-sm md:max-w-md mx-4 relative">
+          <div className="hidden md:block flex-1 max-w-xs lg:max-w-md mx-4 relative flex-shrink">
             <div className="relative group">
               <input 
                 placeholder="Pergunte à Catarina... (Ctrl+K)" 
@@ -644,7 +644,7 @@ export default function DashboardLayout({ children }) {
 
               {/* Stripe-style Notification Center */}
               {showNotifications && (
-                <div className="absolute right-0 top-12 w-80 md:w-96 bg-[#0E1220] border border-slate-800/80 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[450px]">
+                <div className="absolute right-0 top-12 w-80 md:w-96 bg-[#0E1220]/80 backdrop-blur-lg border border-slate-800/80 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[450px]">
                   
                   {/* Header info */}
                   <div className="px-4 py-3 bg-slate-950/40 border-b border-slate-800/40 flex justify-between items-center">
@@ -700,13 +700,13 @@ export default function DashboardLayout({ children }) {
         </header>
 
         {/* 📋 Main Scrollable Content Area */}
-        <main className="flex-1 p-4 md:p-8 overflow-y-auto">
+        <main className="flex-1 px-6 md:px-12 py-6 overflow-y-auto">
           {children}
         </main>
       </div>
 
       {/* 📱 Mobile Bottom Navigation Bar (Nubank/Revolut Style) */}
-      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-[#0C0E1A]/90 backdrop-blur-lg border-t border-slate-800/40 z-40 flex items-center justify-around md:hidden shadow-2xl">
+      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-[#0C0E1A]/95 border-t border-slate-800/40 z-40 flex items-center justify-around md:hidden shadow-2xl">
         {[
           { href: '/dashboard', icon: '📊', label: 'Início' },
           { href: '/dashboard/cobrancas', icon: '💰', label: 'Cobranças' },
@@ -733,13 +733,13 @@ export default function DashboardLayout({ children }) {
       {/* 👤 Stripe-style Global Client Details Modal Drawer */}
       {selectedClient && (
         <div 
-          className="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center md:items-stretch md:justify-end p-4 md:p-0 backdrop-blur-sm"
+          className="fixed inset-0 bg-slate-950/40 backdrop-blur-md z-50 flex items-center justify-center md:items-stretch md:justify-end p-4 md:p-0"
           onClick={() => setSelectedClient(null)}
         >
           {/* Drawer / Modal Container */}
           <div 
             onClick={e => e.stopPropagation()} 
-            className="bg-[#0C0E1A] rounded-2xl md:rounded-none md:rounded-l-3xl p-6 md:p-8 w-full max-w-xl md:h-screen overflow-y-auto border border-slate-800/60 md:border-y-0 md:border-r-0 md:border-l border-slate-800/50 shadow-2xl flex flex-col"
+            className="bg-[#0C0E1A]/85 backdrop-blur-lg rounded-2xl md:rounded-none md:rounded-l-3xl p-6 md:p-8 w-full max-w-xl md:h-screen overflow-y-auto border border-slate-800/60 md:border-y-0 md:border-r-0 md:border-l border-slate-800/50 shadow-2xl flex flex-col"
           >
             
             {/* Header info */}
@@ -848,13 +848,13 @@ export default function DashboardLayout({ children }) {
       {/* 💸 Minimalist Rebate Modal Form */}
       {showRebateModal && rebateCharge && (
         <div 
-          className="fixed inset-0 bg-slate-950/80 z-[60] flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-slate-950/40 backdrop-blur-md z-[60] flex items-center justify-center p-4"
           onClick={() => {
             setShowRebateModal(false);
             setRebateCharge(null);
           }}
         >
-          <div onClick={e => e.stopPropagation()} className="bg-[#0C0E1A] rounded-2xl p-6 w-full max-w-sm border border-slate-800/60 shadow-2xl">
+          <div onClick={e => e.stopPropagation()} className="bg-[#0C0E1A]/85 backdrop-blur-lg rounded-2xl p-6 w-full max-w-sm border border-slate-800/60 shadow-2xl">
             <h3 className="text-base font-bold text-slate-100 mb-1">Abatimento de Fatura</h3>
             <p className="text-xs text-slate-500 mb-4 leading-relaxed">
               Deduza uma quantia paga avulso da cobrança <strong className="text-slate-300">{rebateCharge.description}</strong>.
@@ -909,7 +909,7 @@ export default function DashboardLayout({ children }) {
       {/* 🪄 Minimalist Copilot AI Drawer/Modal */}
       {showCopilotModal && (
         <div 
-          className="fixed inset-0 bg-slate-950/80 z-[50] flex items-end md:items-center justify-center p-0 md:p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-slate-950/40 backdrop-blur-md z-[50] flex items-end md:items-center justify-center p-0 md:p-4"
           onClick={() => {
             if (!copilotLoading) {
               setShowCopilotModal(false);
@@ -919,10 +919,10 @@ export default function DashboardLayout({ children }) {
         >
           <div 
             onClick={e => e.stopPropagation()} 
-            className="bg-[#0C0E1A] rounded-t-3xl md:rounded-2xl p-6 w-full max-w-md border-t md:border border-slate-800/60 shadow-2xl flex flex-col max-h-[90vh] md:max-h-none overflow-y-auto animate-fadeInUp"
+            className="bg-[#0C0E1A]/85 backdrop-blur-lg rounded-t-3xl md:rounded-2xl p-6 w-full max-w-md border-t md:border border-slate-800/60 shadow-2xl flex flex-col max-h-[95vh] md:max-h-[85vh] overflow-hidden animate-fadeInUp"
           >
             {/* Header */}
-            <div className="flex items-center gap-3 border-b border-slate-800/40 pb-4 mb-4">
+            <div className="flex items-center gap-3 border-b border-slate-800/40 pb-4 mb-4 flex-shrink-0">
               <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-xl shadow shadow-emerald-500/10">🪄</div>
               <div>
                 <h3 className="text-sm font-bold text-slate-100">Catarina AI Copilot</h3>
@@ -930,187 +930,191 @@ export default function DashboardLayout({ children }) {
               </div>
             </div>
 
-            {/* Loading state */}
-            {copilotLoading && (
-              <div className="py-8 text-center flex flex-col items-center justify-center">
-                <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-4"></div>
-                <p className="text-slate-300 text-xs font-semibold">Catarina está processando seu comando...</p>
-                <p className="text-slate-500 text-[10px] mt-1">Validando intenções e estruturando dados 🐍</p>
-              </div>
-            )}
+            {/* Scrollable Container to prevent squeezing */}
+            <div className="flex-1 overflow-y-auto pr-1 space-y-4 my-2 scrollbar-none flex-shrink flex-grow min-h-0 text-left">
+              
+              {/* Loading state */}
+              {copilotLoading && (
+                <div className="py-8 text-center flex flex-col items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-4 flex-shrink-0"></div>
+                  <p className="text-slate-300 text-xs font-semibold">Catarina está processando seu comando...</p>
+                  <p className="text-slate-500 text-[10px] mt-1">Validando intenções e estruturando dados 🐍</p>
+                </div>
+              )}
 
-            {/* Error state */}
-            {copilotError && !copilotLoading && (
-              <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 mb-4 text-left">
-                <p className="text-rose-400 text-xs font-medium">❌ {copilotError}</p>
-              </div>
-            )}
+              {/* Error state */}
+              {copilotError && !copilotLoading && (
+                <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 mb-4 text-left flex-shrink-0">
+                  <p className="text-rose-400 text-xs font-medium">❌ {copilotError}</p>
+                </div>
+              )}
 
-            {/* Success state */}
-            {copilotSuccessMsg && !copilotLoading && (
-              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 mb-4 text-center">
-                <p className="text-emerald-400 text-xs font-bold">{copilotSuccessMsg}</p>
-              </div>
-            )}
+              {/* Success state */}
+              {copilotSuccessMsg && !copilotLoading && (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 mb-4 text-center flex-shrink-0">
+                  <p className="text-emerald-400 text-xs font-bold">{copilotSuccessMsg}</p>
+                </div>
+              )}
 
-            {/* Initial input for mobile or quick typing */}
-            {!copilotResponse && !copilotLoading && !copilotSuccessMsg && (
-              <div className="space-y-4 pt-2">
-                <div className="relative">
-                  <input
-                    autoFocus
-                    placeholder="Ex: Cobre R$ 150 de Carlos Eduardo amanhã..."
-                    value={copilotInput}
-                    onChange={e => {
-                      setCopilotInput(e.target.value);
-                      setSearchTerm(e.target.value);
-                    }}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') {
-                        handleCopilotSubmit(copilotInput);
-                      }
-                    }}
-                    className="w-full py-3 pl-4 pr-12 text-xs bg-slate-950 border border-slate-800/80 text-slate-100 placeholder-slate-500 rounded-xl outline-none focus:border-emerald-500 transition-colors"
-                  />
-                  <button
-                    onClick={() => handleCopilotSubmit(copilotInput)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs transition-all"
+              {/* Initial input for mobile or quick typing */}
+              {!copilotResponse && !copilotLoading && !copilotSuccessMsg && (
+                <div className="space-y-4 pt-2 flex-shrink-0">
+                  <div className="relative">
+                    <input
+                      autoFocus
+                      placeholder="Ex: Cobre R$ 150 de Carlos Eduardo amanhã..."
+                      value={copilotInput}
+                      onChange={e => {
+                        setCopilotInput(e.target.value);
+                        setSearchTerm(e.target.value);
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          handleCopilotSubmit(copilotInput);
+                        }
+                      }}
+                      className="w-full py-3 pl-4 pr-12 text-xs bg-slate-950 border border-slate-800/80 text-slate-100 placeholder-slate-500 rounded-xl outline-none focus:border-emerald-500 transition-colors"
+                    />
+                    <button
+                      onClick={() => handleCopilotSubmit(copilotInput)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs transition-all"
+                    >
+                      ➔
+                    </button>
+                  </div>
+
+                  {/* Voice / Text Suggestions */}
+                  <div>
+                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-2">Comandos Sugeridos</span>
+                    <div className="grid grid-cols-1 gap-2">
+                      {[
+                        'Cobre R$ 150 de Carlos Eduardo amanhã',
+                        'Configurar recorrente de R$ 90 para Carlos Eduardo',
+                        'Ver relatórios de faturamento',
+                        'Como está a adimplência hoje?'
+                      ].map((suggestion, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => {
+                            setCopilotInput(suggestion);
+                            handleCopilotSubmit(suggestion);
+                          }}
+                          className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-850 hover:bg-slate-800 hover:text-emerald-400 text-[10px] text-slate-400 font-semibold text-left transition-colors flex items-center gap-2"
+                        >
+                          <span className="text-emerald-500 text-xs">✨</span>
+                          <span>{suggestion}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => setShowCopilotModal(false)}
+                    className="w-full py-3 bg-slate-900 border border-slate-800 text-slate-400 rounded-xl text-xs font-bold transition-all mt-4"
                   >
-                    ➔
+                    Cancelar
                   </button>
                 </div>
+              )}
 
-                {/* Voice / Text Suggestions */}
-                <div>
-                  <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-2">Comandos Sugeridos</span>
-                  <div className="grid grid-cols-1 gap-2">
-                    {[
-                      'Cobre R$ 150 de Carlos Eduardo amanhã',
-                      'Configurar recorrente de R$ 90 para Carlos Eduardo',
-                      'Ver relatórios de faturamento',
-                      'Como está a adimplência hoje?'
-                    ].map((suggestion, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => {
-                          setCopilotInput(suggestion);
-                          handleCopilotSubmit(suggestion);
-                        }}
-                        className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-850 hover:bg-slate-800 hover:text-emerald-400 text-[10px] text-slate-400 font-semibold text-left transition-colors flex items-center gap-2"
-                      >
-                        <span className="text-emerald-500 text-xs">✨</span>
-                        <span>{suggestion}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+              {/* Content Form when structured response received */}
+              {copilotResponse && !copilotLoading && !copilotSuccessMsg && (
+                <div className="space-y-4 flex-shrink-0">
+                  <p className="text-slate-300 text-xs leading-relaxed bg-slate-900/60 p-3 rounded-lg border border-slate-800/40">
+                    {copilotResponse.responseMessage}
+                  </p>
 
-                <button 
-                  onClick={() => setShowCopilotModal(false)}
-                  className="w-full py-3 bg-slate-900 border border-slate-800 text-slate-400 rounded-xl text-xs font-bold transition-all mt-4"
-                >
-                  Cancelar
-                </button>
-              </div>
-            )}
-
-            {/* Content Form when structured response received */}
-            {copilotResponse && !copilotLoading && !copilotSuccessMsg && (
-              <div className="space-y-4">
-                <p className="text-slate-300 text-xs leading-relaxed bg-slate-900/60 p-3 rounded-lg border border-slate-800/40">
-                  {copilotResponse.responseMessage}
-                </p>
-
-                {(copilotResponse.intent === 'create_charge' || copilotResponse.intent === 'create_daily_billing') ? (
-                  <div className="space-y-3">
-                    
-                    {/* Client Selection */}
-                    <div>
-                      <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Cliente Associado</label>
-                      <select
-                        value={copilotResponse.client_id || ''}
-                        onChange={e => setCopilotResponse(prev => ({ ...prev, client_id: e.target.value }))}
-                        className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 cursor-pointer"
-                      >
-                        <option value="">-- Selecione o Cliente --</option>
-                        {allClients.map(cl => (
-                          <option key={cl.id} value={cl.id}>{cl.name}</option>
-                        ))}
-                      </select>
-                      {!copilotResponse.client_id && (
-                        <span className="text-[10px] text-amber-500 block mt-1">
-                          ⚠️ Não consegui mapear o cliente. Selecione na lista!
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Amount & Due Date */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Valor (R$)</label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={copilotResponse.amount || ''}
-                          onChange={e => setCopilotResponse(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
-                          className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500"
-                        />
+                  {(copilotResponse.intent === 'create_charge' || copilotResponse.intent === 'create_daily_billing') ? (
+                    <div className="space-y-3">
+                      
+                      {/* Client Selection */}
+                      <div className="flex-shrink-0">
+                        <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Cliente Associado</label>
+                        <select
+                          value={copilotResponse.client_id || ''}
+                          onChange={e => setCopilotResponse(prev => ({ ...prev, client_id: e.target.value }))}
+                          className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 cursor-pointer"
+                        >
+                          <option value="">-- Selecione o Cliente --</option>
+                          {allClients.map(cl => (
+                            <option key={cl.id} value={cl.id}>{cl.name}</option>
+                          ))}
+                        </select>
+                        {!copilotResponse.client_id && (
+                          <span className="text-[10px] text-amber-500 block mt-1">
+                            ⚠️ Não consegui mapear o cliente. Selecione na lista!
+                          </span>
+                        )}
                       </div>
 
-                      {/* Due Date (for single charge) */}
-                      {copilotResponse.intent === 'create_charge' && (
+                      {/* Amount & Due Date */}
+                      <div className="grid grid-cols-2 gap-3 flex-shrink-0">
                         <div>
-                          <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Vencimento</label>
+                          <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Valor (R$)</label>
                           <input
-                            type="date"
-                            value={copilotResponse.due_date || ''}
-                            onChange={e => setCopilotResponse(prev => ({ ...prev, due_date: e.target.value }))}
+                            type="number"
+                            step="0.01"
+                            value={copilotResponse.amount || ''}
+                            onChange={e => setCopilotResponse(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
                             className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500"
                           />
                         </div>
-                      )}
-                    </div>
 
-                    {/* Description */}
-                    <div>
-                      <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Descrição</label>
-                      <input
-                        type="text"
-                        value={copilotResponse.description || ''}
-                        onChange={e => setCopilotResponse(prev => ({ ...prev, description: e.target.value }))}
-                        className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-4 text-slate-500 text-xs">
-                    Nenhuma ação de banco de dados pendente para esta intenção.
-                  </div>
-                )}
+                        {/* Due Date (for single charge) */}
+                        {copilotResponse.intent === 'create_charge' && (
+                          <div>
+                            <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Vencimento</label>
+                            <input
+                              type="date"
+                              value={copilotResponse.due_date || ''}
+                              onChange={e => setCopilotResponse(prev => ({ ...prev, due_date: e.target.value }))}
+                              className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                        )}
+                      </div>
 
-                {/* Footer Buttons */}
-                <div className="flex gap-3 justify-end pt-2">
-                  <button
-                    onClick={() => {
-                      setCopilotResponse(null);
-                    }}
-                    className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold hover:bg-slate-800"
-                  >
-                    Voltar
-                  </button>
-                  
-                  {(copilotResponse.intent === 'create_charge' || copilotResponse.intent === 'create_daily_billing') && (
-                    <button
-                      onClick={executeCopilotAction}
-                      className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-lg shadow-emerald-500/10"
-                    >
-                      Confirmar e Lançar 🐍
-                    </button>
+                      {/* Description */}
+                      <div className="flex-shrink-0">
+                        <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Descrição</label>
+                        <input
+                          type="text"
+                          value={copilotResponse.description || ''}
+                          onChange={e => setCopilotResponse(prev => ({ ...prev, description: e.target.value }))}
+                          className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-slate-500 text-xs flex-shrink-0">
+                      Nenhuma ação de banco de dados pendente para esta intenção.
+                    </div>
                   )}
+
+                  {/* Footer Buttons */}
+                  <div className="flex gap-3 justify-end pt-2 flex-shrink-0">
+                    <button
+                      onClick={() => {
+                        setCopilotResponse(null);
+                      }}
+                      className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold hover:bg-slate-800"
+                    >
+                      Voltar
+                    </button>
+                    
+                    {(copilotResponse.intent === 'create_charge' || copilotResponse.intent === 'create_daily_billing') && (
+                      <button
+                        onClick={executeCopilotAction}
+                        className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-lg shadow-emerald-500/10"
+                      >
+                        Confirmar e Lançar 🐍
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       )}

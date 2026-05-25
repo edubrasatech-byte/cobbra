@@ -317,7 +317,7 @@ export default function CobrancaDiariaPage() {
         }
       `}</style>
 
-      <div className="cd-responsive pb-24 px-4 lg:px-0">
+      <div className="cd-responsive pb-24">
         {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
  
         {/* Overview Stats Cards */}
@@ -477,7 +477,7 @@ export default function CobrancaDiariaPage() {
 
         {/* Configure/Edit Modal */}
         {showModal && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }} onClick={() => setShowModal(false)}>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setShowModal(false)}>
             <div onClick={e => e.stopPropagation()} className="modal-content" style={{ background: '#1e293b', borderRadius: 20, padding: 36, border: '1px solid rgba(255,255,255,0.1)' }}>
               <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 8 }}>
                 {editingBill ? '⚙️ Ajustar Faturamento Diário' : '📅 Ativar Faturamento Diário'}
@@ -617,7 +617,7 @@ export default function CobrancaDiariaPage() {
 
         {/* Payment/Rebate/Payoff Modal */}
         {showPaymentModal && selectedBillForPayment && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }} onClick={() => setShowPaymentModal(false)}>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setShowPaymentModal(false)}>
             <div onClick={e => e.stopPropagation()} style={{ background: '#1e293b', borderRadius: 20, padding: 36, width: 440, border: '1px solid rgba(255,255,255,0.1)' }}>
               <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8 }}>
                 💸 Pagar/Abater Faturamento Diário

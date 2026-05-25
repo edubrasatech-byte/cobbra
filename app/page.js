@@ -160,7 +160,7 @@ export default function HomePage() {
   const lostPerMonth = (calcClients * calcAmount * calcLatePercent) / 100;
   const recoveredWithCobbra = lostPerMonth * 0.94;
 
-  const headerBg = scrollY > 50 ? 'rgba(255,255,255,0.95)' : 'transparent';
+  const headerBg = scrollY > 50 ? '#ffffff' : 'transparent';
   const headerShadow = scrollY > 50 ? '0 1px 10px rgba(0,0,0,0.08)' : 'none';
 
   const faqs = [
@@ -186,7 +186,7 @@ export default function HomePage() {
       {/* ===== HEADER ===== */}
       <header style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-        background: headerBg, backdropFilter: 'blur(20px)', boxShadow: headerShadow,
+        background: headerBg, boxShadow: headerShadow,
         transition: 'all 0.3s ease', borderBottom: scrollY > 50 ? '1px solid #e2e8f0' : 'none'
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -587,9 +587,8 @@ export default function HomePage() {
             {/* Right side: Mock AI chatbot and ticket simulation */}
             <div style={{ flex: 1, minWidth: 320 }}>
               <div style={{ 
-                background: 'rgba(30, 41, 59, 0.75)', borderRadius: 24, padding: 28, 
-                border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
-                backdropFilter: 'blur(16px)'
+                background: 'rgba(30, 41, 59, 0.96)', borderRadius: 24, padding: 28, 
+                border: '1px solid rgba(255, 255, 255, 0.08)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 16, marginBottom: 20 }}>
                   <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🐍</div>
@@ -662,7 +661,7 @@ export default function HomePage() {
           <p style={{ textAlign: 'center', color: '#94a3b8', marginBottom: 48, fontSize: 16 }}>
             Descubra quanto o Cobbra pode recuperar para você.
           </p>
-          <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 20, padding: 40, border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+          <div style={{ background: 'rgba(25, 30, 50, 0.85)', borderRadius: 20, padding: 40, border: '1px solid rgba(255,255,255,0.1)' }}>
             <div style={{ marginBottom: 28 }}>
               <label style={{ fontSize: 14, fontWeight: 600, color: '#e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
                 <span>Quantos clientes você tem?</span>
@@ -1045,7 +1044,7 @@ export default function HomePage() {
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 999,
           background: 'linear-gradient(135deg, #0f172a, #1e293b)', padding: '12px 24px',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16,
-          borderTop: '1px solid rgba(5,150,105,0.3)', backdropFilter: 'blur(10px)'
+          borderTop: '1px solid rgba(5,150,105,0.3)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', animation: 'pulse 2s infinite' }} />

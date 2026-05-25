@@ -319,12 +319,12 @@ export default function CobrancasPage() {
         {/* Search & Filters Chips */}
         <div className="flex flex-col gap-3 flex-1 max-w-lg">
           {/* Search bar input */}
-          <div className="relative w-full">
+          <div className="relative w-full h-11 min-h-[44px] flex-shrink-0">
             <input 
               placeholder="Buscar cobranças..." 
               value={search} 
               onChange={e => setSearch(e.target.value)} 
-              className="w-full py-2.5 pl-9 pr-4 text-xs bg-[#0C0E1A] border border-slate-800/60 text-white rounded-xl outline-none focus:border-emerald-500 transition-colors placeholder-slate-500 font-medium"
+              className="w-full h-11 min-h-[44px] py-2.5 pl-10 pr-4 text-xs bg-[#0C0E1A] border border-slate-800/60 text-white rounded-xl outline-none focus:border-emerald-500 transition-colors placeholder-slate-500 font-medium flex-shrink-0"
             />
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">🔍</span>
           </div>
@@ -517,8 +517,13 @@ export default function CobrancasPage() {
               
               {charges.length === 0 && (
                 <tr>
-                  <td colSpan="8" className="px-5 py-8 text-center text-slate-500 text-xs">
-                    {loading ? 'Carregando cobranças...' : 'Nenhuma cobrança encontrada'}
+                  <td colSpan="8" className="px-5 py-12 text-center text-slate-500 text-xs flex-shrink-0">
+                    {loading ? (
+                      <div className="flex flex-col items-center justify-center gap-3 py-6">
+                        <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin flex-shrink-0 mx-auto"></div>
+                        <p className="text-slate-500 text-xs font-semibold">Carregando cobranças...</p>
+                      </div>
+                    ) : 'Nenhuma cobrança encontrada'}
                   </td>
                 </tr>
               )}
@@ -532,7 +537,7 @@ export default function CobrancasPage() {
         <>
           {/* Drawer Backdrop Overlay */}
           <div 
-            className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[45] md:hidden"
+            className="fixed inset-0 bg-slate-950/95 z-[45] md:hidden"
             onClick={() => setActiveDrawerCharge(null)}
           />
           
@@ -648,7 +653,7 @@ export default function CobrancasPage() {
       {/* 💸 Minimalist Rebate Modal Form */}
       {showRebateModal && rebateCharge && (
         <div 
-          className="fixed inset-0 bg-slate-950/80 z-[60] flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-slate-950/95 z-[60] flex items-center justify-center p-4"
           onClick={() => {
             setShowRebateModal(false);
             setRebateCharge(null);
@@ -703,7 +708,7 @@ export default function CobrancasPage() {
       {/* 🏗️ Create Modal (New Charge) */}
       {showModal && (
         <div 
-          className="fixed inset-0 bg-slate-950/80 z-[50] flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-slate-950/95 z-[50] flex items-center justify-center p-4"
           onClick={() => setShowModal(false)}
         >
           <div 
@@ -886,7 +891,7 @@ export default function CobrancasPage() {
         
         return (
           <div 
-            className="fixed inset-0 bg-slate-950/80 z-[50] flex items-center justify-center p-4 backdrop-blur-sm"
+            className="fixed inset-0 bg-slate-950/95 z-[50] flex items-center justify-center p-4"
             onClick={() => setSelectedChargeForContract(null)}
           >
             <div 

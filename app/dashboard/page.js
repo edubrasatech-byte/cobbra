@@ -268,7 +268,7 @@ export default function DashboardHome() {
   const selectedPoint = selectedBarIndex !== null && stats.revenueData ? stats.revenueData[selectedBarIndex] : null;
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6 text-left">
       
       {/* 🔄 Top Floating Sync/Reload Header */}
       <div className="flex justify-between items-center border-b border-slate-900/60 pb-4">
@@ -282,65 +282,6 @@ export default function DashboardHome() {
         >
           🔄 Recarregar Dados
         </button>
-      </div>
-
-      {/* 🪄 Catarina AI Insights Premium Banner */}
-      <div className="bg-[#0C0E1A] border border-slate-800/40 rounded-2xl p-6 backdrop-blur-md relative overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute -right-20 -top-20 w-44 h-44 rounded-full bg-[#10B981]/5 blur-3xl pointer-events-none"></div>
-        <div className="absolute -left-20 -bottom-20 w-44 h-44 rounded-full bg-teal-500/5 blur-3xl pointer-events-none"></div>
-
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-900/50 pb-4 mb-4">
-          <div className="flex items-center gap-3">
-            <span className="text-xl">🪄</span>
-            <div>
-              <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-                Catarina AI Insights
-                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span>
-              </h3>
-              <p className="text-[11px] text-slate-500">Fluxo de inteligência automatizada sobre inadimplência</p>
-            </div>
-          </div>
-          <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/15 uppercase tracking-wider">
-            Gemini 2.5 Flash
-          </span>
-        </div>
-
-        {insightsLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-24 bg-slate-950/40 rounded-xl border border-slate-900/60 flex items-center justify-center">
-                <span className="text-[11px] text-slate-500 animate-pulse font-medium">Analisando cobranças...</span>
-              </div>
-            ))}
-          </div>
-        ) : insights.length === 0 ? (
-          <p className="text-slate-500 text-xs italic">Registros insuficientes para geração de análises Catarina AI.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {insights.map((insight, idx) => {
-              const borderColors = { success: 'border-emerald-500/40', warning: 'border-rose-500/40', info: 'border-blue-500/40' };
-              const bgColors = { success: 'bg-emerald-500/[0.02]', warning: 'bg-rose-500/[0.02]', info: 'bg-blue-500/[0.02]' };
-              const textColors = { success: 'text-emerald-400', warning: 'text-rose-400', info: 'text-blue-400' };
-              const badgeLabels = { success: 'Otimização', warning: 'Risco', info: 'Insight' };
-
-              return (
-                <div 
-                  key={idx} 
-                  className={`border ${borderColors[insight.type] || 'border-slate-800/40'} ${bgColors[insight.type] || 'bg-slate-900/10'} rounded-xl p-4 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg hover:shadow-black/5`}
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="text-xs font-bold text-slate-200">{insight.title}</h4>
-                    <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${bgColors[insight.type]} ${textColors[insight.type]}`}>
-                      {badgeLabels[insight.type] || 'Info'}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">{insight.text}</p>
-                </div>
-              );
-            })}
-          </div>
-        )}
       </div>
 
       {/* 📊 Exactly 3 Stat Cards Row */}
@@ -555,6 +496,65 @@ export default function DashboardHome() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* 🪄 Catarina AI Insights Premium Banner (Relocated to the bottom of the page) */}
+      <div className="bg-[#0C0E1A]/80 backdrop-blur-lg border border-slate-800/40 rounded-2xl p-6 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute -right-20 -top-20 w-44 h-44 rounded-full bg-[#10B981]/5 blur-3xl pointer-events-none"></div>
+        <div className="absolute -left-20 -bottom-20 w-44 h-44 rounded-full bg-teal-500/5 blur-3xl pointer-events-none"></div>
+
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-900/50 pb-4 mb-4">
+          <div className="flex items-center gap-3">
+            <span className="text-xl">🪄</span>
+            <div>
+              <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
+                Catarina AI Insights
+                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span>
+              </h3>
+              <p className="text-[11px] text-slate-500">Fluxo de inteligência automatizada sobre inadimplência</p>
+            </div>
+          </div>
+          <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/15 uppercase tracking-wider">
+            Gemini 2.5 Flash
+          </span>
+        </div>
+
+        {insightsLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-24 bg-slate-950/40 rounded-xl border border-slate-900/60 flex items-center justify-center">
+                <span className="text-[11px] text-slate-500 animate-pulse font-medium">Analisando cobranças...</span>
+              </div>
+            ))}
+          </div>
+        ) : insights.length === 0 ? (
+          <p className="text-slate-500 text-xs italic">Registros insuficientes para geração de análises Catarina AI.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {insights.map((insight, idx) => {
+              const borderColors = { success: 'border-emerald-500/40', warning: 'border-rose-500/40', info: 'border-blue-500/40' };
+              const bgColors = { success: 'bg-emerald-500/[0.02]', warning: 'bg-rose-500/[0.02]', info: 'bg-blue-500/[0.02]' };
+              const textColors = { success: 'text-emerald-400', warning: 'text-rose-400', info: 'text-blue-400' };
+              const badgeLabels = { success: 'Otimização', warning: 'Risco', info: 'Insight' };
+
+              return (
+                <div 
+                  key={idx} 
+                  className={`border ${borderColors[insight.type] || 'border-slate-800/40'} ${bgColors[insight.type] || 'bg-slate-900/10'} rounded-xl p-4 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg hover:shadow-black/5`}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="text-xs font-bold text-slate-200">{insight.title}</h4>
+                    <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${bgColors[insight.type]} ${textColors[insight.type]}`}>
+                      {badgeLabels[insight.type] || 'Info'}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">{insight.text}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

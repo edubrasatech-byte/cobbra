@@ -3,8 +3,45 @@ import { useState } from 'react';
 
 const changelog = [
   {
+    version: 'Versão 4.0 — Nova Interface Mobile-First, Catarina AI 2.0 & Espaçamentos Pixel-Perfect 🐍💎✨',
+    date: '25 de Maio de 2026 (Hoje)',
+    badge: '🚀 DESTAQUE',
+    badgeColor: 'rgba(16,185,129,0.15)',
+    textColor: '#10b981',
+    description: 'Uma revolução completa na usabilidade e design do Cobbra! Redesenhamos o dashboard sob a nova engine de estilos do Tailwind CSS v4, trazendo uma experiência minimalista ultra-premium inspirada em fintechs internacionais (Stripe, Nubank, Revolut), focando em ergonomia móvel e respiros perfeitos.',
+    categories: [
+      {
+        title: '📐 Espaçamentos Generosos & Alinhamento Horizontal (Pixel-Perfect Spacing)',
+        items: [
+          '**Mais Respiro nas Extremidades:** Ampliamos o padding horizontal de todo o dashboard para 24px no celular e 48px no computador, eliminando de forma definitiva textos encostados nas bordas.',
+          '**Alinhamento Perfeito:** O cabeçalho superior e o conteúdo principal agora alinham-se simetricamente em todas as resoluções.'
+        ]
+      },
+      {
+        title: '🤖 Catarina AI 2.0 & Copilot Otimizado',
+        items: [
+          '**Gaveta Lateral Retrátil:** O antigo botão flutuante redondo (FAB) que cobria inputs no celular foi substituído por um ícone elegante no cabeçalho superior. Ao clicar, o chatbot Catarina desliza suavemente a partir do canto como um painel lateral.',
+          '**Copilot Anti-Achatamento:** A modal de comandos da Catarina AI foi blindada e reestruturada de forma que o teclado móvel do celular nunca esmague os botões ou caixas de digitação.'
+        ]
+      },
+      {
+        title: '📱 Experiência Mobile-First Ergonômica',
+        items: [
+          '**Menu Inferior Nubank-Style:** Introdução de barra flutuante inferior para smartphones, permitindo transicionar entre as telas principais com um único polegar.',
+          '**Chips Horizontais & Grids Fluidos:** Telas de Ajustes, Lembretes, Clientes, Relatórios e Calendário adaptadas com abas horizontais roláveis e formulários empilhados de forma harmoniosa.'
+        ]
+      },
+      {
+        title: '📈 Gráficos SVG Interativos & Performance',
+        items: [
+          '**Leitura Dinâmica:** Substituição do gráfico de receita por uma linha com preenchimento em degrade suave (SVG), permitindo tocar em qualquer ponto para ler o faturamento exato daquele dia instantaneamente.'
+        ]
+      }
+    ]
+  },
+  {
     version: 'Versão 3.8 — Gemini 2.5 Flash & Liberador Pública do Chatbot 🐍🤖',
-    date: '24 de Maio de 2026 (Hoje)',
+    date: '24 de Maio de 2026',
     badge: '🚀 NOVO',
     badgeColor: 'rgba(16,185,129,0.15)',
     textColor: '#10b981',

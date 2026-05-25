@@ -173,11 +173,10 @@ export default function LoginPage() {
 
             {/* 2. Simulated WhatsApp Push Notification Banner */}
             <div style={{
-              background: 'rgba(30, 41, 59, 0.45)',
+              background: 'rgba(30, 41, 59, 0.92)',
               border: '1px solid rgba(255, 255, 255, 0.06)',
               borderRadius: 12,
               padding: 8,
-              backdropFilter: 'blur(8px)',
               boxShadow: '0 8px 24px rgba(0,0,0,0.2)'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>

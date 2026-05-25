@@ -86,7 +86,7 @@ export default function RelatoriosPage() {
   };
 
   return (
-    <div className="pb-24 px-4 lg:px-0">
+    <div className="pb-24">
       {/* Tabs and Reload */}
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-6 gap-4">
         <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-none whitespace-nowrap">
@@ -295,7 +295,12 @@ export default function RelatoriosPage() {
         </div>
       )}
 
-      {!data && <p style={{ color: '#64748b', textAlign: 'center', padding: 60 }}>Carregando relatórios...</p>}
+      {!data && (
+        <div className="flex flex-col items-center justify-center gap-3 py-16 flex-shrink-0">
+          <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin flex-shrink-0 mx-auto"></div>
+          <p className="text-slate-500 text-xs font-semibold">Carregando relatórios...</p>
+        </div>
+      )}
     </div>
   );
 }

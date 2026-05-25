@@ -78,7 +78,7 @@ export default function CalendarioPage() {
         .cal-responsive-styles .cal-cell.is-feriado { background: rgba(239,68,68,0.05); border-color: rgba(239,68,68,0.15); }
         .cal-responsive-styles .cal-cell.is-saturday { background: rgba(139,92,246,0.04); }
         .cal-responsive-styles .cal-cell.is-sunday { background: rgba(245,158,11,0.04); }
-        .cal-responsive-styles .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(4px); }
+        .cal-responsive-styles .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; }
         .cal-responsive-styles .drawer-panel { position: fixed; bottom: 0; left: 0; right: 0; max-height: 70vh; background: #1e293b; border-radius: 20px 20px 0 0; z-index: 1001; overflow-y: auto; padding: 24px; border-top: 2px solid #059669; animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         @media (min-width: 768px) {
@@ -97,7 +97,7 @@ export default function CalendarioPage() {
         }
       `}</style>
 
-      <div className="cal-responsive-styles px-4 lg:px-0">
+      <div className="cal-responsive-styles">
         {/* Header with month navigation */}
         <div className="header-nav">
           <div className="flex items-center justify-between sm:justify-start gap-4 w-full sm:w-auto">
@@ -148,7 +148,10 @@ export default function CalendarioPage() {
 
         {/* Calendar Grid */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8' }}>Carregando calendário...</div>
+          <div className="flex flex-col items-center justify-center gap-3 py-16 flex-shrink-0">
+            <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin flex-shrink-0 mx-auto"></div>
+            <p className="text-slate-500 text-xs font-semibold">Carregando calendário...</p>
+          </div>
         ) : (
           <div style={{ ...cardS, padding: 16 }}>
             {/* Day headers */}
