@@ -324,7 +324,8 @@ export default function CobrancasPage() {
               placeholder="Buscar cobranças..." 
               value={search} 
               onChange={e => setSearch(e.target.value)} 
-              className="w-full h-11 min-h-[44px] py-2.5 pl-10 pr-4 text-xs bg-[#0C0E1A] border border-slate-800/60 text-white rounded-xl outline-none focus:border-emerald-500 transition-colors placeholder-slate-500 font-medium flex-shrink-0"
+              className="w-full h-11 min-h-[44px] py-2.5 text-xs bg-[#0C0E1A] border border-slate-800/60 text-white rounded-xl outline-none focus:border-emerald-500 transition-colors placeholder-slate-500 font-medium flex-shrink-0"
+              style={{ paddingLeft: '38px' }}
             />
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">🔍</span>
           </div>

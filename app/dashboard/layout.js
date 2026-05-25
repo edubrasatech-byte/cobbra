@@ -568,7 +568,7 @@ export default function DashboardLayout({ children }) {
           <div className="hidden md:block flex-1 max-w-xs lg:max-w-md mx-4 relative flex-shrink">
             <div className="relative group">
               <input 
-                placeholder="Pergunte à Catarina... (Ctrl+K)" 
+                placeholder="Pergunte à Catarina..." 
                 value={copilotInput}
                 onChange={e => {
                   setCopilotInput(e.target.value);
@@ -579,7 +579,8 @@ export default function DashboardLayout({ children }) {
                     handleCopilotSubmit(copilotInput);
                   }
                 }}
-                className="w-full py-1.5 pl-9 pr-14 text-xs bg-slate-900/60 hover:bg-slate-900 border border-slate-800/60 hover:border-emerald-500/40 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 text-slate-200 placeholder-slate-500 rounded-lg transition-all duration-200 outline-none"
+                className="w-full py-1.5 text-xs bg-slate-900/60 hover:bg-slate-900 border border-slate-800/60 hover:border-emerald-500/40 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 text-slate-200 placeholder-slate-500 rounded-lg transition-all duration-200 outline-none"
+                style={{ paddingLeft: '34px', paddingRight: '56px' }}
               />
               <span className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
                 <svg className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
