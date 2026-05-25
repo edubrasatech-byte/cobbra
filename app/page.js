@@ -59,7 +59,7 @@ function MiniSnake({ size = 40, style = {} }) {
   const uniqueId = id.replace(/:/g, '');
   const miniGradId = `miniGrad-${uniqueId}`;
   return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" style={style}>
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" style={style} className="mini-snake-hover">
       <g transform="translate(1.5, 1.5)">
         <path d="M8 30 C4 28, 3 22, 8 18 C13 14, 20 13, 25 17 C30 21, 33 18, 33 13 C33 9, 29 7, 26 9" stroke={`url(#${miniGradId})`} strokeWidth="4" strokeLinecap="round" fill="none" />
         <circle cx="24" cy="8" r="5" fill={`url(#${miniGradId})`} />
@@ -75,6 +75,243 @@ function MiniSnake({ size = 40, style = {} }) {
         </linearGradient>
       </defs>
     </svg>
+  );
+}
+
+// ========== GLOW CARD (Vercel-style hover glow) ==========
+function GlowCard({ children, style = {}, ...props }) {
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setCoords({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
+
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseMove={handleMouseMove}
+      style={{
+        position: 'relative',
+        background: '#0c0e1a',
+        borderRadius: 20,
+        overflow: 'hidden',
+        border: '1px solid rgba(255,255,255,0.06)',
+        transition: 'transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
+        boxShadow: isHovered ? '0 10px 30px rgba(16, 185, 129, 0.04)' : 'none',
+        transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
+        ...style
+      }}
+      {...props}
+    >
+      {isHovered && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: `radial-gradient(circle 200px at ${coords.x}px ${coords.y}px, rgba(16, 185, 129, 0.08) 0%, transparent 80%)`,
+          pointerEvents: 'none',
+          zIndex: 1
+        }} />
+      )}
+      <div style={{ position: 'relative', zIndex: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ========== WHATSAPP SIMULATOR ==========
+function WhatsAppSimulator() {
+  const [step, setStep] = useState(0);
+  const [typing, setTyping] = useState(false);
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    let active = true;
+    const runSequence = async () => {
+      if (!active) return;
+      setStep(0);
+      setTyping(false);
+      setMessages([]);
+
+      await new Promise(r => setTimeout(r, 2500));
+      if (!active) return;
+
+      setStep(1);
+      setMessages([{ sender: 'system', text: '🤖 Catarina AI: Agendando lembrete de Pix para Marina Oliveira (Vence Amanhã).' }]);
+
+      await new Promise(r => setTimeout(r, 2500));
+      if (!active) return;
+
+      setStep(2);
+      setTyping(true);
+      await new Promise(r => setTimeout(r, 1800));
+      if (!active) return;
+      setTyping(false);
+      setMessages(prev => [...prev, {
+        sender: 'cobbra',
+        text: 'Oi Mari! 💚 Lembrete gentil da Cobbra: sua mensalidade de R$ 450,00 vence amanhã. Segue o Pix copia e cola no link abaixo.',
+        status: 'sent'
+      }]);
+
+      await new Promise(r => setTimeout(r, 800));
+      if (!active) return;
+      setMessages(prev => prev.map(m => m.sender === 'cobbra' ? { ...m, status: 'delivered' } : m));
+      
+      await new Promise(r => setTimeout(r, 1000));
+      if (!active) return;
+      setMessages(prev => prev.map(m => m.sender === 'cobbra' ? { ...m, status: 'read' } : m));
+
+      await new Promise(r => setTimeout(r, 2500));
+      if (!active) return;
+
+      setStep(3);
+      setTyping(true);
+      await new Promise(r => setTimeout(r, 2000));
+      if (!active) return;
+      setTyping(false);
+      setMessages(prev => [...prev, {
+        sender: 'marina',
+        text: 'Nossa, verdade! Estava na correria e tinha esquecido. Pago em 2 minutos! Obrigado pelo aviso! 🤝'
+      }]);
+
+      await new Promise(r => setTimeout(r, 3000));
+      if (!active) return;
+
+      setStep(4);
+      setMessages(prev => [...prev, {
+        sender: 'system-success',
+        text: '✅ Pix de R$ 450,00 recebido! Repassado 100% à sua conta (Taxa: R$ 0,00).'
+      }]);
+
+      await new Promise(r => setTimeout(r, 6000));
+      if (active) runSequence();
+    };
+
+    runSequence();
+    return () => { active = false; };
+  }, []);
+
+  return (
+    <div style={{
+      background: '#0c0e1a', borderRadius: 24, padding: '24px 20px', boxShadow: '0 25px 60px rgba(0,0,0,0.5)',
+      border: '1px solid rgba(255,255,255,0.06)', position: 'relative', width: '100%', maxWidth: 440, margin: '0 auto',
+      minHeight: 460, display: 'flex', flexDirection: 'column', gap: 14, overflow: 'hidden'
+    }}>
+      {/* Smartphone notch */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 10px #10b981' }} />
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#e2e8f0' }}>Simulador Cobbra em Ação</span>
+        </div>
+        <span style={{ fontSize: 10, background: 'rgba(16,185,129,0.15)', color: '#34d399', padding: '3px 8px', borderRadius: 6, fontWeight: 800 }}>LIVE DEMO</span>
+      </div>
+
+      {/* Message Screen Area */}
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, gap: 12, minHeight: 340, justifyContent: 'flex-end', paddingBottom: 8 }}>
+        {step === 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'fadeIn 0.3s ease', padding: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <p style={{ fontSize: 11, color: '#94a3b8' }}>Faturamento Recuperado</p>
+                <p style={{ fontSize: 26, fontWeight: 900, color: '#10b981' }}>R$ 8.420,00</p>
+              </div>
+              <div style={{ fontSize: 10, padding: '4px 8px', borderRadius: 6, background: 'rgba(16,185,129,0.15)', color: '#10b981', fontWeight: 700 }}>
+                Taxa Pago: 94%
+              </div>
+            </div>
+            
+            <div style={{ background: '#070913', borderRadius: 14, padding: 14, border: '1px solid rgba(255,255,255,0.03)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12 }}>
+                <span style={{ color: '#cbd5e1', fontWeight: 600 }}>Mariana Oliveira</span>
+                <span style={{ color: '#f59e0b', background: 'rgba(245,158,11,0.1)', padding: '2px 6px', borderRadius: 4, fontSize: 10, fontWeight: 700 }}>Aguardando...</span>
+              </div>
+              <div style={{ height: 4, background: '#1e293b', borderRadius: 2 }}>
+                <div style={{ height: '100%', width: '40%', background: '#f59e0b', borderRadius: 2 }} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step > 0 && messages.map((msg, idx) => {
+          if (msg.sender === 'system') {
+            return (
+              <div key={idx} style={{
+                alignSelf: 'center', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)',
+                color: '#94a3b8', fontSize: 11, padding: '8px 12px', borderRadius: 10, maxWidth: '95%',
+                textAlign: 'center', animation: 'fadeInUp 0.3s ease', lineHeight: 1.4
+              }}>
+                {msg.text}
+              </div>
+            );
+          }
+          if (msg.sender === 'system-success') {
+            return (
+              <div key={idx} style={{
+                alignSelf: 'center', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)',
+                color: '#34d399', fontSize: 12, padding: '10px 14px', borderRadius: 12, maxWidth: '95%',
+                textAlign: 'center', fontWeight: 700, animation: 'fadeInUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                boxShadow: '0 4px 20px rgba(16,185,129,0.15)'
+              }}>
+                {msg.text}
+              </div>
+            );
+          }
+
+          const isCobbra = msg.sender === 'cobbra';
+          return (
+            <div key={idx} style={{
+              alignSelf: isCobbra ? 'flex-end' : 'flex-start',
+              background: isCobbra ? '#059669' : 'rgba(255,255,255,0.05)',
+              border: isCobbra ? 'none' : '1px solid rgba(255,255,255,0.08)',
+              color: '#ffffff',
+              padding: '10px 14px',
+              borderRadius: isCobbra ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+              maxWidth: '85%',
+              fontSize: 13,
+              lineHeight: 1.45,
+              animation: 'fadeInUp 0.3s ease',
+              boxShadow: isCobbra ? '0 4px 12px rgba(5,150,105,0.15)' : 'none'
+            }}>
+              <div>{msg.text}</div>
+              {isCobbra && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 4, marginTop: 4, fontSize: 9, color: 'rgba(255,255,255,0.6)', fontWeight: 'bold' }}>
+                  <span>14:00</span>
+                  {msg.status === 'sent' && <span>✓</span>}
+                  {msg.status === 'delivered' && <span>✓✓</span>}
+                  {msg.status === 'read' && <span style={{ color: '#60a5fa' }}>✓✓</span>}
+                </div>
+              )}
+              {!isCobbra && (
+                <div style={{ fontSize: 8, color: '#64748b', marginTop: 4, textAlign: 'right' }}>
+                  14:02
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {typing && (
+          <div style={{
+            alignSelf: 'flex-start', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
+            padding: '10px 16px', borderRadius: '16px 16px 16px 4px', width: 64, display: 'flex', gap: 4,
+            justifyContent: 'center', alignItems: 'center'
+          }}>
+            <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8', animation: 'pulse 1.2s infinite' }} />
+            <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8', animation: 'pulse 1.2s infinite 0.2s' }} />
+            <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#94a3b8', animation: 'pulse 1.2s infinite 0.4s' }} />
+          </div>
+        )}
+      </div>
+
+      {/* Swipe bar indicator */}
+      <div style={{ alignSelf: 'center', width: 100, height: 4, background: 'rgba(255,255,255,0.15)', borderRadius: 2 }} />
+    </div>
   );
 }
 
@@ -143,6 +380,7 @@ export default function HomePage() {
   const [urgencyVisible, setUrgencyVisible] = useState(true);
   const [scrollY, setScrollY] = useState(0);
   const [faqCategory, setFaqCategory] = useState('all');
+  const [faqSearch, setFaqSearch] = useState('');
   const [testimonialFilter, setTestimonialFilter] = useState('todos');
   const [urgencyTime, setUrgencyTime] = useState('');
   const [urgencyCity, setUrgencyCity] = useState('');
@@ -188,7 +426,11 @@ export default function HomePage() {
     { cat: 'Segurança', q: 'Meus dados estão seguros?', a: 'Sim! Usamos criptografia de ponta a ponta e as melhores práticas de segurança do mercado. Seus dados e os dos seus clientes estão 100% protegidos. Nenhuma informação é compartilhada com terceiros.' },
   ];
 
-  const filteredFaqs = faqCategory === 'all' ? faqs : faqs.filter(f => f.cat === faqCategory);
+  const filteredFaqs = faqs.filter(f => {
+    const matchesCategory = faqCategory === 'all' || f.cat === faqCategory;
+    const matchesSearch = f.q.toLowerCase().includes(faqSearch.toLowerCase()) || f.a.toLowerCase().includes(faqSearch.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
   const faqCategories = ['all', ...new Set(faqs.map(f => f.cat))];
 
   return (
@@ -350,77 +592,70 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right - Dashboard Preview with Mascot */}
-          <div className="hero-mockup" style={{ flex: 1, position: 'relative', animation: 'fadeInUp 1s ease 0.2s both' }}>
+          {/* Right - Interactive WhatsApp Simulator with Mascot */}
+          <div className="hero-mockup" style={{ flex: 1, position: 'relative', animation: 'fadeInUp 1s ease 0.2s both', zIndex: 5 }}>
             {/* Mascot peeking from top */}
-            <div style={{ position: 'absolute', top: -60, right: 30, zIndex: 2, animation: 'float 3s ease-in-out infinite' }}>
-              <SnakeMascot size={110} />
+            <div style={{ position: 'absolute', top: -50, right: 20, zIndex: 10, animation: 'float 3s ease-in-out infinite' }}>
+              <SnakeMascot size={100} />
             </div>
             {/* Speech bubble */}
             <div style={{
-              position: 'absolute', top: -20, right: 140, background: '#0c0e1a', borderRadius: 12, padding: '8px 14px',
+              position: 'absolute', top: -15, right: 125, background: '#0c0e1a', borderRadius: 12, padding: '8px 14px',
               fontSize: 12, fontWeight: 600, color: '#10b981', boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-              border: '1px solid rgba(16,185,129,0.2)', zIndex: 3
+              border: '1px solid rgba(16,185,129,0.2)', zIndex: 10
             }}>
-              Psst... pode deixar comigo! 🐍
+              Deixa que eu cobro! 🐍
               <div style={{ position: 'absolute', bottom: -6, right: 20, width: 12, height: 12, background: '#0c0e1a', border: '1px solid rgba(16,185,129,0.2)', borderTop: 'none', borderLeft: 'none', transform: 'rotate(45deg)' }} />
             </div>
 
-            <div style={{
-              background: '#0c0e1a', borderRadius: 20, padding: 28, boxShadow: '0 25px 60px rgba(0,0,0,0.5)',
-              border: '1px solid rgba(255,255,255,0.06)',
-              transform: 'perspective(1000px) rotateY(-5deg) rotateX(2deg)', transition: 'transform 0.5s'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-                <div>
-                  <p style={{ fontSize: 13, color: '#94a3b8' }}>Recebido este mês</p>
-                  <p style={{ fontSize: 32, fontWeight: 800, color: '#10b981' }}>R$ 8.420,00</p>
-                </div>
-                <div style={{ background: 'rgba(16,185,129,0.15)', padding: '6px 12px', borderRadius: 8, color: '#10b981', fontSize: 13, fontWeight: 600 }}>
-                  ↑ 23% vs mês anterior
-                </div>
-              </div>
-              {/* Mini chart bars */}
-              <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end', height: 60, marginBottom: 20 }}>
-                {[40, 65, 45, 80, 55, 70, 90, 60, 75, 85, 95, 50, 70, 88].map((h, i) => (
-                  <div key={i} style={{ flex: 1, height: `${h}%`, background: `linear-gradient(to top, #10b981, #0d9488)`, borderRadius: 3, opacity: 0.8 + (i * 0.01) }} />
-                ))}
-              </div>
-              {/* Client list */}
-              {[
-                { name: 'Mariana Alves', status: 'Pago', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
-                { name: 'Rodrigo Pacheco', status: 'Lembrete enviado', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
-                { name: 'Studio Bem Estar', status: 'Aguardando', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
-                { name: 'Juliana Mendes', status: 'Pago', color: '#10b981', bg: 'rgba(16,185,129,0.15)' }
-              ].map(item => (
-                <div key={item.name} style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0',
-                  borderBottom: '1px solid rgba(255,255,255,0.06)'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#10b981', fontWeight: 700 }}>
-                      {item.name.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <span style={{ color: '#e2e8f0', fontSize: 14 }}>{item.name}</span>
-                  </div>
-                  <span style={{ fontSize: 12, padding: '4px 10px', borderRadius: 6, background: item.bg, color: item.color, fontWeight: 600 }}>
-                    {item.status}
-                  </span>
-                </div>
-              ))}
-              {/* WhatsApp preview */}
-              <div style={{ marginTop: 16, background: 'rgba(37,211,102,0.05)', borderRadius: 12, padding: 14, border: '1px solid rgba(37,211,102,0.15)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                  <span style={{ fontSize: 16 }}>💬</span>
-                  <span style={{ fontSize: 11, color: '#25d366', fontWeight: 600 }}>WhatsApp · agora</span>
-                </div>
-                <p style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.5 }}>
-                  Oi Mari! 🐍 Lembrete gentil: sua mensalidade vence amanhã. Pode pagar pelo Pix no link.
-                </p>
-              </div>
-            </div>
+            <WhatsAppSimulator />
           </div>
         </div>
+      </section>
+
+      {/* ===== INTEGRATIONS MARQUEE ===== */}
+      <section style={{ background: '#070913', padding: '24px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', borderTop: '1px solid rgba(255,255,255,0.04)', overflow: 'hidden', position: 'relative' }}>
+        {/* Shadow overlays */}
+        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 100, background: 'linear-gradient(90deg, #070913, transparent)', zIndex: 2, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 100, background: 'linear-gradient(-90deg, #070913, transparent)', zIndex: 2, pointerEvents: 'none' }} />
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center', marginBottom: 12 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 1.5, margin: 0 }}>Compatível com Pix e qualquer banco brasileiro</p>
+        </div>
+
+        <div className="marquee-container" style={{ display: 'flex', overflow: 'hidden', width: '100%' }}>
+          <div className="marquee-content" style={{ display: 'flex', gap: 60, animation: 'marqueeScroll 28s linear infinite', whiteSpace: 'nowrap', minWidth: '100%' }}>
+            {[
+              'Pix', 'Nubank', 'Cora', 'Mercado Pago', 'Banco Inter', 'C6 Bank', 'Neon', 'Stone', 'PagBank',
+              'Pix', 'Nubank', 'Cora', 'Mercado Pago', 'Banco Inter', 'C6 Bank', 'Neon', 'Stone', 'PagBank'
+            ].map((brand, i) => (
+              <span key={i} style={{ fontSize: 14, fontWeight: 900, color: '#334155', letterSpacing: -0.5, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ color: '#10b981', fontSize: 16 }}>✓</span> {brand}
+              </span>
+            ))}
+          </div>
+        </div>
+        
+        <style>{`
+          @keyframes marqueeScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+          }
+          @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .mini-snake-hover {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          }
+          .mini-snake-hover:hover {
+            transform: scale(1.15) rotate(8deg);
+          }
+        `}</style>
       </section>
 
       {/* ===== HOW IT WORKS ===== */}
@@ -696,6 +931,50 @@ export default function HomePage() {
               <input type="range" min="5" max="50" value={calcLatePercent} onChange={e => setCalcLatePercent(+e.target.value)}
                 style={{ width: '100%', marginTop: 12, accentColor: '#f59e0b' }} />
             </div>
+
+            {/* Dynamic SVG Comparison Chart */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28, background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 16, padding: 20 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4, textAlign: 'center', margin: 0 }}>Projeção Visual Financeira Mensal</p>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {/* Bar 1: Lost Money */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
+                    <span style={{ color: '#fca5a5', fontWeight: 600 }}>Planilha / Cobrança Manual (Inadimplência)</span>
+                    <span style={{ color: '#ef4444', fontWeight: 800 }}>R$ {lostPerMonth.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</span>
+                  </div>
+                  <div style={{ height: 12, background: '#1c1012', borderRadius: 8, border: '1px solid rgba(239, 68, 68, 0.15)', overflow: 'hidden', position: 'relative' }}>
+                    <div style={{
+                      height: '100%',
+                      width: `${Math.min(100, Math.max(8, (lostPerMonth / ((calcClients * calcAmount) || 1)) * 100))}%`,
+                      background: 'linear-gradient(90deg, #b91c1c, #ef4444)',
+                      borderRadius: 8,
+                      boxShadow: '0 0 12px rgba(239, 68, 68, 0.4)',
+                      transition: 'width 0.4s cubic-bezier(0.1, 0.8, 0.2, 1)'
+                    }} />
+                  </div>
+                </div>
+
+                {/* Bar 2: Recovered Money */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 6 }}>
+                    <span style={{ color: '#a7f3d0', fontWeight: 600 }}>Com Automação Cobbra (94% Recuperado)</span>
+                    <span style={{ color: '#10b981', fontWeight: 800 }}>+ R$ {recoveredWithCobbra.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</span>
+                  </div>
+                  <div style={{ height: 12, background: '#091c14', borderRadius: 8, border: '1px solid rgba(16, 185, 129, 0.15)', overflow: 'hidden', position: 'relative' }}>
+                    <div style={{
+                      height: '100%',
+                      width: `${Math.min(100, Math.max(8, (recoveredWithCobbra / ((calcClients * calcAmount) || 1)) * 100))}%`,
+                      background: 'linear-gradient(90deg, #0d9488, #10b981)',
+                      borderRadius: 8,
+                      boxShadow: '0 0 12px rgba(16, 185, 129, 0.4)',
+                      transition: 'width 0.4s cubic-bezier(0.1, 0.8, 0.2, 1)'
+                    }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="calc-results" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
               <div style={{ background: 'rgba(239,68,68,0.08)', borderRadius: 16, padding: 24, textAlign: 'center', border: '1px solid rgba(239,68,68,0.15)' }}>
                 <p style={{ fontSize: 13, color: '#fca5a5', marginBottom: 8 }}>Você perde por mês</p>
@@ -845,10 +1124,7 @@ export default function HomePage() {
 
           <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, alignItems: 'stretch' }}>
             {/* Starter */}
-            <div style={{ background: '#0c0e1a', borderRadius: 24, padding: 36, border: '2px solid rgba(255,255,255,0.06)', textAlign: 'left', transition: 'all 0.3s', display: 'flex', flexDirection: 'column' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(16,185,129,0.05)'; e.currentTarget.style.borderColor = 'rgba(16,185,129,0.25)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
-            >
+            <GlowCard style={{ padding: 36, textAlign: 'left' }}>
               <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: '#ffffff' }}>Starter</h3>
               <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20 }}>Para testar e começar a cobrar</p>
               <div style={{ marginBottom: 4 }}>
@@ -876,23 +1152,20 @@ export default function HomePage() {
                 onMouseEnter={e => { e.target.style.borderColor = '#10b981'; e.target.style.color = '#10b981'; }}
                 onMouseLeave={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; e.target.style.color = '#ffffff'; }}
               >Assinar Starter</a>
-            </div>
+            </GlowCard>
 
             {/* Crescimento - POPULAR — com destaque visual forte */}
-            <div className="pricing-featured" style={{
-              background: 'linear-gradient(145deg, #0c0e1a, #070913)', borderRadius: 28, padding: '44px 36px',
+            <GlowCard className="pricing-featured" style={{
+              borderRadius: 28, padding: '44px 36px',
               border: '3px solid #10b981', textAlign: 'left', position: 'relative',
-              boxShadow: '0 0 0 1px #10b981, 0 24px 60px rgba(16,185,129,0.2)',
-              transform: 'scale(1.05)', transition: 'all 0.3s', display: 'flex', flexDirection: 'column'
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.boxShadow = '0 0 0 1px #10b981, 0 30px 80px rgba(16,185,129,0.3)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 0 0 1px #10b981, 0 24px 60px rgba(16,185,129,0.2)'; }}
-            >
+              boxShadow: '0 24px 60px rgba(16,185,129,0.15)',
+              transform: 'scale(1.05)'
+            }}>
               <div style={{
                 position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)',
                 background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#fff',
                 padding: '7px 22px', borderRadius: 100, fontSize: 12, fontWeight: 800, letterSpacing: 0.5,
-                boxShadow: '0 4px 12px rgba(245,158,11,0.4)', whiteSpace: 'nowrap'
+                boxShadow: '0 4px 12px rgba(245,158,11,0.4)', whiteSpace: 'nowrap', zIndex: 10
               }}>⚡ MAIS POPULAR — MELHOR CUSTO-BENEFÍCIO</div>
               <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4, color: '#fff' }}>Crescimento</h3>
               <p style={{ fontSize: 13, color: '#a7f3d0', marginBottom: 20 }}>Para quem está crescendo e quer resultado rápido</p>
@@ -916,13 +1189,10 @@ export default function HomePage() {
                 background: '#10b981', color: '#070913', fontSize: 16, fontWeight: 800,
                 textAlign: 'center', boxShadow: '0 4px 20px rgba(16,185,129,0.4)', transition: 'all 0.3s', textDecoration: 'none'
               }}>Assinar agora — Começar a recuperar →</a>
-            </div>
+            </GlowCard>
 
             {/* Cobra Pro */}
-            <div style={{ background: '#0c0e1a', borderRadius: 24, padding: 36, border: '2px solid rgba(255,255,255,0.06)', textAlign: 'left', color: '#fff', transition: 'all 0.3s', display: 'flex', flexDirection: 'column' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(16,185,129,0.05)'; e.currentTarget.style.borderColor = 'rgba(16,185,129,0.25)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
-            >
+            <GlowCard style={{ padding: 36, textAlign: 'left', color: '#fff' }}>
               <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: '#fff' }}>Cobra Pro</h3>
               <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20 }}>Para quem quer o máximo</p>
               <div style={{ marginBottom: 4 }}>
@@ -942,7 +1212,7 @@ export default function HomePage() {
                 background: '#10b981', color: '#070913', fontSize: 15, fontWeight: 700,
                 textAlign: 'center', boxShadow: '0 4px 14px rgba(16,185,129,0.3)', transition: 'all 0.3s', textDecoration: 'none'
               }}>Assinar Cobra Pro →</a>
-            </div>
+            </GlowCard>
           </div>
 
           <p style={{ fontSize: 13, color: '#64748b', marginTop: 40, textAlign: 'center' }}>Todos os planos: 0% sobre o valor recebido · Cancele quando quiser · Pix 100% na sua conta</p>
@@ -971,9 +1241,49 @@ export default function HomePage() {
             ))}
           </div>
 
+          {/* FAQ Search Bar */}
+          <div style={{ maxWidth: 600, margin: '0 auto 36px', position: 'relative' }}>
+            <input 
+              type="text" 
+              placeholder="Busque por dúvidas (ex: Pix, juros, taxas, WhatsApp...)" 
+              value={faqSearch}
+              onChange={e => setFaqSearch(e.target.value)}
+              style={{
+                width: '100%', padding: '14px 20px 14px 46px', borderRadius: 14,
+                background: '#0c0e1a', border: '1px solid rgba(255,255,255,0.08)',
+                color: '#ffffff', fontSize: 14, transition: 'all 0.3s',
+                fontFamily: 'Inter, sans-serif', outline: 'none'
+              }}
+              onFocus={e => e.target.style.borderColor = '#10b981'}
+              onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+            />
+            <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontSize: 16, pointerEvents: 'none' }}>🔍</span>
+            {faqSearch && (
+              <button 
+                onClick={() => setFaqSearch('')}
+                style={{ 
+                  position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', 
+                  color: '#10b981', fontSize: 12, fontWeight: 800, border: 'none', background: 'none',
+                  cursor: 'pointer', fontFamily: 'Inter, sans-serif'
+                }}
+              >LIMPAR</button>
+            )}
+          </div>
+
           {filteredFaqs.map((faq, i) => (
             <FaqItem key={i} question={faq.q} answer={faq.a} category={faq.cat} />
           ))}
+
+          {filteredFaqs.length === 0 && (
+            <div style={{
+              background: '#0c0e1a', borderRadius: 16, padding: '40px 24px', textAlign: 'center',
+              border: '1px solid rgba(255,255,255,0.05)', animation: 'fadeIn 0.3s ease'
+            }}>
+              <span style={{ fontSize: 32, display: 'block', marginBottom: 12 }}>🔍</span>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Nenhuma dúvida encontrada</h3>
+              <p style={{ fontSize: 14, color: '#94a3b8', margin: 0 }}>Tente buscar termos como "Pix", "boleto", "WhatsApp" ou "taxas".</p>
+            </div>
+          )}
         </div>
       </section>
 
