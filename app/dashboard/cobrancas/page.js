@@ -342,7 +342,7 @@ export default function CobrancasPage() {
           
           <button 
             onClick={() => setShowModal(true)} 
-            className="h-11 px-4 sm:px-5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black tracking-wider flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/15 border border-emerald-400/20 active:scale-95 transition-all duration-200 cursor-pointer whitespace-nowrap"
+            className="h-11 px-4 sm:px-5 rounded-xl bg-[#10B981] hover:bg-[#34D399] text-[#070913] text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/25 border border-[#34D399]/30 active:scale-95 transition-all duration-200 cursor-pointer whitespace-nowrap"
           >
             <span className="text-sm font-bold">+</span>
             <span className="hidden sm:inline">Nova Cobrança</span>
