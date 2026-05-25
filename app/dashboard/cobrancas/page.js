@@ -365,19 +365,19 @@ export default function CobrancasPage() {
         <div className="flex items-center gap-2.5 justify-end">
           <button 
             onClick={handleReload}
-            className="px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800/60 text-slate-400 text-xs font-bold hover:bg-slate-850 hover:text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer group"
+            title="Recarregar dados"
+            className="w-11 h-11 flex-shrink-0 flex items-center justify-center rounded-xl bg-[#0C0E1A] border border-slate-800/60 text-slate-400 hover:bg-slate-900/40 hover:text-slate-200 transition-all cursor-pointer group active:scale-95"
           >
-            <svg className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-200 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg className="w-4 h-4 text-slate-400 group-hover:text-slate-200 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
             </svg>
-            Recarregar
           </button>
           
           <button 
             onClick={() => setShowModal(true)} 
-            className="px-4 py-2.5 rounded-xl bg-[#10B981] hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-lg shadow-emerald-500/10 cursor-pointer"
+            className="h-11 px-5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black tracking-wide flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/10 active:scale-95 transition-all cursor-pointer"
           >
-            + Nova Cobrança
+            <span>+</span> Nova Cobrança
           </button>
         </div>
       </div>
@@ -722,15 +722,15 @@ export default function CobrancasPage() {
           >
             <h3 className="text-base font-bold text-slate-100 mb-5">Nova Cobrança</h3>
             
-            <form onSubmit={createCharge} className="space-y-4">
+            <form onSubmit={createCharge} className="space-y-5">
               
               {/* Client Selection */}
               <div>
-                <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1.5">Cliente *</label>
+                <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Cliente *</label>
                 <select 
                   value={form.client_id} 
                   onChange={e => setForm({ ...form, client_id: e.target.value })} 
-                  className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 cursor-pointer"
+                  className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
                   required
                 >
                   <option value="">Selecione o cliente...</option>
@@ -741,37 +741,38 @@ export default function CobrancasPage() {
               {/* Amount & Due Date Grid */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1.5">Valor (R$) *</label>
+                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Valor (R$) *</label>
                   <input 
                     type="number" 
                     step="0.01" 
                     min="0.01" 
                     value={form.amount} 
                     onChange={e => setForm({ ...form, amount: e.target.value })} 
-                    className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500" 
+                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all focus:ring-1 focus:ring-emerald-500/20" 
+                    placeholder="0,00"
                     required 
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1.5">Vencimento *</label>
+                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Vencimento *</label>
                   <input 
                     type="date" 
                     value={form.due_date} 
                     onChange={e => setForm({ ...form, due_date: e.target.value })} 
-                    className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 cursor-pointer" 
+                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20" 
                     required 
                   />
                 </div>
               </div>
               
               {/* AI Writer Helper Option */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end bg-slate-900/30 p-3 rounded-xl border border-slate-800/40">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end bg-slate-900/30 p-4 rounded-xl border border-slate-800/40">
                 <div className="sm:col-span-2">
-                  <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1.5">Tom da Cobrança (AI Writer)</label>
+                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Tom da Cobrança (AI Writer)</label>
                   <select 
                     value={cobrancaHumor} 
                     onChange={e => setCobrancaHumor(e.target.value)} 
-                    className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-slate-300 rounded-lg outline-none focus:border-emerald-500 cursor-pointer"
+                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-slate-300 rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
                   >
                     <option value="gentil">😇 Gentil (Amigável)</option>
                     <option value="firme">👔 Firme (Profissional)</option>
@@ -784,7 +785,7 @@ export default function CobrancasPage() {
                   type="button" 
                   onClick={handleRedigirComIA}
                   disabled={cobrancaAiLoading}
-                  className="w-full py-2.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold text-xs border border-emerald-500/20 transition-all opacity-90 disabled:opacity-50"
+                  className="w-full py-3.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold text-xs border border-emerald-500/20 transition-all active:scale-[0.98] disabled:opacity-50"
                 >
                   {cobrancaAiLoading ? 'Escrevendo...' : '🪄 Redigir com IA'}
                 </button>
@@ -792,24 +793,24 @@ export default function CobrancasPage() {
 
               {/* Description textarea */}
               <div>
-                <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1.5">Descrição / Mensagem de Cobrança</label>
+                <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Descrição / Mensagem de Cobrança</label>
                 <textarea 
                   rows="3"
                   value={form.description} 
                   onChange={e => setForm({ ...form, description: e.target.value })} 
                   placeholder="Ex: Lembrete da parcela mensal. Clique no botão de IA acima para redigir um texto incrível!" 
-                  className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 resize-y" 
+                  className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all resize-y focus:ring-1 focus:ring-emerald-500/20" 
                 />
               </div>
               
               {/* Recurrence & Late fee Interest */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1.5">Recorrência</label>
+                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Recorrência</label>
                   <select 
                     value={form.recurrence} 
                     onChange={e => setForm({ ...form, recurrence: e.target.value })} 
-                    className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 cursor-pointer"
+                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
                   >
                     <option value="once">Única</option>
                     <option value="monthly">Mensal</option>
@@ -819,7 +820,7 @@ export default function CobrancasPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1.5">Juros Diários Pós-Vencimento (%)</label>
+                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Juros Diários Pós-Vencimento (%)</label>
                   <input 
                     type="number" 
                     step="0.01" 
@@ -827,7 +828,7 @@ export default function CobrancasPage() {
                     value={form.daily_interest_rate} 
                     onChange={e => setForm({ ...form, daily_interest_rate: e.target.value })} 
                     placeholder="Ex: 0.1" 
-                    className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500" 
+                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all focus:ring-1 focus:ring-emerald-500/20" 
                   />
                 </div>
               </div>
@@ -835,28 +836,28 @@ export default function CobrancasPage() {
               {/* Channels & Payment Method Grid */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1.5">Canal de Lembrete</label>
+                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Canal de Lembrete</label>
                   <select 
                     value={form.reminder_channel} 
                     onChange={e => setForm({ ...form, reminder_channel: e.target.value })} 
-                    className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 cursor-pointer"
+                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
                   >
                     {user?.plan !== 'starter' && <option value="both">WhatsApp + Email</option>}
                     {user?.plan !== 'starter' && <option value="whatsapp">WhatsApp</option>}
                     <option value="email">E-mail</option>
                   </select>
                   {user?.plan === 'starter' && (
-                    <span className="block text-[10px] text-amber-500 mt-1">
+                    <span className="block text-[10px] text-amber-500 mt-1.5">
                       ⚠️ WhatsApp requer plano superior.
                     </span>
                   )}
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1.5">Método de Liquidação</label>
+                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Método de Liquidação</label>
                   <select 
                     value={form.payment_method} 
                     onChange={e => setForm({ ...form, payment_method: e.target.value })} 
-                    className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 cursor-pointer"
+                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
                   >
                     <option value="pix">Pix</option>
                     <option value="boleto">Boleto</option>
@@ -866,17 +867,17 @@ export default function CobrancasPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 justify-end pt-3">
+              <div className="flex gap-3 justify-end pt-4">
                 <button 
                   type="button" 
                   onClick={() => setShowModal(false)} 
-                  className="px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold hover:bg-slate-800"
+                  className="px-5 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-xs font-bold hover:bg-slate-800 hover:text-slate-200 transition-all"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
-                  className="px-4 py-2.5 rounded-lg bg-[#10B981] hover:bg-emerald-600 text-white text-xs font-bold shadow-lg shadow-emerald-500/10"
+                  className="px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black shadow-lg shadow-emerald-500/10 active:scale-[0.98] transition-all"
                 >
                   Criar Cobrança
                 </button>
