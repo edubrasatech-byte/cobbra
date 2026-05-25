@@ -30,6 +30,7 @@ export default function CobrancasPage() {
   const [msgType, setMsgType] = useState('success'); 
   const [cobrancaHumor, setCobrancaHumor] = useState('gentil');
   const [cobrancaAiLoading, setCobrancaAiLoading] = useState(false);
+  const [isReloading, setIsReloading] = useState(false);
 
   // Bottom drawer state for mobile interactive cards
   const [activeDrawerCharge, setActiveDrawerCharge] = useState(null);
@@ -65,6 +66,7 @@ export default function CobrancasPage() {
   }
 
   function handleReload() {
+    setIsReloading(true);
     if (filter === '' && search === '') {
       loadCharges();
     } else {
@@ -72,6 +74,9 @@ export default function CobrancasPage() {
       setSearch('');
     }
     triggerToast('Tabela de cobranças recarregada! 🔄', 'success');
+    setTimeout(() => {
+      setIsReloading(false);
+    }, 850);
   }
 
   useEffect(() => { 
@@ -335,18 +340,18 @@ export default function CobrancasPage() {
             title="Recarregar dados"
             className="w-11 h-11 flex-shrink-0 flex items-center justify-center rounded-xl bg-[#0C0E1A] border border-slate-800/60 text-slate-400 hover:bg-slate-900/40 hover:text-slate-200 transition-all cursor-pointer group active:scale-95"
           >
-            <svg className="w-4 h-4 text-slate-400 group-hover:text-slate-200 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg className={`w-4 h-4 text-slate-400 group-hover:text-slate-200 transition-colors ${isReloading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
             </svg>
           </button>
           
           <button 
             onClick={() => setShowModal(true)} 
-            className="h-11 px-4 sm:px-5 rounded-xl bg-[#10B981] hover:bg-[#34D399] text-[#070913] text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/25 border border-[#34D399]/30 active:scale-95 transition-all duration-200 cursor-pointer whitespace-nowrap"
+            className="w-11 h-11 flex-shrink-0 rounded-xl bg-[#10B981] hover:bg-[#34D399] text-[#070913] flex flex-col items-center justify-center shadow-lg shadow-emerald-500/25 border border-[#34D399]/30 active:scale-95 transition-all duration-200 cursor-pointer select-none"
+            title="Nova Cobrança"
           >
-            <span className="text-sm font-bold">+</span>
-            <span className="hidden sm:inline">Nova Cobrança</span>
-            <span className="sm:hidden">Nova</span>
+            <span className="text-[13px] font-black leading-none mb-0.5">+</span>
+            <span className="text-[8px] font-black uppercase tracking-widest leading-none">Nova</span>
           </button>
         </div>
 
@@ -539,13 +544,30 @@ export default function CobrancasPage() {
       {/* 📱 Mobile One-Hand Bottom Drawer Sheet */}
       {activeDrawerCharge && (
         <>
+          <style>{`
+            .animate-slide-up {
+              animation: slideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+            .animate-fade-in {
+              animation: fadeIn 0.25s ease-out forwards;
+            }
+            @keyframes slideUp {
+              from { transform: translateY(100%); }
+              to { transform: translateY(0); }
+            }
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 0.7; }
+            }
+          `}</style>
+
           {/* Drawer Backdrop Overlay */}
           <div 
-            className="fixed inset-0 bg-slate-950/95 z-[45] md:hidden"
+            className="fixed inset-0 bg-slate-950 z-[45] md:hidden animate-fade-in"
             onClick={() => setActiveDrawerCharge(null)}
           />
           
-          <div className="fixed inset-x-0 bottom-0 bg-[#0C0E1A] border-t border-slate-800/80 rounded-t-3xl z-[46] md:hidden space-y-5 shadow-2xl" style={{ padding: '24px' }}>
+          <div className="fixed inset-x-0 bottom-0 bg-[#0C0E1A] border-t border-slate-800/80 rounded-t-3xl z-[46] md:hidden space-y-5 shadow-2xl animate-slide-up" style={{ padding: '24px' }}>
             
             {/* Grabber Handle */}
             <div className="w-12 h-1 bg-slate-800 rounded-full mx-auto" onClick={() => setActiveDrawerCharge(null)} />
