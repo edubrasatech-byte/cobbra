@@ -289,27 +289,27 @@ export default function DashboardHome() {
       </div>
 
       {/* 📱 Mobile Only: Resumo Financeiro Diário below the header */}
-      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-6 animate-fadeInUp">
+      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 animate-fadeInUp" style={{ padding: '24px' }}>
         <h3 className="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-4 flex items-center gap-2">
           <span>📅</span> Resumo Financeiro Diário
         </h3>
         <div className="grid grid-cols-1 gap-2.5">
-          <div className="bg-[#0F111E] rounded-xl p-4 border border-slate-900 flex justify-between items-center flex-wrap gap-y-1.5 gap-x-4">
+          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1.5 gap-x-4" style={{ padding: '16px' }}>
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Pago Hoje</span>
             <p className="text-base font-black text-emerald-400">{fmt(stats.receivedToday || 0)}</p>
           </div>
           
-          <div className="bg-[#0F111E] rounded-xl p-4 border border-slate-900 flex justify-between items-center flex-wrap gap-y-1.5 gap-x-4">
+          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1.5 gap-x-4" style={{ padding: '16px' }}>
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Hoje</span>
             <p className="text-base font-black text-amber-500">{fmt(stats.dueToday || 0)}</p>
           </div>
           
-          <div className="bg-[#0F111E] rounded-xl p-4 border border-slate-900 flex justify-between items-center flex-wrap gap-y-1.5 gap-x-4">
+          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1.5 gap-x-4" style={{ padding: '16px' }}>
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Amanhã</span>
             <p className="text-base font-black text-blue-400">{fmt(stats.dueTomorrow || 0)}</p>
           </div>
           
-          <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl p-4 border border-slate-900 cursor-pointer transition-all duration-200" onClick={() => window.location.href = '/dashboard/cobranca-diaria'}>
+          <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl border border-slate-900 cursor-pointer transition-all duration-200" onClick={() => window.location.href = '/dashboard/cobranca-diaria'} style={{ padding: '16px' }}>
             <div className="flex justify-between items-center w-full flex-wrap gap-y-1.5 gap-x-4">
               <div>
                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Recorrentes Diários</span>
@@ -324,7 +324,7 @@ export default function DashboardHome() {
       </div>
 
       {/* 📱 Mobile Only: Alertas de Clientes em Risco below Resumo Financeiro */}
-      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-6 animate-fadeInUp">
+      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 animate-fadeInUp" style={{ padding: '24px' }}>
         <h3 className="text-xs font-bold text-rose-400 uppercase tracking-wider mb-4 flex items-center gap-2">
           <span>🚨</span> Alertas de Clientes em Risco
         </h3>
@@ -338,7 +338,8 @@ export default function DashboardHome() {
             return (
               <div 
                 key={i} 
-                className="bg-[#0F111E] rounded-xl p-4 border border-slate-900 flex items-center justify-between gap-3 hover:border-slate-800 transition-colors flex-wrap gap-y-1.5"
+                className="bg-[#0F111E] rounded-xl border border-slate-900 flex items-center justify-between gap-3 hover:border-slate-800 transition-colors flex-wrap gap-y-1.5"
+                style={{ padding: '16px' }}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-base ${
@@ -510,22 +511,22 @@ export default function DashboardHome() {
         <div className="hidden md:block bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '24px' }}>
           <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4">Resumo Financeiro Diário</h3>
           <div className="space-y-3">
-            <div className="bg-[#0F111E] rounded-xl p-3.5 border border-slate-900">
+            <div className="bg-[#0F111E] rounded-xl border border-slate-900" style={{ padding: '16px' }}>
               <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Pago Hoje</span>
               <p className="text-lg font-black text-emerald-400 mt-0.5">{fmt(stats.receivedToday || 0)}</p>
             </div>
             
-            <div className="bg-[#0F111E] rounded-xl p-3.5 border border-slate-900">
+            <div className="bg-[#0F111E] rounded-xl border border-slate-900" style={{ padding: '16px' }}>
               <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Hoje</span>
               <p className="text-lg font-black text-amber-500 mt-0.5">{fmt(stats.dueToday || 0)}</p>
             </div>
             
-            <div className="bg-[#0F111E] rounded-xl p-3.5 border border-slate-900">
+            <div className="bg-[#0F111E] rounded-xl border border-slate-900" style={{ padding: '16px' }}>
               <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Amanhã</span>
               <p className="text-lg font-black text-blue-400 mt-0.5">{fmt(stats.dueTomorrow || 0)}</p>
             </div>
             
-            <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl p-3.5 border border-slate-900 cursor-pointer transition-all duration-200" onClick={() => window.location.href = '/dashboard/cobranca-diaria'}>
+            <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl border border-slate-900 cursor-pointer transition-all duration-200" onClick={() => window.location.href = '/dashboard/cobranca-diaria'} style={{ padding: '16px' }}>
               <div className="flex justify-between items-center">
                 <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Faturamentos Recorrentes Diários</span>
                 <span className="text-[10px] text-emerald-400 font-bold hover:underline">Ver →</span>
@@ -552,7 +553,8 @@ export default function DashboardHome() {
               return (
                 <div 
                   key={i} 
-                  className="bg-[#0F111E] rounded-xl p-3 border border-slate-900 flex items-center justify-between gap-3 hover:border-slate-800 transition-colors"
+                  className="bg-[#0F111E] rounded-xl border border-slate-900 flex items-center justify-between gap-3 hover:border-slate-800 transition-colors"
+                  style={{ padding: '16px' }}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-base ${
