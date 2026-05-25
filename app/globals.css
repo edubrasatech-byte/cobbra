@@ -192,30 +192,64 @@ img {
    RESPONSIVE SYSTEM
    ============================ */
 
+/* Mobile-only / Desktop-only helper classes */
+.mobile-only {
+  display: none !important;
+}
+.desktop-only {
+  display: block !important;
+}
+div.desktop-only, section.desktop-only {
+  display: flex !important;
+}
+
 /* Landing page mobile nav */
 @media (max-width: 768px) {
+  .mobile-only {
+    display: block !important;
+  }
+  div.mobile-only {
+    display: flex !important;
+  }
+  .desktop-only {
+    display: none !important;
+  }
   .landing-nav { display: none !important; }
   .landing-nav-mobile { display: flex !important; }
   .mobile-hamburger { display: block !important; }
   .hero-grid { flex-direction: column !important; }
-  .hero-mockup { display: none !important; }
+  .hero-mockup { display: block !important; width: 100% !important; margin-top: 24px !important; }
   .hero-h1 { font-size: 36px !important; }
   .hero-sub { font-size: 16px !important; }
   .hero-cta { flex-direction: column !important; }
   .hero-cta a { width: 100% !important; text-align: center !important; justify-content: center !important; }
   .pricing-grid { grid-template-columns: 1fr !important; }
   .pricing-featured { transform: scale(1) !important; }
-  .before-after-grid { grid-template-columns: 1fr !important; }
+  .before-after-grid { display: none !important; }
   .before-after-divider { display: none !important; }
   .before-panel, .after-panel { border-radius: 16px !important; }
-  .testimonials-grid { grid-template-columns: 1fr !important; }
+  .mobile-before-after { display: flex !important; }
+  .testimonials-grid { display: none !important; }
+  .mobile-testimonials { display: flex !important; }
   .how-it-works-steps { flex-direction: column !important; gap: 32px !important; }
   .how-it-works-line { display: none !important; }
   .calc-results { grid-template-columns: 1fr !important; }
   .featured-testimonial { flex-direction: column !important; gap: 24px !important; }
   .featured-stats { flex-direction: row !important; flex-wrap: wrap !important; min-width: unset !important; }
   .footer-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
-  .urgency-bar { flex-wrap: wrap !important; gap: 8px !important; justify-content: center !important; }
+  .urgency-bar { 
+    flex-direction: column !important;
+    gap: 12px !important; 
+    justify-content: center !important; 
+    padding: 16px 20px !important;
+    border-radius: 16px 16px 0 0 !important;
+    text-align: center !important;
+  }
+  .urgency-bar a {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 12px !important;
+  }
 }
 
 @media (max-width: 640px) {
