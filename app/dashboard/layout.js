@@ -696,7 +696,9 @@ export default function DashboardLayout({ children }) {
               ☰
             </button>
             <h1 className="text-base md:text-lg font-bold text-slate-100 tracking-tight hidden sm:block">{pageTitle}</h1>
-            <span className="sm:hidden w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center text-lg shadow shadow-emerald-500/10 select-none">🐍</span>
+            <div className="sm:hidden w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center shadow shadow-emerald-500/10 select-none">
+              <MiniSnake size={20} />
+            </div>
           </div>
 
           {/* 🔍 Catarina AI Engine: Flat Command Bar Widget */}
