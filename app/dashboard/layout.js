@@ -792,7 +792,7 @@ export default function DashboardLayout({ children }) {
             </div>
 
             {/* Score and Quick Stats Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6" style={{ marginBottom: '24px' }}>
               <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/30 flex flex-col justify-center">
                 <span className="text-[10px] text-slate-500 uppercase font-semibold mb-1">Score Pagador</span>
                 <span className={`text-xs font-bold ${getPayerScore(selectedClient).c}`}>{getPayerScore(selectedClient).l}</span>
@@ -807,14 +807,14 @@ export default function DashboardLayout({ children }) {
               </div>
               <div className={`rounded-xl p-3 border ${
                 selectedClient.total_overdue > 0 ? 'bg-rose-500/5 border-rose-500/20' : 'bg-slate-900/60 border-slate-800/30'
-              }`}>
+              }`} style={{ height: '100%' }}>
                 <span className="text-[10px] text-slate-500 uppercase font-semibold mb-1">Em Aberto</span>
                 <span className={`text-xs font-bold block ${selectedClient.total_overdue > 0 ? 'text-rose-400' : 'text-slate-400'}`}>{fmt(selectedClient.total_overdue)}</span>
               </div>
             </div>
 
             {/* Debts list / History */}
-            <h4 className="text-sm font-bold text-slate-200 mb-3">Histórico Financeiro</h4>
+            <h4 className="text-sm font-bold text-slate-200 mb-3" style={{ marginTop: '12px', marginBottom: '16px' }}>Histórico Financeiro</h4>
             <div className="flex-1 space-y-3 overflow-y-auto pr-1">
               {loadingCharges ? (
                 <p className="text-slate-500 text-xs text-center py-6">Carregando faturas...</p>

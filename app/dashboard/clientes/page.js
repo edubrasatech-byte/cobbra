@@ -254,7 +254,7 @@ export default function ClientesPage() {
     <div>
       {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
 
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center mb-6">
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center mb-6" style={{ marginBottom: '24px' }}>
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
           <input placeholder="Buscar clientes..." value={search} onChange={e => setSearch(e.target.value)} className="w-full sm:w-64 h-11 min-h-[44px] flex-shrink-0" style={inputS} />
           <div className="flex gap-2 h-11 min-h-[44px] flex-shrink-0">
@@ -393,7 +393,7 @@ export default function ClientesPage() {
             </div>
 
             {/* Score and Quick Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6" style={{ marginBottom: '24px' }}>
               <div style={{ background: 'rgba(5,150,105,0.08)', borderRadius: 12, padding: 14, border: '1px solid rgba(5,150,105,0.15)' }}>
                 <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 4 }}>Pontualidade (Score)</p>
                 <p style={{ fontSize: 15, fontWeight: 700, color: getPayerScore(selectedClient).c, margin: 0 }}>
@@ -415,7 +415,7 @@ export default function ClientesPage() {
             </div>
 
             {/* Debts list / History */}
-            <h4 style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 12 }}>Histórico Completo de Cobranças</h4>
+            <h4 style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginTop: '12px', marginBottom: '16px' }}>Histórico Completo de Cobranças</h4>
             {loadingCharges ? (
               <p style={{ color: '#94a3b8', fontSize: 14, textAlign: 'center', padding: 20 }}>Carregando histórico...</p>
             ) : clientCharges.length === 0 ? (
