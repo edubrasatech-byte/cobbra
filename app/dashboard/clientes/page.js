@@ -366,7 +366,7 @@ export default function ClientesPage() {
       {selectedClient && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999 }}
           onClick={() => setSelectedClient(null)}>
-          <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 md:p-8 max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto border border-white/10">
+          <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 md:p-8 max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto border border-white/10" style={{ padding: isMobile ? '24px' : '32px' }}>
             
             {/* Header info */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 20, marginBottom: 20 }}>
@@ -481,7 +481,7 @@ export default function ClientesPage() {
       {/* Partial Abatement Modal (Modal Secundário) */}
       {abaterCharge && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1001 }} onClick={() => setAbaterCharge(null)}>
-          <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 max-w-md w-full mx-4 border border-white/15">
+          <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 max-w-md w-full mx-4 border border-white/15" style={{ padding: '24px' }}>
             <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>💸 Abater Parte do Valor</h3>
             <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20 }}>
               Dívida: <strong>{abaterCharge.description || 'Sem descrição'}</strong><br />
@@ -524,7 +524,7 @@ export default function ClientesPage() {
       {/* Create Client Modal */}
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setShowModal(false)}>
-          <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 md:p-8 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto border border-white/10">
+          <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 md:p-8 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto border border-white/10" style={{ padding: isMobile ? '24px' : '32px' }}>
             <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 24 }}>Novo Cliente</h3>
             <form onSubmit={createClient}>
               {[

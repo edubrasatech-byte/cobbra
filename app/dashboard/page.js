@@ -279,44 +279,45 @@ export default function DashboardHome() {
         </div>
         <button 
           onClick={loadStats}
-          className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-emerald-500/30 text-slate-300 hover:text-emerald-400 text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 cursor-pointer shadow-sm shadow-black/10 group"
+          className="p-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-emerald-500/30 text-slate-300 hover:text-emerald-400 flex items-center justify-center transition-all duration-200 cursor-pointer shadow-sm shadow-black/10 group"
+          title="Recarregar dados"
+          aria-label="Recarregar dados"
         >
-          <svg className="w-3 h-3 text-slate-400 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg className="w-4 h-4 text-slate-400 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
           </svg>
-          Recarregar Dados
         </button>
       </div>
 
       {/* 📱 Mobile Only: Resumo Financeiro Diário below the header */}
-      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 animate-fadeInUp" style={{ padding: '24px' }}>
-        <h3 className="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-4 flex items-center gap-2">
+      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 animate-fadeInUp" style={{ padding: '16px' }}>
+        <h3 className="text-xs font-bold text-[#10B981] uppercase tracking-wider flex items-center gap-2" style={{ marginBottom: '12px' }}>
           <span>📅</span> Resumo Financeiro Diário
         </h3>
-        <div className="grid grid-cols-1 gap-2.5">
-          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1.5 gap-x-4" style={{ padding: '16px' }}>
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Pago Hoje</span>
-            <p className="text-base font-black text-emerald-400">{fmt(stats.receivedToday || 0)}</p>
+        <div className="grid grid-cols-1 gap-2">
+          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1 gap-x-3" style={{ padding: '10px 14px' }}>
+            <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Pago Hoje</span>
+            <p className="text-sm font-black text-emerald-400">{fmt(stats.receivedToday || 0)}</p>
           </div>
           
-          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1.5 gap-x-4" style={{ padding: '16px' }}>
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Hoje</span>
-            <p className="text-base font-black text-amber-500">{fmt(stats.dueToday || 0)}</p>
+          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1 gap-x-3" style={{ padding: '10px 14px' }}>
+            <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Hoje</span>
+            <p className="text-sm font-black text-amber-500">{fmt(stats.dueToday || 0)}</p>
           </div>
           
-          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1.5 gap-x-4" style={{ padding: '16px' }}>
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Amanhã</span>
-            <p className="text-base font-black text-blue-400">{fmt(stats.dueTomorrow || 0)}</p>
+          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1 gap-x-3" style={{ padding: '10px 14px' }}>
+            <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Amanhã</span>
+            <p className="text-sm font-black text-blue-400">{fmt(stats.dueTomorrow || 0)}</p>
           </div>
           
-          <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl border border-slate-900 cursor-pointer transition-all duration-200" onClick={() => window.location.href = '/dashboard/cobranca-diaria'} style={{ padding: '16px' }}>
-            <div className="flex justify-between items-center w-full flex-wrap gap-y-1.5 gap-x-4">
+          <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl border border-slate-900 cursor-pointer transition-all duration-200" onClick={() => window.location.href = '/dashboard/cobranca-diaria'} style={{ padding: '10px 14px' }}>
+            <div className="flex justify-between items-center w-full flex-wrap gap-y-1 gap-x-3">
               <div>
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Recorrentes Diários</span>
-                <span className="text-[9px] text-slate-500 font-semibold block mt-0.5">{stats.dailyBillingCount || 0} contratos ativos</span>
+                <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block">Recorrentes Diários</span>
+                <span className="text-[8px] text-slate-500 font-semibold block mt-0.5">{stats.dailyBillingCount || 0} contratos ativos</span>
               </div>
               <div className="text-right">
-                <p className="text-base font-black text-[#10B981]">{fmt(stats.dailyBillingTotal || 0)}<span className="text-[10px] text-slate-500 font-bold">/dia</span></p>
+                <p className="text-sm font-black text-[#10B981]">{fmt(stats.dailyBillingTotal || 0)}<span className="text-[9px] text-slate-500 font-bold">/dia</span></p>
               </div>
             </div>
           </div>
@@ -324,11 +325,11 @@ export default function DashboardHome() {
       </div>
 
       {/* 📱 Mobile Only: Alertas de Clientes em Risco below Resumo Financeiro */}
-      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 animate-fadeInUp" style={{ padding: '24px' }}>
-        <h3 className="text-xs font-bold text-rose-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 animate-fadeInUp" style={{ padding: '16px' }}>
+        <h3 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2" style={{ marginBottom: '12px' }}>
           <span>🚨</span> Alertas de Clientes em Risco
         </h3>
-        <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
+        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
           {(stats.atRiskClients || []).map((c, i) => {
             const dateStr = c.oldest_overdue_date 
               ? `Vencido desde ${new Date(c.oldest_overdue_date).toLocaleDateString('pt-BR')}` 
@@ -338,27 +339,27 @@ export default function DashboardHome() {
             return (
               <div 
                 key={i} 
-                className="bg-[#0F111E] rounded-xl border border-slate-900 flex items-center justify-between gap-3 hover:border-slate-800 transition-colors flex-wrap gap-y-1.5"
-                style={{ padding: '16px' }}
+                className="bg-[#0F111E] rounded-xl border border-slate-900 flex items-center justify-between gap-3 hover:border-slate-800 transition-colors flex-wrap gap-y-1"
+                style={{ padding: '8px 12px' }}
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-base ${
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm ${
                     isCritical ? 'bg-rose-500/10 text-rose-400' : 'bg-amber-500/10 text-amber-400'
                   }`}>
                     {isCritical ? '🚨' : '⚠️'}
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-slate-200 truncate">{c.name}</p>
-                    <p className={`text-[10px] font-medium leading-none mt-1 ${isCritical ? 'text-rose-400/90' : 'text-amber-400/90'}`}>
+                    <p className={`text-[9px] font-medium leading-none mt-1 ${isCritical ? 'text-rose-400/90' : 'text-amber-400/90'}`}>
                       Débito: {fmt(c.total_overdue)}
                     </p>
                     {dateStr && (
-                      <p className="text-[9px] text-slate-500 mt-0.5 truncate">{dateStr}</p>
+                      <p className="text-[8px] text-slate-500 mt-0.5 truncate">{dateStr}</p>
                     )}
                   </div>
                 </div>
                 
-                <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded ${
+                <span className={`text-[8px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded ${
                   isCritical ? 'bg-rose-500/10 text-rose-400 border border-rose-500/10' : 'bg-amber-500/10 text-amber-400 border border-amber-500/10'
                 } flex-shrink-0 scale-90`}>
                   {isCritical ? 'Crítico' : 'Alerta'}
@@ -368,10 +369,10 @@ export default function DashboardHome() {
           })}
           
           {(!stats.atRiskClients || stats.atRiskClients.length === 0) && (
-            <div className="flex flex-col items-center justify-center py-6 text-center">
-              <span className="text-2xl mb-2">🎉</span>
+            <div className="flex flex-col items-center justify-center py-4 text-center">
+              <span className="text-xl mb-1.5">🎉</span>
               <p className="text-emerald-400 text-xs font-bold">100% em dia!</p>
-              <p className="text-[10px] text-slate-500 mt-1">Todos os clientes ativos adimplentes.</p>
+              <p className="text-[9px] text-slate-500 mt-0.5">Todos os clientes ativos adimplentes.</p>
             </div>
           )}
         </div>
@@ -508,42 +509,42 @@ export default function DashboardHome() {
         </div>
 
         {/* 2. Resumo Diário */}
-        <div className="hidden md:block bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '24px' }}>
-          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4">Resumo Financeiro Diário</h3>
-          <div className="space-y-3">
-            <div className="bg-[#0F111E] rounded-xl border border-slate-900" style={{ padding: '16px' }}>
+        <div className="hidden md:block bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '16px' }}>
+          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider" style={{ marginBottom: '12px' }}>Resumo Financeiro Diário</h3>
+          <div className="space-y-2">
+            <div className="bg-[#0F111E] rounded-xl border border-slate-900" style={{ padding: '10px 14px' }}>
               <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Pago Hoje</span>
-              <p className="text-lg font-black text-emerald-400 mt-0.5">{fmt(stats.receivedToday || 0)}</p>
+              <p className="text-sm font-black text-emerald-400 mt-0.5">{fmt(stats.receivedToday || 0)}</p>
             </div>
             
-            <div className="bg-[#0F111E] rounded-xl border border-slate-900" style={{ padding: '16px' }}>
+            <div className="bg-[#0F111E] rounded-xl border border-slate-900" style={{ padding: '10px 14px' }}>
               <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Hoje</span>
-              <p className="text-lg font-black text-amber-500 mt-0.5">{fmt(stats.dueToday || 0)}</p>
+              <p className="text-sm font-black text-amber-500 mt-0.5">{fmt(stats.dueToday || 0)}</p>
             </div>
             
-            <div className="bg-[#0F111E] rounded-xl border border-slate-900" style={{ padding: '16px' }}>
+            <div className="bg-[#0F111E] rounded-xl border border-slate-900" style={{ padding: '10px 14px' }}>
               <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Amanhã</span>
-              <p className="text-lg font-black text-blue-400 mt-0.5">{fmt(stats.dueTomorrow || 0)}</p>
+              <p className="text-sm font-black text-blue-400 mt-0.5">{fmt(stats.dueTomorrow || 0)}</p>
             </div>
             
-            <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl border border-slate-900 cursor-pointer transition-all duration-200" onClick={() => window.location.href = '/dashboard/cobranca-diaria'} style={{ padding: '16px' }}>
+            <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl border border-slate-900 cursor-pointer transition-all duration-200" onClick={() => window.location.href = '/dashboard/cobranca-diaria'} style={{ padding: '10px 14px' }}>
               <div className="flex justify-between items-center">
                 <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Faturamentos Recorrentes Diários</span>
                 <span className="text-[10px] text-emerald-400 font-bold hover:underline">Ver →</span>
               </div>
-              <p className="text-lg font-black text-emerald-400 mt-0.5">
+              <p className="text-sm font-black text-emerald-400 mt-0.5">
                 {fmt(stats.dailyBillingTotal || 0)}
                 <span className="text-slate-500 font-bold text-xs"> /dia</span>
               </p>
-              <p className="text-[9px] text-slate-500 mt-1 font-semibold">{stats.dailyBillingCount || 0} contratos recorrentes ativos</p>
+              <p className="text-[8px] text-slate-500 mt-1 font-semibold">{stats.dailyBillingCount || 0} contratos recorrentes ativos</p>
             </div>
           </div>
         </div>
 
         {/* 3. Clientes em Risco */}
-        <div className="hidden md:block bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '24px' }}>
-          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4">Alertas de Clientes em Risco</h3>
-          <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
+        <div className="hidden md:block bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '16px' }}>
+          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider" style={{ marginBottom: '12px' }}>Alertas de Clientes em Risco</h3>
+          <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
             {(stats.atRiskClients || []).map((c, i) => {
               const dateStr = c.oldest_overdue_date 
                 ? `Vencido desde ${new Date(c.oldest_overdue_date).toLocaleDateString('pt-BR')}` 
@@ -554,26 +555,26 @@ export default function DashboardHome() {
                 <div 
                   key={i} 
                   className="bg-[#0F111E] rounded-xl border border-slate-900 flex items-center justify-between gap-3 hover:border-slate-800 transition-colors"
-                  style={{ padding: '16px' }}
+                  style={{ padding: '8px 12px' }}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-base ${
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm ${
                       isCritical ? 'bg-rose-500/10 text-rose-400' : 'bg-amber-500/10 text-amber-400'
                     }`}>
                       {isCritical ? '🚨' : '⚠️'}
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-slate-200 truncate">{c.name}</p>
-                      <p className={`text-[10px] font-medium leading-none mt-1 ${isCritical ? 'text-rose-400/90' : 'text-amber-400/90'}`}>
+                      <p className={`text-[9px] font-medium leading-none mt-1 ${isCritical ? 'text-rose-400/90' : 'text-amber-400/90'}`}>
                         Débito: {fmt(c.total_overdue)}
                       </p>
                       {dateStr && (
-                        <p className="text-[9px] text-slate-500 mt-0.5 truncate">{dateStr}</p>
+                        <p className="text-[8px] text-slate-500 mt-0.5 truncate">{dateStr}</p>
                       )}
                     </div>
                   </div>
                   
-                  <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded ${
+                  <span className={`text-[8px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded ${
                     isCritical ? 'bg-rose-500/10 text-rose-400 border border-rose-500/10' : 'bg-amber-500/10 text-amber-400 border border-amber-500/10'
                   } flex-shrink-0 scale-90`}>
                     {isCritical ? 'Crítico' : 'Alerta'}
@@ -583,10 +584,10 @@ export default function DashboardHome() {
             })}
             
             {(!stats.atRiskClients || stats.atRiskClients.length === 0) && (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <span className="text-3xl mb-2">🎉</span>
+              <div className="flex flex-col items-center justify-center py-4 text-center">
+                <span className="text-2xl mb-1.5">🎉</span>
                 <p className="text-emerald-400 text-xs font-bold">100% em dia!</p>
-                <p className="text-[10px] text-slate-500 mt-1">Todos os clientes ativos adimplentes.</p>
+                <p className="text-[9px] text-slate-500 mt-0.5">Todos os clientes ativos adimplentes.</p>
               </div>
             )}
           </div>

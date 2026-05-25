@@ -390,7 +390,8 @@ export default function CobrancasPage() {
             <div 
               key={c.id} 
               onClick={() => setActiveDrawerCharge(c)}
-              className="bg-[#0C0E1A] hover:bg-slate-900/40 border border-slate-800/40 p-5 rounded-2xl flex items-center justify-between cursor-pointer transition-all duration-200 active:scale-[0.98]"
+              className="bg-[#0C0E1A] hover:bg-slate-900/40 border border-slate-800/40 rounded-2xl flex items-center justify-between cursor-pointer transition-all duration-200 active:scale-[0.98]"
+              style={{ padding: '16px' }}
             >
               <div className="min-w-0 pr-4 flex-1">
                 <p className="font-extrabold text-sm text-slate-100 truncate">{c.client_name || 'Cliente Sem Nome'}</p>
@@ -545,8 +546,7 @@ export default function CobrancasPage() {
             onClick={() => setActiveDrawerCharge(null)}
           />
           
-          {/* Bottom Drawer Sheet */}
-          <div className="fixed inset-x-0 bottom-0 bg-[#0C0E1A] border-t border-slate-800/80 rounded-t-3xl p-6 z-[46] md:hidden space-y-5 shadow-2xl">
+          <div className="fixed inset-x-0 bottom-0 bg-[#0C0E1A] border-t border-slate-800/80 rounded-t-3xl z-[46] md:hidden space-y-5 shadow-2xl" style={{ padding: '24px' }}>
             
             {/* Grabber Handle */}
             <div className="w-12 h-1 bg-slate-800 rounded-full mx-auto" onClick={() => setActiveDrawerCharge(null)} />
@@ -663,7 +663,7 @@ export default function CobrancasPage() {
             setRebateCharge(null);
           }}
         >
-          <div onClick={e => e.stopPropagation()} className="bg-[#0C0E1A] rounded-2xl p-6 w-full max-w-sm border border-slate-800/60 shadow-2xl">
+          <div onClick={e => e.stopPropagation()} className="bg-[#0C0E1A] rounded-2xl p-6 w-full max-w-sm border border-slate-800/60 shadow-2xl" style={{ padding: '24px' }}>
             <h3 className="text-base font-bold text-slate-100 mb-1">Abatimento de Fatura</h3>
             <p className="text-xs text-slate-500 mb-4 leading-relaxed">
               Deduza uma quantia paga avulso da cobrança <strong className="text-slate-300">{rebateCharge.description}</strong>.
@@ -718,6 +718,7 @@ export default function CobrancasPage() {
           <div 
             onClick={e => e.stopPropagation()} 
             className="bg-[#0C0E1A] rounded-2xl p-6 w-full max-w-lg border border-slate-800/60 shadow-2xl max-h-[90vh] overflow-y-auto"
+            style={{ padding: '24px' }}
           >
             <h3 className="text-base font-bold text-slate-100 mb-5">Nova Cobrança</h3>
             
@@ -901,6 +902,7 @@ export default function CobrancasPage() {
             <div 
               onClick={e => e.stopPropagation()} 
               className="bg-[#0C0E1A] rounded-2xl p-6 w-full max-w-2xl border border-slate-800/60 shadow-2xl max-h-[90vh] overflow-y-auto"
+              style={{ padding: '24px' }}
             >
               
               <div className="flex justify-between items-center border-b border-slate-800/40 pb-4 mb-4">

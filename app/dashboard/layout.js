@@ -86,6 +86,26 @@ const NAV_ICONS = {
   )
 };
 
+// ========== MINI SNAKE MASCOT LOGO ==========
+function MiniSnake({ size = 40, style = {} }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" style={style}>
+      <path d="M8 30 C4 28, 3 22, 8 18 C13 14, 20 13, 25 17 C30 21, 33 18, 33 13 C33 9, 29 7, 26 9" stroke="url(#miniGradLayout)" strokeWidth="4" strokeLinecap="round" fill="none" />
+      <circle cx="24" cy="8" r="5" fill="url(#miniGradLayout)" />
+      <circle cx="23" cy="7" r="1.2" fill="white" />
+      <circle cx="26" cy="7" r="1.2" fill="white" />
+      <circle cx="23.2" cy="7.3" r="0.7" fill="#0f172a" />
+      <circle cx="26.2" cy="7.3" r="0.7" fill="#0f172a" />
+      <defs>
+        <linearGradient id="miniGradLayout" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#10b981" />
+          <stop offset="100%" stopColor="#0d9488" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}
+
 export default function DashboardLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -510,9 +530,7 @@ export default function DashboardLayout({ children }) {
         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800/40">
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="w-10 h-10 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/10 select-none">
-              <svg className="w-6 h-6 text-[#10B981] filter drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5.5 1.5 1.5 1.5 2.5 0 1.5-.5 2-1 3-1.072 2.143-.224 4.054 2 6 .5.5 1 1 1 2a2.5 2.5 0 0 1-5 0z" />
-              </svg>
+              <MiniSnake size={24} />
             </div>
             {!sidebarCollapsed && (
               <span className="font-extrabold text-lg bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent tracking-tight">
@@ -603,9 +621,7 @@ export default function DashboardLayout({ children }) {
         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800/40">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center flex-shrink-0 shadow shadow-emerald-500/10 select-none">
-              <svg className="w-5 h-5 text-[#10B981] filter drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5.5 1.5 1.5 1.5 2.5 0 1.5-.5 2-1 3-1.072 2.143-.224 4.054 2 6 .5.5 1 1 1 2a2.5 2.5 0 0 1-5 0z" />
-              </svg>
+              <MiniSnake size={20} />
             </div>
             <span className="font-extrabold text-base text-slate-100">Cobbra<span className="text-[#10B981] text-[10px] font-bold">.ai</span></span>
           </div>
