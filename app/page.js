@@ -518,8 +518,8 @@ export default function HomePage() {
       </header>
 
       {/* ===== HERO ===== */}
-      <section style={{
-        paddingTop: 95, paddingBottom: 60, background: '#070913',
+      <section className="hero-section" style={{
+        background: '#070913',
         position: 'relative', overflow: 'hidden'
       }}>
         {/* Decorative Neon Halos */}
@@ -665,7 +665,7 @@ export default function HomePage() {
       {/* ===== HOW IT WORKS ===== */}
       <section id="como-funciona" style={{ padding: '70px 0', background: '#070913', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 40, fontWeight: 800, marginBottom: 16, color: '#ffffff' }}>Nunca mais você vai precisar<br /><span style={{ color: '#10b981' }}>fingir que esqueceu de cobrar.</span></h2>
+          <h2 className="section-title" style={{ marginBottom: 16, color: '#ffffff' }}>Nunca mais você vai precisar<br /><span style={{ color: '#10b981' }}>fingir que esqueceu de cobrar.</span></h2>
           <p style={{ fontSize: 18, color: '#94a3b8', marginBottom: 40 }}>O Cobbra faz o papel chato por você — e o cliente nem percebe que é automático.</p>
           <div className="how-it-works-steps" style={{ display: 'flex', gap: 40, justifyContent: 'center', position: 'relative' }}>
             {/* Connection line */}
@@ -697,7 +697,7 @@ export default function HomePage() {
       {/* ===== BEFORE VS AFTER ===== */}
       <section style={{ padding: '70px 0', background: '#070913' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px' }}>
-          <h2 style={{ fontSize: 40, fontWeight: 800, textAlign: 'center', marginBottom: 12, color: '#ffffff' }}>
+          <h2 className="section-title" style={{ textAlign: 'center', marginBottom: 12, color: '#ffffff' }}>
             Você fica o bonzinho.<br /><span style={{ color: '#10b981' }}>A cobra faz o serviço sujo.</span>
           </h2>
           <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: 17, marginBottom: 48 }}>Pare de perder amizades (e dinheiro) por não cobrar.</p>
@@ -822,7 +822,7 @@ export default function HomePage() {
             }}>
               ✨ NOVA ATUALIZAÇÃO 3.0
             </span>
-            <h2 style={{ fontSize: 42, fontWeight: 900, marginTop: 16, marginBottom: 16, letterSpacing: -1 }}>
+            <h2 className="section-title" style={{ marginTop: 16, marginBottom: 16 }}>
               Conheça a <span style={{ background: 'linear-gradient(135deg, #10b981, #0d9488)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Catarina AI Engine</span>
             </h2>
             <p style={{ fontSize: 18, color: '#94a3b8', maxWidth: 640, margin: '0 auto', lineHeight: 1.6 }}>
@@ -1098,7 +1098,7 @@ export default function HomePage() {
       {/* ===== SAVINGS CALCULATOR ===== */}
       <section style={{ padding: '70px 0', background: '#070913' }}>
         <div style={{ maxWidth: 700, margin: '0 auto', padding: '0 24px' }}>
-          <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 8, color: '#fff' }}>
+          <h2 className="section-title" style={{ textAlign: 'center', marginBottom: 8, color: '#fff' }}>
             🧮 Quanto você <span style={{ color: '#10b981' }}>perde</span> por mês?
           </h2>
           <p style={{ textAlign: 'center', color: '#94a3b8', marginBottom: 48, fontSize: 16 }}>
@@ -1209,7 +1209,7 @@ export default function HomePage() {
       <section id="depoimentos" style={{ padding: '70px 0', background: '#070913', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
-            <h2 style={{ fontSize: 40, fontWeight: 800, marginBottom: 12, color: '#ffffff' }}>
+            <h2 className="section-title" style={{ marginBottom: 12, color: '#ffffff' }}>
               Quem usa, <span style={{ color: '#10b981' }}>comprova</span>
             </h2>
             <p style={{ fontSize: 18, color: '#94a3b8', marginBottom: 24 }}>Resultados reais de profissionais como você</p>
@@ -1375,7 +1375,7 @@ export default function HomePage() {
       {/* ===== PRICING ===== */}
       <section id="precos" style={{ padding: '70px 0', background: '#070913', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 8, color: '#ffffff' }}>
+          <h2 className="section-title" style={{ marginBottom: 8, color: '#ffffff' }}>
             Demita a inadimplência.<br /><span style={{ color: '#10b981' }}>Planos que cabem no bolso.</span>
           </h2>
           <p style={{ fontSize: 16, color: '#cbd5e1', marginBottom: 32 }}>Planos acessíveis e transparentes. Faça upgrade quando precisar. Sem fidelidade.</p>
@@ -1520,7 +1520,7 @@ export default function HomePage() {
       {/* ===== FAQ WITH CATEGORIES ===== */}
       <section id="faq" style={{ padding: '70px 0', background: '#070913' }}>
         <div style={{ maxWidth: 750, margin: '0 auto', padding: '0 24px' }}>
-          <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 12, color: '#ffffff' }}>Ainda em dúvida? <span style={{ color: '#10b981' }}>A cobra responde.</span> 🐍</h2>
+          <h2 className="section-title" style={{ textAlign: 'center', marginBottom: 12, color: '#ffffff' }}>Ainda em dúvida? <span style={{ color: '#10b981' }}>A cobra responde.</span> 🐍</h2>
           <p style={{ textAlign: 'center', color: '#cbd5e1', marginBottom: 32, fontSize: 16 }}>Tudo que você precisa saber para começar hoje</p>
 
           {/* Category filters */}
@@ -1592,7 +1592,7 @@ export default function HomePage() {
         <div style={{ position: 'absolute', bottom: 30, right: '15%', opacity: 0.15, animation: 'float 5s ease-in-out infinite 1s' }}><MiniSnake size={60} /></div>
 
         <div style={{ maxWidth: 700, margin: '0 auto', padding: '0 24px', position: 'relative' }}>
-          <h2 style={{ fontSize: 44, fontWeight: 900, color: '#fff', marginBottom: 16, lineHeight: 1.2 }}>
+          <h2 className="section-title" style={{ color: '#fff', marginBottom: 16, lineHeight: 1.2 }}>
             Enquanto você dorme,<br />a cobra cobra.
           </h2>
           <p style={{ fontSize: 19, color: 'rgba(255,255,255,0.9)', marginBottom: 16 }}>
@@ -1662,26 +1662,16 @@ export default function HomePage() {
 
       {/* ===== FLOATING URGENCY BAR ===== */}
       {urgencyVisible && urgencyTime && (
-        <div className="urgency-bar" style={{
-          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 999,
-          background: 'linear-gradient(135deg, #070913, #0c0e1a)', padding: '12px 24px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16,
-          borderTop: '1px solid rgba(16,185,129,0.3)'
-        }}>
+        <div className="urgency-bar">
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', animation: 'pulse 2s infinite' }} />
             <span style={{ fontSize: 14, color: '#e2e8f0' }}>
               <span className="desktop-only">🐍 Última cobrança enviada <strong style={{ color: '#10b981' }}>{urgencyTime}</strong> em <strong style={{ color: '#10b981' }}>{urgencyCity}</strong></span>
-              <span className="mobile-only" style={{ display: 'none' }}>🔥 Comece em 2 minutos grátis</span>
+              <span className="mobile-only" style={{ display: 'none' }}>🐍 Cobranças automáticas no WhatsApp</span>
             </span>
           </div>
-          <a href="/cadastro" style={{
-            padding: '8px 20px', borderRadius: 8, background: '#10b981',
-            color: '#070913', fontSize: 13, fontWeight: 700, textDecoration: 'none'
-          }}>Começar agora</a>
-          <button onClick={() => setUrgencyVisible(false)} style={{
-            color: '#64748b', fontSize: 20, cursor: 'pointer', background: 'none', border: 'none', padding: '0 4px'
-          }} aria-label="Fechar barra de urgência">×</button>
+          <a href="/cadastro">Começar agora</a>
+          <button onClick={() => setUrgencyVisible(false)} aria-label="Fechar barra de urgência">×</button>
         </div>
       )}
 

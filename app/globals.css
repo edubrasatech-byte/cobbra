@@ -188,9 +188,74 @@ img {
   color: var(--green-900);
 }
 
+/* Floating Urgency Bar Capsule Style */
+.urgency-bar {
+  position: fixed !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 999 !important;
+  background: rgba(12, 14, 26, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  padding: 10px 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  border: 1px solid rgba(16,185,129,0.3) !important;
+  border-radius: 100px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px rgba(16,185,129,0.1) !important;
+  width: 90% !important;
+  max-width: 540px !important;
+  transition: all 0.3s ease !important;
+}
+
+.urgency-bar a {
+  padding: 8px 20px !important;
+  border-radius: 100px !important;
+  background: #10b981 !important;
+  color: #070913 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+}
+.urgency-bar a:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+}
+
+.urgency-bar button {
+  color: #64748b !important;
+  font-size: 20px !important;
+  cursor: pointer !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 4px !important;
+}
+
 /* ============================
    RESPONSIVE SYSTEM
    ============================ */
+
+/* Hero section and typography system */
+.hero-section {
+  padding-top: 105px !important;
+  padding-bottom: 60px !important;
+}
+.hero-h1 {
+  font-size: 52px !important;
+  font-weight: 900 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.02em !important;
+}
+.section-title {
+  font-size: 40px !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.02em !important;
+}
 
 /* Mobile-only / Desktop-only helper classes */
 .mobile-only {
@@ -205,6 +270,18 @@ div.desktop-only, section.desktop-only {
 
 /* Landing page mobile nav */
 @media (max-width: 768px) {
+  .hero-section {
+    padding-top: 80px !important;
+    padding-bottom: 40px !important;
+  }
+  .hero-h1 {
+    font-size: 32px !important;
+    line-height: 1.2 !important;
+  }
+  .section-title {
+    font-size: 24px !important;
+    line-height: 1.25 !important;
+  }
   .mobile-only {
     display: block !important;
   }
@@ -219,8 +296,6 @@ div.desktop-only, section.desktop-only {
   .mobile-hamburger { display: block !important; }
   .hero-grid { flex-direction: column !important; }
   .hero-mockup { display: block !important; width: 100% !important; margin-top: 24px !important; }
-  .hero-h1 { font-size: 36px !important; }
-  .hero-sub { font-size: 16px !important; }
   .hero-cta { flex-direction: column !important; }
   .hero-cta a { width: 100% !important; text-align: center !important; justify-content: center !important; }
   .pricing-grid { grid-template-columns: 1fr !important; }
@@ -238,23 +313,27 @@ div.desktop-only, section.desktop-only {
   .featured-stats { flex-direction: row !important; flex-wrap: wrap !important; min-width: unset !important; }
   .footer-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
   .urgency-bar { 
-    flex-direction: column !important;
-    gap: 12px !important; 
-    justify-content: center !important; 
-    padding: 16px 20px !important;
-    border-radius: 16px 16px 0 0 !important;
-    text-align: center !important;
+    flex-direction: row !important;
+    gap: 10px !important; 
+    justify-content: space-between !important; 
+    padding: 8px 12px 8px 16px !important;
+    border-radius: 100px !important;
+    width: 92% !important;
+    max-width: 395px !important;
+    bottom: 12px !important;
+    font-size: 12px !important;
   }
   .urgency-bar a {
-    width: 100% !important;
-    text-align: center !important;
-    padding: 12px !important;
+    width: auto !important;
+    padding: 8px 16px !important;
+    font-size: 11px !important;
+    border-radius: 100px !important;
   }
 }
 
 @media (max-width: 640px) {
-  .hero-h1 { font-size: 28px !important; line-height: 1.2 !important; }
-  .section-title { font-size: 26px !important; }
+  .hero-h1 { font-size: 26px !important; line-height: 1.2 !important; }
+  .section-title { font-size: 20px !important; }
   .section-pad { padding: 48px 16px !important; }
   .pricing-grid { gap: 16px !important; }
   .faq-filters { gap: 6px !important; }
