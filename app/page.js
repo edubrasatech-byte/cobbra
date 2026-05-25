@@ -830,124 +830,130 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="hero-grid" style={{ display: 'flex', alignItems: 'center', gap: 60, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 40, width: '100%' }}>
             
-            {/* Left side: Features grid - fully responsive, stacked on mobile */}
-            <div style={{ flex: 1.2, display: 'flex', flexDirection: 'column', gap: 20, width: '100%' }}>
+            {/* Top row: 3 Highlighted Feature Boxes in horizontal row on desktop, stack on mobile */}
+            <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, width: '100%' }}>
               {[
                 {
                   icon: '🪄',
-                  title: 'Dashboard Copilot (Linguagem Natural)',
-                  desc: 'Comande a plataforma conversando de forma natural. Catarina traduz frases livres em lançamentos e ações financeiras estruturadas de banco de dados.',
+                  title: 'Dashboard Copilot',
+                  desc: 'Comande conversando. Catarina traduz frases livres em ações financeiras estruturadas de banco de dados.',
                   badge: '“Cobre R$ 150 do Gustavo amanhã”'
                 },
                 {
                   icon: '😇',
-                  title: 'Copywriter de Lembretes (Humor da IA)',
-                  desc: 'Redija mensagens perfeitas para seu WhatsApp com um clique. Escolha o tom de abordagem (Gentil 😇, Firme 👔, Urgente 🚨 ou Divertido 🐍) e evite desgastes comerciais.',
-                  badge: 'Livre-se de textos robóticos'
+                  title: 'Copywriter de Lembretes',
+                  desc: 'Escolha a abordagem (Gentil 😇, Firme 👔, Urgente 🚨 ou Divertido 🐍) e evite desgastes comerciais.',
+                  badge: 'Abordagem perfeita em 1 clique'
                 },
                 {
                   icon: '📈',
-                  title: 'Insights Financeiros Inteligentes',
-                  desc: 'A IA analisa de forma 100% anônima e segura seu histórico financeiro e gera automaticamente 3 conselhos de negócios práticos para otimizar suas datas de recebimento e fluxo de caixa.',
+                  title: 'Insights Financeiros',
+                  desc: 'A IA analisa de forma segura seu histórico e gera conselhos práticos para otimizar seus prazos.',
                   badge: 'Decisões orientadas a dados'
                 }
               ].map((f, i) => (
                 <div 
                   key={i} 
                   style={{ 
-                    background: 'rgba(255,255,255,0.02)', 
-                    borderRadius: 16, padding: 24, 
-                    border: '1px solid rgba(255,255,255,0.05)', 
-                    transition: 'all 0.3s'
+                    background: 'rgba(255,255,255,0.01)', 
+                    borderRadius: 16, padding: '16px 20px', 
+                    border: '1px solid rgba(16,185,129,0.1)', 
+                    transition: 'all 0.3s',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: 12
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.background = 'rgba(16,185,129,0.06)';
                     e.currentTarget.style.borderColor = 'rgba(16,185,129,0.25)';
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.01)';
+                    e.currentTarget.style.borderColor = 'rgba(16,185,129,0.1)';
                   }}
                 >
-                  <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <div style={{ 
-                      width: 44, height: 44, borderRadius: 12, background: 'rgba(16,185,129,0.15)', 
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0
+                      width: 32, height: 32, borderRadius: 8, background: 'rgba(16,185,129,0.15)', 
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0
                     }}>{f.icon}</div>
-                    <div>
-                      <h3 className="feature-card-title" style={{ fontWeight: 700, color: '#fff', marginBottom: 6 }}>{f.title}</h3>
-                      <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.5, marginBottom: 12 }}>{f.desc}</p>
-                      <span style={{ 
-                        fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 6, 
-                        background: 'rgba(255,255,255,0.04)', color: '#34d399' 
-                      }}>{f.badge}</span>
-                    </div>
+                    <h3 className="feature-card-title" style={{ fontWeight: 700, color: '#fff', margin: 0 }}>{f.title}</h3>
+                  </div>
+                  <p style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.5, margin: 0 }}>{f.desc}</p>
+                  <div>
+                    <span style={{ 
+                      fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 6, 
+                      background: 'rgba(16,185,129,0.1)', color: '#10b981'
+                    }}>{f.badge}</span>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Right side: Mock AI chatbot and ticket simulation (static and high-fidelity) */}
-            <div style={{ flex: 1, minWidth: 320, width: '100%' }}>
-              <div style={{ 
-                background: '#0c0e1a', borderRadius: 24, padding: 24, 
-                border: '1px solid rgba(255, 255, 255, 0.06)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 16, marginBottom: 20 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🐍</div>
-                  <div>
-                    <h4 style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0 }}>Catarina — IA Cobrinha</h4>
-                    <span style={{ fontSize: 10, color: '#34d399', display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} /> Online e ativa
-                    </span>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minHeight: 220, justifyContent: 'center' }}>
-                  <div style={{ 
-                    alignSelf: 'flex-end', background: '#10b981', borderRadius: '16px 16px 2px 16px', 
-                    padding: '10px 14px', fontSize: 13, color: '#070913', fontWeight: 600, maxWidth: '85%' 
-                  }}>
-                    Cobre R$ 150 do Gustavo amanhã
-                  </div>
-                  
-                  <div style={{ 
-                    alignSelf: 'flex-start', background: 'rgba(255,255,255,0.03)', borderRadius: '16px 16px 16px 2px', 
-                    padding: '10px 14px', fontSize: 13, color: '#cbd5e1', maxWidth: '85%',
-                    border: '1px solid rgba(255,255,255,0.04)'
-                  }}>
-                    Com certeza! Cadastrei a cobrança de **R$ 150,00** para **Gustavo** com vencimento para amanhã. Ele receberá o lembrete gentil com o Pix copia e cola às 09:00 no WhatsApp. 🐍
-                    
-                    <div style={{ 
-                      marginTop: 10, padding: '8px 12px', background: 'rgba(16,185,129,0.1)', 
-                      border: '1px solid rgba(16,185,129,0.2)', borderRadius: 8, fontSize: 11, 
-                      color: '#10b981', fontWeight: 600 
-                    }}>
-                      📅 Cobrança agendada: Gustavo · R$ 150,00 · Vence Amanhã
+            {/* Bottom row: Center-aligned Mock AI chatbot */}
+            <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+              <div style={{ flex: 1, maxWidth: 440, width: '100%' }}>
+                <div style={{ 
+                  background: '#0c0e1a', borderRadius: 24, padding: 24, 
+                  border: '1px solid rgba(255, 255, 255, 0.06)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 16, marginBottom: 20 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🐍</div>
+                    <div>
+                      <h4 style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0 }}>Catarina — IA Cobrinha</h4>
+                      <span style={{ fontSize: 10, color: '#34d399', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} /> Online e ativa
+                      </span>
                     </div>
                   </div>
-                </div>
 
-                <div style={{ 
-                  marginTop: 24, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16,
-                  display: 'flex', gap: 10, alignItems: 'center'
-                }}>
-                  <div style={{ 
-                    flex: 1, background: 'rgba(255,255,255,0.03)', borderRadius: 10, 
-                    padding: '12px 14px', fontSize: 12, color: '#64748b' 
-                  }}>
-                    Escreva sua dúvida aqui...
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minHeight: 220, justifyContent: 'center' }}>
+                    <div style={{ 
+                      alignSelf: 'flex-end', background: '#10b981', borderRadius: '16px 16px 2px 16px', 
+                      padding: '10px 14px', fontSize: 13, color: '#070913', fontWeight: 600, maxWidth: '85%' 
+                    }}>
+                      Cobre R$ 150 do Gustavo amanhã
+                    </div>
+                    
+                    <div style={{ 
+                      alignSelf: 'flex-start', background: 'rgba(255,255,255,0.03)', borderRadius: '16px 16px 16px 2px', 
+                      padding: '10px 14px', fontSize: 13, color: '#cbd5e1', maxWidth: '85%',
+                      border: '1px solid rgba(255,255,255,0.04)'
+                    }}>
+                      Com certeza! Cadastrei a cobrança de **R$ 150,00** para **Gustavo** com vencimento para amanhã. Ele receberá o lembrete gentil com o Pix copia e cola às 09:00 no WhatsApp. 🐍
+                      
+                      <div style={{ 
+                        marginTop: 10, padding: '8px 12px', background: 'rgba(16,185,129,0.1)', 
+                        border: '1px solid rgba(16,185,129,0.2)', borderRadius: 8, fontSize: 11, 
+                        color: '#10b981', fontWeight: 600 
+                      }}>
+                        📅 Cobrança agendada: Gustavo · R$ 150,00 · Vence Amanhã
+                      </div>
+                    </div>
                   </div>
-                  <div style={{ 
-                    padding: '12px 16px', borderRadius: 10, background: '#10b981', 
-                    color: '#070913', fontSize: 12, fontWeight: 700, cursor: 'pointer'
-                  }}>
-                    Enviar
-                  </div>
-                </div>
 
+                  <div style={{ 
+                    marginTop: 24, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16,
+                    display: 'flex', gap: 10, alignItems: 'center'
+                  }}>
+                    <div style={{ 
+                      flex: 1, background: 'rgba(255,255,255,0.03)', borderRadius: 10, 
+                      padding: '12px 14px', fontSize: 12, color: '#64748b' 
+                    }}>
+                      Escreva sua dúvida aqui...
+                    </div>
+                    <div style={{ 
+                      padding: '12px 16px', borderRadius: 10, background: '#10b981', 
+                      color: '#070913', fontSize: 12, fontWeight: 700, cursor: 'pointer'
+                    }}>
+                      Enviar
+                    </div>
+                  </div>
+
+                </div>
               </div>
             </div>
 
@@ -1165,57 +1171,73 @@ export default function HomePage() {
               
               return (
                 <div className="animate-fadeIn" style={{
-                  background: '#0c0e1a', borderRadius: 20, padding: 24, border: '1px solid rgba(255,255,255,0.06)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', position: 'relative'
+                  background: 'rgba(255, 255, 255, 0.01)', borderRadius: 20, padding: '20px 18px', border: '1px solid rgba(16, 185, 129, 0.15)',
+                  boxShadow: '0 8px 30px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', position: 'relative'
                 }}>
+                  {/* Top Row: User Avatar & Info left, Stars & Muted right */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                    <div style={{ display: 'flex', gap: 3 }}>
-                      {Array(item.stars).fill(0).map((_, s) => <span key={s} style={{ color: '#f59e0b', fontSize: 16 }}>★</span>)}
-                    </div>
-                    <span style={{ fontSize: 11, color: '#94a3b8', background: 'rgba(255,255,255,0.04)', padding: '3px 8px', borderRadius: 6 }}>{item.time}</span>
-                  </div>
-                  <p style={{ fontSize: 14, color: '#cbd5e1', lineHeight: 1.6, marginBottom: 16, fontStyle: 'italic' }}>
-                    &ldquo;{item.quote}&rdquo;
-                  </p>
-                  <div style={{ background: 'rgba(16,185,129,0.08)', borderRadius: 8, padding: '8px 12px', marginBottom: 16, fontSize: 13, color: '#10b981', fontWeight: 600 }}>
-                    📊 {item.result}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <div style={{
-                        width: 40, height: 40, borderRadius: '50%', background: item.color,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 14
+                        width: 38, height: 38, borderRadius: '50%', background: item.color,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 13
                       }}>{item.initials}</div>
                       <div>
-                        <p style={{ fontWeight: 700, fontSize: 14, color: '#ffffff', margin: 0 }}>{item.name}</p>
+                        <p style={{ fontWeight: 700, fontSize: 13, color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+                          {item.name} <span style={{ color: '#10b981', fontSize: 11 }}>✔</span>
+                        </p>
                         <p style={{ fontSize: 11, color: '#94a3b8', margin: 0 }}>{item.role}</p>
                       </div>
                     </div>
-                    
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <button 
-                        onClick={() => setActiveTestimonial(prev => (prev - 1 + activeList.length) % activeList.length)}
-                        style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}
-                      >‹</button>
-                      <button 
-                        onClick={() => setActiveTestimonial(prev => (prev + 1) % activeList.length)}
-                        style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}
-                      >›</button>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+                      <div style={{ display: 'flex', gap: 2 }}>
+                        {Array(item.stars).fill(0).map((_, s) => <span key={s} style={{ color: '#f59e0b', fontSize: 12 }}>★</span>)}
+                      </div>
+                      <span style={{ fontSize: 9, color: '#64748b', background: 'rgba(255,255,255,0.03)', padding: '2px 6px', borderRadius: 4 }}>{item.time}</span>
                     </div>
                   </div>
-                  
-                  <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: 20 }}>
-                    {activeList.map((_, i) => (
-                      <div 
-                        key={i} 
-                        onClick={() => setActiveTestimonial(i)}
-                        style={{
-                          width: 8, height: 8, borderRadius: '50%', cursor: 'pointer',
-                          background: i === idx ? '#10b981' : 'rgba(255,255,255,0.15)',
-                          transition: 'background 0.2s'
-                        }} 
-                      />
-                    ))}
+
+                  {/* Body: Speech bubble Review */}
+                  <p style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.6, marginBottom: 14, fontStyle: 'italic', margin: '0 0 14px' }}>
+                    &ldquo;{item.quote}&rdquo;
+                  </p>
+
+                  {/* Result Pill */}
+                  <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 16 }}>
+                    <div style={{ 
+                      background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)',
+                      borderRadius: 100, padding: '4px 10px', fontSize: 11, color: '#10b981', fontWeight: 600,
+                      display: 'flex', alignItems: 'center', gap: 6
+                    }}>
+                      <span>📈</span>
+                      <span>{item.result}</span>
+                    </div>
+                  </div>
+
+                  {/* Footer Row: Nav arrows left/right with dots centered! */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 12 }}>
+                    <button 
+                      onClick={() => setActiveTestimonial(prev => (prev - 1 + activeList.length) % activeList.length)}
+                      style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', color: '#fff', border: '1px solid rgba(255,255,255,0.06)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}
+                    >‹</button>
+                    
+                    <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                      {activeList.map((_, i) => (
+                        <div 
+                          key={i} 
+                          onClick={() => setActiveTestimonial(i)}
+                          style={{
+                            width: 6, height: 6, borderRadius: '50%', cursor: 'pointer',
+                            background: i === idx ? '#10b981' : 'rgba(255,255,255,0.15)',
+                            transition: 'background 0.2s'
+                          }} 
+                        />
+                      ))}
+                    </div>
+
+                    <button 
+                      onClick={() => setActiveTestimonial(prev => (prev + 1) % activeList.length)}
+                      style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', color: '#fff', border: '1px solid rgba(255,255,255,0.06)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}
+                    >›</button>
                   </div>
                 </div>
               );
