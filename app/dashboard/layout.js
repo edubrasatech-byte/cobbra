@@ -726,7 +726,12 @@ export default function DashboardLayout({ children }) {
         {/* 📋 Main Scrollable Content Area */}
         <main 
           className="flex-1 w-full max-w-full overflow-y-auto overflow-x-hidden px-6 md:px-12 pt-6 pb-24 md:pb-8"
-          style={{ paddingLeft: horizontalPadding, paddingRight: horizontalPadding }}
+          style={{ 
+            paddingLeft: horizontalPadding, 
+            paddingRight: horizontalPadding,
+            paddingTop: '28px',
+            paddingBottom: isDesktop ? '32px' : '96px'
+          }}
         >
           {children}
         </main>
