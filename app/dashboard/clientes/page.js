@@ -262,8 +262,27 @@ export default function ClientesPage() {
               <option style={{ color: '#0f172a' }} value="">Todos os status</option>
               {Object.entries(HEALTH).map(([k, v]) => <option style={{ color: '#0f172a' }} key={k} value={k}>{v.i} {v.l}</option>)}
             </select>
-            <button onClick={loadClients} className="px-4 h-11 min-h-[44px] flex-shrink-0 rounded-xl bg-white/5 border border-white/10 text-slate-200 text-sm font-semibold flex items-center justify-center gap-1.5 hover:bg-white/10 active:scale-95 transition-all">
-              🔄
+            <button 
+              onClick={loadClients} 
+              style={{
+                width: '44px',
+                height: '44px',
+                minHeight: '44px',
+                borderRadius: '12px',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: '#cbd5e1',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                flexShrink: 0
+              }}
+              className="hover:bg-white/10 active:scale-95 transition-all"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+              </svg>
             </button>
           </div>
         </div>

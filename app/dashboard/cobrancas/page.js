@@ -365,9 +365,12 @@ export default function CobrancasPage() {
         <div className="flex items-center gap-2.5 justify-end">
           <button 
             onClick={handleReload}
-            className="px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800/60 text-slate-400 text-xs font-bold hover:bg-slate-850 hover:text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800/60 text-slate-400 text-xs font-bold hover:bg-slate-850 hover:text-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer group"
           >
-            🔄 Recarregar
+            <svg className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-200 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+            </svg>
+            Recarregar
           </button>
           
           <button 

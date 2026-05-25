@@ -427,33 +427,33 @@ export default function ConfiguracoesPage() {
               <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 24 }}>Defina as taxas padrão de juros diários pós-vencimento a serem aplicadas de acordo com o score pagador do cliente.</p>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div className="bg-[rgba(16,185,129,0.08)] rounded-xl p-4 border border-[rgba(16,185,129,0.15)]">
-                  <label className="block text-xs font-semibold text-[#10b981] mb-2">😊 Score Excelente (% ao dia)</label>
+                <div style={{ backgroundColor: 'rgba(16, 185, 129, 0.05)', borderColor: 'rgba(16, 185, 129, 0.2)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <label className="block text-xs font-semibold text-[#10b981]">😊 Score Excelente (% ao dia)</label>
                   <input type="number" step="0.01" value={scoreRates.excellent} onChange={e => setScoreRates({ ...scoreRates, excellent: parseFloat(e.target.value) || 0 })} style={inputS} />
                 </div>
-                <div className="bg-[rgba(245,158,11,0.08)] rounded-xl p-4 border border-[rgba(245,158,11,0.15)]">
-                  <label className="block text-xs font-semibold text-[#f59e0b] mb-2">⚠️ Score Regular (% ao dia)</label>
+                <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.05)', borderColor: 'rgba(245, 158, 11, 0.2)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <label className="block text-xs font-semibold text-[#f59e0b]">⚠️ Score Regular (% ao dia)</label>
                   <input type="number" step="0.01" value={scoreRates.regular} onChange={e => setScoreRates({ ...scoreRates, regular: parseFloat(e.target.value) || 0 })} style={inputS} />
                 </div>
-                <div className="bg-[rgba(239,68,68,0.08)] rounded-xl p-4 border border-[rgba(239,68,68,0.15)]">
-                  <label className="block text-xs font-semibold text-[#ef4444] mb-2">🚨 Score de Risco (% ao dia)</label>
+                <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.05)', borderColor: 'rgba(239, 68, 68, 0.2)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <label className="block text-xs font-semibold text-[#ef4444]">🚨 Score de Risco (% ao dia)</label>
                   <input type="number" step="0.01" value={scoreRates.risk} onChange={e => setScoreRates({ ...scoreRates, risk: parseFloat(e.target.value) || 0 })} style={inputS} />
                 </div>
               </div>
-
+ 
               <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8 }}>Limites de Faixa de Score</h3>
               <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 24 }}>Defina o limite de inadimplência (proporção de cobranças vencidas sobre o faturado total) para classificar o score de risco do cliente.</p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div className="bg-[rgba(110,231,183,0.08)] rounded-xl p-4 border border-[rgba(110,231,183,0.15)]">
-                  <label className="block text-xs font-semibold text-[#6ee7b7] mb-2">😊 Limite Máximo Score Bom (% de inadimplência)</label>
+                <div style={{ backgroundColor: 'rgba(16, 185, 129, 0.05)', borderColor: 'rgba(16, 185, 129, 0.2)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <label className="block text-xs font-semibold text-[#6ee7b7]">😊 Limite Máximo Score Bom (% de inadimplência)</label>
                   <input type="number" min="1" max="99" value={scoreThresholds.good} onChange={e => setScoreThresholds({ ...scoreThresholds, good: parseInt(e.target.value) || 0 })} style={inputS} />
-                  <span style={{ display: 'block', fontSize: 11, color: '#64748b', marginTop: 6 }}>Clientes abaixo deste percentual de dívidas vencidas serão considerados <strong>Bons pagadores</strong>.</span>
+                  <span style={{ display: 'block', fontSize: 11, color: '#64748b', lineHeight: '1.4' }}>Clientes abaixo deste percentual de dívidas vencidas serão considerados <strong>Bons pagadores</strong>.</span>
                 </div>
-                <div className="bg-[rgba(245,158,11,0.08)] rounded-xl p-4 border border-[rgba(245,158,11,0.15)]">
-                  <label className="block text-xs font-semibold text-[#f59e0b] mb-2">⚠️ Limite Máximo Score Regular (% de inadimplência)</label>
+                <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.05)', borderColor: 'rgba(245, 158, 11, 0.2)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <label className="block text-xs font-semibold text-[#f59e0b]">⚠️ Limite Máximo Score Regular (% de inadimplência)</label>
                   <input type="number" min="2" max="100" value={scoreThresholds.regular} onChange={e => setScoreThresholds({ ...scoreThresholds, regular: parseInt(e.target.value) || 0 })} style={inputS} />
-                  <span style={{ display: 'block', fontSize: 11, color: '#64748b', marginTop: 6 }}>Clientes entre o limite Bom e este serão classificados como <strong>Regulares</strong>. Acima deste serão de <strong>Alto Risco</strong>.</span>
+                  <span style={{ display: 'block', fontSize: 11, color: '#64748b', lineHeight: '1.4' }}>Clientes entre o limite Bom e este serão classificados como <strong>Regulares</strong>. Acima deste serão de <strong>Alto Risco</strong>.</span>
                 </div>
               </div>
               

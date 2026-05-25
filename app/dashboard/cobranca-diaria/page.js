@@ -344,8 +344,32 @@ export default function CobrancaDiariaPage() {
         <div className="filter-bar">
           <div className="flex gap-3 items-center w-full md:w-auto flex-1">
             <input placeholder="Buscar faturamentos..." value={search} onChange={e => setSearch(e.target.value)} style={inputS} className="w-full md:w-72 min-w-0" />
-            <button onClick={loadData} style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#e2e8f0', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.2s', outline: 'none', whiteSpace: 'nowrap' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}>
-              🔄 Recarregar
+            <button 
+              onClick={loadData} 
+              style={{ 
+                padding: '12px 16px', 
+                borderRadius: 10, 
+                background: 'rgba(255,255,255,0.05)', 
+                border: '1px solid rgba(255,255,255,0.1)', 
+                color: '#e2e8f0', 
+                fontSize: 14, 
+                fontWeight: 600, 
+                cursor: 'pointer', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 6, 
+                transition: 'all 0.2s', 
+                outline: 'none', 
+                whiteSpace: 'nowrap' 
+              }} 
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} 
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+              className="group"
+            >
+              <svg className="w-3.5 h-3.5 text-slate-300 group-hover:text-white transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+              </svg>
+              Recarregar
             </button>
           </div>
           <button onClick={handleNewBillClick} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter', whiteSpace: 'nowrap' }} className="w-full md:w-auto text-center">+ Ativar Cobrança Diária</button>

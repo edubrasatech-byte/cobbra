@@ -271,6 +271,41 @@ export default function DashboardHome() {
   return (
     <div className="flex flex-col gap-6 text-left">
       
+      {/* 📱 Mobile Only: Resumo Financeiro Diário at the top */}
+      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-5 animate-fadeInUp">
+        <h3 className="text-xs font-bold text-[#10B981] uppercase tracking-wider mb-4 flex items-center gap-2">
+          <span>📅</span> Resumo Financeiro Diário
+        </h3>
+        <div className="grid grid-cols-1 gap-2.5">
+          <div className="bg-[#0F111E] rounded-xl p-3 border border-slate-900 flex justify-between items-center">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Pago Hoje</span>
+            <p className="text-base font-black text-emerald-400">{fmt(stats.receivedToday || 0)}</p>
+          </div>
+          
+          <div className="bg-[#0F111E] rounded-xl p-3 border border-slate-900 flex justify-between items-center">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Hoje</span>
+            <p className="text-base font-black text-amber-500">{fmt(stats.dueToday || 0)}</p>
+          </div>
+          
+          <div className="bg-[#0F111E] rounded-xl p-3 border border-slate-900 flex justify-between items-center">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Amanhã</span>
+            <p className="text-base font-black text-blue-400">{fmt(stats.dueTomorrow || 0)}</p>
+          </div>
+          
+          <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl p-3 border border-slate-900 cursor-pointer transition-all duration-200" onClick={() => window.location.href = '/dashboard/cobranca-diaria'}>
+            <div className="flex justify-between items-center w-full">
+              <div>
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Recorrentes Diários</span>
+                <span className="text-[9px] text-slate-500 font-semibold block mt-0.5">{stats.dailyBillingCount || 0} contratos ativos</span>
+              </div>
+              <div className="text-right">
+                <p className="text-base font-black text-[#10B981]">{fmt(stats.dailyBillingTotal || 0)}<span className="text-[10px] text-slate-500 font-bold">/dia</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* 🔄 Top Floating Sync/Reload Header */}
       <div className="flex justify-between items-center border-b border-slate-900/60 pb-4">
         <div>
@@ -279,9 +314,12 @@ export default function DashboardHome() {
         </div>
         <button 
           onClick={loadStats}
-          className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-emerald-500/30 text-slate-300 hover:text-emerald-400 text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 cursor-pointer shadow-sm shadow-black/10"
+          className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-emerald-500/30 text-slate-300 hover:text-emerald-400 text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 cursor-pointer shadow-sm shadow-black/10 group"
         >
-          🔄 Recarregar Dados
+          <svg className="w-3 h-3 text-slate-400 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+          </svg>
+          Recarregar Dados
         </button>
       </div>
 
@@ -391,7 +429,8 @@ export default function DashboardHome() {
             {(stats.recentActivity || []).slice(0, 6).map((a, i) => (
               <div 
                 key={i} 
-                className="flex gap-3 py-2.5 border-b border-slate-900/60 last:border-b-0 hover:bg-slate-950/20 px-2 rounded-lg transition-colors duration-150"
+                className="flex gap-3 border-b border-slate-900/60 last:border-b-0 hover:bg-slate-950/20 rounded-lg transition-colors duration-150"
+                style={{ paddingLeft: '16px', paddingRight: '16px', paddingTop: '10px', paddingBottom: '10px' }}
               >
                 <div className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800/50 flex items-center justify-center text-base flex-shrink-0">
                   {actIcons[a.action] || '📋'}
@@ -415,7 +454,7 @@ export default function DashboardHome() {
         </div>
 
         {/* 2. Resumo Diário */}
-        <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '24px' }}>
+        <div className="hidden md:block bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '24px' }}>
           <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4">Resumo Financeiro Diário</h3>
           <div className="space-y-3">
             <div className="bg-[#0F111E] rounded-xl p-3.5 border border-slate-900">

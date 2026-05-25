@@ -33,6 +33,8 @@ export default function DashboardLayout({ children }) {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  const horizontalPadding = isDesktop ? '40px' : '24px';
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -414,11 +416,16 @@ export default function DashboardLayout({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#070913] text-slate-100 font-sans">
-        <div className="text-center">
-          <div className="text-5xl mb-4 animate-bounce">🐍</div>
-          <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400 text-sm tracking-wider font-semibold">Carregando Cobbra...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#070913] text-slate-100 font-sans p-6">
+        <div className="flex flex-col items-center justify-center text-center max-w-xs w-full">
+          <div className="text-6xl mb-8 animate-bounce select-none flex items-center justify-center w-24 h-24 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-2xl shadow-emerald-500/10">
+            🐍
+          </div>
+          <div className="flex justify-center items-center mb-6">
+            <div className="w-10 h-10 border-4 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-slate-200 text-xs font-bold tracking-widest uppercase">Carregando Cobbra</p>
+          <p className="text-slate-500 text-[10px] mt-1.5 font-semibold">Preparando seu ambiente financeiro...</p>
         </div>
       </div>
     );
@@ -549,7 +556,10 @@ export default function DashboardLayout({ children }) {
       <div className="flex-1 flex flex-col min-w-0 max-w-full overflow-hidden pb-20 md:pb-0">
         
         {/* 🧼 Minimalist Flat Header */}
-        <header className="h-16 flex items-center justify-between border-b border-slate-800/20 bg-[#0C0E1A]/85 backdrop-blur-md sticky top-0 z-40" style={{ paddingLeft: isDesktop ? '36px' : '20px', paddingRight: isDesktop ? '36px' : '20px' }}>
+        <header 
+          className="h-16 flex items-center justify-between border-b border-slate-800/20 bg-[#0C0E1A]/85 backdrop-blur-md sticky top-0 z-40 px-6 md:px-12"
+          style={{ paddingLeft: horizontalPadding, paddingRight: horizontalPadding }}
+        >
           
           {/* Left info / Mobile trigger */}
           <div className="flex items-center gap-4 flex-shrink-0 min-w-[140px]">
@@ -657,10 +667,10 @@ export default function DashboardLayout({ children }) {
 
               {/* Stripe-style Notification Center */}
               {showNotifications && (
-                <div className="absolute right-0 top-12 w-80 md:w-96 bg-[#0E1220]/80 backdrop-blur-lg border border-slate-800/80 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[450px]">
+                <div className="fixed md:absolute right-4 md:right-0 top-16 md:top-12 w-[calc(100vw-32px)] md:w-96 bg-[#0E1220]/80 backdrop-blur-lg border border-slate-800/80 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[450px]">
                   
                   {/* Header info */}
-                  <div className="px-4 py-3 bg-slate-950/40 border-b border-slate-800/40 flex justify-between items-center">
+                  <div className="bg-slate-950/40 border-b border-slate-800/40 flex justify-between items-center" style={{ paddingLeft: '20px', paddingRight: '20px', paddingTop: '14px', paddingBottom: '14px' }}>
                     <span className="font-bold text-xs text-slate-200">Notificações</span>
                     <div className="flex gap-3">
                       {unreadCount > 0 && (
@@ -690,9 +700,10 @@ export default function DashboardLayout({ children }) {
                           <div 
                             key={notif.id}
                             onClick={() => notif.read === 0 && markAsRead(notif.id)}
-                            className={`p-4 flex gap-3 text-left transition-colors cursor-pointer ${
+                            className={`flex gap-3 text-left transition-colors cursor-pointer ${
                               notif.read === 0 ? 'bg-emerald-500/[0.02] hover:bg-emerald-500/[0.05]' : 'hover:bg-slate-900/40'
                             }`}
+                            style={{ paddingLeft: '20px', paddingRight: '20px', paddingTop: '16px', paddingBottom: '16px' }}
                           >
                             <span className="text-base mt-0.5">{emoji}</span>
                             <div className="flex-1">
@@ -714,13 +725,8 @@ export default function DashboardLayout({ children }) {
 
         {/* 📋 Main Scrollable Content Area */}
         <main 
-          className="flex-1 w-full max-w-full overflow-y-auto overflow-x-hidden"
-          style={{ 
-            paddingLeft: isDesktop ? '36px' : '20px', 
-            paddingRight: isDesktop ? '36px' : '20px',
-            paddingTop: '24px',
-            paddingBottom: isDesktop ? '32px' : '96px' 
-          }}
+          className="flex-1 w-full max-w-full overflow-y-auto overflow-x-hidden px-6 md:px-12 pt-6 pb-24 md:pb-8"
+          style={{ paddingLeft: horizontalPadding, paddingRight: horizontalPadding }}
         >
           {children}
         </main>

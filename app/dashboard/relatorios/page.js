@@ -110,14 +110,17 @@ export default function RelatoriosPage() {
           onMouseEnter={e => e.currentTarget.style.background = 'rgba(5,150,105,0.1)'}
           onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
         >
-          🔄 Recarregar
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+          </svg>
+          Recarregar
         </button>
       </div>
 
       {/* Revenue */}
       {activeTab === 'revenue' && data && (
-        <div>
-          <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
+        <div style={{ marginTop: '16px' }}>
+          <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
             {['7', '30', '90', '365'].map(p => (
               <button key={p} onClick={() => setPeriod(p)} style={{
                 padding: '6px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter',
@@ -209,7 +212,7 @@ export default function RelatoriosPage() {
 
       {/* Inadimplência */}
       {activeTab === 'inadimplencia' && data && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ marginTop: '16px' }}>
           <div style={cardS}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Inadimplência por mês</h3>
             {data.overdueByMonth?.map((m, i) => (
@@ -244,7 +247,7 @@ export default function RelatoriosPage() {
 
       {/* Clients */}
       {activeTab === 'clients' && data && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ marginTop: '16px' }}>
           <div style={cardS}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>🏆 Melhores pagadores</h3>
             {data.topPayers?.map((c, i) => (
@@ -276,7 +279,7 @@ export default function RelatoriosPage() {
 
       {/* Reminders */}
       {activeTab === 'reminders' && data && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6" style={{ marginTop: '16px' }}>
           <div style={{ ...cardS, textAlign: 'center' }}>
             <p style={{ fontSize: 40, marginBottom: 8 }}>📤</p>
             <p style={{ fontSize: 36, fontWeight: 800, color: '#3b82f6' }}>{data.totalSent || 0}</p>
