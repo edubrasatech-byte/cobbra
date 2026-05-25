@@ -2,6 +2,15 @@ import "./globals.css";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://cobbra.ai';
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+  themeColor: '#059669'
+};
+
 export const metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
@@ -50,6 +59,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" dir="ltr">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
         <meta name="theme-color" content="#059669" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
