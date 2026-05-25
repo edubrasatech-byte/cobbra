@@ -538,7 +538,7 @@ export default function DashboardLayout({ children }) {
       </aside>
 
       {/* 🚀 Main Layout Area */}
-      <div className="flex-1 flex flex-col min-w-0 pb-20 md:pb-0">
+      <div className="flex-1 flex flex-col min-w-0 max-w-full overflow-hidden pb-20 md:pb-0">
         
         {/* 🧼 Minimalist Flat Header */}
         <header className="h-16 flex items-center justify-between px-6 md:px-12 border-b border-slate-800/20 bg-[#0C0E1A]/85 backdrop-blur-md sticky top-0 z-40">
@@ -700,7 +700,7 @@ export default function DashboardLayout({ children }) {
         </header>
 
         {/* 📋 Main Scrollable Content Area */}
-        <main className="flex-1 px-6 md:px-12 py-6 overflow-y-auto">
+        <main className="flex-1 w-full max-w-full px-6 md:px-12 py-6 overflow-y-auto overflow-x-hidden">
           {children}
         </main>
       </div>
