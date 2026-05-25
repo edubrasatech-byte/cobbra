@@ -314,55 +314,22 @@ export default function CobrancasPage() {
       })()}
 
       {/* Minimal Header and Filter Panel */}
-      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 border-b border-slate-900/60 pb-5" style={{ paddingBottom: '20px' }}>
+      <div className="flex flex-col gap-4 border-b border-slate-900/60 pb-5" style={{ paddingBottom: '20px' }}>
         
-        {/* Search & Filters Chips */}
-        <div className="flex flex-col gap-3 flex-1 max-w-lg">
+        {/* Row 1: Search Input + Reload Button + Add Charge Button (Unified single-row for extreme screen-space efficiency) */}
+        <div className="flex items-center gap-2.5 w-full">
           {/* Search bar input */}
-          <div className="relative w-full h-11 min-h-[44px] flex-shrink-0">
+          <div className="relative flex-1 h-11 min-h-[44px]">
             <input 
               placeholder="Buscar cobranças..." 
               value={search} 
               onChange={e => setSearch(e.target.value)} 
-              className="w-full h-11 min-h-[44px] py-2.5 text-xs bg-[#0C0E1A] border border-slate-800/60 text-white rounded-xl outline-none focus:border-emerald-500 transition-colors placeholder-slate-500 font-medium flex-shrink-0"
+              className="w-full h-11 min-h-[44px] py-2.5 text-xs bg-[#0C0E1A] border border-slate-800/60 text-white rounded-xl outline-none focus:border-emerald-500 transition-colors placeholder-slate-500 font-medium"
               style={{ paddingLeft: '38px' }}
             />
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">🔍</span>
           </div>
-          
-          {/* Chips Filter Row */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none max-w-full -mx-4 px-4 sm:mx-0 sm:px-0">
-            <button 
-              onClick={() => setFilter('')}
-              className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border whitespace-nowrap cursor-pointer ${
-                filter === '' 
-                  ? 'bg-slate-100 text-slate-900 border-white' 
-                  : 'bg-slate-900 text-slate-400 border-slate-800/60 hover:text-slate-200 hover:border-slate-700'
-              }`}
-            >
-              Todos
-            </button>
-            {Object.entries(STATUS).map(([k, v]) => {
-              const isSelected = filter === k;
-              return (
-                <button
-                  key={k}
-                  onClick={() => setFilter(k)}
-                  className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border whitespace-nowrap cursor-pointer ${
-                    isSelected
-                      ? 'bg-[#10B981] text-white border-[#10B981]'
-                      : 'bg-slate-900 text-slate-400 border-slate-800/60 hover:text-slate-200 hover:border-slate-700'
-                  }`}
-                >
-                  {v.l}
-                </button>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-2.5 justify-end">
           <button 
             onClick={handleReload}
             title="Recarregar dados"
@@ -375,10 +342,42 @@ export default function CobrancasPage() {
           
           <button 
             onClick={() => setShowModal(true)} 
-            className="h-11 px-5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black tracking-wide flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/10 active:scale-95 transition-all cursor-pointer"
+            className="h-11 px-4 sm:px-5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black tracking-wider flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/15 border border-emerald-400/20 active:scale-95 transition-all duration-200 cursor-pointer whitespace-nowrap"
           >
-            <span>+</span> Nova Cobrança
+            <span className="text-sm font-bold">+</span>
+            <span className="hidden sm:inline">Nova Cobrança</span>
+            <span className="sm:hidden">Nova</span>
           </button>
+        </div>
+
+        {/* Row 2: Filter Chips */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none max-w-full -mx-4 px-4 sm:mx-0 sm:px-0">
+          <button 
+            onClick={() => setFilter('')}
+            className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border whitespace-nowrap cursor-pointer ${
+              filter === '' 
+                ? 'bg-slate-100 text-slate-900 border-white' 
+                : 'bg-slate-900 text-slate-400 border-slate-800/60 hover:text-slate-200 hover:border-slate-700'
+            }`}
+          >
+            Todos
+          </button>
+          {Object.entries(STATUS).map(([k, v]) => {
+            const isSelected = filter === k;
+            return (
+              <button
+                key={k}
+                onClick={() => setFilter(k)}
+                className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border whitespace-nowrap cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#10B981] text-white border-[#10B981]'
+                    : 'bg-slate-900 text-slate-400 border-slate-800/60 hover:text-slate-200 hover:border-slate-700'
+                }`}
+              >
+                {v.l}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -766,7 +765,7 @@ export default function CobrancasPage() {
               </div>
               
               {/* AI Writer Helper Option */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end bg-slate-900/30 p-4 rounded-xl border border-slate-800/40">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end bg-slate-900/30 p-4 rounded-xl border border-slate-800/40" style={{ marginTop: '24px' }}>
                 <div className="sm:col-span-2">
                   <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Tom da Cobrança (AI Writer)</label>
                   <select 
@@ -792,7 +791,7 @@ export default function CobrancasPage() {
               </div>
 
               {/* Description textarea */}
-              <div>
+              <div style={{ marginTop: '24px' }}>
                 <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Descrição / Mensagem de Cobrança</label>
                 <textarea 
                   rows="3"
@@ -804,7 +803,7 @@ export default function CobrancasPage() {
               </div>
               
               {/* Recurrence & Late fee Interest */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4" style={{ marginTop: '24px' }}>
                 <div>
                   <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Recorrência</label>
                   <select 
@@ -834,7 +833,7 @@ export default function CobrancasPage() {
               </div>
 
               {/* Channels & Payment Method Grid */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4" style={{ marginTop: '24px' }}>
                 <div>
                   <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Canal de Lembrete</label>
                   <select 
@@ -867,17 +866,17 @@ export default function CobrancasPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 justify-end pt-4">
+              <div className="flex gap-3 justify-end pt-4" style={{ marginTop: '32px' }}>
                 <button 
                   type="button" 
                   onClick={() => setShowModal(false)} 
-                  className="px-5 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-xs font-bold hover:bg-slate-800 hover:text-slate-200 transition-all"
+                  className="px-5 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-xs font-bold hover:bg-slate-800 hover:text-slate-200 transition-all cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
-                  className="px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black shadow-lg shadow-emerald-500/10 active:scale-[0.98] transition-all"
+                  className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black uppercase tracking-wider border border-emerald-400/20 shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 active:scale-[0.97] transition-all duration-200 cursor-pointer"
                 >
                   Criar Cobrança
                 </button>

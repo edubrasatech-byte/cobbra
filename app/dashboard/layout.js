@@ -510,8 +510,8 @@ export default function DashboardLayout({ children }) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#070913] text-slate-100 font-sans p-6">
         <div className="flex flex-col items-center justify-center text-center max-w-xs w-full">
-          <div className="text-6xl mb-8 animate-bounce select-none flex items-center justify-center w-24 h-24 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-2xl shadow-emerald-500/10">
-            🐍
+          <div className="mb-8 animate-bounce select-none flex items-center justify-center w-24 h-24 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-2xl shadow-emerald-500/10">
+            <MiniSnake size={54} />
           </div>
           <div className="flex justify-center items-center mb-6">
             <div className="w-10 h-10 border-4 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin"></div>
