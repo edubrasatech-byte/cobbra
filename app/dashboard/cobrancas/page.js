@@ -347,11 +347,20 @@ export default function CobrancasPage() {
           
           <button 
             onClick={() => setShowModal(true)} 
-            className="w-11 h-11 flex-shrink-0 rounded-xl bg-[#10B981] hover:bg-[#34D399] text-[#070913] flex flex-col items-center justify-center shadow-lg shadow-emerald-500/25 border border-[#34D399]/30 active:scale-95 transition-all duration-200 cursor-pointer select-none"
+            className="flex-shrink-0 flex flex-col items-center justify-center active:scale-95 transition-all duration-200 cursor-pointer select-none"
+            style={{ 
+              width: '44px', 
+              height: '44px', 
+              borderRadius: '12px', 
+              backgroundColor: '#10B981', 
+              color: '#070913',
+              boxShadow: '0 10px 15px -3px rgba(16, 185, 129, 0.25)',
+              border: '1px solid rgba(52, 211, 153, 0.3)'
+            }}
             title="Nova Cobrança"
           >
-            <span className="text-[13px] font-black leading-none mb-0.5">+</span>
-            <span className="text-[8px] font-black uppercase tracking-widest leading-none">Nova</span>
+            <span className="text-[13px] font-black leading-none mb-0.5" style={{ color: '#070913' }}>+</span>
+            <span className="text-[8px] font-black uppercase tracking-widest leading-none" style={{ color: '#070913' }}>Nova</span>
           </button>
         </div>
 
@@ -387,7 +396,7 @@ export default function CobrancasPage() {
       </div>
 
       {/* 📱 Mobile UI: Card Lists with Drawer Menu (Operable with one hand) */}
-      <div className="md:hidden space-y-3">
+      <div className="md:hidden" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         {charges.map(c => {
           const interest = calcInterest(c);
           return (
