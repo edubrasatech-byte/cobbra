@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Chatbot from '../components/Chatbot';
 
@@ -88,16 +88,19 @@ const NAV_ICONS = {
 
 // ========== MINI SNAKE MASCOT LOGO ==========
 function MiniSnake({ size = 40, style = {} }) {
+  const gradId = 'miniGradLayout-' + useId().replace(/:/g, '');
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" fill="none" style={style}>
-      <path d="M8 30 C4 28, 3 22, 8 18 C13 14, 20 13, 25 17 C30 21, 33 18, 33 13 C33 9, 29 7, 26 9" stroke="url(#miniGradLayout)" strokeWidth="4" strokeLinecap="round" fill="none" />
-      <circle cx="24" cy="8" r="5" fill="url(#miniGradLayout)" />
-      <circle cx="23" cy="7" r="1.2" fill="white" />
-      <circle cx="26" cy="7" r="1.2" fill="white" />
-      <circle cx="23.2" cy="7.3" r="0.7" fill="#0f172a" />
-      <circle cx="26.2" cy="7.3" r="0.7" fill="#0f172a" />
+      <g transform="translate(1.5, 1.5)">
+        <path d="M8 30 C4 28, 3 22, 8 18 C13 14, 20 13, 25 17 C30 21, 33 18, 33 13 C33 9, 29 7, 26 9" stroke={`url(#${gradId})`} strokeWidth="4" strokeLinecap="round" fill="none" />
+        <circle cx="24" cy="8" r="5" fill={`url(#${gradId})`} />
+        <circle cx="23" cy="7" r="1.2" fill="white" />
+        <circle cx="26" cy="7" r="1.2" fill="white" />
+        <circle cx="23.2" cy="7.3" r="0.7" fill="#0f172a" />
+        <circle cx="26.2" cy="7.3" r="0.7" fill="#0f172a" />
+      </g>
       <defs>
-        <linearGradient id="miniGradLayout" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#10b981" />
           <stop offset="100%" stopColor="#0d9488" />
         </linearGradient>
@@ -621,7 +624,7 @@ export default function DashboardLayout({ children }) {
         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800/40">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center flex-shrink-0 shadow shadow-emerald-500/10 select-none">
-              <MiniSnake size={20} />
+              <MiniSnake size={26} />
             </div>
             <span className="font-extrabold text-base text-slate-100">Cobbra<span className="text-[#10B981] text-[10px] font-bold">.ai</span></span>
           </div>
@@ -687,18 +690,18 @@ export default function DashboardLayout({ children }) {
         >
           
           {/* Left info / Mobile trigger */}
-          <div className="flex items-center gap-4 flex-shrink-0 min-w-[140px]">
+          <div className="flex items-center gap-3 flex-shrink-0">
             <button
               onClick={() => setMobileSidebarOpen(true)}
-              className="md:hidden text-slate-300 text-xl p-1 bg-slate-800/20 rounded border border-slate-800/40 flex items-center justify-center"
+              className="md:hidden text-slate-300 text-xl p-1.5 bg-slate-800/20 rounded-xl border border-slate-800/40 flex items-center justify-center cursor-pointer active:scale-95 transition-all"
               aria-label="Abrir menu"
             >
               ☰
             </button>
-            <h1 className="text-base md:text-lg font-bold text-slate-100 tracking-tight hidden sm:block">{pageTitle}</h1>
-            <div className="sm:hidden w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center shadow shadow-emerald-500/10 select-none">
-              <MiniSnake size={20} />
+            <div className="w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center shadow shadow-emerald-500/10 select-none flex-shrink-0">
+              <MiniSnake size={26} />
             </div>
+            <h1 className="text-sm md:text-base font-bold text-slate-100 tracking-tight">{pageTitle}</h1>
           </div>
 
           {/* 🔍 Catarina AI Engine: Flat Command Bar Widget */}
