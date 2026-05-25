@@ -200,9 +200,19 @@ export default function Chatbot({ isOpen, onClose }) {
               <div style={{ 
                 width: 44, height: 44, borderRadius: '50%', 
                 background: 'rgba(16, 185, 129, 0.08)', color: '#10b981',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
                 border: '1px solid rgba(16, 185, 129, 0.2)'
-              }}>🐍</div>
+              }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 11a9 9 0 0 1 18 0" />
+                  <rect x="2" y="11" width="3" height="5" rx="1.5" fill="currentColor" />
+                  <rect x="19" y="11" width="3" height="5" rx="1.5" fill="currentColor" />
+                  <path d="M12 5c-3.866 0-7 2.686-7 6 0 1.942 1.077 3.655 2.766 4.708l-.766 2.292 2.766-.922A7.848 7.848 0 0 0 12 17c3.866 0 7-2.686 7-6s-3.134-6-7-6z" />
+                  <path d="M19 16c0 1-1 2-2 2h-2" />
+                  <circle cx="10" cy="11" r="1.5" fill="currentColor" />
+                  <circle cx="14" cy="11" r="1.5" fill="currentColor" />
+                </svg>
+              </div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <h3 style={{ margin: 0, fontWeight: 700, color: '#0f172a', fontSize: 16 }}>Catarina AI</h3>

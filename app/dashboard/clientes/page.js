@@ -254,7 +254,7 @@ export default function ClientesPage() {
     <div>
       {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
 
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center mb-6" style={{ marginBottom: '24px' }}>
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center mb-6" style={{ marginBottom: '36px' }}>
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
           <input placeholder="Buscar clientes..." value={search} onChange={e => setSearch(e.target.value)} className="w-full sm:w-64 h-11 min-h-[44px] flex-shrink-0" style={inputS} />
           <div className="flex gap-2 h-11 min-h-[44px] flex-shrink-0">
@@ -290,7 +290,7 @@ export default function ClientesPage() {
       </div>
 
       {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-24">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-24" style={{ marginTop: '12px' }}>
         {clients.map(c => {
           const h = HEALTH[c.health_score] || HEALTH.good;
           const score = getPayerScore(c);
@@ -393,23 +393,23 @@ export default function ClientesPage() {
             </div>
 
             {/* Score and Quick Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6" style={{ marginBottom: '24px' }}>
-              <div style={{ background: 'rgba(5,150,105,0.08)', borderRadius: 12, padding: 14, border: '1px solid rgba(5,150,105,0.15)' }}>
-                <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 4 }}>Pontualidade (Score)</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6" style={{ marginBottom: '32px' }}>
+              <div style={{ background: 'rgba(5,150,105,0.08)', borderRadius: 16, padding: '16px 18px', border: '1px solid rgba(5,150,105,0.15)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <p style={{ fontSize: 11, color: '#94a3b8', margin: 0 }}>Pontualidade (Score)</p>
                 <p style={{ fontSize: 15, fontWeight: 700, color: getPayerScore(selectedClient).c, margin: 0 }}>
                   {getPayerScore(selectedClient).l} {getPayerScore(selectedClient).s}
                 </p>
               </div>
-              <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 12, padding: 14, border: '1px solid rgba(255,255,255,0.04)' }}>
-                <p style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>Total Cobrado</p>
+              <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.04)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <p style={{ fontSize: 11, color: '#64748b', margin: 0 }}>Total Cobrado</p>
                 <p style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0', margin: 0 }}>{fmt(selectedClient.total_charged)}</p>
               </div>
-              <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 12, padding: 14, border: '1px solid rgba(255,255,255,0.04)' }}>
-                <p style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>Total Pago</p>
+              <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.04)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <p style={{ fontSize: 11, color: '#64748b', margin: 0 }}>Total Pago</p>
                 <p style={{ fontSize: 15, fontWeight: 700, color: '#10b981', margin: 0 }}>{fmt(selectedClient.total_paid)}</p>
               </div>
-              <div style={{ background: selectedClient.total_overdue > 0 ? 'rgba(239,68,68,0.08)' : 'rgba(255,255,255,0.02)', borderRadius: 12, padding: 14, border: selectedClient.total_overdue > 0 ? '1px solid rgba(239,68,68,0.15)' : '1px solid rgba(255,255,255,0.04)' }}>
-                <p style={{ fontSize: 11, color: selectedClient.total_overdue > 0 ? '#ef4444' : '#64748b', marginBottom: 4 }}>Em Aberto</p>
+              <div style={{ background: selectedClient.total_overdue > 0 ? 'rgba(239,68,68,0.08)' : 'rgba(255,255,255,0.02)', borderRadius: 16, padding: '16px 18px', border: selectedClient.total_overdue > 0 ? '1px solid rgba(239,68,68,0.15)' : '1px solid rgba(255,255,255,0.04)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <p style={{ fontSize: 11, color: selectedClient.total_overdue > 0 ? '#ef4444' : '#64748b', margin: 0 }}>Em Aberto</p>
                 <p style={{ fontSize: 15, fontWeight: 700, color: selectedClient.total_overdue > 0 ? '#ef4444' : '#94a3b8', margin: 0 }}>{fmt(selectedClient.total_overdue)}</p>
               </div>
             </div>

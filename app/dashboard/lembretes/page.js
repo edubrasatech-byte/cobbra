@@ -80,7 +80,7 @@ export default function LembretesPage() {
       </div>
 
       {activeTab === 'history' && (
-        <div style={cardS}>
+        <div style={{ ...cardS, marginTop: '16px' }}>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 20 }}>Lembretes enviados</h3>
           {reminders.map(r => {
             const st = statusConfig[r.status] || statusConfig.sent;
@@ -109,7 +109,7 @@ export default function LembretesPage() {
       )}
 
       {activeTab === 'templates' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{ marginTop: '16px' }}>
           {templates.map(t => {
             const tone = toneConfig[t.tone] || toneConfig.gentle;
             return (
@@ -136,7 +136,7 @@ export default function LembretesPage() {
       )}
 
       {activeTab === 'daily' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ marginTop: '16px' }}>
           {/* Template Editor */}
           <div style={cardS}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>

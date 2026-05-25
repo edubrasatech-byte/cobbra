@@ -286,7 +286,7 @@ export default function CobrancasPage() {
   const fmt = v => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       
       {/* Toast Alert */}
       {msg && (() => {
@@ -314,7 +314,7 @@ export default function CobrancasPage() {
       })()}
 
       {/* Minimal Header and Filter Panel */}
-      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 border-b border-slate-900/60 pb-5">
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 border-b border-slate-900/60 pb-5" style={{ paddingBottom: '20px' }}>
         
         {/* Search & Filters Chips */}
         <div className="flex flex-col gap-3 flex-1 max-w-lg">

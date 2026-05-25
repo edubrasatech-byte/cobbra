@@ -633,35 +633,41 @@ export default function DashboardLayout({ children }) {
             {/* Mobile AI Command Trigger Icon */}
             <button 
               onClick={() => setShowCopilotModal(true)}
-              className="md:hidden w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center text-sm cursor-pointer transition-all active:scale-90"
-              aria-label="Perguntar à Catarina"
-            >
-              🪄
-            </button>
-
-            {/* Catarina AI Chatbot Toggle Button */}
+              className="md:hidden w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-cent            {/* Catarina AI Chatbot Toggle Button */}
             <button 
               onClick={() => setChatbotOpen(!chatbotOpen)}
-              className={`w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center text-sm cursor-pointer transition-all relative ${
+              className={`w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center cursor-pointer transition-all relative ${
                 chatbotOpen ? 'border-emerald-500/60 ring-1 ring-emerald-500/10' : ''
               }`}
               title="Conversar com a Catarina"
               aria-label="Conversar com a Catarina"
             >
-              💬
+              <svg className={`w-5 h-5 transition-colors ${chatbotOpen ? 'text-[#10B981]' : 'text-slate-400 hover:text-emerald-400'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 11a9 9 0 0 1 18 0" />
+                <rect x="2" y="11" width="3" height="5" rx="1.5" fill="currentColor" />
+                <rect x="19" y="11" width="3" height="5" rx="1.5" fill="currentColor" />
+                <path d="M12 5c-3.866 0-7 2.686-7 6 0 1.942 1.077 3.655 2.766 4.708l-.766 2.292 2.766-.922A7.848 7.848 0 0 0 12 17c3.866 0 7-2.686 7-6s-3.134-6-7-6z" />
+                <path d="M19 16c0 1-1 2-2 2h-2" />
+                <circle cx="10" cy="11" r="1.5" fill="currentColor" />
+                <circle cx="14" cy="11" r="1.5" fill="currentColor" />
+              </svg>
               <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-slate-950 animate-pulse" />
             </button>
-
+ 
             <div className="relative">
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
-                className={`w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center text-sm cursor-pointer transition-all relative ${
+                className={`w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center cursor-pointer transition-all relative ${
                   showNotifications ? 'border-emerald-500/60 ring-1 ring-emerald-500/10' : ''
                 }`}
               >
-                🔔
+                <svg className={`w-4 h-4 transition-colors ${showNotifications ? 'text-[#10B981]' : 'text-slate-400 hover:text-emerald-400'}`} fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"></path>
+                </svg>
                 {unreadCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center animate-pulse">{unreadCount}</span>
+                )}
+              </button> rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center animate-pulse">{unreadCount}</span>
                 )}
               </button>
 
@@ -725,11 +731,11 @@ export default function DashboardLayout({ children }) {
 
         {/* 📋 Main Scrollable Content Area */}
         <main 
-          className="flex-1 w-full max-w-full overflow-y-auto overflow-x-hidden px-6 md:px-12 pt-6 pb-24 md:pb-8"
+          className="flex-1 w-full max-w-full overflow-y-auto overflow-x-hidden px-6 md:px-12 pt-10 pb-24 md:pb-8"
           style={{ 
             paddingLeft: horizontalPadding, 
             paddingRight: horizontalPadding,
-            paddingTop: '28px',
+            paddingTop: isDesktop ? '48px' : '36px',
             paddingBottom: isDesktop ? '32px' : '96px'
           }}
         >
@@ -792,24 +798,24 @@ export default function DashboardLayout({ children }) {
             </div>
 
             {/* Score and Quick Stats Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6" style={{ marginBottom: '24px' }}>
-              <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/30 flex flex-col justify-center">
-                <span className="text-[10px] text-slate-500 uppercase font-semibold mb-1">Score Pagador</span>
-                <span className={`text-xs font-bold ${getPayerScore(selectedClient).c}`}>{getPayerScore(selectedClient).l}</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6" style={{ marginBottom: '32px' }}>
+              <div className="bg-slate-900/60 rounded-2xl p-4 border border-slate-800/30 flex flex-col gap-1.5 justify-center">
+                <span className="text-[10px] text-slate-500 uppercase font-semibold">Score Pagador</span>
+                <span className={`text-xs font-extrabold ${getPayerScore(selectedClient).c}`}>{getPayerScore(selectedClient).l}</span>
               </div>
-              <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/30">
-                <span className="text-[10px] text-slate-500 uppercase font-semibold mb-1">Cobrado</span>
-                <span className="text-xs font-bold text-slate-200 block">{fmt(selectedClient.total_charged)}</span>
+              <div className="bg-slate-900/60 rounded-2xl p-4 border border-slate-800/30 flex flex-col gap-1.5">
+                <span className="text-[10px] text-slate-500 uppercase font-semibold">Cobrado</span>
+                <span className="text-xs font-extrabold text-slate-200 block">{fmt(selectedClient.total_charged)}</span>
               </div>
-              <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800/30">
-                <span className="text-[10px] text-slate-500 uppercase font-semibold mb-1">Quitado</span>
-                <span className="text-xs font-bold text-emerald-400 block">{fmt(selectedClient.total_paid)}</span>
+              <div className="bg-slate-900/60 rounded-2xl p-4 border border-slate-800/30 flex flex-col gap-1.5">
+                <span className="text-[10px] text-slate-500 uppercase font-semibold">Quitado</span>
+                <span className="text-xs font-extrabold text-emerald-400 block">{fmt(selectedClient.total_paid)}</span>
               </div>
-              <div className={`rounded-xl p-3 border ${
+              <div className={`rounded-2xl p-4 border flex flex-col gap-1.5 ${
                 selectedClient.total_overdue > 0 ? 'bg-rose-500/5 border-rose-500/20' : 'bg-slate-900/60 border-slate-800/30'
               }`} style={{ height: '100%' }}>
-                <span className="text-[10px] text-slate-500 uppercase font-semibold mb-1">Em Aberto</span>
-                <span className={`text-xs font-bold block ${selectedClient.total_overdue > 0 ? 'text-rose-400' : 'text-slate-400'}`}>{fmt(selectedClient.total_overdue)}</span>
+                <span className="text-[10px] text-slate-500 uppercase font-semibold">Em Aberto</span>
+                <span className={`text-xs font-extrabold block ${selectedClient.total_overdue > 0 ? 'text-rose-400' : 'text-slate-400'}`}>{fmt(selectedClient.total_overdue)}</span>
               </div>
             </div>
 
