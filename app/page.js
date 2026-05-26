@@ -374,19 +374,6 @@ function FaqItem({ question, answer, category }) {
 
 // ========== MAIN PAGE ==========
 export default function HomePage() {
-  const [heroCoords, setHeroCoords] = useState({ x: 0, y: 0 });
-  const [heroHovered, setHeroHovered] = useState(false);
-  const heroRef = useRef(null);
-
-  const handleHeroMouseMove = (e) => {
-    if (!heroRef.current) return;
-    const rect = heroRef.current.getBoundingClientRect();
-    setHeroCoords({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    });
-  };
-
   const [calcClients, setCalcClients] = useState(20);
   const [calcAmount, setCalcAmount] = useState(300);
   const [calcLatePercent, setCalcLatePercent] = useState(25);
@@ -516,10 +503,6 @@ export default function HomePage() {
 
       {/* ===== HERO ===== */}
       <section 
-        ref={heroRef}
-        onMouseEnter={() => setHeroHovered(true)}
-        onMouseLeave={() => setHeroHovered(false)}
-        onMouseMove={handleHeroMouseMove}
         className="hero-section" 
         style={{
           background: 'radial-gradient(circle at 50% 0%, #0d1226 0%, #070913 80%)',
@@ -527,8 +510,12 @@ export default function HomePage() {
           padding: '120px 0 80px'
         }}
       >
-        {/* CSS Keyframes for interactive spotlight and lasers */}
+        {/* CSS Keyframes for floating ambient halo and lasers */}
         <style>{`
+          @keyframes floatGlow {
+            0%, 100% { transform: translate(-50%, -200px) scale(1); opacity: 0.8; }
+            50% { transform: translate(-50%, -180px) scale(1.06); opacity: 0.95; }
+          }
           @keyframes laserHorizontal {
             0% { left: -15%; opacity: 0; }
             10% { opacity: 0.6; }
@@ -556,7 +543,7 @@ export default function HomePage() {
           zIndex: 1
         }} />
 
-        {/* Ambient background glow (Pulsing / static center glow for mobile and fallback) */}
+        {/* Ambient background glow - Hardware accelerated slowly floating CSS halo */}
         <div style={{
           position: 'absolute',
           top: -200,
@@ -565,32 +552,14 @@ export default function HomePage() {
           width: 750,
           height: 750,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.14) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%)',
           filter: 'blur(80px)',
           pointerEvents: 'none',
           zIndex: 1,
-          opacity: heroHovered ? 0.4 : 1,
-          transition: 'opacity 0.6s ease'
+          animation: 'floatGlow 12s ease-in-out infinite'
         }} />
 
-        {/* Option 1: Interactive Spotlight (Tracks mouse on Desktop) */}
-        {heroHovered && (
-          <div style={{
-            position: 'absolute',
-            left: heroCoords.x - 300,
-            top: heroCoords.y - 300,
-            width: 600,
-            height: 600,
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(16, 185, 129, 0.16) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 70%)',
-            filter: 'blur(70px)',
-            pointerEvents: 'none',
-            zIndex: 1,
-            transition: 'left 0.1s cubic-bezier(0.1, 0.8, 0.2, 1), top 0.1s cubic-bezier(0.1, 0.8, 0.2, 1)'
-          }} />
-        )}
-
-        {/* Option 3: Payment Laser Flows (Active simulated digital billing pulses) */}
+        {/* Payment Laser Flows (Active simulated digital billing pulses running at 60fps) */}
         <div style={{
           position: 'absolute',
           top: '35%',
