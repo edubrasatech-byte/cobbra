@@ -551,8 +551,8 @@ export default function HomePage() {
               Mais Barato do Brasil
             </h1>
 
-            <p className="hero-sub" style={{ fontSize: 17, color: '#cbd5e1', lineHeight: 1.7, marginBottom: 32, maxWidth: 520 }}>
-              Cobranças automáticas por WhatsApp e E-mail, controle completo e recebimentos 100% direto no Pix, sem taxas. Tudo integrado com a inteligência da Catarina AI.
+            <p className="hero-sub" style={{ fontSize: 16, color: '#cbd5e1', lineHeight: 1.6, marginBottom: 32, maxWidth: 520 }}>
+              Cobranças automáticas por WhatsApp e E-mail, Pix direto na sua conta e taxa zero. Integrado com a Catarina AI.
             </p>
 
             <div className="hero-cta" style={{ display: 'flex', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
