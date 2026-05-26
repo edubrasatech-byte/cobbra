@@ -54,6 +54,9 @@ export default function ConfiguracoesPage() {
         if (data.status) {
           setWhatsappStatus(data.status);
           setWhatsappPhone(data.phone || '');
+          if (data.qrCode) {
+            setWhatsappQrCode(data.qrCode);
+          }
         }
       })
       .catch(() => {});
@@ -101,6 +104,12 @@ export default function ConfiguracoesPage() {
               setWhatsappPhone(data.phone || '');
               clearInterval(interval);
               showMsg('WhatsApp conectado com sucesso! 📱');
+            } else if (data.status === 'scanning' && data.qrCode) {
+              setWhatsappQrCode(data.qrCode);
+            } else if (data.status === 'disconnected') {
+              setWhatsappStatus('disconnected');
+              setWhatsappQrCode('');
+              clearInterval(interval);
             }
           })
           .catch(() => {});
@@ -237,6 +246,7 @@ export default function ConfiguracoesPage() {
     setTimeout(() => {
       setIntLoading(false);
       setShowIntModal(false);
+      setSelectedInt(null);
       showMsg('Integração salva com sucesso! 🚀');
     }, 1200);
   }
@@ -503,98 +513,395 @@ export default function ConfiguracoesPage() {
 
           {activeTab === 'integrations' && (
             <div>
-              {/* Catarina AI card (visible to everyone) */}
-              <div style={{ ...cardS, marginBottom: 24 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>🤖</div>
-                  <div>
-                    <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', margin: 0 }}>Catarina AI Engine & Copilot</h3>
-                    <p style={{ fontSize: 12, color: '#94a3b8', margin: 0 }}>Integração Oficial Google Gemini 2.5 Flash 🐍</p>
-                  </div>
-                </div>
-
-                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(5,150,105,0.15)', borderRadius: 12, padding: 18, marginBottom: 20, lineHeight: 1.6 }}>
-                  <p style={{ fontSize: 13, color: '#e2e8f0', margin: '0 0 10px 0', fontWeight: 600 }}>✨ Inteligência Artificial Integrada</p>
-                  <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>
-                    Sua conta conta com a assistente inteligente <strong>Catarina AI</strong> ativa por padrão. Ela automatiza e refina seu fluxo financeiro diariamente:
-                  </p>
-                  <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: '#cbd5e1' }}>
-                    <div>• <strong>Redação Inteligente:</strong> Escreve mensagens de cobrança personalizadas com base no humor selecionado (Gentil, Firme, Urgente, etc.).</div>
-                    <div>• <strong>Comandos Copilot:</strong> Entende instruções de linguagem natural no topo do dashboard (ex: <em>"Cobre R$ 150 do Gustavo amanhã"</em>) para lançamentos rápidos.</div>
-                    <div>• <strong>Insights Financeiros:</strong> Analisa seus dados de caixa e gera dicas de negócios automáticas na tela inicial.</div>
-                  </div>
-                </div>
-
-                <h4 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 12 }}>Limites diários do seu plano:</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
-                  <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 10, padding: 12, border: user?.plan === 'starter' ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.04)' }}>
-                    <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 4px 0', fontWeight: 600 }}>STARTER</p>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: user?.plan === 'starter' ? '#10b981' : '#fff', margin: 0 }}>20 chamadas/dia</p>
-                  </div>
-                  <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 10, padding: 12, border: user?.plan === 'crescimento' ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.04)' }}>
-                    <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 4px 0', fontWeight: 600 }}>CRESCIMENTO</p>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: user?.plan === 'crescimento' ? '#10b981' : '#fff', margin: 0 }}>50 chamadas/dia</p>
-                  </div>
-                  <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 10, padding: 12, border: user?.plan === 'cobra_pro' ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.04)' }}>
-                    <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 4px 0', fontWeight: 600 }}>COBRA PRO</p>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: user?.plan === 'cobra_pro' ? '#10b981' : '#fff', margin: 0 }}>Ilimitadas</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Integrations locking cards */}
-              <div style={cardS}>
-                {user?.plan !== 'cobra_pro' && user?.plan !== 'trial' ? (
-                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-                  <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
-                  <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 10 }}>Integrações Personalizadas</h3>
-                  <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 24, maxWidth: 360, margin: '0 auto 24px', lineHeight: 1.6 }}>
-                    A conexão com seu próprio número comercial do WhatsApp (Z-API) e servidor de e-mail SMTP próprio está disponível exclusivamente para assinantes do plano **Cobra Pro**.
-                  </p>
-                  <button onClick={() => setActiveTab('plan')} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter' }}>
-                    Ver Planos de Upgrade
-                  </button>
-                </div>
-              ) : (
+              {!selectedInt ? (
                 <>
-                  <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 24 }}>Integrações</h3>
-                  <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 20 }}>Conecte suas APIs favoritas para disparar lembretes e gerenciar fluxos.</p>
-                  {[
-                    { key: 'whatsapp', name: 'WhatsApp Business API (Z-API / Evolution)', desc: 'Envie lembretes via WhatsApp automaticamente', icon: '📱', status: 'config', color: '#25d366' },
-                    { key: 'smtp', name: 'SMTP / E-mail Próprio', desc: 'Configure seu servidor de e-mail para disparos profissionais', icon: '✉️', status: 'config', color: '#3b82f6' },
-                    { key: 'stripe', name: 'Stripe', desc: 'Aceite pagamentos internacionais com cartão de crédito', icon: '💳', status: 'soon', color: '#6366f1' },
-                    { key: 'mercado_pago', name: 'Mercado Pago', desc: 'Integração para boletos automáticos e Pix integrado', icon: '🏦', status: 'soon', color: '#00b1ea' },
-                  ].map((intg, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                      <div style={{ width: 44, height: 44, borderRadius: 12, background: `${intg.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{intg.icon}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <p style={{ fontSize: 15, fontWeight: 600, color: '#e2e8f0', margin: 0 }}>{intg.name}</p>
-                          {intg.key === 'whatsapp' && whatsappStatus === 'connected' && (
-                            <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 6, background: 'rgba(16,185,129,0.15)', color: '#10b981' }}>
-                              🟢 Ativo ({whatsappPhone})
-                            </span>
-                          )}
-                        </div>
-                        <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0 0' }}>{intg.desc}</p>
+                  {/* Catarina AI card (visible to everyone) */}
+                  <div style={{ ...cardS, marginBottom: 24 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>🤖</div>
+                      <div>
+                        <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', margin: 0 }}>Catarina AI Engine & Copilot</h3>
+                        <p style={{ fontSize: 12, color: '#94a3b8', margin: 0 }}>Integração Oficial Google Gemini 2.5 Flash 🐍</p>
                       </div>
-                      <button 
-                        onClick={() => {
-                          if (intg.status === 'config') {
-                            setSelectedInt(intg.key);
-                            setShowIntModal(true);
-                          }
-                        }}
-                        style={{ padding: '6px 16px', borderRadius: 8, border: 'none', cursor: intg.status === 'config' ? 'pointer' : 'default', fontFamily: 'Inter', fontSize: 12, fontWeight: 600, background: intg.status === 'config' ? 'rgba(5,150,105,0.15)' : 'rgba(255,255,255,0.05)', color: intg.status === 'config' ? '#10b981' : '#64748b' }}
-                      >
-                        {intg.status === 'config' ? 'Configurar' : 'Em breve'}
-                      </button>
                     </div>
-                  ))}
+
+                    <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(5,150,105,0.15)', borderRadius: 12, padding: 18, marginBottom: 20, lineHeight: 1.6 }}>
+                      <p style={{ fontSize: 13, color: '#e2e8f0', margin: '0 0 10px 0', fontWeight: 600 }}>✨ Inteligência Artificial Integrada</p>
+                      <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>
+                        Sua conta conta com a assistente inteligente <strong>Catarina AI</strong> ativa por padrão. Ela automatiza e refina seu fluxo financeiro diariamente:
+                      </p>
+                      <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13, color: '#cbd5e1' }}>
+                        <div>• <strong>Redação Inteligente:</strong> Escreve mensagens de cobrança personalizadas com base no humor selecionado (Gentil, Firme, Urgente, etc.).</div>
+                        <div>• <strong>Comandos Copilot:</strong> Entende instruções de linguagem natural no topo do dashboard (ex: <em>"Cobre R$ 150 do Gustavo amanhã"</em>) para lançamentos rápidos.</div>
+                        <div>• <strong>Insights Financeiros:</strong> Analisa seus dados de caixa e gera dicas de negócios automáticas na tela inicial.</div>
+                      </div>
+                    </div>
+
+                    <h4 style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 12 }}>Limites diários do seu plano:</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                      <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 10, padding: 12, border: user?.plan === 'starter' ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.04)' }}>
+                        <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 4px 0', fontWeight: 600 }}>STARTER</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: user?.plan === 'starter' ? '#10b981' : '#fff', margin: 0 }}>20 chamadas/dia</p>
+                      </div>
+                      <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 10, padding: 12, border: user?.plan === 'crescimento' ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.04)' }}>
+                        <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 4px 0', fontWeight: 600 }}>CRESCIMENTO</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: user?.plan === 'crescimento' ? '#10b981' : '#fff', margin: 0 }}>50 chamadas/dia</p>
+                      </div>
+                      <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 10, padding: 12, border: user?.plan === 'cobra_pro' ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.04)' }}>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: user?.plan === 'cobra_pro' ? '#10b981' : '#fff', margin: 0 }}>Ilimitadas</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Integrations locking cards */}
+                  <div style={cardS}>
+                    {user?.plan !== 'cobra_pro' && user?.plan !== 'trial' ? (
+                      <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                        <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
+                        <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 10 }}>Integrações Personalizadas</h3>
+                        <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 24, maxWidth: 360, margin: '0 auto 24px', lineHeight: 1.6 }}>
+                          A conexão com seu próprio número comercial do WhatsApp (Z-API) e servidor de e-mail SMTP próprio está disponível exclusivamente para assinantes do plano **Cobra Pro**.
+                        </p>
+                        <button onClick={() => setActiveTab('plan')} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter' }}>
+                          Ver Planos de Upgrade
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 24 }}>Integrações</h3>
+                        <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 20 }}>Conecte suas APIs favoritas para disparar lembretes e gerenciar fluxos.</p>
+                        {[
+                          { key: 'whatsapp', name: 'WhatsApp Business API (Z-API / Evolution)', desc: 'Envie lembretes via WhatsApp automaticamente', icon: '📱', status: 'config', color: '#25d366' },
+                          { key: 'smtp', name: 'SMTP / E-mail Próprio', desc: 'Configure seu servidor de e-mail para disparos profissionais', icon: '✉️', status: 'config', color: '#3b82f6' },
+                          { key: 'stripe', name: 'Stripe', desc: 'Aceite pagamentos internacionais com cartão de crédito', icon: '💳', status: 'soon', color: '#6366f1' },
+                          { key: 'mercado_pago', name: 'Mercado Pago', desc: 'Integração para boletos automáticos e Pix integrado', icon: '🏦', status: 'soon', color: '#00b1ea' },
+                        ].map((intg, i) => (
+                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                            <div style={{ width: 44, height: 44, borderRadius: 12, background: `${intg.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{intg.icon}</div>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <p style={{ fontSize: 15, fontWeight: 600, color: '#e2e8f0', margin: 0 }}>{intg.name}</p>
+                                {intg.key === 'whatsapp' && whatsappStatus === 'connected' && (
+                                  <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 6, background: 'rgba(16,185,129,0.15)', color: '#10b981' }}>
+                                    🟢 Ativo ({whatsappPhone})
+                                  </span>
+                                )}
+                              </div>
+                              <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0 0' }}>{intg.desc}</p>
+                            </div>
+                            <button 
+                              onClick={() => {
+                                if (intg.status === 'config') {
+                                  setSelectedInt(intg.key);
+                                }
+                              }}
+                              style={{ padding: '6px 16px', borderRadius: 8, border: 'none', cursor: intg.status === 'config' ? 'pointer' : 'default', fontFamily: 'Inter', fontSize: 12, fontWeight: 600, background: intg.status === 'config' ? 'rgba(5,150,105,0.15)' : 'rgba(255,255,255,0.05)', color: intg.status === 'config' ? '#10b981' : '#64748b' }}
+                            >
+                              {intg.status === 'config' ? 'Configurar' : 'Em breve'}
+                            </button>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
                 </>
+              ) : (
+                <div style={cardS}>
+                  {/* Back button and title */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
+                    <button 
+                      type="button"
+                      onClick={() => setSelectedInt(null)} 
+                      style={{ padding: '8px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', color: '#cbd5e1', fontSize: 13, fontWeight: 600, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.08)', fontFamily: 'Inter' }}
+                    >
+                      ← Voltar
+                    </button>
+                    <div>
+                      <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', margin: 0 }}>
+                        {selectedInt === 'whatsapp' ? 'Configurar WhatsApp API' : 'Configurar Servidor SMTP'}
+                      </h3>
+                      <p style={{ fontSize: 13, color: '#94a3b8', margin: '4px 0 0 0', lineHeight: 1.4 }}>
+                        {selectedInt === 'whatsapp' 
+                          ? 'Insira suas credenciais de integração para disparar faturas pelo seu número comercial.' 
+                          : 'Configure suas credenciais SMTP para que os e-mails saiam com seu próprio domínio.'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <form onSubmit={handleSaveIntegration}>
+                    {selectedInt === 'whatsapp' ? (
+                      <>
+                        {/* Method tabs Selector */}
+                        <div style={{ display: 'flex', gap: 8, background: 'rgba(255,255,255,0.03)', padding: 4, borderRadius: 10, marginBottom: 24, maxWidth: 400 }}>
+                          <button type="button" onClick={() => setWaMethod('simplified')} style={{
+                            flex: 1, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter', fontSize: 12, fontWeight: 600,
+                            background: waMethod === 'simplified' ? '#059669' : 'transparent',
+                            color: waMethod === 'simplified' ? '#fff' : '#94a3b8', transition: 'all 0.2s'
+                          }}>
+                            ⚡ Simplificado (Cobbra API)
+                          </button>
+                          <button type="button" onClick={() => setWaMethod('advanced')} style={{
+                            flex: 1, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter', fontSize: 12, fontWeight: 600,
+                            background: waMethod === 'advanced' ? '#059669' : 'transparent',
+                            color: waMethod === 'advanced' ? '#fff' : '#94a3b8', transition: 'all 0.2s'
+                          }}>
+                            ⚙️ Avançado (Z-API / BYOK)
+                          </button>
+                        </div>
+
+                        {waMethod === 'simplified' ? (
+                          <div style={{ padding: '10px 0 20px 0' }}>
+                            {whatsappStatus === 'disconnected' && (
+                              <div>
+                                <div style={{ padding: '10px 0' }}>
+                                  <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20, lineHeight: 1.5 }}>
+                                    Conecte o seu número de WhatsApp (pessoal ou comercial) na plataforma Cobbra para enviar faturas diretamente do seu contato.
+                                  </p>
+                                  
+                                  {/* Visual Benefits Card */}
+                                  <div style={{ background: 'rgba(16,185,129,0.03)', border: '1px solid rgba(16,185,129,0.1)', borderRadius: 12, padding: 14, textAlign: 'left', marginBottom: 24 }}>
+                                    <p style={{ fontSize: 11, color: '#10b981', fontWeight: 700, margin: '0 0 6px 0', textTransform: 'uppercase', letterSpacing: 0.5 }}>✓ O que muda ao conectar seu número:</p>
+                                    <div style={{ fontSize: 12, color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                      <span>💬 Seus clientes respondem diretamente para você no WhatsApp.</span>
+                                      <span>🏷️ Sua própria foto e nome de perfil aparecem no disparo.</span>
+                                      <span>⚡ Mensagens automáticas sem depender do número mestre.</span>
+                                    </div>
+                                  </div>
+
+                                  <button
+                                    type="button"
+                                    onClick={handleStartWaConnection}
+                                    style={{ padding: '12px 28px', borderRadius: 12, background: 'linear-gradient(135deg,#10b981,#059669)', color: '#070913', fontSize: 14, fontWeight: 800, border: 'none', cursor: 'pointer', fontFamily: 'Inter', boxShadow: '0 4px 14px rgba(16,185,129,0.25)', transition: 'all 0.2s' }}
+                                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                                    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                                  >
+                                    Conectar Meu Aparelho Celular 📱
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+
+                            {whatsappStatus === 'connecting' && (
+                              <div style={{ padding: '30px 0', textAlign: 'center' }}>
+                                <div style={{ border: '3.5px solid rgba(16,185,129,0.1)', borderTop: '3.5px solid #10b981', borderRadius: '50%', width: 44, height: 44, margin: '0 auto 20px', animation: 'spin 1s linear infinite' }} />
+                                <p style={{ fontSize: 14, fontWeight: 600, color: '#f8fafc', marginBottom: 6 }}>Gerando Sessão de WhatsApp...</p>
+                                <p style={{ fontSize: 12, color: '#64748b' }}>Conectando com o servidor de mensagens. Aguarde alguns instantes.</p>
+                              </div>
+                            )}
+
+                            {whatsappStatus === 'scanning' && (
+                              <div>
+                                {/* Step-by-Step Instructions */}
+                                <div style={{ textAlign: 'left', background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: 18, border: '1px solid rgba(255,255,255,0.04)', marginBottom: 20 }}>
+                                  <h4 style={{ fontSize: 12, fontWeight: 800, color: '#10b981', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: 0.5 }}>COMO CONECTAR O SEU CELULAR:</h4>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12, color: '#cbd5e1' }}>
+                                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                                      <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>1</span>
+                                      <span>Abra o <strong>WhatsApp</strong> no seu aparelho celular.</span>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                                      <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>2</span>
+                                      <span>Acesse a aba <strong>Configurações / Menu</strong> e clique em <strong>Aparelhos Conectados</strong>.</span>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                                      <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>3</span>
+                                      <span>Toque em <strong>Conectar um Aparelho</strong> e aponte a câmera para o QR Code abaixo:</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* QR Code Container */}
+                                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+                                  <div style={{ background: '#fff', padding: 18, borderRadius: 20, display: 'inline-block', boxShadow: '0 8px 30px rgba(0,0,0,0.5)', border: '4px solid #10b981', minWidth: 226, minHeight: 226, position: 'relative' }}>
+                                    {whatsappQrCode ? (
+                                      <img src={whatsappQrCode} alt="WhatsApp QR Code" style={{ width: 190, height: 190, display: 'block' }} />
+                                    ) : (
+                                      <div style={{ width: 190, height: 190, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', borderRadius: 12, padding: 12 }}>
+                                        <div style={{ border: '3px solid rgba(16,185,129,0.1)', borderTop: '3px solid #10b981', borderRadius: '50%', width: 32, height: 32, marginBottom: 12, animation: 'spin 1s linear infinite' }} />
+                                        <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', textAlign: 'center', lineHeight: '1.4' }}>
+                                          Obtendo QRCode da Evolution API...
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Status Indicator */}
+                                <div className="flex items-center justify-center gap-2 mb-6">
+                                  <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10b981] opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#10b981]"></span>
+                                  </span>
+                                  <span style={{ fontSize: 12, fontWeight: 700, color: '#34d399', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                                    Aguardando leitura do QRCode...
+                                  </span>
+                                </div>
+
+                                {/* Simulador de testes robusto e ocultável */}
+                                <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 12, padding: 14, maxWidth: 380, margin: '0 auto' }}>
+                                  <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 8px 0', fontWeight: 700 }}>🧪 PAREAMENTO DE HOMOLOGAÇÃO/SIMULADO:</p>
+                                  <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                                    <input 
+                                      type="text"
+                                      placeholder="Seu número Ex: (11) 99999-9999"
+                                      value={waSimPhone}
+                                      onChange={e => setWaSimPhone(e.target.value)}
+                                      style={{ ...inputS, width: 220, padding: '6px 12px', fontSize: 12, height: 34 }}
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={handleSimulateScan}
+                                      style={{ padding: '6px 14px', borderRadius: 8, background: '#059669', color: '#fff', fontSize: 11, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'Inter', height: 34 }}
+                                    >
+                                      Simular
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {whatsappStatus === 'connected' && (
+                              <div style={{ padding: '20px 0', textAlign: 'center' }}>
+                                <div style={{ width: 68, height: 68, borderRadius: '50%', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, margin: '0 auto 20px', color: '#10b981' }}>✓</div>
+                                <h4 style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 6 }}>WhatsApp Pareado com Sucesso!</h4>
+                                <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 28 }}>
+                                  Seu número conectado: <strong style={{ color: '#10b981' }}>{whatsappPhone}</strong>
+                                </p>
+                                
+                                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 12, padding: 14, maxWidth: 360, margin: '0 auto 28px', fontSize: 12, color: '#94a3b8', lineHeight: 1.5 }}>
+                                  🔒 A conexão com a Cobbra é totalmente segura. Não salvamos históricos de conversas, contatos ou fotos de perfil.
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={handleDisconnectWa}
+                                  style={{ padding: '10px 22px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.2)', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter', transition: 'all 0.2s' }}
+                                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.18)'}
+                                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(239,68,68,0.1)'}
+                                >
+                                  🔴 Desconectar e Desparear Aparelho
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <>
+                            <div style={{ marginBottom: 16 }}>
+                              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Instância API (Evolution API / Z-API URL) *</label>
+                              <input 
+                                type="url" 
+                                value={intForm.whatsappUrl} 
+                                onChange={e => setIntForm({ ...intForm, whatsappUrl: e.target.value })} 
+                                placeholder="https://api.z-api.io/instances/..." 
+                                style={inputS} 
+                                required 
+                              />
+                            </div>
+                            <div style={{ marginBottom: 24 }}>
+                              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Token / API Key *</label>
+                              <input 
+                                type="password" 
+                                value={intForm.whatsappToken} 
+                                onChange={e => setIntForm({ ...intForm, whatsappToken: e.target.value })} 
+                                placeholder="Token da instância" 
+                                style={inputS} 
+                                required 
+                              />
+                            </div>
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr', gap: 12, marginBottom: 16 }}>
+                          <div>
+                            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Servidor Host SMTP *</label>
+                            <input 
+                              type="text" 
+                              value={intForm.smtpHost} 
+                              onChange={e => setIntForm({ ...intForm, smtpHost: e.target.value })} 
+                              placeholder="smtp.exemplo.com" 
+                              style={inputS} 
+                              required 
+                            />
+                          </div>
+                          <div>
+                            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Porta *</label>
+                            <input 
+                              type="text" 
+                              value={intForm.smtpPort} 
+                              onChange={e => setIntForm({ ...intForm, smtpPort: e.target.value })} 
+                              placeholder="587" 
+                              style={inputS} 
+                              required 
+                            />
+                          </div>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+                          <div>
+                            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Usuário SMTP *</label>
+                            <input 
+                              type="email" 
+                              value={intForm.smtpUser} 
+                              onChange={e => setIntForm({ ...intForm, smtpUser: e.target.value })} 
+                              placeholder="usuario@dominio.com" 
+                              style={inputS} 
+                              required 
+                            />
+                          </div>
+                          <div>
+                            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Senha SMTP *</label>
+                            <input 
+                              type="password" 
+                              value={intForm.smtpPass} 
+                              onChange={e => setIntForm({ ...intForm, smtpPass: e.target.value })} 
+                              style={inputS} 
+                              required 
+                            />
+                          </div>
+                        </div>
+                        <div style={{ marginBottom: 24 }}>
+                          <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Nome de Exibição do Remetente</label>
+                          <input 
+                            type="text" 
+                            value={intForm.smtpSender} 
+                            onChange={e => setIntForm({ ...intForm, smtpSender: e.target.value })} 
+                            placeholder="Ex: Financeiro da Minha Empresa" 
+                            style={inputS} 
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 20 }}>
+                      <button 
+                        type="button" 
+                        onClick={() => setSelectedInt(null)} 
+                        style={{ padding: '12px 24px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', color: '#cbd5e1', fontSize: 14, fontWeight: 600, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.08)', fontFamily: 'Inter' }}
+                        disabled={intLoading} 
+                      >
+                        {selectedInt === 'whatsapp' && waMethod === 'simplified' ? 'Voltar' : 'Cancelar'}
+                      </button>
+                      {!(selectedInt === 'whatsapp' && waMethod === 'simplified') && (
+                        <button 
+                          type="submit" 
+                          style={{ 
+                            padding: '12px 24px', borderRadius: 10, 
+                            background: intLoading ? '#3b4252' : 'linear-gradient(135deg,#059669,#0d9488)', 
+                            color: '#fff', fontSize: 14, fontWeight: 700, 
+                            cursor: intLoading ? 'not-allowed' : 'pointer', border: 'none', 
+                            fontFamily: 'Inter' 
+                          }} 
+                          disabled={intLoading} 
+                        >
+                          {intLoading ? 'Salvando...' : 'Salvar e Testar'}
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                </div>
               )}
             </div>
-          </div>
           )}
 
           {activeTab === 'security' && (
@@ -756,296 +1063,6 @@ export default function ConfiguracoesPage() {
           )}
         </div>
       </div>
-
-      {/* Integration Configuration Modal */}
-      {showIntModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
-          onClick={() => setShowIntModal(false)}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#1e293b', borderRadius: 20, padding: 36, width: 500, border: '1px solid rgba(255,255,255,0.1)' }}>
-            
-            <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 8 }}>
-              {selectedInt === 'whatsapp' ? 'Configurar WhatsApp API' : 'Configurar Servidor SMTP'}
-            </h3>
-            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 24, lineHeight: 1.4 }}>
-              {selectedInt === 'whatsapp' 
-                ? 'Insira suas credenciais de integração para disparar mensagens diretamente pelo seu número comercial.' 
-                : 'Configure suas credenciais SMTP para que os e-mails de cobrança saiam com o domínio da sua empresa.'}
-            </p>
-
-            <form onSubmit={handleSaveIntegration}>
-              {selectedInt === 'whatsapp' ? (
-                <>
-                  {/* Method tabs Selector */}
-                  <div style={{ display: 'flex', gap: 8, background: 'rgba(255,255,255,0.03)', padding: 4, borderRadius: 10, marginBottom: 24 }}>
-                    <button type="button" onClick={() => setWaMethod('simplified')} style={{
-                      flex: 1, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter', fontSize: 12, fontWeight: 600,
-                      background: waMethod === 'simplified' ? '#059669' : 'transparent',
-                      color: waMethod === 'simplified' ? '#fff' : '#94a3b8', transition: 'all 0.2s'
-                    }}>
-                      ⚡ Simplificado (Cobbra API)
-                    </button>
-                    <button type="button" onClick={() => setWaMethod('advanced')} style={{
-                      flex: 1, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter', fontSize: 12, fontWeight: 600,
-                      background: waMethod === 'advanced' ? '#059669' : 'transparent',
-                      color: waMethod === 'advanced' ? '#fff' : '#94a3b8', transition: 'all 0.2s'
-                    }}>
-                      ⚙️ Avançado (Z-API / BYOK)
-                    </button>
-                  </div>
-
-                  {waMethod === 'simplified' ? (
-                    <div style={{ textAlign: 'center', padding: '10px 0 20px 0' }}>
-                      {whatsappStatus === 'disconnected' && (
-                        <div>
-                          <div style={{ textAlign: 'center', padding: '10px 0' }}>
-                            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20, lineHeight: 1.5 }}>
-                              Conecte o seu número de WhatsApp (pessoal ou comercial) na plataforma Cobbra para enviar faturas diretamente do seu contato.
-                            </p>
-                            
-                            {/* Visual Benefits Card */}
-                            <div style={{ background: 'rgba(16,185,129,0.03)', border: '1px solid rgba(16,185,129,0.1)', borderRadius: 12, padding: 14, textAlign: 'left', marginBottom: 24 }}>
-                              <p style={{ fontSize: 11, color: '#10b981', fontWeight: 700, margin: '0 0 6px 0', textTransform: 'uppercase', letterSpacing: 0.5 }}>✓ O que muda ao conectar seu número:</p>
-                              <div style={{ fontSize: 12, color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                <span>💬 Seus clientes respondem diretamente para você no WhatsApp.</span>
-                                <span>🏷️ Sua própria foto e nome de perfil aparecem no disparo.</span>
-                                <span>⚡ Mensagens automáticas sem depender do número mestre.</span>
-                              </div>
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={handleStartWaConnection}
-                              style={{ padding: '12px 28px', borderRadius: 12, background: 'linear-gradient(135deg,#10b981,#059669)', color: '#070913', fontSize: 14, fontWeight: 800, border: 'none', cursor: 'pointer', fontFamily: 'Inter', boxShadow: '0 4px 14px rgba(16,185,129,0.25)', transition: 'all 0.2s' }}
-                              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-                              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-                            >
-                              Conectar Meu Aparelho Celular 📱
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-                        {whatsappStatus === 'connecting' && (
-                          <div style={{ padding: '30px 0', textAlign: 'center' }}>
-                            <div style={{ border: '3.5px solid rgba(16,185,129,0.1)', borderTop: '3.5px solid #10b981', borderRadius: '50%', width: 44, height: 44, margin: '0 auto 20px', animation: 'spin 1s linear infinite' }} />
-                            <p style={{ fontSize: 14, fontWeight: 600, color: '#f8fafc', marginBottom: 6 }}>Gerando Sessão de WhatsApp...</p>
-                            <p style={{ fontSize: 12, color: '#64748b' }}>Conectando com o servidor de mensagens. Aguarde alguns instantes.</p>
-                          </div>
-                        )}
-
-                        {whatsappStatus === 'scanning' && (
-                          <div style={{ textAlign: 'center' }}>
-                            {/* Step-by-Step Instructions */}
-                            <div style={{ textAlign: 'left', background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: 18, border: '1px solid rgba(255,255,255,0.04)', marginBottom: 20 }}>
-                              <h4 style={{ fontSize: 12, fontWeight: 800, color: '#10b981', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: 0.5 }}>COMO CONECTAR O SEU CELULAR:</h4>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12, color: '#cbd5e1' }}>
-                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                                  <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>1</span>
-                                  <span>Abra o <strong>WhatsApp</strong> no seu aparelho celular.</span>
-                                </div>
-                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                                  <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>2</span>
-                                  <span>Acesse a aba <strong>Configurações / Menu</strong> e clique em <strong>Aparelhos Conectados</strong>.</span>
-                                </div>
-                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                                  <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>3</span>
-                                  <span>Toque em <strong>Conectar um Aparelho</strong> e aponte a câmera para o QR Code abaixo:</span>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            {/* QR Code Container */}
-                            <div style={{ background: '#fff', padding: 18, borderRadius: 20, display: 'inline-block', marginBottom: 18, boxShadow: '0 8px 30px rgba(0,0,0,0.5)', border: '4px solid #10b981', minWidth: 226, minHeight: 226, position: 'relative' }}>
-                              {whatsappQrCode ? (
-                                <img src={whatsappQrCode} alt="WhatsApp QR Code" style={{ width: 190, height: 190, display: 'block' }} />
-                              ) : (
-                                <div style={{ width: 190, height: 190, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', borderRadius: 12, padding: 12 }}>
-                                  <div style={{ border: '3px solid rgba(16,185,129,0.1)', borderTop: '3px solid #10b981', borderRadius: '50%', width: 32, height: 32, marginBottom: 12, animation: 'spin 1s linear infinite' }} />
-                                  <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', textAlign: 'center', lineHeight: '1.4' }}>
-                                    Obtendo QRCode da Evolution API...
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Status Indicator */}
-                            <div className="flex items-center justify-center gap-2 mb-6">
-                              <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10b981] opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#10b981]"></span>
-                              </span>
-                              <span style={{ fontSize: 12, fontWeight: 700, color: '#34d399', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                                Aguardando leitura do QRCode...
-                              </span>
-                            </div>
-
-                            {/* Simulador de testes robusto e ocultável */}
-                            <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 12, padding: 14, maxWidth: 380, margin: '0 auto' }}>
-                              <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 8px 0', fontWeight: 700 }}>🧪 PAREAMENTO DE HOMOLOGAÇÃO/SIMULADO:</p>
-                              <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                                <input 
-                                  type="text"
-                                  placeholder="Seu número Ex: (11) 99999-9999"
-                                  value={waSimPhone}
-                                  onChange={e => setWaSimPhone(e.target.value)}
-                                  style={{ ...inputS, width: 220, padding: '6px 12px', fontSize: 12, height: 34 }}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={handleSimulateScan}
-                                  style={{ padding: '6px 14px', borderRadius: 8, background: '#059669', color: '#fff', fontSize: 11, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'Inter', height: 34 }}
-                                >
-                                  Simular Pareamento
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {whatsappStatus === 'connected' && (
-                          <div style={{ padding: '20px 0', textAlign: 'center' }}>
-                            <div style={{ width: 68, height: 68, borderRadius: '50%', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, margin: '0 auto 20px', color: '#10b981' }}>✓</div>
-                            <h4 style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 6 }}>WhatsApp Pareado com Sucesso!</h4>
-                            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 28 }}>
-                              Seu número conectado: <strong style={{ color: '#10b981' }}>{whatsappPhone}</strong>
-                            </p>
-                            
-                            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 12, padding: 14, maxWidth: 360, margin: '0 auto 28px', fontSize: 12, color: '#94a3b8', lineHeight: 1.5 }}>
-                              🔒 A conexão com a Cobbra é totalmente segura. Não salvamos históricos de conversas, contatos ou fotos de perfil.
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={handleDisconnectWa}
-                              style={{ padding: '10px 22px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.2)', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter', transition: 'all 0.2s' }}
-                              onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.18)'}
-                              onMouseLeave={e => e.currentTarget.style.background = 'rgba(239,68,68,0.1)'}
-                            >
-                              🔴 Desconectar e Desparear Aparelho
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                  ) : (
-                    <>
-                      <div style={{ marginBottom: 16 }}>
-                        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Instância API (Evolution API / Z-API URL) *</label>
-                        <input 
-                          type="url" 
-                          value={intForm.whatsappUrl} 
-                          onChange={e => setIntForm({ ...intForm, whatsappUrl: e.target.value })} 
-                          placeholder="https://api.z-api.io/instances/..." 
-                          style={inputS} 
-                          required 
-                        />
-                      </div>
-                      <div style={{ marginBottom: 24 }}>
-                        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Token / API Key *</label>
-                        <input 
-                          type="password" 
-                          value={intForm.whatsappToken} 
-                          onChange={e => setIntForm({ ...intForm, whatsappToken: e.target.value })} 
-                          placeholder="Token da instância" 
-                          style={inputS} 
-                          required 
-                        />
-                      </div>
-                    </>
-                  )}
-                </>
-              ) : (
-                <>
-                  <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr', gap: 12, marginBottom: 16 }}>
-                    <div>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Servidor Host SMTP *</label>
-                      <input 
-                        type="text" 
-                        value={intForm.smtpHost} 
-                        onChange={e => setIntForm({ ...intForm, smtpHost: e.target.value })} 
-                        placeholder="smtp.exemplo.com" 
-                        style={inputS} 
-                        required 
-                      />
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Porta *</label>
-                      <input 
-                        type="text" 
-                        value={intForm.smtpPort} 
-                        onChange={e => setIntForm({ ...intForm, smtpPort: e.target.value })} 
-                        placeholder="587" 
-                        style={inputS} 
-                        required 
-                      />
-                    </div>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
-                    <div>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Usuário SMTP *</label>
-                      <input 
-                        type="email" 
-                        value={intForm.smtpUser} 
-                        onChange={e => setIntForm({ ...intForm, smtpUser: e.target.value })} 
-                        placeholder="usuario@dominio.com" 
-                        style={inputS} 
-                        required 
-                      />
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Senha SMTP *</label>
-                      <input 
-                        type="password" 
-                        value={intForm.smtpPass} 
-                        onChange={e => setIntForm({ ...intForm, smtpPass: e.target.value })} 
-                        style={inputS} 
-                        required 
-                      />
-                    </div>
-                  </div>
-                  <div style={{ marginBottom: 24 }}>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Nome de Exibição do Remetente</label>
-                    <input 
-                      type="text" 
-                      value={intForm.smtpSender} 
-                      onChange={e => setIntForm({ ...intForm, smtpSender: e.target.value })} 
-                      placeholder="Ex: Financeiro da Minha Empresa" 
-                      style={inputS} 
-                    />
-                  </div>
-                </>
-              )}
-
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-                <button 
-                  type="button" 
-                  onClick={() => setShowIntModal(false)} 
-                  style={{ padding: '12px 24px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', color: '#94a3b8', fontSize: 14, fontWeight: 600, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'Inter' }}
-                  disabled={intLoading} 
-                >
-                  {selectedInt === 'whatsapp' && waMethod === 'simplified' ? 'Fechar' : 'Cancelar'}
-                </button>
-                {!(selectedInt === 'whatsapp' && waMethod === 'simplified') && (
-                  <button 
-                    type="submit" 
-                    style={{ 
-                      padding: '12px 24px', borderRadius: 10, 
-                      background: intLoading ? '#3b4252' : 'linear-gradient(135deg,#059669,#0d9488)', 
-                      color: '#fff', fontSize: 14, fontWeight: 700, 
-                      cursor: intLoading ? 'not-allowed' : 'pointer', border: 'none', 
-                      fontFamily: 'Inter' 
-                    }} 
-                    disabled={intLoading} 
-                  >
-                    {intLoading ? 'Salvando...' : 'Salvar e Testar Conexão'}
-                  </button>
-                )}
-              </div>
-            </form>
-
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }
