@@ -256,7 +256,24 @@ Plano ativo: ${user.plan || 'trial'}`;
 
 // Highly customized Brazilian SaaS fallback rules
 function getFallbackReply(text) {
-  const t = text.toLowerCase();
+  const t = text.trim().toLowerCase();
+  
+  // Natural greeting handling
+  if (
+    t === 'oi' || 
+    t === 'olá' || 
+    t === 'ola' || 
+    t.startsWith('oi ') || 
+    t.startsWith('olá ') || 
+    t.includes('bom dia') || 
+    t.includes('boa tarde') || 
+    t.includes('boa noite') || 
+    t.includes('tudo bem') || 
+    t.includes('como vai')
+  ) {
+    return 'Olá! Sou a Catarina AI, a assistente inteligente do Cobbra. 🐍\n\nEstou pronta para tirar suas dúvidas de suporte ou ajudar você a gerenciar seu faturamento. Como posso ajudar você hoje?';
+  }
+
   if (t.includes('whatsapp') || t.includes('conectar') || t.includes('celular') || t.includes('qr code')) {
     return 'Para conectar seu WhatsApp Business ao Cobbra, acesse "Configurações > Integrações", clique em "Configurar" no card do WhatsApp e escaneie o QR Code. O processo leva menos de 2 minutos e é super amigável! 🐍';
   }
@@ -275,5 +292,5 @@ function getFallbackReply(text) {
   if (t.includes('estorno') || t.includes('cancelamento manual') || t.includes('reembolso') || t.includes('bug') || t.includes('erro técnico') || t.includes('estornar')) {
     return 'Entendo perfeitamente que essa é uma questão sensível e importante. Como eu sou uma assistente virtual, não consigo processar estornos ou cancelamentos manuais de forma direta. Por isso, acabo de abrir um chamado de suporte prioritário para a nossa equipe pelo e-mail suporte@cobbra.com.br. Eles vão resolver isso para você o mais rápido possível! [SUPPORT_TICKET_TRIGGER] 🐍';
   }
-  return 'Excelente pergunta! Como assistente inteligente do Cobbra, posso te garantir que nossa ferramenta ajuda você a reduzir a inadimplência em até 40% enviando lembretes gentis por WhatsApp e e-mail. Se precisar de ajuda para configurar, me avise! 🐍';
+  return 'Como a sua assistente inteligente do Cobbra, estou aqui para ajudar você a reduzir a inadimplência e automatizar cobranças gentis por WhatsApp e E-mail. 🐍\n\nSe tiver dúvidas sobre juros, Pix, planos ou sobre como conectar seu WhatsApp, basta me perguntar!';
 }

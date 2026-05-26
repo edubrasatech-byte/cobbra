@@ -2,6 +2,9 @@
 import { useState, useEffect, useRef } from 'react';
 
 export default function Chatbot({ isOpen, onClose }) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isCurrentlyOpen = isOpen !== undefined ? isOpen : internalOpen;
+
   const [activeTab, setActiveTab] = useState('chat'); // 'chat' | 'history'
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -32,10 +35,10 @@ export default function Chatbot({ isOpen, onClose }) {
   };
 
   useEffect(() => {
-    if (isOpen) {
+    if (isCurrentlyOpen) {
       scrollToBottom();
     }
-  }, [messages, isTyping, isOpen]);
+  }, [messages, isTyping, isCurrentlyOpen]);
 
   // Auth & Plan Validation on mount
   useEffect(() => {
@@ -257,9 +260,81 @@ export default function Chatbot({ isOpen, onClose }) {
     setFeedbacks({});
   };
 
+  const handleCloseClick = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      setInternalOpen(false);
+    }
+  };
+
   return (
     <div style={{ fontFamily: "'Inter', sans-serif" }}>
       
+      {/* Floating Mascot Launcher Button (Only shown in uncontrolled/landing page mode when closed) */}
+      {isOpen === undefined && !isCurrentlyOpen && (
+        <button
+          onClick={() => setInternalOpen(true)}
+          aria-label="Abrir suporte Catarina AI"
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            width: 60,
+            height: 60,
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #0c0e1a 0%, #10b981 100%)',
+            border: '2px solid rgba(16, 185, 129, 0.4)',
+            boxShadow: '0 8px 30px rgba(16, 185, 129, 0.4), 0 0 15px rgba(16, 185, 129, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            zIndex: 9999,
+            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            animation: 'chat-float 3s ease-in-out infinite'
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'scale(1.1) translateY(-3px)';
+            e.currentTarget.style.boxShadow = '0 12px 35px rgba(16, 185, 129, 0.6), 0 0 25px rgba(16, 185, 129, 0.4)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'scale(1) translateY(0)';
+            e.currentTarget.style.boxShadow = '0 8px 30px rgba(16, 185, 129, 0.4), 0 0 15px rgba(16, 185, 129, 0.2)';
+          }}
+        >
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
+              <g transform="translate(1.5, 1.5)">
+                <path d="M8 30 C4 28, 3 22, 8 18 C13 14, 20 13, 25 17 C30 21, 33 18, 33 13 C33 9, 29 7, 26 9" stroke="url(#launcherSnakeGrad)" strokeWidth="4.5" strokeLinecap="round" fill="none" />
+                <circle cx="24" cy="8" r="5" fill="url(#launcherSnakeGrad)" />
+                <circle cx="23" cy="7" r="1.2" fill="white" />
+                <circle cx="26" cy="7" r="1.2" fill="white" />
+                <circle cx="23.2" cy="7.3" r="0.7" fill="#070913" />
+                <circle cx="26.2" cy="7.3" r="0.7" fill="#070913" />
+              </g>
+              <defs>
+                <linearGradient id="launcherSnakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#10b981" />
+                  <stop offset="100%" stopColor="#34d399" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <span style={{
+              position: 'absolute',
+              top: -2,
+              right: -2,
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              background: '#10b981',
+              border: '2px solid #0c0e1a',
+              boxShadow: '0 0 4px #10b981'
+            }} />
+          </div>
+        </button>
+      )}
+
       {/* CSS Animations & Micro-interactions */}
       <style jsx global>{`
         @keyframes chat-float {
@@ -306,22 +381,58 @@ export default function Chatbot({ isOpen, onClose }) {
         .chat-scrollbar::-webkit-scrollbar-thumb:hover {
           background: rgba(255,255,255,0.2);
         }
+
+        /* Responsive Premium Floating Card Box Styles */
+        .chatbot-drawer-container {
+          position: fixed !important;
+          z-index: 9998 !important;
+          display: flex !important;
+          flex-direction: column !important;
+          background: #0c0e1a !important;
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(16, 185, 129, 0.05) !important;
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease !important;
+          
+          /* Desktop default floating card */
+          bottom: 24px !important;
+          right: 24px !important;
+          width: 420px !important;
+          height: 680px !important;
+          max-height: calc(100vh - 48px) !important;
+          border-radius: 24px !important;
+          border: 1px solid rgba(255,255,255,0.08) !important;
+          transform: translateY(120%) scale(0.95) !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+          overflow: hidden !important;
+        }
+        
+        .chatbot-drawer-container.open {
+          transform: translateY(0) scale(1) !important;
+          opacity: 1 !important;
+          pointer-events: all !important;
+        }
+        
+        /* Mobile fullscreen adaptation */
+        @media (max-width: 640px) {
+          .chatbot-drawer-container {
+            bottom: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
+            border-radius: 0 !important;
+            border: none !important;
+            transform: translateX(100%) !important;
+          }
+          
+          .chatbot-drawer-container.open {
+            transform: translateX(0) !important;
+          }
+        }
       `}</style>
 
-      {/* Slide-out Sidebar Drawer (Hostinger style - Premium Dark Redesign) */}
-      <div 
-        style={{
-          position: 'fixed', top: 0, bottom: 0, right: 0,
-          width: '100%', maxWidth: 420, height: '100vh',
-          background: '#0c0e1a', borderLeft: '1px solid rgba(255,255,255,0.06)',
-          boxShadow: '-10px 0 40px rgba(0, 0, 0, 0.5)', zIndex: 9998,
-          display: 'flex', flexDirection: 'column',
-          transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
-          opacity: isOpen ? 1 : 0,
-          transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease',
-          pointerEvents: isOpen ? 'all' : 'none'
-        }}
-      >
+      {/* Floating Card Support Chat (Premium Dark Redesign) */}
+      <div className={`chatbot-drawer-container ${isCurrentlyOpen ? 'open' : ''}`}>
         
         {/* Drawer Header (Premium Dark Style) */}
         <div style={{ padding: '24px 24px 16px 24px', display: 'flex', flexDirection: 'column', gap: 16, borderBottom: '1px solid rgba(255,255,255,0.06)', background: '#0c0e1a' }}>
@@ -382,7 +493,7 @@ export default function Chatbot({ isOpen, onClose }) {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
               </button>
               <button 
-                onClick={onClose}
+                onClick={handleCloseClick}
                 title="Minimizar chat"
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, borderRadius: 8, color: '#94a3b8', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; }}
@@ -507,6 +618,26 @@ export default function Chatbot({ isOpen, onClose }) {
                     wordBreak: 'break-word'
                   }}>
                     {m.text}
+
+                    {/* Green Snake Brand Logo SVG inside bot bubble (Matching user screenshot) */}
+                    {m.sender === 'bot' && (
+                      <div style={{ display: 'flex', alignItems: 'center', marginTop: 8, opacity: 0.9 }}>
+                        <svg width="16" height="16" viewBox="0 0 40 40" fill="none" style={{ filter: 'drop-shadow(0 0 2px rgba(16,185,129,0.3))' }}>
+                          <g transform="translate(1.5, 1.5)">
+                            <path d="M8 30 C4 28, 3 22, 8 18 C13 14, 20 13, 25 17 C30 21, 33 18, 33 13 C33 9, 29 7, 26 9" stroke="url(#bubbleSnakeGrad)" strokeWidth="4.5" strokeLinecap="round" fill="none" />
+                            <circle cx="24" cy="8" r="5" fill="url(#bubbleSnakeGrad)" />
+                            <circle cx="23" cy="7" r="1.2" fill="white" />
+                            <circle cx="26" cy="7" r="1.2" fill="white" />
+                          </g>
+                          <defs>
+                            <linearGradient id="bubbleSnakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#10b981" />
+                              <stop offset="100%" stopColor="#0d9488" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                      </div>
+                    )}
 
                     {/* Copilot In-bubble green Scheduled Ticket Card (Matching the user screenshot exactly) */}
                     {m.scheduledTicket && (
