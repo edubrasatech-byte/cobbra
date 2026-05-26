@@ -514,19 +514,11 @@ export default function HomePage() {
         <style>{`
           @keyframes floatGlow {
             0%, 100% { transform: translate(-50%, -200px) scale(1); opacity: 0.8; }
-            50% { transform: translate(-50%, -180px) scale(1.06); opacity: 0.95; }
+            50% { transform: translate(-50%, -180px) scale(1.04); opacity: 0.95; }
           }
-          @keyframes laserHorizontal {
-            0% { left: -15%; opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { left: 115%; opacity: 0; }
-          }
-          @keyframes laserVertical {
-            0% { top: -15%; opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { top: 115%; opacity: 0; }
+          @keyframes crawlSnake {
+            0% { stroke-dashoffset: 350; }
+            100% { stroke-dashoffset: -350; }
           }
         `}</style>
 
@@ -543,7 +535,7 @@ export default function HomePage() {
           zIndex: 1
         }} />
 
-        {/* Ambient background glow - Hardware accelerated slowly floating CSS halo */}
+        {/* Ambient background glow - Very subtle (5% opacity) to prevent it from looking too bright */}
         <div style={{
           position: 'absolute',
           top: -200,
@@ -552,55 +544,83 @@ export default function HomePage() {
           width: 750,
           height: 750,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.14) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%)',
-          filter: 'blur(80px)',
+          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, rgba(99, 102, 241, 0.02) 50%, transparent 70%)',
+          filter: 'blur(90px)',
           pointerEvents: 'none',
           zIndex: 1,
-          animation: 'floatGlow 12s ease-in-out infinite'
+          animation: 'floatGlow 15s ease-in-out infinite'
         }} />
 
-        {/* Payment Laser Flows (Active simulated digital billing pulses running at 60fps) */}
-        <div style={{
-          position: 'absolute',
-          top: '35%',
-          left: '-15%',
-          width: '150px',
-          height: '1px',
-          background: 'linear-gradient(90deg, transparent, #10b981, transparent)',
-          boxShadow: '0 0 8px #10b981, 0 0 16px rgba(16, 185, 129, 0.6)',
-          animation: 'laserHorizontal 8s linear infinite',
-          animationDelay: '1.5s',
-          pointerEvents: 'none',
-          zIndex: 2
-        }} />
+        {/* Glowing Crawling Snakes (Organically curving along grid lines to dodge characters and CTAs) */}
+        <svg 
+          viewBox="0 0 1200 600" 
+          width="100%" 
+          height="100%" 
+          preserveAspectRatio="none" 
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+            zIndex: 2
+          }}
+        >
+          <defs>
+            <linearGradient id="snakeGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#10b981" stopOpacity="0" />
+              <stop offset="50%" stopColor="#34d399" stopOpacity="1" />
+              <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+            </linearGradient>
+            <linearGradient id="snakeGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#0d9488" stopOpacity="0" />
+              <stop offset="50%" stopColor="#10b981" stopOpacity="1" />
+              <stop offset="100%" stopColor="#0d9488" stopOpacity="0" />
+            </linearGradient>
+          </defs>
 
-        <div style={{
-          position: 'absolute',
-          left: '65%',
-          top: '-15%',
-          width: '1px',
-          height: '150px',
-          background: 'linear-gradient(180deg, transparent, #10b981, transparent)',
-          boxShadow: '0 0 8px #10b981, 0 0 16px rgba(16, 185, 129, 0.6)',
-          animation: 'laserVertical 11s linear infinite',
-          animationDelay: '3.5s',
-          pointerEvents: 'none',
-          zIndex: 2
-        }} />
+          {/* Snake 1: Crawling horizontally at the top, curving UP to dodge the main title */}
+          <path 
+            d="M 0,150 L 250,150 C 350,150 350,55 480,55 L 720,55 C 850,55 850,150 950,150 L 1200,150" 
+            fill="none" 
+            stroke="url(#snakeGrad1)" 
+            strokeWidth="2.5" 
+            strokeLinecap="round"
+            strokeDasharray="45 300"
+            style={{
+              filter: 'drop-shadow(0 0 5px #10b981) drop-shadow(0 0 12px rgba(16,185,129,0.5))',
+              animation: 'crawlSnake 9s linear infinite'
+            }}
+          />
 
-        <div style={{
-          position: 'absolute',
-          top: '72%',
-          left: '-15%',
-          width: '180px',
-          height: '1px',
-          background: 'linear-gradient(90deg, transparent, #34d399, transparent)',
-          boxShadow: '0 0 8px #34d399, 0 0 16px rgba(52, 211, 153, 0.6)',
-          animation: 'laserHorizontal 14s linear infinite',
-          animationDelay: '6s',
-          pointerEvents: 'none',
-          zIndex: 2
-        }} />
+          {/* Snake 2: Crawling horizontally at the bottom, curving DOWN to dodge the CTA block */}
+          <path 
+            d="M 0,380 L 280,380 C 380,380 380,480 500,480 L 700,480 C 820,480 820,380 920,380 L 1200,380" 
+            fill="none" 
+            stroke="url(#snakeGrad2)" 
+            strokeWidth="2.5" 
+            strokeLinecap="round"
+            strokeDasharray="50 300"
+            style={{
+              filter: 'drop-shadow(0 0 5px #10b981) drop-shadow(0 0 12px rgba(16,185,129,0.5))',
+              animation: 'crawlSnake 11s linear infinite',
+              animationDelay: '3s'
+            }}
+          />
+
+          {/* Snake 3: Weaving vertically on the left side of the grid */}
+          <path 
+            d="M 180,0 L 180,180 C 180,240 80,260 80,350 C 80,440 180,460 180,600" 
+            fill="none" 
+            stroke="url(#snakeGrad1)" 
+            strokeWidth="2.5" 
+            strokeLinecap="round"
+            strokeDasharray="40 260"
+            style={{
+              filter: 'drop-shadow(0 0 5px #10b981) drop-shadow(0 0 12px rgba(16,185,129,0.5))',
+              animation: 'crawlSnake 13s linear infinite',
+              animationDelay: '6s'
+            }}
+          />
+        </svg>
 
         <div className="hero-grid" style={{ maxWidth: 840, margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'relative', zIndex: 10 }}>
           {/* Content */}
