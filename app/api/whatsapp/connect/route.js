@@ -73,7 +73,7 @@ export async function GET(request) {
         }
       } catch (e) {
         console.error("[EVOLUTION API ERROR]:", e);
-        qrError = 'Erro de comunicação com a VPS da Evolution API. Verifique a URL.';
+        qrError = `Erro de comunicação com a VPS em "${baseUrl}". Detalhes: ${e.message}`;
       }
     }
 
@@ -160,7 +160,7 @@ export async function POST(request) {
           }
         } catch (e) {
           console.error("[EVOLUTION API START ERROR]:", e);
-          qrError = 'Erro de comunicação com a VPS da Evolution API. Verifique a URL.';
+          qrError = `Erro de comunicação com a VPS em "${baseUrl}". Detalhes: ${e.message}`;
         }
       }
 
