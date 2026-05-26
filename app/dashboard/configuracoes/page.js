@@ -822,7 +822,8 @@ export default function ConfiguracoesPage() {
                               Conectar Meu Aparelho Celular 📱
                             </button>
                           </div>
-                        )}
+                        </div>
+                      )}
 
                         {whatsappStatus === 'connecting' && (
                           <div style={{ padding: '30px 0', textAlign: 'center' }}>
