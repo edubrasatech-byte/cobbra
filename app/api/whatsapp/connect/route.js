@@ -16,6 +16,10 @@ export async function GET(request) {
     const phone = userData?.whatsapp_phone || null;
     const instance = userData?.whatsapp_instance || `cobbra_inst_${user.id.substring(0, 8)}`;
 
+    if (status === 'disconnected') {
+      return Response.json({ status: 'disconnected', phone: null, instance: null });
+    }
+
     const mockQrCode = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="250" height="250" viewBox="0 0 250 250"><rect width="250" height="250" fill="white"/><g fill="%230f172a"><rect x="20" y="20" width="40" height="40"/><rect x="20" y="70" width="10" height="10"/><rect x="50" y="70" width="10" height="10"/><rect x="20" y="90" width="40" height="40"/><rect x="70" y="20" width="10" height="10"/><rect x="90" y="20" width="40" height="40"/><rect x="90" y="70" width="10" height="10"/><rect x="120" y="70" width="10" height="10"/><rect x="90" y="90" width="40" height="40"/><rect x="140" y="20" width="40" height="40"/><rect x="140" y="70" width="10" height="10"/><rect x="170" y="70" width="10" height="10"/><rect x="140" y="90" width="40" height="40"/><rect x="190" y="20" width="10" height="10"/><rect x="210" y="20" width="20" height="20"/><rect x="190" y="50" width="30" height="10"/><rect x="190" y="70" width="40" height="40"/><g fill="%2310b981"><rect x="30" y="30" width="20" height="20"/><rect x="100" y="30" width="20" height="20"/><rect x="150" y="30" width="20" height="20"/><rect x="30" y="100" width="20" height="20"/><rect x="100" y="100" width="20" height="20"/><rect x="150" y="100" width="20" height="20"/></g></g></svg>';
 
     let qrCode = null;
@@ -62,12 +66,6 @@ export async function GET(request) {
           const connectData = await connectRes.json();
           // Evolution API connects returns code or base64 (which is a data URI starting with data:image...)
           qrCode = connectData?.base64 || connectData?.code || null;
-          status = 'scanning';
-          
-          run(
-            "UPDATE users SET whatsapp_status = 'scanning', whatsapp_instance = ?, updated_at = datetime('now') WHERE id = ?",
-            [instance, user.id]
-          );
         }
       } catch (e) {
         console.error("[EVOLUTION API ERROR] Falling back to mock simulation:", e);
@@ -81,13 +79,6 @@ export async function GET(request) {
 
     if (!qrCode) {
       qrCode = mockQrCode;
-      if (status === 'disconnected') {
-        status = 'scanning';
-        run(
-          "UPDATE users SET whatsapp_status = 'scanning', whatsapp_instance = ?, updated_at = datetime('now') WHERE id = ?",
-          [instance, user.id]
-        );
-      }
     }
 
     return Response.json({
@@ -101,18 +92,81 @@ export async function GET(request) {
   }
 }
 
-// POST /api/whatsapp/connect - Trigger simulated scan connection
+// POST /api/whatsapp/connect - Trigger connect start or simulated scan connection
 export async function POST(request) {
   try {
     const user = getUserFromRequest(request);
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
     const body = await request.json();
-    const { phone } = body;
+    const { phone, action } = body;
+    const instance = `cobbra_inst_${user.id.substring(0, 8)}`;
+
+    if (action === 'start' || !phone) {
+      // START NEW CONNECTION
+      run(
+        "UPDATE users SET whatsapp_status = 'scanning', whatsapp_instance = ?, updated_at = datetime('now') WHERE id = ?",
+        [instance, user.id]
+      );
+
+      let qrCode = null;
+      const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL;
+      const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN;
+      const mockQrCode = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="250" height="250" viewBox="0 0 250 250"><rect width="250" height="250" fill="white"/><g fill="%230f172a"><rect x="20" y="20" width="40" height="40"/><rect x="20" y="70" width="10" height="10"/><rect x="50" y="70" width="10" height="10"/><rect x="20" y="90" width="40" height="40"/><rect x="70" y="20" width="10" height="10"/><rect x="90" y="20" width="40" height="40"/><rect x="90" y="70" width="10" height="10"/><rect x="120" y="70" width="10" height="10"/><rect x="90" y="90" width="40" height="40"/><rect x="140" y="20" width="40" height="40"/><rect x="140" y="70" width="10" height="10"/><rect x="170" y="70" width="10" height="10"/><rect x="140" y="90" width="40" height="40"/><rect x="190" y="20" width="10" height="10"/><rect x="210" y="20" width="20" height="20"/><rect x="190" y="50" width="30" height="10"/><rect x="190" y="70" width="40" height="40"/><g fill="%2310b981"><rect x="30" y="30" width="20" height="20"/><rect x="100" y="30" width="20" height="20"/><rect x="150" y="30" width="20" height="20"/><rect x="30" y="100" width="20" height="20"/><rect x="100" y="100" width="20" height="20"/><rect x="150" y="100" width="20" height="20"/></g></g></svg>';
+
+      if (evoUrl && evoToken) {
+        try {
+          const baseUrl = evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl;
+
+          // Check connection state
+          const stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
+            headers: { 'apikey': evoToken }
+          });
+
+          let isConnected = false;
+          if (stateRes.ok) {
+            const stateData = await stateRes.json();
+            isConnected = stateData?.instance?.state === 'open';
+          }
+
+          if (isConnected) {
+            run(
+              "UPDATE users SET whatsapp_status = 'connected', whatsapp_instance = ?, updated_at = datetime('now') WHERE id = ?",
+              [instance, user.id]
+            );
+            return Response.json({ success: true, status: 'connected', instance });
+          }
+
+          await fetch(`${baseUrl}/instance/create`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': evoToken },
+            body: JSON.stringify({ instanceName: instance, qrcode: true })
+          });
+
+          const connectRes = await fetch(`${baseUrl}/instance/connect/${instance}`, {
+            headers: { 'apikey': evoToken }
+          });
+
+          if (connectRes.ok) {
+            const connectData = await connectRes.json();
+            qrCode = connectData?.base64 || connectData?.code || null;
+          }
+        } catch (e) {
+          console.error("[EVOLUTION API START ERROR]:", e);
+        }
+      }
+
+      if (!qrCode) {
+        qrCode = mockQrCode;
+      }
+
+      return Response.json({ success: true, status: 'scanning', qrCode, instance });
+    }
+
+    // SIMULATED PAIRING
     const cleanPhone = phone || user.phone || '5511999999999';
 
     // Simulate Evolution API webhook callback that switches status to connected
-    const instance = `cobbra_inst_${user.id.substring(0, 8)}`;
     run(
       `UPDATE users SET 
         whatsapp_status = 'connected', 

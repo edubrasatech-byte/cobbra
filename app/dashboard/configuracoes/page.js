@@ -123,7 +123,11 @@ export default function ConfiguracoesPage() {
   async function handleStartWaConnection() {
     setWhatsappStatus('connecting');
     try {
-      const res = await fetch('/api/whatsapp/connect');
+      const res = await fetch('/api/whatsapp/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'start' })
+      });
       const data = await res.json();
       if (data.qrCode) {
         setWhatsappQrCode(data.qrCode);
