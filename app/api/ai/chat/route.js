@@ -142,20 +142,20 @@ Plano ativo: ${user.plan || 'trial'}`;
           aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
           if (!aiResponse) {
             console.warn('[GEMINI CHAT WARNING] Gemini returned empty response or candidate safety block, falling back to rule-based reply.');
-            aiResponse = getFallbackReply(message) + `\n\n[Debug: Resposta vazia ou bloqueio de segurança do Gemini]`;
+            aiResponse = getFallbackReply(message);
           }
         } else {
           const errorText = await response.text();
           console.error('[GEMINI API ERROR]', errorText);
-          aiResponse = getFallbackReply(message) + `\n\n[Debug: Erro da API do Gemini - ${errorText}]`;
+          aiResponse = getFallbackReply(message);
         }
       } catch (fetchError) {
         console.error('[GEMINI FETCH EXCEPTION] Outgoing request failed, resorting to local offline brain:', fetchError);
-        aiResponse = getFallbackReply(message) + `\n\n[Debug: Exceção no Fetch - ${fetchError.message}]`;
+        aiResponse = getFallbackReply(message);
       }
     } else {
       // Use fallback matching if API Key is not set
-      aiResponse = getFallbackReply(message) + `\n\n[Debug: GEMINI_API_KEY não está definida nas variáveis de ambiente]`;
+      aiResponse = getFallbackReply(message);
     }
 
     // Support ticket trigger parsing
