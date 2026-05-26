@@ -61,13 +61,6 @@ export default function Chatbot({ isOpen, onClose }) {
     checkUserAuth();
   }, []);
 
-  const suggestions = [
-    { label: 'Como conectar o meu WhatsApp?', text: 'Como posso conectar o meu WhatsApp?' },
-    { label: 'Quais são os planos e limites?', text: 'Quais são os planos e limites do Cobbra?' },
-    { label: 'Como funcionam os juros automáticos?', text: 'Como funcionam os juros automáticos no score?' },
-    { label: 'O Pix tem taxa de intermediação?', text: 'O Pix do Cobbra tem alguma taxa de intermediação?' }
-  ];
-
   const handleSendMessage = async (text) => {
     if (!text.trim()) return;
 
@@ -415,10 +408,13 @@ export default function Chatbot({ isOpen, onClose }) {
         /* Mobile fullscreen adaptation */
         @media (max-width: 640px) {
           .chatbot-drawer-container {
+            top: 0 !important;
             bottom: 0 !important;
             right: 0 !important;
             width: 100% !important;
+            height: 100dvh !important;
             height: 100vh !important;
+            max-height: 100dvh !important;
             max-height: 100vh !important;
             border-radius: 0 !important;
             border: none !important;
@@ -428,6 +424,10 @@ export default function Chatbot({ isOpen, onClose }) {
           .chatbot-drawer-container.open {
             transform: translateX(0) !important;
           }
+          
+          .chatbot-header-container {
+            padding-top: calc(20px + env(safe-area-inset-top, 16px)) !important;
+          }
         }
       `}</style>
 
@@ -435,7 +435,7 @@ export default function Chatbot({ isOpen, onClose }) {
       <div className={`chatbot-drawer-container ${isCurrentlyOpen ? 'open' : ''}`}>
         
         {/* Drawer Header (Premium Dark Style) */}
-        <div style={{ padding: '24px 24px 16px 24px', display: 'flex', flexDirection: 'column', gap: 16, borderBottom: '1px solid rgba(255,255,255,0.06)', background: '#0c0e1a' }}>
+        <div className="chatbot-header-container" style={{ padding: '24px 24px 16px 24px', display: 'flex', flexDirection: 'column', gap: 16, borderBottom: '1px solid rgba(255,255,255,0.06)', background: '#0c0e1a' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             
             {/* Persona info */}
@@ -741,44 +741,6 @@ export default function Chatbot({ isOpen, onClose }) {
               {/* Auto Scroll ref */}
               <div ref={messagesEndRef} style={{ height: 1 }} />
             </div>
-
-            {/* Suggestions list (Premium Dark suggestions) */}
-            {messages.length === 1 && !isTyping && (
-              <div style={{ padding: '0 24px 16px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', letterSpacing: '0.5px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>✨</span> SUGESTÕES
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {suggestions.map((s, idx) => (
-                    <button 
-                      key={idx}
-                      onClick={() => handleSendMessage(s.text)}
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: 12,
-                        padding: '10px 16px', color: '#cbd5e1', fontSize: 12.5, fontWeight: 600,
-                        cursor: 'pointer', textAlign: 'left', display: 'flex', justifyContent: 'space-between',
-                        alignItems: 'center', transition: 'all 0.2s', fontFamily: 'Inter', outline: 'none'
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.borderColor = '#10b981';
-                        e.currentTarget.style.color = '#10b981';
-                        e.currentTarget.style.background = 'rgba(16, 185, 129, 0.08)';
-                        e.currentTarget.style.transform = 'translateX(2px)';
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
-                        e.currentTarget.style.color = '#cbd5e1';
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
-                        e.currentTarget.style.transform = 'none';
-                      }}
-                    >
-                      <span>{s.label}</span>
-                      <span style={{ fontSize: 11, color: '#64748b', marginLeft: 8 }}>↗</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Simulated Live Microphone overlay */}
             {isListening && (
