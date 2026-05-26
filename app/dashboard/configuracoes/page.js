@@ -96,10 +96,10 @@ export default function ConfiguracoesPage() {
       .catch(err => console.error(err));
   }, []);
 
-  // Polling WhatsApp status when scanning or connecting
+  // Polling WhatsApp status when scanning
   useEffect(() => {
     let interval;
-    if (whatsappStatus === 'connecting' || whatsappStatus === 'scanning') {
+    if (whatsappStatus === 'scanning') {
       interval = setInterval(() => {
         fetch('/api/whatsapp/connect')
           .then(r => r.json())
@@ -149,6 +149,9 @@ export default function ConfiguracoesPage() {
       } else if (data.status === 'connected') {
         setWhatsappStatus('connected');
         setWhatsappPhone(data.phone || '');
+      } else {
+        // Se falhar ou der erro de conexão, transiciona para scanning para renderizar a caixa com erro waError
+        setWhatsappStatus('scanning');
       }
       if (data.error) {
         setWaError(data.error);
