@@ -523,18 +523,6 @@ export default function HomePage() {
         `}</style>
 
         {/* Technical dot grid background with radial mask */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: 'radial-gradient(rgba(16, 185, 129, 0.15) 1.2px, transparent 1.2px)',
-          backgroundSize: '28px 28px',
-          maskImage: 'radial-gradient(circle, black 30%, transparent 80%)',
-          WebkitMaskImage: 'radial-gradient(circle, black 30%, transparent 80%)',
-          opacity: 0.8,
-          pointerEvents: 'none',
-          zIndex: 1
-        }} />
-
         {/* Ambient background glow - Very subtle (5% opacity) to prevent it from looking too bright */}
         <div style={{
           position: 'absolute',
@@ -551,20 +539,26 @@ export default function HomePage() {
           animation: 'floatGlow 15s ease-in-out infinite'
         }} />
 
-        {/* Glowing Crawling Snakes (Organically curving along grid lines to dodge characters and CTAs) */}
+        {/* Integrated Grid and Glowing Crawling Snakes (Mathematically locked to absolute 28px grid steps) */}
         <svg 
-          viewBox="0 0 1200 600" 
-          width="100%" 
-          height="100%" 
-          preserveAspectRatio="none" 
           style={{
             position: 'absolute',
             inset: 0,
+            width: '100%',
+            height: '100%',
             pointerEvents: 'none',
-            zIndex: 2
+            maskImage: 'radial-gradient(circle, black 30%, transparent 80%)',
+            WebkitMaskImage: 'radial-gradient(circle, black 30%, transparent 80%)',
+            opacity: 0.8,
+            zIndex: 1
           }}
         >
           <defs>
+            {/* Dot Grid Pattern - repeating every 28px, dot centered at cx=14 cy=14 */}
+            <pattern id="dotGridPattern" width="28" height="28" patternUnits="userSpaceOnUse">
+              <circle cx="14" cy="14" r="1.2" fill="rgba(16, 185, 129, 0.15)" />
+            </pattern>
+
             <linearGradient id="snakeGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#10b981" stopOpacity="0" />
               <stop offset="50%" stopColor="#34d399" stopOpacity="1" />
@@ -577,47 +571,35 @@ export default function HomePage() {
             </linearGradient>
           </defs>
 
-          {/* Snake 1: Crawling horizontally at the top, curving UP to dodge the main title */}
+          {/* Render the Dot Grid Rect */}
+          <rect width="100%" height="100%" fill="url(#dotGridPattern)" />
+
+          {/* Snake 1: Crawling horizontally at y=154, turning vertically at x=294 and x=910 to dodge ABOVE the title */}
           <path 
-            d="M 0,150 L 250,150 C 350,150 350,55 480,55 L 720,55 C 850,55 850,150 950,150 L 1200,150" 
+            d="M -200,154 L 294,154 L 294,70 L 910,70 L 910,154 L 2000,154" 
             fill="none" 
             stroke="url(#snakeGrad1)" 
             strokeWidth="2.5" 
             strokeLinecap="round"
-            strokeDasharray="45 300"
+            strokeDasharray="50 350"
             style={{
               filter: 'drop-shadow(0 0 5px #10b981) drop-shadow(0 0 12px rgba(16,185,129,0.5))',
-              animation: 'crawlSnake 9s linear infinite'
+              animation: 'crawlSnake 10s linear infinite'
             }}
           />
 
-          {/* Snake 2: Crawling horizontally at the bottom, curving DOWN to dodge the CTA block */}
+          {/* Snake 2: Crawling horizontally at y=378, turning vertically at x=910 and x=294 to dodge BELOW the CTA block */}
           <path 
-            d="M 0,380 L 280,380 C 380,380 380,480 500,480 L 700,480 C 820,480 820,380 920,380 L 1200,380" 
+            d="M 2000,378 L 910,378 L 910,490 L 294,490 L 294,378 L -200,378" 
             fill="none" 
             stroke="url(#snakeGrad2)" 
             strokeWidth="2.5" 
             strokeLinecap="round"
-            strokeDasharray="50 300"
+            strokeDasharray="50 350"
             style={{
               filter: 'drop-shadow(0 0 5px #10b981) drop-shadow(0 0 12px rgba(16,185,129,0.5))',
-              animation: 'crawlSnake 11s linear infinite',
+              animation: 'crawlSnake 12s linear infinite',
               animationDelay: '3s'
-            }}
-          />
-
-          {/* Snake 3: Weaving vertically on the left side of the grid */}
-          <path 
-            d="M 180,0 L 180,180 C 180,240 80,260 80,350 C 80,440 180,460 180,600" 
-            fill="none" 
-            stroke="url(#snakeGrad1)" 
-            strokeWidth="2.5" 
-            strokeLinecap="round"
-            strokeDasharray="40 260"
-            style={{
-              filter: 'drop-shadow(0 0 5px #10b981) drop-shadow(0 0 12px rgba(16,185,129,0.5))',
-              animation: 'crawlSnake 13s linear infinite',
-              animationDelay: '6s'
             }}
           />
         </svg>

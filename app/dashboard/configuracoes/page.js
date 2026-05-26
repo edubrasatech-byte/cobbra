@@ -797,75 +797,134 @@ export default function ConfiguracoesPage() {
                     <div style={{ textAlign: 'center', padding: '10px 0 20px 0' }}>
                       {whatsappStatus === 'disconnected' && (
                         <div>
-                          <p style={{ fontSize: 13, color: '#cbd5e1', marginBottom: 20 }}>
-                            Conecte o seu número de WhatsApp pessoal ou comercial no nosso disparador central da Cobbra. Rápido, seguro e incluso no seu plano!
-                          </p>
-                          <button
-                            type="button"
-                            onClick={handleStartWaConnection}
-                            style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'Inter' }}
-                          >
-                            Gerar QR Code de Conexão 📱
-                          </button>
-                        </div>
-                      )}
+                          <div style={{ textAlign: 'center', padding: '10px 0' }}>
+                            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20, lineHeight: 1.5 }}>
+                              Conecte o seu número de WhatsApp (pessoal ou comercial) na plataforma Cobbra para enviar faturas diretamente do seu contato.
+                            </p>
+                            
+                            {/* Visual Benefits Card */}
+                            <div style={{ background: 'rgba(16,185,129,0.03)', border: '1px solid rgba(16,185,129,0.1)', borderRadius: 12, padding: 14, textAlign: 'left', marginBottom: 24 }}>
+                              <p style={{ fontSize: 11, color: '#10b981', fontWeight: 700, margin: '0 0 6px 0', textTransform: 'uppercase', letterSpacing: 0.5 }}>✓ O que muda ao conectar seu número:</p>
+                              <div style={{ fontSize: 12, color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                <span>💬 Seus clientes respondem diretamente para você no WhatsApp.</span>
+                                <span>🏷️ Sua própria foto e nome de perfil aparecem no disparo.</span>
+                                <span>⚡ Mensagens automáticas sem depender do número mestre.</span>
+                              </div>
+                            </div>
 
-                      {whatsappStatus === 'connecting' && (
-                        <div style={{ padding: '20px 0' }}>
-                          <div style={{ border: '4px solid rgba(255,255,255,0.05)', borderTop: '4px solid #10b981', borderRadius: '50%', width: 40, height: 40, margin: '0 auto 16px', animation: 'spin 1s linear infinite' }} />
-                          <p style={{ fontSize: 13, color: '#94a3b8' }}>Solicitando nova instância ao disparador central...</p>
-                        </div>
-                      )}
-
-                      {whatsappStatus === 'scanning' && (
-                        <div>
-                          <p style={{ fontSize: 13, color: '#cbd5e1', marginBottom: 16 }}>
-                            Abra o WhatsApp no seu celular, acesse <strong>Aparelhos Conectados &gt; Conectar um Aparelho</strong> e escaneie o código abaixo:
-                          </p>
-                          
-                          <div style={{ background: '#fff', padding: 16, borderRadius: 16, display: 'inline-block', marginBottom: 20, boxShadow: '0 8px 30px rgba(0,0,0,0.3)' }}>
-                            <img src={whatsappQrCode} alt="WhatsApp QR Code" style={{ width: 180, height: 180, display: 'block' }} />
+                            <button
+                              type="button"
+                              onClick={handleStartWaConnection}
+                              style={{ padding: '12px 28px', borderRadius: 12, background: 'linear-gradient(135deg,#10b981,#059669)', color: '#070913', fontSize: 14, fontWeight: 800, border: 'none', cursor: 'pointer', fontFamily: 'Inter', boxShadow: '0 4px 14px rgba(16,185,129,0.25)', transition: 'all 0.2s' }}
+                              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                            >
+                              Conectar Meu Aparelho Celular 📱
+                            </button>
                           </div>
+                        )}
 
-                          <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(16,185,129,0.3)', borderRadius: 10, padding: 14, maxWidth: 360, margin: '0 auto' }}>
-                            <p style={{ fontSize: 11, color: '#34d399', margin: '0 0 8px 0', fontWeight: 700 }}>🧪 SIMULADOR DE TESTE RÁPIDO:</p>
-                            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                              <input 
-                                type="text"
-                                placeholder="Seu número Ex: (11) 99999-9999"
-                                value={waSimPhone}
-                                onChange={e => setWaSimPhone(e.target.value)}
-                                style={{ ...inputS, width: 200, padding: '6px 10px', fontSize: 12, height: 32 }}
-                              />
-                              <button
-                                type="button"
-                                onClick={handleSimulateScan}
-                                style={{ padding: '6px 12px', borderRadius: 8, background: '#10b981', color: '#fff', fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'Inter', height: 32 }}
-                              >
-                                Parear Celular ⚡
-                              </button>
+                        {whatsappStatus === 'connecting' && (
+                          <div style={{ padding: '30px 0', textAlign: 'center' }}>
+                            <div style={{ border: '3.5px solid rgba(16,185,129,0.1)', borderTop: '3.5px solid #10b981', borderRadius: '50%', width: 44, height: 44, margin: '0 auto 20px', animation: 'spin 1s linear infinite' }} />
+                            <p style={{ fontSize: 14, fontWeight: 600, color: '#f8fafc', marginBottom: 6 }}>Gerando Sessão de WhatsApp...</p>
+                            <p style={{ fontSize: 12, color: '#64748b' }}>Conectando com o servidor de mensagens. Aguarde alguns instantes.</p>
+                          </div>
+                        )}
+
+                        {whatsappStatus === 'scanning' && (
+                          <div style={{ textAlign: 'center' }}>
+                            {/* Step-by-Step Instructions */}
+                            <div style={{ textAlign: 'left', background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: 18, border: '1px solid rgba(255,255,255,0.04)', marginBottom: 20 }}>
+                              <h4 style={{ fontSize: 12, fontWeight: 800, color: '#10b981', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: 0.5 }}>COMO CONECTAR O SEU CELULAR:</h4>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12, color: '#cbd5e1' }}>
+                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                                  <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>1</span>
+                                  <span>Abra o <strong>WhatsApp</strong> no seu aparelho celular.</span>
+                                </div>
+                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                                  <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>2</span>
+                                  <span>Acesse a aba <strong>Configurações / Menu</strong> e clique em <strong>Aparelhos Conectados</strong>.</span>
+                                </div>
+                                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                                  <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>3</span>
+                                  <span>Toque em <strong>Conectar um Aparelho</strong> e aponte a câmera para o QR Code abaixo:</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* QR Code Container */}
+                            <div style={{ background: '#fff', padding: 18, borderRadius: 20, display: 'inline-block', marginBottom: 18, boxShadow: '0 8px 30px rgba(0,0,0,0.5)', border: '4px solid #10b981', minWidth: 226, minHeight: 226, position: 'relative' }}>
+                              {whatsappQrCode ? (
+                                <img src={whatsappQrCode} alt="WhatsApp QR Code" style={{ width: 190, height: 190, display: 'block' }} />
+                              ) : (
+                                <div style={{ width: 190, height: 190, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', borderRadius: 12, padding: 12 }}>
+                                  <div style={{ border: '3px solid rgba(16,185,129,0.1)', borderTop: '3px solid #10b981', borderRadius: '50%', width: 32, height: 32, marginBottom: 12, animation: 'spin 1s linear infinite' }} />
+                                  <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', textAlign: 'center', lineHeight: '1.4' }}>
+                                    Obtendo QRCode da Evolution API...
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Status Indicator */}
+                            <div className="flex items-center justify-center gap-2 mb-6">
+                              <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10b981] opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#10b981]"></span>
+                              </span>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: '#34d399', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                                Aguardando leitura do QRCode...
+                              </span>
+                            </div>
+
+                            {/* Simulador de testes robusto e ocultável */}
+                            <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 12, padding: 14, maxWidth: 380, margin: '0 auto' }}>
+                              <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 8px 0', fontWeight: 700 }}>🧪 PAREAMENTO DE HOMOLOGAÇÃO/SIMULADO:</p>
+                              <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                                <input 
+                                  type="text"
+                                  placeholder="Seu número Ex: (11) 99999-9999"
+                                  value={waSimPhone}
+                                  onChange={e => setWaSimPhone(e.target.value)}
+                                  style={{ ...inputS, width: 220, padding: '6px 12px', fontSize: 12, height: 34 }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={handleSimulateScan}
+                                  style={{ padding: '6px 14px', borderRadius: 8, background: '#059669', color: '#fff', fontSize: 11, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'Inter', height: 34 }}
+                                >
+                                  Simular Pareamento
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
-                      {whatsappStatus === 'connected' && (
-                        <div style={{ padding: '10px 0' }}>
-                          <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, margin: '0 auto 16px' }}>🟢</div>
-                          <h4 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 6 }}>WhatsApp Conectado!</h4>
-                          <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 24 }}>
-                            Aparelho ativo: <strong>{whatsappPhone}</strong>
-                          </p>
-                          <button
-                            type="button"
-                            onClick={handleDisconnectWa}
-                            style={{ padding: '10px 20px', borderRadius: 8, background: 'rgba(239,68,68,0.15)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.2)', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter' }}
-                          >
-                            🔴 Desconectar Aparelho
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                        {whatsappStatus === 'connected' && (
+                          <div style={{ padding: '20px 0', textAlign: 'center' }}>
+                            <div style={{ width: 68, height: 68, borderRadius: '50%', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, margin: '0 auto 20px', color: '#10b981' }}>✓</div>
+                            <h4 style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 6 }}>WhatsApp Pareado com Sucesso!</h4>
+                            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 28 }}>
+                              Seu número conectado: <strong style={{ color: '#10b981' }}>{whatsappPhone}</strong>
+                            </p>
+                            
+                            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 12, padding: 14, maxWidth: 360, margin: '0 auto 28px', fontSize: 12, color: '#94a3b8', lineHeight: 1.5 }}>
+                              🔒 A conexão com a Cobbra é totalmente segura. Não salvamos históricos de conversas, contatos ou fotos de perfil.
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={handleDisconnectWa}
+                              style={{ padding: '10px 22px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.2)', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter', transition: 'all 0.2s' }}
+                              onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.18)'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'rgba(239,68,68,0.1)'}
+                            >
+                              🔴 Desconectar e Desparear Aparelho
+                            </button>
+                          </div>
+                        )}
+                      </div>
                   ) : (
                     <>
                       <div style={{ marginBottom: 16 }}>
