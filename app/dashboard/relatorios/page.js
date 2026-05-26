@@ -1,3 +1,6 @@
+'use client';
+import { useState, useEffect } from 'react';
+
 function AreaChart({ data, onSelectPoint, selectedIndex }) {
   if (!data || data.length === 0) return null;
   
