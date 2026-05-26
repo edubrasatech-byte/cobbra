@@ -503,7 +503,7 @@ export default function HomePage() {
 
       {/* ===== HERO ===== */}
       <section className="hero-section" style={{
-        background: '#070913',
+        background: 'radial-gradient(circle at 50% 0%, #0d1226 0%, #070913 80%)',
         position: 'relative', overflow: 'hidden',
         padding: '120px 0 80px'
       }}>
@@ -511,16 +511,16 @@ export default function HomePage() {
         <div style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: 'radial-gradient(rgba(16, 185, 129, 0.07) 1.2px, transparent 1.2px)',
+          backgroundImage: 'radial-gradient(rgba(16, 185, 129, 0.15) 1.2px, transparent 1.2px)',
           backgroundSize: '28px 28px',
-          maskImage: 'radial-gradient(ellipse at 50% 50%, black, transparent 75%)',
-          WebkitMaskImage: 'radial-gradient(ellipse at 50% 50%, black, transparent 75%)',
+          maskImage: 'radial-gradient(circle, black 30%, transparent 80%)',
+          WebkitMaskImage: 'radial-gradient(circle, black 30%, transparent 80%)',
           opacity: 0.8,
           pointerEvents: 'none',
-          zIndex: 0
+          zIndex: 1
         }} />
 
-        {/* Decorative Neon Halos - Emerald and Deep Slate Blue for tridimensional depth */}
+        {/* Decorative Neon Halos - Emerald and Indigo for tridimensional depth */}
         <div style={{
           position: 'absolute',
           top: -200,
@@ -529,13 +529,13 @@ export default function HomePage() {
           width: 750,
           height: 750,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, rgba(30, 41, 59, 0.04) 50%, transparent 70%)',
-          filter: 'blur(90px)',
+          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(99, 102, 241, 0.06) 50%, transparent 70%)',
+          filter: 'blur(80px)',
           pointerEvents: 'none',
-          zIndex: 0
+          zIndex: 1
         }} />
 
-        <div className="hero-grid" style={{ maxWidth: 840, margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'relative' }}>
+        <div className="hero-grid" style={{ maxWidth: 840, margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'relative', zIndex: 10 }}>
           {/* Content */}
           <div style={{ animation: 'fadeInUp 0.8s ease', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             {/* Mini social proof acima do fold */}
