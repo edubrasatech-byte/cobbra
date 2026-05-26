@@ -374,6 +374,19 @@ function FaqItem({ question, answer, category }) {
 
 // ========== MAIN PAGE ==========
 export default function HomePage() {
+  const [heroCoords, setHeroCoords] = useState({ x: 0, y: 0 });
+  const [heroHovered, setHeroHovered] = useState(false);
+  const heroRef = useRef(null);
+
+  const handleHeroMouseMove = (e) => {
+    if (!heroRef.current) return;
+    const rect = heroRef.current.getBoundingClientRect();
+    setHeroCoords({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
+
   const [calcClients, setCalcClients] = useState(20);
   const [calcAmount, setCalcAmount] = useState(300);
   const [calcLatePercent, setCalcLatePercent] = useState(25);
@@ -502,11 +515,34 @@ export default function HomePage() {
       </header>
 
       {/* ===== HERO ===== */}
-      <section className="hero-section" style={{
-        background: 'radial-gradient(circle at 50% 0%, #0d1226 0%, #070913 80%)',
-        position: 'relative', overflow: 'hidden',
-        padding: '120px 0 80px'
-      }}>
+      <section 
+        ref={heroRef}
+        onMouseEnter={() => setHeroHovered(true)}
+        onMouseLeave={() => setHeroHovered(false)}
+        onMouseMove={handleHeroMouseMove}
+        className="hero-section" 
+        style={{
+          background: 'radial-gradient(circle at 50% 0%, #0d1226 0%, #070913 80%)',
+          position: 'relative', overflow: 'hidden',
+          padding: '120px 0 80px'
+        }}
+      >
+        {/* CSS Keyframes for interactive spotlight and lasers */}
+        <style>{`
+          @keyframes laserHorizontal {
+            0% { left: -15%; opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { left: 115%; opacity: 0; }
+          }
+          @keyframes laserVertical {
+            0% { top: -15%; opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { top: 115%; opacity: 0; }
+          }
+        `}</style>
+
         {/* Technical dot grid background with radial mask */}
         <div style={{
           position: 'absolute',
@@ -520,7 +556,7 @@ export default function HomePage() {
           zIndex: 1
         }} />
 
-        {/* Decorative Neon Halos - Emerald and Indigo for tridimensional depth */}
+        {/* Ambient background glow (Pulsing / static center glow for mobile and fallback) */}
         <div style={{
           position: 'absolute',
           top: -200,
@@ -529,10 +565,72 @@ export default function HomePage() {
           width: 750,
           height: 750,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(99, 102, 241, 0.06) 50%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%)',
           filter: 'blur(80px)',
           pointerEvents: 'none',
-          zIndex: 1
+          zIndex: 1,
+          opacity: heroHovered ? 0.4 : 1,
+          transition: 'opacity 0.6s ease'
+        }} />
+
+        {/* Option 1: Interactive Spotlight (Tracks mouse on Desktop) */}
+        {heroHovered && (
+          <div style={{
+            position: 'absolute',
+            left: heroCoords.x - 300,
+            top: heroCoords.y - 300,
+            width: 600,
+            height: 600,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(16, 185, 129, 0.16) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 70%)',
+            filter: 'blur(70px)',
+            pointerEvents: 'none',
+            zIndex: 1,
+            transition: 'left 0.1s cubic-bezier(0.1, 0.8, 0.2, 1), top 0.1s cubic-bezier(0.1, 0.8, 0.2, 1)'
+          }} />
+        )}
+
+        {/* Option 3: Payment Laser Flows (Active simulated digital billing pulses) */}
+        <div style={{
+          position: 'absolute',
+          top: '35%',
+          left: '-15%',
+          width: '150px',
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent, #10b981, transparent)',
+          boxShadow: '0 0 8px #10b981, 0 0 16px rgba(16, 185, 129, 0.6)',
+          animation: 'laserHorizontal 8s linear infinite',
+          animationDelay: '1.5s',
+          pointerEvents: 'none',
+          zIndex: 2
+        }} />
+
+        <div style={{
+          position: 'absolute',
+          left: '65%',
+          top: '-15%',
+          width: '1px',
+          height: '150px',
+          background: 'linear-gradient(180deg, transparent, #10b981, transparent)',
+          boxShadow: '0 0 8px #10b981, 0 0 16px rgba(16, 185, 129, 0.6)',
+          animation: 'laserVertical 11s linear infinite',
+          animationDelay: '3.5s',
+          pointerEvents: 'none',
+          zIndex: 2
+        }} />
+
+        <div style={{
+          position: 'absolute',
+          top: '72%',
+          left: '-15%',
+          width: '180px',
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent, #34d399, transparent)',
+          boxShadow: '0 0 8px #34d399, 0 0 16px rgba(52, 211, 153, 0.6)',
+          animation: 'laserHorizontal 14s linear infinite',
+          animationDelay: '6s',
+          pointerEvents: 'none',
+          zIndex: 2
         }} />
 
         <div className="hero-grid" style={{ maxWidth: 840, margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'relative', zIndex: 10 }}>
