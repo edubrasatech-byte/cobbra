@@ -245,7 +245,7 @@ img {
   padding-bottom: 60px !important;
 }
 .hero-h1 {
-  font-size: 52px !important;
+  font-size: 58px !important;
   font-weight: 900 !important;
   line-height: 1.1 !important;
   letter-spacing: -0.02em !important;
@@ -359,7 +359,7 @@ div.desktop-only, section.desktop-only {
     padding-bottom: 40px !important;
   }
   .hero-h1 {
-    font-size: 36px !important;
+    font-size: 40px !important;
     line-height: 1.2 !important;
   }
   .section-title {
@@ -416,7 +416,7 @@ div.desktop-only, section.desktop-only {
 }
 
 @media (max-width: 640px) {
-  .hero-h1 { font-size: 30px !important; line-height: 1.2 !important; }
+  .hero-h1 { font-size: 34px !important; line-height: 1.2 !important; }
   .section-title { font-size: 24px !important; }
   .section-pad { padding: 48px 16px !important; }
   .pricing-grid { gap: 16px !important; }

@@ -543,7 +543,7 @@ export default function HomePage() {
               <span><strong style={{ color: '#10b981' }}>&ldquo;Minha inadimplência caiu de 35% para 6%&rdquo;</strong> — Marina O.</span>
             </div>
 
-            <h1 className="hero-h1" style={{ fontSize: 52, fontWeight: 900, lineHeight: 1.1, marginBottom: 24, letterSpacing: -1, color: '#ffffff' }}>
+            <h1 className="hero-h1" style={{ fontSize: 58, fontWeight: 900, lineHeight: 1.1, marginBottom: 24, letterSpacing: -1, color: '#ffffff' }}>
               Seu Funcionário{' '}
               <span style={{ background: 'linear-gradient(135deg, #10b981, #0d9488)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 Financeiro
@@ -551,8 +551,8 @@ export default function HomePage() {
               Mais Barato do Brasil
             </h1>
 
-            <p className="hero-sub" style={{ fontSize: 19, color: '#cbd5e1', lineHeight: 1.7, marginBottom: 32, maxWidth: 520 }}>
-              Uma plataforma completa que gerencia e automatiza suas cobranças de ponta a ponta. Envie lembretes inteligentes e personalizados via WhatsApp e E-mail, acompanhe tudo em um dashboard em tempo real e receba 100% direto no seu Pix — sem taxas e com o suporte da nossa inteligência artificial Catarina.
+            <p className="hero-sub" style={{ fontSize: 17, color: '#cbd5e1', lineHeight: 1.7, marginBottom: 32, maxWidth: 520 }}>
+              Cobranças automáticas por WhatsApp e E-mail, controle completo e recebimentos 100% direto no Pix, sem taxas. Tudo integrado com a inteligência da Catarina AI.
             </p>
 
             <div className="hero-cta" style={{ display: 'flex', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
