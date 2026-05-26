@@ -17,7 +17,7 @@ export default function Chatbot({ isOpen, onClose }) {
   const [messages, setMessages] = useState([
     {
       sender: 'bot',
-      text: 'Olá! Sou a Catarina AI, a assistente inteligente do Cobbra. 🐍\n\nEstou conectada ao seu banco de dados e pronta para gerenciar cobranças gentis, analisar inadimplências ou criar faturamentos. \n\nComo posso acelerar seu fluxo de caixa hoje?',
+      text: 'Olá! Sou a Catarina AI. 🐍\n\nComo posso te ajudar com suporte ou automação de cobranças hoje?',
       time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     }
   ]);
