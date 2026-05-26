@@ -24,7 +24,7 @@ export async function GET(request) {
     let qrError = null;
     const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL || process.env.EVOLUTION_API_URL;
     const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
-    const baseUrl = evoUrl ? (evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl) : '';
+    let baseUrl = evoUrl ? (evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl) : '';
 
     if (!evoUrl || !evoToken) {
       qrError = 'Evolution API não configurada nas variáveis de ambiente do servidor (EVOLUTION_API_URL / EVOLUTION_API_TOKEN).';
@@ -32,9 +32,22 @@ export async function GET(request) {
       try {
 
         // Check if the instance already has an open/active connection
-        const stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
-          headers: { 'apikey': evoToken }
-        });
+        let stateRes;
+        try {
+          stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
+            headers: { 'apikey': evoToken }
+          });
+        } catch (fetchErr) {
+          if (baseUrl.includes(':8080')) {
+            baseUrl = baseUrl.replace(':8080', '');
+            console.log(`[SELF-HEALING GET]: Port 8080 failed. Retrying on port 80: ${baseUrl}`);
+            stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
+              headers: { 'apikey': evoToken }
+            });
+          } else {
+            throw fetchErr;
+          }
+        }
 
         if (stateRes.ok) {
           const stateData = await stateRes.json();
@@ -113,7 +126,7 @@ export async function POST(request) {
       let qrError = null;
       const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL || process.env.EVOLUTION_API_URL;
       const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
-      const baseUrl = evoUrl ? (evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl) : '';
+      let baseUrl = evoUrl ? (evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl) : '';
 
       if (!evoUrl || !evoToken) {
         qrError = 'Evolution API não configurada nas variáveis de ambiente do servidor (EVOLUTION_API_URL / EVOLUTION_API_TOKEN).';
@@ -121,9 +134,22 @@ export async function POST(request) {
         try {
 
           // Check connection state
-          const stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
-            headers: { 'apikey': evoToken }
-          });
+          let stateRes;
+          try {
+            stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
+              headers: { 'apikey': evoToken }
+            });
+          } catch (fetchErr) {
+            if (baseUrl.includes(':8080')) {
+              baseUrl = baseUrl.replace(':8080', '');
+              console.log(`[SELF-HEALING POST]: Port 8080 failed. Retrying on port 80: ${baseUrl}`);
+              stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
+                headers: { 'apikey': evoToken }
+              });
+            } else {
+              throw fetchErr;
+            }
+          }
 
           let isConnected = false;
           if (stateRes.ok) {
