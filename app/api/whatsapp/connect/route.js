@@ -67,7 +67,7 @@ export async function GET(request) {
         await fetch(`${baseUrl}/instance/create`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'apikey': evoToken },
-          body: JSON.stringify({ instanceName: instance, qrcode: true })
+          body: JSON.stringify({ instanceName: instance, integration: "WHATSAPP-BAILEYS", qrcode: true })
         });
 
         // Request a connection QR Code from Evolution API
@@ -168,7 +168,7 @@ export async function POST(request) {
           await fetch(`${baseUrl}/instance/create`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'apikey': evoToken },
-            body: JSON.stringify({ instanceName: instance, qrcode: true })
+            body: JSON.stringify({ instanceName: instance, integration: "WHATSAPP-BAILEYS", qrcode: true })
           });
 
           const connectRes = await fetch(`${baseUrl}/instance/connect/${instance}`, {
