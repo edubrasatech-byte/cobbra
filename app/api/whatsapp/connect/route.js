@@ -24,13 +24,12 @@ export async function GET(request) {
     let qrError = null;
     const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL || process.env.EVOLUTION_API_URL;
     const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
+    const baseUrl = evoUrl ? (evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl) : '';
 
     if (!evoUrl || !evoToken) {
       qrError = 'Evolution API não configurada nas variáveis de ambiente do servidor (EVOLUTION_API_URL / EVOLUTION_API_TOKEN).';
     } else {
       try {
-        // Clean trailing slash from evoUrl if present
-        const baseUrl = evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl;
 
         // Check if the instance already has an open/active connection
         const stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
@@ -114,12 +113,12 @@ export async function POST(request) {
       let qrError = null;
       const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL || process.env.EVOLUTION_API_URL;
       const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
+      const baseUrl = evoUrl ? (evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl) : '';
 
       if (!evoUrl || !evoToken) {
         qrError = 'Evolution API não configurada nas variáveis de ambiente do servidor (EVOLUTION_API_URL / EVOLUTION_API_TOKEN).';
       } else {
         try {
-          const baseUrl = evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl;
 
           // Check connection state
           const stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
