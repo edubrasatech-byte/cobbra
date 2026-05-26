@@ -810,73 +810,75 @@ export default function Chatbot({ isOpen, onClose }) {
             <div style={{ padding: '0 24px 20px 24px', background: 'transparent', position: 'relative' }}>
               
               {/* Utility Row (Atalhos e Voz) */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, padding: '0 4px' }}>
-                {/* Shortcuts popup / Plus Menu */}
-                <div style={{ position: 'relative' }}>
-                  <button 
-                    onClick={() => setShowPlusMenu(!showPlusMenu)}
-                    style={{ 
-                      display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#10b981', 
-                      fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer',
-                      transition: 'opacity 0.2s'
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.opacity = 0.8}
-                    onMouseLeave={e => e.currentTarget.style.opacity = 1}
-                  >
-                    ⚡ Atalhos Rápidos
-                  </button>
+              {isCopilotEnabled && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, padding: '0 4px' }}>
+                  {/* Shortcuts popup / Plus Menu */}
+                  <div style={{ position: 'relative' }}>
+                    <button 
+                      onClick={() => setShowPlusMenu(!showPlusMenu)}
+                      style={{ 
+                        display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#10b981', 
+                        fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer',
+                        transition: 'opacity 0.2s'
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.opacity = 0.8}
+                      onMouseLeave={e => e.currentTarget.style.opacity = 1}
+                    >
+                      ⚡ Atalhos Rápidos
+                    </button>
 
-                  {/* Quick shortcuts popup tooltip menu */}
-                  {showPlusMenu && (
-                    <div style={{
-                      position: 'absolute', bottom: 28, left: 0, width: 240,
-                      background: '#0c0e1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14,
-                      padding: 8, boxShadow: '0 10px 30px rgba(0,0,0,0.5)', zIndex: 10000,
-                      animation: 'chat-slide-in 0.2s ease both'
-                    }}>
-                      <span style={{ display: 'block', padding: '6px 10px', fontSize: 10, fontWeight: 700, color: '#64748b', letterSpacing: '0.5px' }}>COMANDOS COPILOT</span>
-                      {[
-                        { label: '📊 Ver resumo financeiro', text: 'Ver resumo do meu caixa' },
-                        { label: '👥 Quem está me devendo?', text: 'Quem são meus devedores?' },
-                        { label: '📅 Abrir a agenda Pix', text: 'Abrir meu calendário' },
-                        { label: '📱 Como integrar WhatsApp', text: 'Como posso conectar o WhatsApp?' }
-                      ].map((item, i) => (
-                        <button 
-                          key={i}
-                          onClick={() => {
-                            setInputText(item.text);
-                            setShowPlusMenu(false);
-                          }}
-                          style={{
-                            display: 'block', width: '100%', background: 'none', border: 'none',
-                            padding: '8px 10px', textAlign: 'left', fontSize: 11.5, color: '#cbd5e1',
-                            cursor: 'pointer', borderRadius: 8, transition: 'all 0.2s', fontFamily: 'Inter'
-                          }}
-                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.color = '#10b981'; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#cbd5e1'; }}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                    {/* Quick shortcuts popup tooltip menu */}
+                    {showPlusMenu && (
+                      <div style={{
+                        position: 'absolute', bottom: 28, left: 0, width: 240,
+                        background: '#0c0e1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14,
+                        padding: 8, boxShadow: '0 10px 30px rgba(0,0,0,0.5)', zIndex: 10000,
+                        animation: 'chat-slide-in 0.2s ease both'
+                      }}>
+                        <span style={{ display: 'block', padding: '6px 10px', fontSize: 10, fontWeight: 700, color: '#64748b', letterSpacing: '0.5px' }}>COMANDOS COPILOT</span>
+                        {[
+                          { label: '📊 Ver resumo financeiro', text: 'Ver resumo do meu caixa' },
+                          { label: '👥 Quem está me devendo?', text: 'Quem são meus devedores?' },
+                          { label: '📅 Abrir a agenda Pix', text: 'Abrir meu calendário' },
+                          { label: '📱 Como integrar WhatsApp', text: 'Como posso conectar o WhatsApp?' }
+                        ].map((item, i) => (
+                          <button 
+                            key={i}
+                            onClick={() => {
+                              setInputText(item.text);
+                              setShowPlusMenu(false);
+                            }}
+                            style={{
+                              display: 'block', width: '100%', background: 'none', border: 'none',
+                              padding: '8px 10px', textAlign: 'left', fontSize: 11.5, color: '#cbd5e1',
+                              cursor: 'pointer', borderRadius: 8, transition: 'all 0.2s', fontFamily: 'Inter'
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.color = '#10b981'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#cbd5e1'; }}
+                          >
+                            {item.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Voice Mic Command */}
+                  <button 
+                    onClick={handleMicrophoneClick}
+                    disabled={isListening || isTyping}
+                    style={{ 
+                      display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#cbd5e1', 
+                      background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600,
+                      transition: 'color 0.2s'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#10b981'}
+                    onMouseLeave={e => e.currentTarget.style.color = '#cbd5e1'}
+                  >
+                    🎙️ Comando por voz
+                  </button>
                 </div>
-                
-                {/* Voice Mic Command */}
-                <button 
-                  onClick={handleMicrophoneClick}
-                  disabled={isListening || isTyping}
-                  style={{ 
-                    display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#cbd5e1', 
-                    background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600,
-                    transition: 'color 0.2s'
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.color = '#10b981'}
-                  onMouseLeave={e => e.currentTarget.style.color = '#cbd5e1'}
-                >
-                  🎙️ Comando por voz
-                </button>
-              </div>
+              )}
 
               {/* Side-by-side Input & Send Button Layout (Directly matching User uploaded Image) */}
               <div style={{ display: 'flex', gap: 10, alignItems: 'center', width: '100%' }}>
