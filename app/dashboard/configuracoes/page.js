@@ -761,6 +761,16 @@ export default function ConfiguracoesPage() {
                                     </button>
                                   </div>
                                 </div>
+
+                                <button
+                                  type="button"
+                                  onClick={handleDisconnectWa}
+                                  style={{ padding: '10px 22px', borderRadius: 10, background: 'rgba(239,68,68,0.1)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.2)', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter', transition: 'all 0.2s', marginTop: 20, width: '100%', maxWidth: 380, display: 'inline-block' }}
+                                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.18)'}
+                                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(239,68,68,0.1)'}
+                                >
+                                  🔴 Cancelar Pareamento / Reiniciar Conexão
+                                </button>
                               </div>
                             )}
 
