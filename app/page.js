@@ -523,8 +523,33 @@ export default function HomePage() {
         position: 'relative', overflow: 'hidden',
         padding: '120px 0 80px'
       }}>
-        {/* Decorative Neon Halos */}
-        <div style={{ position: 'absolute', top: -150, left: '50%', transform: 'translateX(-50%)', width: 600, height: 600, borderRadius: '50%', background: 'rgba(16,185,129,0.04)', filter: 'blur(100px)', pointerEvents: 'none' }} />
+        {/* Technical dot grid background with radial mask */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'radial-gradient(rgba(16, 185, 129, 0.07) 1.2px, transparent 1.2px)',
+          backgroundSize: '28px 28px',
+          maskImage: 'radial-gradient(ellipse at 50% 50%, black, transparent 75%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at 50% 50%, black, transparent 75%)',
+          opacity: 0.8,
+          pointerEvents: 'none',
+          zIndex: 0
+        }} />
+
+        {/* Decorative Neon Halos - Emerald and Deep Slate Blue for tridimensional depth */}
+        <div style={{
+          position: 'absolute',
+          top: -200,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 750,
+          height: 750,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, rgba(30, 41, 59, 0.04) 50%, transparent 70%)',
+          filter: 'blur(90px)',
+          pointerEvents: 'none',
+          zIndex: 0
+        }} />
 
         <div className="hero-grid" style={{ maxWidth: 840, margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'relative' }}>
           {/* Content */}

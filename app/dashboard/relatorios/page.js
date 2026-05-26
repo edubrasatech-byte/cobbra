@@ -1,5 +1,96 @@
-'use client';
-import { useState, useEffect } from 'react';
+function AreaChart({ data, onSelectPoint, selectedIndex }) {
+  if (!data || data.length === 0) return null;
+  
+  const width = 500;
+  const height = 150;
+  const paddingX = 24;
+  const paddingY = 24;
+  
+  const maxVal = Math.max(...data.map(d => d.total), 1);
+  const minVal = 0;
+  
+  const points = data.map((d, i) => {
+    const x = paddingX + (i / (data.length - 1)) * (width - 2 * paddingX);
+    const y = height - paddingY - ((d.total - minVal) / (maxVal - minVal)) * (height - 2 * paddingY);
+    return { x, y, data: d, index: i };
+  });
+  
+  const linePath = points.reduce((acc, p, i) => {
+    return acc + (i === 0 ? `M ${p.x} ${p.y}` : ` L ${p.x} ${p.y}`);
+  }, '');
+  
+  const areaPath = points.length > 0
+    ? `${linePath} L ${points[points.length - 1].x} ${height - paddingY} L ${points[0].x} ${height - paddingY} Z`
+    : '';
+
+  return (
+    <div className="relative w-full">
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto overflow-visible">
+        <defs>
+          <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#10b981" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+          </linearGradient>
+          <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#10b981" />
+            <stop offset="50%" stopColor="#34d399" />
+            <stop offset="100%" stopColor="#059669" />
+          </linearGradient>
+        </defs>
+
+        {/* Grid lines */}
+        <line x1={paddingX} y1={paddingY} x2={width - paddingX} y2={paddingY} stroke="rgba(255,255,255,0.02)" strokeWidth="1" strokeDasharray="3 3" />
+        <line x1={paddingX} y1={height / 2} x2={width - paddingX} y2={height / 2} stroke="rgba(255,255,255,0.02)" strokeWidth="1" strokeDasharray="3 3" />
+        <line x1={paddingX} y1={height - paddingY} x2={width - paddingX} y2={height - paddingY} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+
+        {/* Area fill */}
+        {areaPath && (
+          <path d={areaPath} fill="url(#areaGradient)" className="transition-all duration-300" />
+        )}
+
+        {/* Path line */}
+        {linePath && (
+          <path d={linePath} fill="none" stroke="url(#lineGradient)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-300" />
+        )}
+
+        {/* Interactive helper line */}
+        {selectedIndex !== null && points[selectedIndex] && (
+          <line
+            x1={points[selectedIndex].x}
+            y1={paddingY}
+            x2={points[selectedIndex].x}
+            y2={height - paddingY}
+            stroke="rgba(16,185,129,0.2)"
+            strokeWidth="1.5"
+            strokeDasharray="4 4"
+          />
+        )}
+
+        {/* Interactive points */}
+        {points.map((p, i) => {
+          const isSelected = selectedIndex === i;
+          return (
+            <g key={i} className="cursor-pointer" onClick={() => onSelectPoint(i)}>
+              <circle cx={p.x} cy={p.y} r="14" fill="transparent" />
+              {isSelected && (
+                <circle cx={p.x} cy={p.y} r="7" fill="#10b981" fillOpacity="0.2" className="animate-ping" />
+              )}
+              <circle
+                cx={p.x}
+                cy={p.y}
+                r={isSelected ? "4.5" : "3"}
+                fill={isSelected ? "#10b981" : "#0c0e1a"}
+                stroke={isSelected ? "#ffffff" : "#10b981"}
+                strokeWidth={isSelected ? "2" : "1.5"}
+                className="transition-all duration-200 hover:scale-150 origin-center"
+              />
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
 
 export default function RelatoriosPage() {
   const [activeTab, setActiveTab] = useState('revenue');
@@ -128,66 +219,49 @@ export default function RelatoriosPage() {
               }}>{p === '7' ? '7 dias' : p === '30' ? '30 dias' : p === '90' ? '3 meses' : '1 ano'}</button>
             ))}
           </div>
-          <div style={{ ...cardS, marginBottom: 20 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>Receita diária</h3>
-              <span style={{ fontSize: 24, fontWeight: 800, color: '#10b981' }}>{fmt(data.total)}</span>
+          <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: isMobile ? '16px' : '24px', marginBottom: 20 }}>
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Histórico de Receita</h3>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Total no período: <span className="text-[#10B981] font-bold">{fmt(data.total)}</span>
+                </p>
+              </div>
+              
+              <div className="text-right">
+                {selectedBar ? (
+                  <div>
+                    <p className="text-[10px] text-[#10B981] font-bold uppercase tracking-wider leading-none">
+                      {new Date(selectedBar.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}
+                    </p>
+                    <p className="text-sm font-extrabold text-slate-200 mt-1 leading-none">{fmt(selectedBar.total)}</p>
+                  </div>
+                ) : (
+                  <span className="text-[10px] text-slate-500 font-medium bg-slate-900 px-2.5 py-1 rounded border border-slate-800/60">
+                    Selecione um ponto
+                  </span>
+                )}
+              </div>
             </div>
+
             {data.daily && data.daily.length > 0 ? (
-              <>
-                <div style={{ display: 'flex', gap: 3, alignItems: 'flex-end', height: 150, padding: '0 4px' }}>
-                  {data.daily.map((d, i) => {
-                    const max = Math.max(...data.daily.map(x => x.total), 1);
-                    const isSelected = selectedBarIndex === i;
-                    return (
-                      <div key={i}
-                        onClick={() => setSelectedBarIndex(i)}
-                        style={{
-                          flex: 1,
-                          height: `${(d.total / max) * 100}%`,
-                          minHeight: 4,
-                          background: isSelected ? 'linear-gradient(to top, #10b981, #34d399)' : 'linear-gradient(to top, #059669, #34d399)',
-                          borderRadius: 3,
-                          transition: 'all 0.3s ease',
-                          opacity: isSelected ? 1 : 0.65,
-                          cursor: 'pointer',
-                          transform: isSelected ? 'scaleY(1.05)' : 'scaleY(1)',
-                          transformOrigin: 'bottom',
-                          boxShadow: isSelected ? '0 0 8px rgba(16,185,129,0.4)' : 'none'
-                        }}
-                        title={`${new Date(d.date + 'T12:00:00').toLocaleDateString('pt-BR')}: ${fmt(d.total)}`}
-                      />
-                    );
-                  })}
+              <div className="space-y-4">
+                <AreaChart 
+                  data={data.daily} 
+                  onSelectPoint={setSelectedBarIndex} 
+                  selectedIndex={selectedBarIndex} 
+                />
+                
+                <div className="flex justify-between text-[9px] font-bold text-slate-600 px-2 pt-2 border-t border-slate-900/40">
+                  <span>{new Date(data.daily[0].date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
+                  <span>{new Date(data.daily[Math.floor(data.daily.length / 2)].date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
+                  <span>{new Date(data.daily[data.daily.length - 1].date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
                 </div>
-                {/* Interactive date readout */}
-                <div style={{
-                  marginTop: 16, padding: '10px 14px', borderRadius: 10,
-                  background: selectedBar ? 'rgba(16,185,129,0.08)' : 'rgba(255,255,255,0.02)',
-                  border: `1px solid ${selectedBar ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.04)'}`,
-                  transition: 'all 0.3s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8
-                }}>
-                  {selectedBar ? (
-                    <>
-                      <span style={{ fontSize: 13, color: '#10b981', fontWeight: 700 }}>
-                        📅 {new Date(selectedBar.date + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'long' })}
-                      </span>
-                      <span style={{ fontSize: 15, fontWeight: 800, color: '#e2e8f0' }}>
-                        {fmt(selectedBar.total)}
-                      </span>
-                    </>
-                  ) : (
-                    <span style={{ fontSize: 12, color: '#64748b', fontStyle: 'italic' }}>👆 Toque em uma barra para ver a data e o valor</span>
-                  )}
-                </div>
-                {/* Date range labels */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
-                  <span style={{ fontSize: 10, color: '#64748b' }}>{new Date(data.daily[0].date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
-                  <span style={{ fontSize: 10, color: '#64748b' }}>{new Date(data.daily[data.daily.length - 1].date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
-                </div>
-              </>
+              </div>
             ) : (
-              <p style={{ color: '#64748b', textAlign: 'center', padding: 40 }}>Sem dados para o período</p>
+              <div className="flex items-center justify-center h-40 text-xs text-slate-500 italic">
+                Sem dados de faturamentos registrados no período.
+              </div>
             )}
           </div>
           {data.monthly && data.monthly.length > 0 && (
