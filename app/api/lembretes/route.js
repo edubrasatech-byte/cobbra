@@ -122,11 +122,13 @@ export async function POST(request) {
           const cleanPhone = client.phone.replace(/\D/g, '');
           const waNumber = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
           
+          let activeEvoUrl = evoUrl;
+          let response;
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 seconds timeout
+          
           try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 seconds timeout
-            
-            await fetch(`${evoUrl}/message/sendText/${instance}`, {
+            response = await fetch(`${activeEvoUrl}/message/sendText/${instance}`, {
               method: 'POST',
               signal: controller.signal,
               headers: { 
@@ -140,11 +142,48 @@ export async function POST(request) {
               })
             });
             clearTimeout(timeoutId);
-            console.log(`[EVOLUTION API] Successfully sent WhatsApp message to ${waNumber} via instance ${instance}`);
           } catch (e) {
-            console.error("[EVOLUTION API] Connection failed or timed out to send message:", e);
-            throw new Error(`Falha no WhatsApp: ${e.message || 'Sem conexão com a Evolution API.'}`);
+            clearTimeout(timeoutId);
+            
+            // Self-healing: if port 8080 failed due to firewall/outbound block, retry on default port 80
+            if (activeEvoUrl.includes(':8080')) {
+              activeEvoUrl = activeEvoUrl.replace(':8080', '');
+              console.log(`[SELF-HEALING SEND]: Port 8080 connection failed/aborted. Retrying send on default port 80: ${activeEvoUrl}`);
+              
+              const retryController = new AbortController();
+              const retryTimeoutId = setTimeout(() => retryController.abort(), 8000);
+              
+              try {
+                response = await fetch(`${activeEvoUrl}/message/sendText/${instance}`, {
+                  method: 'POST',
+                  signal: retryController.signal,
+                  headers: { 
+                    'Content-Type': 'application/json',
+                    'apikey': evoToken
+                  },
+                  body: JSON.stringify({
+                    number: waNumber,
+                    options: { delay: 1200, linkPreview: true },
+                    textMessage: { text: finalMessage }
+                  })
+                });
+                clearTimeout(retryTimeoutId);
+              } catch (retryErr) {
+                clearTimeout(retryTimeoutId);
+                console.error("[EVOLUTION API SELF-HEALING] Retry also failed:", retryErr);
+                throw new Error(`Falha no WhatsApp (Autocura): ${retryErr.message || 'Sem conexão com a Evolution API.'}`);
+              }
+            } else {
+              console.error("[EVOLUTION API] Connection failed or timed out to send message:", e);
+              throw new Error(`Falha no WhatsApp: ${e.message || 'Sem conexão com a Evolution API.'}`);
+            }
           }
+
+          if (response && !response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(`Falha no WhatsApp: Servidor retornou HTTP ${response.status} - ${errData.message || 'Erro desconhecido'}`);
+          }
+          console.log(`[EVOLUTION API] Successfully sent WhatsApp message to ${waNumber} via instance ${instance}`);
         }
       }
     }

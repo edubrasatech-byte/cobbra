@@ -134,20 +134,46 @@ export async function POST(request) {
               const formattedPhone = charge.client_phone.replace(/\D/g, '');
               const fullPhone = formattedPhone.startsWith('55') ? formattedPhone : `55${formattedPhone}`;
 
-              const response = await fetch(`${evolutionUrl}/message/sendText/cobroo-session`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'apikey': evolutionToken
-                },
-                body: JSON.stringify({
-                  number: fullPhone,
-                  text: formattedMessage,
-                  delay: 1200
-                })
-              });
+              let activeEvoUrl = evolutionUrl;
+              let response;
               
-              if (response.ok) {
+              try {
+                response = await fetch(`${activeEvoUrl}/message/sendText/cobroo-session`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': evolutionToken
+                  },
+                  body: JSON.stringify({
+                    number: fullPhone,
+                    text: formattedMessage,
+                    delay: 1200
+                  })
+                });
+              } catch (fetchErr) {
+                // Self-healing: retry on port 80 if 8080 failed due to firewall/outbound block
+                if (activeEvoUrl.includes(':8080')) {
+                  activeEvoUrl = activeEvoUrl.replace(':8080', '');
+                  console.log(`[SELF-HEALING CRON]: Connection failed on port 8080. Retrying send on port 80: ${activeEvoUrl}`);
+                  
+                  response = await fetch(`${activeEvoUrl}/message/sendText/cobroo-session`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'apikey': evolutionToken
+                    },
+                    body: JSON.stringify({
+                      number: fullPhone,
+                      text: formattedMessage,
+                      delay: 1200
+                    })
+                  });
+                } else {
+                  throw fetchErr;
+                }
+              }
+              
+              if (response && response.ok) {
                 whatsappSent = true;
                 totalWhatsappSent++;
               } else {

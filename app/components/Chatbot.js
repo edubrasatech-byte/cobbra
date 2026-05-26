@@ -1,6 +1,16 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 
+function formatMessageText(text, isUser = false) {
+  if (!text) return '';
+  const parts = text.split('**');
+  return parts.map((part, index) => {
+    return index % 2 === 1 
+      ? <strong key={index} style={{ fontWeight: 700, color: isUser ? 'inherit' : '#10b981' }}>{part}</strong> 
+      : part;
+  });
+}
+
 export default function Chatbot({ isOpen, onClose }) {
   const [internalOpen, setInternalOpen] = useState(false);
   const isCurrentlyOpen = isOpen !== undefined ? isOpen : internalOpen;
@@ -617,7 +627,7 @@ export default function Chatbot({ isOpen, onClose }) {
                     whiteSpace: 'pre-wrap',
                     wordBreak: 'break-word'
                   }}>
-                    {m.text}
+                    {formatMessageText(m.text, m.sender === 'user')}
 
                     {/* Green Snake Brand Logo SVG inside bot bubble (Matching user screenshot) */}
                     {m.sender === 'bot' && (
