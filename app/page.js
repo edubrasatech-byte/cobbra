@@ -377,31 +377,15 @@ export default function HomePage() {
   const [calcClients, setCalcClients] = useState(20);
   const [calcAmount, setCalcAmount] = useState(300);
   const [calcLatePercent, setCalcLatePercent] = useState(25);
-  const [urgencyVisible, setUrgencyVisible] = useState(true);
   const [scrollY, setScrollY] = useState(0);
   const [faqCategory, setFaqCategory] = useState('all');
   const [faqSearch, setFaqSearch] = useState('');
   const [testimonialFilter, setTestimonialFilter] = useState('todos');
-  const [urgencyTime, setUrgencyTime] = useState('');
-  const [urgencyCity, setUrgencyCity] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
   const [beforeAfterTab, setBeforeAfterTab] = useState('after');
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [billingCycle, setBillingCycle] = useState('mensal');
-
-  useEffect(() => {
-    const cities = ['São Paulo, SP', 'Rio de Janeiro, RJ', 'Belo Horizonte, MG', 'Curitiba, PR', 'Porto Alegre, RS', 'Fortaleza, CE', 'Salvador, BA', 'Campinas, SP'];
-    const city = cities[Math.floor(Math.random() * cities.length)];
-    setUrgencyCity(city);
-    const updateTime = () => {
-      const mins = Math.floor(Math.random() * 4) + 1;
-      setUrgencyTime(`${mins} minuto${mins > 1 ? 's' : ''} atrás`);
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 45000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -1527,20 +1511,7 @@ export default function HomePage() {
         </div>
       </footer>
 
-      {/* ===== FLOATING URGENCY BAR ===== */}
-      {urgencyVisible && urgencyTime && (
-        <div className="urgency-bar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', animation: 'pulse 2s infinite' }} />
-            <span style={{ fontSize: 14, color: '#e2e8f0' }}>
-              <span className="desktop-only">🐍 Última cobrança enviada <strong style={{ color: '#10b981' }}>{urgencyTime}</strong> em <strong style={{ color: '#10b981' }}>{urgencyCity}</strong></span>
-              <span className="mobile-only" style={{ display: 'none' }}>🐍 Cobranças automáticas no WhatsApp</span>
-            </span>
-          </div>
-          <a href="/cadastro">Começar agora</a>
-          <button onClick={() => setUrgencyVisible(false)} aria-label="Fechar barra de urgência">×</button>
-        </div>
-      )}
+
 
       {/* Floating Mascot chatbot */}
       <Chatbot />
