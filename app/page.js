@@ -520,20 +520,20 @@ export default function HomePage() {
       {/* ===== HERO ===== */}
       <section className="hero-section" style={{
         background: '#070913',
-        position: 'relative', overflow: 'hidden'
+        position: 'relative', overflow: 'hidden',
+        padding: '120px 0 80px'
       }}>
         {/* Decorative Neon Halos */}
-        <div style={{ position: 'absolute', top: -150, right: -150, width: 400, height: 400, borderRadius: '50%', background: 'rgba(16,185,129,0.03)', filter: 'blur(80px)' }} />
-        <div style={{ position: 'absolute', bottom: -100, left: -100, width: 300, height: 300, borderRadius: '50%', background: 'rgba(13,148,136,0.02)', filter: 'blur(60px)' }} />
+        <div style={{ position: 'absolute', top: -150, left: '50%', transform: 'translateX(-50%)', width: 600, height: 600, borderRadius: '50%', background: 'rgba(16,185,129,0.04)', filter: 'blur(100px)', pointerEvents: 'none' }} />
 
-        <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', gap: 60, position: 'relative' }}>
-          {/* Left Content */}
-          <div style={{ flex: 1, animation: 'fadeInUp 0.8s ease' }}>
+        <div className="hero-grid" style={{ maxWidth: 840, margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'relative' }}>
+          {/* Content */}
+          <div style={{ animation: 'fadeInUp 0.8s ease', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             {/* Mini social proof acima do fold */}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 10, background: '#0c0e1a', padding: '10px 18px',
-              borderRadius: 100, fontSize: 13, fontWeight: 500, color: '#94a3b8', marginBottom: 24,
-              border: '1px solid rgba(16,185,129,0.2)', boxShadow: '0 4px 20px rgba(16,185,129,0.05)', maxWidth: 520
+              borderRadius: 100, fontSize: 13, fontWeight: 500, color: '#94a3b8', marginBottom: 28,
+              border: '1px solid rgba(16,185,129,0.2)', boxShadow: '0 4px 20px rgba(16,185,129,0.05)', maxWidth: '100%'
             }}>
               <div style={{ display: 'flex' }}>
                 {['MO','RC','CF'].map((i, idx) => (
@@ -543,7 +543,7 @@ export default function HomePage() {
               <span><strong style={{ color: '#10b981' }}>&ldquo;Minha inadimplência caiu de 35% para 6%&rdquo;</strong> — Marina O.</span>
             </div>
 
-            <h1 className="hero-h1" style={{ fontSize: 58, fontWeight: 900, lineHeight: 1.1, marginBottom: 24, letterSpacing: -1, color: '#ffffff' }}>
+            <h1 className="hero-h1" style={{ fontSize: 58, fontWeight: 900, lineHeight: 1.1, marginBottom: 24, letterSpacing: -1, color: '#ffffff', maxWidth: 780 }}>
               Seu Funcionário{' '}
               <span style={{ background: 'linear-gradient(135deg, #10b981, #0d9488)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 Financeiro
@@ -551,11 +551,11 @@ export default function HomePage() {
               Mais Barato do Brasil
             </h1>
 
-            <p className="hero-sub" style={{ fontSize: 16, color: '#cbd5e1', lineHeight: 1.6, marginBottom: 32, maxWidth: 520 }}>
+            <p className="hero-sub" style={{ fontSize: 16, color: '#cbd5e1', lineHeight: 1.6, marginBottom: 36, maxWidth: 620 }}>
               Cobranças automáticas por WhatsApp e E-mail, Pix direto na sua conta e taxa zero. Integrado com a Catarina AI.
             </p>
 
-            <div className="hero-cta" style={{ display: 'flex', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
+            <div className="hero-cta" style={{ display: 'flex', gap: 16, marginBottom: 20, flexWrap: 'wrap', justifyContent: 'center' }}>
               <a href="/cadastro" style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 10,
                 background: '#10b981', color: '#070913', fontSize: 14, fontWeight: 700,
@@ -577,10 +577,10 @@ export default function HomePage() {
                 ▶ Ver como funciona
               </a>
             </div>
-            <p style={{ fontSize: 13, color: '#64748b' }}>Sem cartão · Ativo em 2 minutos · Cancele quando quiser — <strong style={{color:'#94a3b8'}}>Não tem pegadinha.</strong></p>
+            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 36 }}>Sem cartão · Ativo em 2 minutos · Cancele quando quiser — <strong style={{color:'#94a3b8'}}>Não tem pegadinha.</strong></p>
 
             {/* Trust Badges — com números concretos */}
-            <div style={{ display: 'flex', gap: 24, marginTop: 32, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap', justifyContent: 'center' }}>
               {[
                 { icon: '🐍', label: '3.500+', text: 'autônomos usando hoje' },
                 { icon: '💰', label: 'R$ 1,2 mi', text: 'movimentados sem taxas' },
@@ -593,25 +593,6 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Right - Interactive WhatsApp Simulator with Mascot */}
-          <div className="hero-mockup" style={{ flex: 1, position: 'relative', animation: 'fadeInUp 1s ease 0.2s both', zIndex: 5 }}>
-            {/* Mascot peeking from top */}
-            <div style={{
-              position: 'absolute', top: -15, right: 125, background: '#0c0e1a', borderRadius: 12, padding: '8px 14px',
-              fontSize: 12, fontWeight: 600, color: '#10b981', boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-              border: '1px solid rgba(16,185,129,0.2)', zIndex: 10
-            }}>
-              Deixa que eu cobro! 🐍
-              <div style={{ position: 'absolute', bottom: -6, right: 20, width: 12, height: 12, background: '#0c0e1a', border: '1px solid rgba(16,185,129,0.2)', borderTop: 'none', borderLeft: 'none', transform: 'rotate(45deg)' }} />
-            </div>
-
-            <div className="hero-mascot-wrapper" style={{ position: 'absolute', top: -50, right: 20, zIndex: 10, animation: 'float 3s ease-in-out infinite' }}>
-              <SnakeMascot size={100} className="mascot-svg" />
-            </div>
-
-            <WhatsAppSimulator />
           </div>
         </div>
       </section>
@@ -666,7 +647,7 @@ export default function HomePage() {
         <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
           <h2 className="section-title" style={{ marginBottom: 16, color: '#ffffff' }}>Nunca mais você vai precisar<br /><span style={{ color: '#10b981' }}>fingir que esqueceu de cobrar.</span></h2>
           <p className="section-subtitle" style={{ color: '#94a3b8', marginBottom: 40 }}>O Cobbra faz o papel chato por você — e o cliente nem percebe que era automática.</p>
-          <div className="how-it-works-steps" style={{ display: 'flex', gap: 40, justifyContent: 'center', position: 'relative' }}>
+          <div className="how-it-works-steps" style={{ display: 'flex', gap: 40, justifyContent: 'center', position: 'relative', marginBottom: 50 }}>
             {/* Connection line */}
             <div className="how-it-works-line" style={{ position: 'absolute', top: 35, left: '20%', right: '20%', height: 2, background: 'linear-gradient(to right, rgba(16,185,129,0.05), #10b981, rgba(16,185,129,0.05))', zIndex: 0 }} />
             {[
@@ -690,6 +671,28 @@ export default function HomePage() {
               </div>
             ))}
           </div>
+
+          {/* Interactive WhatsApp Simulator at the end of the section */}
+          <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: 60, position: 'relative' }}>
+            <div style={{ flex: 1, maxWidth: 440, width: '100%', position: 'relative' }}>
+              {/* Mascot peeking from top */}
+              <div style={{
+                position: 'absolute', top: -15, right: 125, background: '#0c0e1a', borderRadius: 12, padding: '8px 14px',
+                fontSize: 12, fontWeight: 600, color: '#10b981', boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                border: '1px solid rgba(16,185,129,0.2)', zIndex: 10
+              }}>
+                Deixa que eu cobro! 🐍
+                <div style={{ position: 'absolute', bottom: -6, right: 20, width: 12, height: 12, background: '#0c0e1a', border: '1px solid rgba(16,185,129,0.2)', borderTop: 'none', borderLeft: 'none', transform: 'rotate(45deg)' }} />
+              </div>
+
+              <div className="hero-mascot-wrapper" style={{ position: 'absolute', top: -50, right: 20, zIndex: 10, animation: 'float 3s ease-in-out infinite' }}>
+                <SnakeMascot size={100} className="mascot-svg" />
+              </div>
+
+              <WhatsAppSimulator />
+            </div>
+          </div>
+
         </div>
       </section>
 
