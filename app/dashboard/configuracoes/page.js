@@ -44,7 +44,7 @@ export default function ConfiguracoesPage() {
   const [whatsappStatus, setWhatsappStatus] = useState('disconnected');
   const [whatsappPhone, setWhatsappPhone] = useState('');
   const [whatsappQrCode, setWhatsappQrCode] = useState('');
-  const [waSimPhone, setWaSimPhone] = useState('');
+  const [waError, setWaError] = useState('');
 
   useEffect(() => {
     // Fetch active WhatsApp connection status
@@ -56,6 +56,11 @@ export default function ConfiguracoesPage() {
           setWhatsappPhone(data.phone || '');
           if (data.qrCode) {
             setWhatsappQrCode(data.qrCode);
+          }
+          if (data.error) {
+            setWaError(data.error);
+          } else {
+            setWaError('');
           }
         }
       })
@@ -104,11 +109,19 @@ export default function ConfiguracoesPage() {
               setWhatsappPhone(data.phone || '');
               clearInterval(interval);
               showMsg('WhatsApp conectado com sucesso! 📱');
-            } else if (data.status === 'scanning' && data.qrCode) {
-              setWhatsappQrCode(data.qrCode);
+            } else if (data.status === 'scanning') {
+              if (data.qrCode) {
+                setWhatsappQrCode(data.qrCode);
+              }
+              if (data.error) {
+                setWaError(data.error);
+              } else {
+                setWaError('');
+              }
             } else if (data.status === 'disconnected') {
               setWhatsappStatus('disconnected');
               setWhatsappQrCode('');
+              setWaError('');
               clearInterval(interval);
             }
           })
@@ -122,6 +135,7 @@ export default function ConfiguracoesPage() {
 
   async function handleStartWaConnection() {
     setWhatsappStatus('connecting');
+    setWaError('');
     try {
       const res = await fetch('/api/whatsapp/connect', {
         method: 'POST',
@@ -136,28 +150,12 @@ export default function ConfiguracoesPage() {
         setWhatsappStatus('connected');
         setWhatsappPhone(data.phone || '');
       }
+      if (data.error) {
+        setWaError(data.error);
+      }
     } catch (e) {
       setWhatsappStatus('disconnected');
       alert('Erro de conexão com o servidor Evolution.');
-    }
-  }
-
-  async function handleSimulateScan() {
-    const phone = waSimPhone || '(11) 99999-9999';
-    try {
-      const res = await fetch('/api/whatsapp/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone })
-      });
-      const data = await res.json();
-      if (data.success) {
-        setWhatsappStatus('connected');
-        setWhatsappPhone(phone);
-        showMsg('WhatsApp pareado com sucesso! 🎉');
-      }
-    } catch (e) {
-      alert('Erro ao simular conexão.');
     }
   }
 
@@ -170,6 +168,7 @@ export default function ConfiguracoesPage() {
         setWhatsappStatus('disconnected');
         setWhatsappPhone('');
         setWhatsappQrCode('');
+        setWaError('');
         showMsg('WhatsApp desconectado! 🛑');
       }
     } catch (e) { 
@@ -519,8 +518,45 @@ export default function ConfiguracoesPage() {
             <div>
               {!selectedInt ? (
                 <>
-                  {/* Catarina AI card (visible to everyone) */}
+                  {/* Integrations list card (visible to everyone) */}
                   <div style={{ ...cardS, marginBottom: 24 }}>
+                    <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 24 }}>Integrações</h3>
+                    <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 20 }}>Conecte suas APIs favoritas para disparar lembretes e gerenciar fluxos.</p>
+                    {[
+                      { key: 'whatsapp', name: 'WhatsApp Business API (Z-API / Evolution)', desc: 'Envie lembretes via WhatsApp automaticamente', icon: '📱', status: 'config', color: '#25d366' },
+                      { key: 'smtp', name: 'SMTP / E-mail Próprio', desc: 'Configure seu servidor de e-mail para disparos profissionais', icon: '✉️', status: 'config', color: '#3b82f6' },
+                      { key: 'stripe', name: 'Stripe', desc: 'Aceite pagamentos internacionais com cartão de crédito', icon: '💳', status: 'soon', color: '#6366f1' },
+                      { key: 'mercado_pago', name: 'Mercado Pago', desc: 'Integração para boletos automáticos e Pix integrado', icon: '🏦', status: 'soon', color: '#00b1ea' },
+                    ].map((intg, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <div style={{ width: 44, height: 44, borderRadius: 12, background: `${intg.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{intg.icon}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <p style={{ fontSize: 15, fontWeight: 600, color: '#e2e8f0', margin: 0 }}>{intg.name}</p>
+                            {intg.key === 'whatsapp' && whatsappStatus === 'connected' && (
+                              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 6, background: 'rgba(16,185,129,0.15)', color: '#10b981' }}>
+                                🟢 Ativo ({whatsappPhone})
+                              </span>
+                            )}
+                          </div>
+                          <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0 0' }}>{intg.desc}</p>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            if (intg.status === 'config') {
+                              setSelectedInt(intg.key);
+                            }
+                          }}
+                          style={{ padding: '6px 16px', borderRadius: 8, border: 'none', cursor: intg.status === 'config' ? 'pointer' : 'default', fontFamily: 'Inter', fontSize: 12, fontWeight: 600, background: intg.status === 'config' ? 'rgba(5,150,105,0.15)' : 'rgba(255,255,255,0.05)', color: intg.status === 'config' ? '#10b981' : '#64748b' }}
+                        >
+                          {intg.status === 'config' ? 'Configurar' : 'Em breve'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Catarina AI card (visible to everyone) */}
+                  <div style={cardS}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                       <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>🤖</div>
                       <div>
@@ -556,59 +592,34 @@ export default function ConfiguracoesPage() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Integrations locking cards */}
-                  <div style={cardS}>
-                    {user?.plan !== 'cobra_pro' && user?.plan !== 'trial' ? (
-                      <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-                        <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
-                        <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 10 }}>Integrações Personalizadas</h3>
-                        <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 24, maxWidth: 360, margin: '0 auto 24px', lineHeight: 1.6 }}>
-                          A conexão com seu próprio número comercial do WhatsApp (Z-API) e servidor de e-mail SMTP próprio está disponível exclusivamente para assinantes do plano **Cobra Pro**.
-                        </p>
-                        <button onClick={() => setActiveTab('plan')} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter' }}>
-                          Ver Planos de Upgrade
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 24 }}>Integrações</h3>
-                        <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 20 }}>Conecte suas APIs favoritas para disparar lembretes e gerenciar fluxos.</p>
-                        {[
-                          { key: 'whatsapp', name: 'WhatsApp Business API (Z-API / Evolution)', desc: 'Envie lembretes via WhatsApp automaticamente', icon: '📱', status: 'config', color: '#25d366' },
-                          { key: 'smtp', name: 'SMTP / E-mail Próprio', desc: 'Configure seu servidor de e-mail para disparos profissionais', icon: '✉️', status: 'config', color: '#3b82f6' },
-                          { key: 'stripe', name: 'Stripe', desc: 'Aceite pagamentos internacionais com cartão de crédito', icon: '💳', status: 'soon', color: '#6366f1' },
-                          { key: 'mercado_pago', name: 'Mercado Pago', desc: 'Integração para boletos automáticos e Pix integrado', icon: '🏦', status: 'soon', color: '#00b1ea' },
-                        ].map((intg, i) => (
-                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                            <div style={{ width: 44, height: 44, borderRadius: 12, background: `${intg.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{intg.icon}</div>
-                            <div style={{ flex: 1 }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                <p style={{ fontSize: 15, fontWeight: 600, color: '#e2e8f0', margin: 0 }}>{intg.name}</p>
-                                {intg.key === 'whatsapp' && whatsappStatus === 'connected' && (
-                                  <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 6, background: 'rgba(16,185,129,0.15)', color: '#10b981' }}>
-                                    🟢 Ativo ({whatsappPhone})
-                                  </span>
-                                )}
-                              </div>
-                              <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0 0' }}>{intg.desc}</p>
-                            </div>
-                            <button 
-                              onClick={() => {
-                                if (intg.status === 'config') {
-                                  setSelectedInt(intg.key);
-                                }
-                              }}
-                              style={{ padding: '6px 16px', borderRadius: 8, border: 'none', cursor: intg.status === 'config' ? 'pointer' : 'default', fontFamily: 'Inter', fontSize: 12, fontWeight: 600, background: intg.status === 'config' ? 'rgba(5,150,105,0.15)' : 'rgba(255,255,255,0.05)', color: intg.status === 'config' ? '#10b981' : '#64748b' }}
-                            >
-                              {intg.status === 'config' ? 'Configurar' : 'Em breve'}
-                            </button>
-                          </div>
-                        ))}
-                      </>
-                    )}
-                  </div>
                 </>
+              ) : user?.plan !== 'cobra_pro' && user?.plan !== 'trial' ? (
+                <div style={cardS}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
+                    <button 
+                      type="button"
+                      onClick={() => setSelectedInt(null)} 
+                      style={{ padding: '8px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', color: '#cbd5e1', fontSize: 13, fontWeight: 600, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.08)', fontFamily: 'Inter' }}
+                    >
+                      ← Voltar
+                    </button>
+                    <div>
+                      <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', margin: 0 }}>
+                        {selectedInt === 'whatsapp' ? 'Configurar WhatsApp API' : 'Configurar Servidor SMTP'}
+                      </h3>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'center', padding: '40px 20px', background: 'rgba(255,255,255,0.01)', borderRadius: 16, border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
+                    <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 10 }}>Integração Exclusiva</h3>
+                    <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 24, maxWidth: 360, margin: '0 auto 24px', lineHeight: 1.6 }}>
+                      A conexão com seu próprio número comercial do WhatsApp (Z-API) e servidor de e-mail SMTP próprio está disponível exclusivamente para assinantes do plano **Cobra Pro**.
+                    </p>
+                    <button type="button" onClick={() => { setSelectedInt(null); setActiveTab('plan'); }} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter' }}>
+                      Ver Planos de Upgrade
+                    </button>
+                  </div>
+                </div>
               ) : (
                 <div style={cardS}>
                   {/* Back button and title */}
@@ -719,6 +730,13 @@ export default function ConfiguracoesPage() {
                                   <div style={{ background: '#fff', padding: 18, borderRadius: 20, display: 'inline-block', boxShadow: '0 8px 30px rgba(0,0,0,0.5)', border: '4px solid #10b981', minWidth: 226, minHeight: 226, position: 'relative' }}>
                                     {whatsappQrCode ? (
                                       <img src={whatsappQrCode} alt="WhatsApp QR Code" style={{ width: 190, height: 190, display: 'block' }} />
+                                    ) : waError ? (
+                                      <div style={{ width: 190, height: 190, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fef2f2', borderRadius: 12, padding: 12 }}>
+                                        <span style={{ fontSize: 24, marginBottom: 8 }}>⚠️</span>
+                                        <span style={{ fontSize: 11, fontWeight: 700, color: '#991b1b', textAlign: 'center', lineHeight: '1.4' }}>
+                                          {waError}
+                                        </span>
+                                      </div>
                                     ) : (
                                       <div style={{ width: 190, height: 190, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', borderRadius: 12, padding: 12 }}>
                                         <div style={{ border: '3px solid rgba(16,185,129,0.1)', borderTop: '3px solid #10b981', borderRadius: '50%', width: 32, height: 32, marginBottom: 12, animation: 'spin 1s linear infinite' }} />
@@ -739,27 +757,6 @@ export default function ConfiguracoesPage() {
                                   <span style={{ fontSize: 12, fontWeight: 700, color: '#34d399', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                                     Aguardando leitura do QRCode...
                                   </span>
-                                </div>
-
-                                {/* Simulador de testes robusto e ocultável */}
-                                <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 12, padding: 14, maxWidth: 380, margin: '0 auto' }}>
-                                  <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 8px 0', fontWeight: 700 }}>🧪 PAREAMENTO DE HOMOLOGAÇÃO/SIMULADO:</p>
-                                  <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                                    <input 
-                                      type="text"
-                                      placeholder="Seu número Ex: (11) 99999-9999"
-                                      value={waSimPhone}
-                                      onChange={e => setWaSimPhone(e.target.value)}
-                                      style={{ ...inputS, width: 220, padding: '6px 12px', fontSize: 12, height: 34 }}
-                                    />
-                                    <button
-                                      type="button"
-                                      onClick={handleSimulateScan}
-                                      style={{ padding: '6px 14px', borderRadius: 8, background: '#059669', color: '#fff', fontSize: 11, fontWeight: 700, border: 'none', cursor: 'pointer', fontFamily: 'Inter', height: 34 }}
-                                    >
-                                      Simular
-                                    </button>
-                                  </div>
                                 </div>
 
                                 <button

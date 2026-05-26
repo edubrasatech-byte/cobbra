@@ -20,13 +20,14 @@ export async function GET(request) {
       return Response.json({ status: 'disconnected', phone: null, instance: null });
     }
 
-    const mockQrCode = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="250" height="250" viewBox="0 0 250 250"><rect width="250" height="250" fill="white"/><g fill="%230f172a"><rect x="20" y="20" width="40" height="40"/><rect x="20" y="70" width="10" height="10"/><rect x="50" y="70" width="10" height="10"/><rect x="20" y="90" width="40" height="40"/><rect x="70" y="20" width="10" height="10"/><rect x="90" y="20" width="40" height="40"/><rect x="90" y="70" width="10" height="10"/><rect x="120" y="70" width="10" height="10"/><rect x="90" y="90" width="40" height="40"/><rect x="140" y="20" width="40" height="40"/><rect x="140" y="70" width="10" height="10"/><rect x="170" y="70" width="10" height="10"/><rect x="140" y="90" width="40" height="40"/><rect x="190" y="20" width="10" height="10"/><rect x="210" y="20" width="20" height="20"/><rect x="190" y="50" width="30" height="10"/><rect x="190" y="70" width="40" height="40"/><g fill="%2310b981"><rect x="30" y="30" width="20" height="20"/><rect x="100" y="30" width="20" height="20"/><rect x="150" y="30" width="20" height="20"/><rect x="30" y="100" width="20" height="20"/><rect x="100" y="100" width="20" height="20"/><rect x="150" y="100" width="20" height="20"/></g></g></svg>';
-
     let qrCode = null;
-    const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL;
-    const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN;
+    let qrError = null;
+    const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL || process.env.EVOLUTION_API_URL;
+    const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
 
-    if (evoUrl && evoToken) {
+    if (!evoUrl || !evoToken) {
+      qrError = 'Evolution API não configurada nas variáveis de ambiente do servidor (EVOLUTION_API_URL / EVOLUTION_API_TOKEN).';
+    } else {
       try {
         // Clean trailing slash from evoUrl if present
         const baseUrl = evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl;
@@ -64,28 +65,28 @@ export async function GET(request) {
 
         if (connectRes.ok) {
           const connectData = await connectRes.json();
-          // Evolution API connects returns code or base64 (which is a data URI starting with data:image...)
           qrCode = connectData?.base64 || connectData?.code || null;
         }
+
+        if (!qrCode) {
+          qrError = 'Servidor Evolution não retornou QR Code. Tente reiniciar a conexão.';
+        }
       } catch (e) {
-        console.error("[EVOLUTION API ERROR] Falling back to mock simulation:", e);
+        console.error("[EVOLUTION API ERROR]:", e);
+        qrError = 'Erro de comunicação com a VPS da Evolution API. Verifique a URL.';
       }
     }
 
-    // Graceful fallback to fully interactive mock simulator if Evolution API is not configured or offline
     if (status === 'connected') {
       return Response.json({ status, phone, instance });
-    }
-
-    if (!qrCode) {
-      qrCode = mockQrCode;
     }
 
     return Response.json({
       status,
       phone,
       instance,
-      qrCode
+      qrCode,
+      error: qrError
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
@@ -110,11 +111,13 @@ export async function POST(request) {
       );
 
       let qrCode = null;
-      const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL;
-      const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN;
-      const mockQrCode = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="250" height="250" viewBox="0 0 250 250"><rect width="250" height="250" fill="white"/><g fill="%230f172a"><rect x="20" y="20" width="40" height="40"/><rect x="20" y="70" width="10" height="10"/><rect x="50" y="70" width="10" height="10"/><rect x="20" y="90" width="40" height="40"/><rect x="70" y="20" width="10" height="10"/><rect x="90" y="20" width="40" height="40"/><rect x="90" y="70" width="10" height="10"/><rect x="120" y="70" width="10" height="10"/><rect x="90" y="90" width="40" height="40"/><rect x="140" y="20" width="40" height="40"/><rect x="140" y="70" width="10" height="10"/><rect x="170" y="70" width="10" height="10"/><rect x="140" y="90" width="40" height="40"/><rect x="190" y="20" width="10" height="10"/><rect x="210" y="20" width="20" height="20"/><rect x="190" y="50" width="30" height="10"/><rect x="190" y="70" width="40" height="40"/><g fill="%2310b981"><rect x="30" y="30" width="20" height="20"/><rect x="100" y="30" width="20" height="20"/><rect x="150" y="30" width="20" height="20"/><rect x="30" y="100" width="20" height="20"/><rect x="100" y="100" width="20" height="20"/><rect x="150" y="100" width="20" height="20"/></g></g></svg>';
+      let qrError = null;
+      const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL || process.env.EVOLUTION_API_URL;
+      const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
 
-      if (evoUrl && evoToken) {
+      if (!evoUrl || !evoToken) {
+        qrError = 'Evolution API não configurada nas variáveis de ambiente do servidor (EVOLUTION_API_URL / EVOLUTION_API_TOKEN).';
+      } else {
         try {
           const baseUrl = evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl;
 
@@ -151,16 +154,17 @@ export async function POST(request) {
             const connectData = await connectRes.json();
             qrCode = connectData?.base64 || connectData?.code || null;
           }
+
+          if (!qrCode) {
+            qrError = 'Servidor Evolution não retornou QR Code. Tente reiniciar a conexão.';
+          }
         } catch (e) {
           console.error("[EVOLUTION API START ERROR]:", e);
+          qrError = 'Erro de comunicação com a VPS da Evolution API. Verifique a URL.';
         }
       }
 
-      if (!qrCode) {
-        qrCode = mockQrCode;
-      }
-
-      return Response.json({ success: true, status: 'scanning', qrCode, instance });
+      return Response.json({ success: true, status: 'scanning', qrCode, error: qrError, instance });
     }
 
     // SIMULATED PAIRING
