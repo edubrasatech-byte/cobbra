@@ -126,7 +126,7 @@ export async function POST(request) {
     // Format WhatsApp message with Pix and updated debt summary if applicable
     let finalMessage = message;
     if (pixCode) {
-      finalMessage += `\n\n💵 *Resumo do Pagamento Atualizado:*\n`;
+      finalMessage += `\n\n💵 *Resumo do Pagamento:* \n`;
       if (delayDays > 0 && interestApplied > 0) {
         finalMessage += `• Valor original: R$ ${charge.amount.toFixed(2).replace('.', ',')}\n`;
         finalMessage += `• Juros por atraso (${delayDays} dias): R$ ${interestApplied.toFixed(2).replace('.', ',')}\n`;
@@ -134,7 +134,7 @@ export async function POST(request) {
       } else {
         finalMessage += `• *Valor Total:* R$ ${updatedAmount.toFixed(2).replace('.', ',')}\n\n`;
       }
-      finalMessage += `🔑 *Pix Copia e Cola (toque para copiar):*\n\`${pixCode}\``;
+      finalMessage += `📸 *O QRCode e o Pix Copia e Cola foram enviados logo abaixo para facilitar o seu pagamento!*`;
     }
 
     const id = generateId();
