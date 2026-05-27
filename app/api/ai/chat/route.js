@@ -5,6 +5,7 @@ import { sendEmail } from '@/lib/mailer';
 
 export async function POST(request) {
   let user = null;
+  let targetRental = null;
   try {
     user = getUserFromRequest(request);
   } catch (authError) {
@@ -93,6 +94,47 @@ Adequar totalmente suas orientações, exemplos de cobrança e linguagem para es
 - Se for 'clinica' (Saúde): Aconselhe abordagens altamente diplomáticas, priorizando o acolhimento do paciente e a discrição.
 
 Se o usuário perguntar sobre o seu faturamento, clientes, inadimplência, ou quem deve para ele, você DEVE responder consultando exatamente os números acima com precisão e oferecendo conselhos práticos de cobrança amigável para ajudá-lo a receber!`;
+
+        // Intercept contract alteration requests dynamically
+        const isContractRequest = /contrato|cláusula|clausula|altera.*contrato|muda.*contrato|adiciona.*contrato/i.test(message);
+        
+        if (isContractRequest) {
+          const activeRentals = query(
+            `SELECT c.*, cl.name as client_name 
+             FROM charges c 
+             JOIN clients cl ON c.client_id = cl.id 
+             WHERE c.user_id = ? AND c.vehicle_info IS NOT NULL`,
+            [user.id]
+          );
+          
+          for (const r of activeRentals) {
+            const clientFirstName = r.client_name.split(' ')[0].toLowerCase();
+            const vehicleModel = r.vehicle_info.toLowerCase();
+            if (message.toLowerCase().includes(clientFirstName) || message.toLowerCase().includes(vehicleModel.split(' ')[0])) {
+              targetRental = r;
+              break;
+            }
+          }
+          if (!targetRental && activeRentals.length === 1) {
+            targetRental = activeRentals[0];
+          }
+        }
+
+        if (targetRental) {
+          systemPrompt += `\n\nATENÇÃO - SOLICITAÇÃO DE ALTERAÇÃO DE CONTRATO ATIVA:
+O usuário deseja alterar o contrato de locação do veículo de *${targetRental.client_name}* (${targetRental.vehicle_info}).
+Texto atual do contrato:
+\"\"\"
+${targetRental.contract_text || 'Sem contrato gerado.'}
+\"\"\"
+
+Você DEVE reescrever este contrato completo incorporando as alterações de cláusulas ou novos termos solicitados pelo usuário. O contrato deve permanecer extremamente rígido e amplamente favorável ao locador.
+Ao responder, você DEVE envelopar o novo texto completo do contrato exatamente dentro deste bloco de código markdown:
+\`\`\`contract
+[CONTRATO COMPLETO ALTERADO]
+\`\`\`
+Explique de forma muito simpática e resumida no chat quais cláusulas foram ajustadas e afirme que o contrato eletrônico correspondente já foi atualizado com sucesso no painel do usuário!`;
+        }
       } catch (dbError) {
         console.error('[GEMINI CHAT DB STATS EXCEPTION] Proceeding with base profile:', dbError);
         systemPrompt += `\n\nCONTEXTO REAL DO USUÁRIO LOGADO:
@@ -152,6 +194,19 @@ Plano ativo: ${user.plan || 'trial'}`;
           if (!aiResponse) {
             console.warn('[GEMINI CHAT WARNING] Gemini returned empty response or candidate safety block, falling back to rule-based reply.');
             aiResponse = getFallbackReply(message);
+          } else {
+            const contractRegex = /```contract\s*([\s\S]*?)\s*```/i;
+            const match = aiResponse.match(contractRegex);
+            if (match && targetRental) {
+              const newContract = match[1].trim();
+              try {
+                run('UPDATE charges SET contract_text = ? WHERE id = ?', [newContract, targetRental.id]);
+                console.log(`[AI CONTRACT MUTATION SUCCESS] Contract updated for charge ${targetRental.id}`);
+              } catch (dbErr) {
+                console.error('[AI CONTRACT MUTATION ERROR] Failed to update contract in database:', dbErr);
+              }
+              aiResponse = aiResponse.replace(contractRegex, '').trim();
+            }
           }
         } else {
           const errorText = await response.text();

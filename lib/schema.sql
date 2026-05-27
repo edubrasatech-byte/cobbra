@@ -79,6 +79,8 @@ CREATE TABLE IF NOT EXISTS charges (
   reminders_sent INTEGER DEFAULT 0,
   vehicle_info TEXT,
   loan_info TEXT,
+  contract_text TEXT,
+  deposit_amount REAL DEFAULT 0,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now')),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
