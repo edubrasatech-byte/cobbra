@@ -79,6 +79,20 @@ const NAV_ICONS = {
       <path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
     </svg>
   ),
+  '/dashboard/locacoes': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+      <circle cx="7" cy="17" r="2" />
+      <path d="M9 17h6" />
+      <circle cx="17" cy="17" r="2" />
+    </svg>
+  ),
+  '/dashboard/emprestimos': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="1" x2="12" y2="23" />
+      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+    </svg>
+  ),
   '/dashboard/admin': (colorClass) => (
     <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -438,12 +452,15 @@ export default function DashboardLayout({ children }) {
     fetch('/api/auth/me').then(r => r.json()).then(data => {
       if (data.user) {
         setUser(data.user);
+        if (data.user.onboarding_completed === 0 && pathname !== '/dashboard/onboarding') {
+          router.push('/dashboard/onboarding');
+        }
       } else {
         router.push('/login');
       }
       setLoading(false);
     }).catch(() => { router.push('/login'); setLoading(false); });
-  }, [router]);
+  }, [router, pathname]);
 
   useEffect(() => {
     if (user) {
@@ -501,8 +518,16 @@ export default function DashboardLayout({ children }) {
     }
   }
 
+  const dynamicNavItems = [...NAV_ITEMS];
+  
+  if (user?.business_niche === 'locacao_veiculos') {
+    dynamicNavItems.splice(3, 0, { href: '/dashboard/locacoes', icon: '🚗', label: 'Locações' });
+  } else if (user?.business_niche === 'emprestimo') {
+    dynamicNavItems.splice(3, 0, { href: '/dashboard/emprestimos', icon: '💸', label: 'Empréstimos' });
+  }
+
   const navItems = user?.role === 'admin_senior' || user?.role === 'admin'
-    ? [...NAV_ITEMS, ADMIN_ITEM] : NAV_ITEMS;
+    ? [...dynamicNavItems, ADMIN_ITEM] : dynamicNavItems;
 
   const pageTitle = navItems.find(i => i.href === pathname)?.label || 'Visão Geral';
 

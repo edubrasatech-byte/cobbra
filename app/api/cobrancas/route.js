@@ -72,7 +72,7 @@ export async function POST(request) {
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
     const body = await request.json();
-    const { client_id, amount, description, due_date, recurrence, reminder_channel, payment_method, daily_interest_rate } = body;
+    const { client_id, amount, description, due_date, recurrence, reminder_channel, payment_method, daily_interest_rate, vehicle_info, loan_info } = body;
 
     if (!client_id || !amount || !due_date) {
       return Response.json({ error: 'Cliente, valor e vencimento são obrigatórios' }, { status: 400 });
@@ -114,9 +114,9 @@ export async function POST(request) {
 
     const id = generateId();
     run(
-      `INSERT INTO charges (id, user_id, client_id, amount, description, due_date, recurrence, reminder_channel, payment_method, daily_interest_rate)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [id, user.id, client_id, amount, description || '', due_date, recurrence || 'once', finalReminderChannel, payment_method || 'pix', daily_interest_rate || 0]
+      `INSERT INTO charges (id, user_id, client_id, amount, description, due_date, recurrence, reminder_channel, payment_method, daily_interest_rate, vehicle_info, loan_info)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, user.id, client_id, amount, description || '', due_date, recurrence || 'once', finalReminderChannel, payment_method || 'pix', daily_interest_rate || 0, vehicle_info || null, loan_info || null]
     );
 
 

@@ -3,17 +3,17 @@ import { sendEmail } from '@/lib/mailer';
 
 export async function POST(request) {
   try {
-    const { name, email, password, phone } = await request.json();
+    const { name, email, password, phone, plan } = await request.json();
 
     if (!name || !email || !password) {
       return Response.json({ error: 'Nome, email e senha são obrigatórios' }, { status: 400 });
     }
 
-    if (password.length < 6) {
-      return Response.json({ error: 'A senha deve ter pelo menos 6 caracteres' }, { status: 400 });
+    if (password.length < 8) {
+      return Response.json({ error: 'A senha deve ter pelo menos 8 caracteres' }, { status: 400 });
     }
 
-    const user = await registerUser({ name, email, password, phone });
+    const user = await registerUser({ name, email, password, phone, plan: plan || 'starter' });
     const token = generateToken(user);
 
     // Send Welcome Email asynchronously to avoid blocking the main registration thread
