@@ -19,11 +19,6 @@ export default function LocacoesPage() {
   const [waError, setWaError] = useState('');
   const [showWaPairModal, setShowWaPairModal] = useState(false);
 
-  // Telematics Simulation State (Item 4)
-  const [blockingRental, setBlockingRental] = useState(null);
-  const [blockLogs, setBlockLogs] = useState([]);
-  const [blockProgress, setBlockProgress] = useState(0);
-  const [isBlockComplete, setIsBlockComplete] = useState(false);
 
   // Form State
   const [form, setForm] = useState({
@@ -327,36 +322,6 @@ Contrato sujeito a alterações pela Catarina IA.`
     }
   };
 
-  // Telemetry locking progress triggers (Item 4)
-  const handleStartTelemetryLock = (rental) => {
-    setBlockingRental(rental);
-    setBlockLogs([`[INFO] Iniciando protocolo de telemetria OBD-II de emergência...`]);
-    setBlockProgress(0);
-    setIsBlockComplete(false);
-
-    const steps = [
-      { p: 15, msg: `📡 Estabelecendo handshake seguro (TLS v1.3) via canal de satélite L-Band...` },
-      { p: 35, msg: `🛰️ Conexão estabelecida! Sinal GPS: 94% (Excelente). Coordenadas: SP (-23.5505, -46.6333)` },
-      { p: 55, msg: `🚗 Reconhecendo ECU do veículo: ${rental.vehicle_info}. Módulo de telemetria ativo.` },
-      { p: 75, msg: `🔌 Acessando barramento CAN-BUS. Solicitando bloqueio do relé secundário de ignição...` },
-      { p: 90, msg: `⚠️ ALERTA: Iniciando interrupção ativa da bomba de combustível em 3, 2, 1...` },
-      { p: 100, msg: `⚡ SUCESSO! Bomba de combustível desativada. Bloqueio físico ativado com sucesso! Ignição inativa.` }
-    ];
-
-    let currentStep = 0;
-    const interval = setInterval(() => {
-      if (currentStep < steps.length) {
-        const step = steps[currentStep];
-        setBlockProgress(step.p);
-        setBlockLogs(prev => [...prev, step.msg]);
-        currentStep++;
-      } else {
-        clearInterval(interval);
-        setIsBlockComplete(true);
-        showNotification('⚡ Veículo bloqueado fisicamente via telemetria!');
-      }
-    }, 1200);
-  };
 
   const handleRegisterRental = async (e) => {
     e.preventDefault();
@@ -800,26 +765,7 @@ Contrato sujeito a alterações pela Catarina IA.`
                       </button>
                     )}
 
-                    {/* GPS Lock Simulation Trigger (Item 4) */}
-                    {r.status === 'overdue' && (
-                      <button 
-                        onClick={() => handleStartTelemetryLock(r)}
-                        style={{
-                          flex: 1,
-                          minWidth: '90px',
-                          padding: '8px 10px',
-                          background: 'rgba(239,68,68,0.15)',
-                          border: '1px solid rgba(239,68,68,0.3)',
-                          color: '#ef4444',
-                          borderRadius: 8,
-                          fontSize: 11,
-                          fontWeight: 700,
-                          cursor: 'pointer'
-                        }}
-                      >
-                        ⚡ Bloquear Motor
-                      </button>
-                    )}
+
                   </div>
                 </div>
               );
@@ -958,25 +904,7 @@ Contrato sujeito a alterações pela Catarina IA.`
                             </button>
                           )}
 
-                          {/* GPS locking simulation trigger (Item 4) */}
-                          {r.status === 'overdue' && (
-                            <button 
-                              onClick={() => handleStartTelemetryLock(r)}
-                              title="Bloquear motor do veículo via telemetria"
-                              style={{
-                                padding: '6px 10px',
-                                background: 'rgba(239,68,68,0.15)',
-                                border: '1px solid rgba(239,68,68,0.3)',
-                                color: '#ef4444',
-                                borderRadius: 8,
-                                fontSize: 11,
-                                fontWeight: 700,
-                                cursor: 'pointer'
-                              }}
-                            >
-                              ⚡ Bloquear
-                            </button>
-                          )}
+
                         </div>
                       </td>
                     </tr>
@@ -1281,123 +1209,7 @@ Contrato sujeito a alterações pela Catarina IA.`
         </div>
       )}
 
-      {/* Telematics Lock Simulation Overlay (Item 4) */}
-      {blockingRental && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(12, 14, 26, 0.98)', // protective opaque background
-          zIndex: 2000,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 20,
-          fontFamily: 'monospace'
-        }}>
-          <div style={{
-            width: '100%',
-            maxWidth: 580,
-            background: '#070913',
-            border: '2px solid #ef4444',
-            borderRadius: 24,
-            padding: 28,
-            boxShadow: '0 25px 50px -12px rgba(239,68,68,0.25), 0 0 40px rgba(239,68,68,0.1)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 20,
-            color: '#ef4444'
-          }}>
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(239,68,68,0.2)', paddingBottom: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 24, animation: 'pulse 1.2s infinite' }}>⚡</span>
-                <h3 style={{ fontSize: 17, fontWeight: 900, color: '#ffffff', margin: 0, textTransform: 'uppercase', letterSpacing: '1px' }}>
-                  CENTRAL DE TELEMETRIA & BLOQUEIO
-                </h3>
-              </div>
-              {!isBlockComplete ? (
-                <span style={{ fontSize: 11, background: 'rgba(239,68,68,0.1)', padding: '4px 10px', borderRadius: 20, border: '1px solid #ef4444', fontWeight: 'bold', animation: 'pulse 1.2s infinite' }}>
-                  CONECTANDO...
-                </span>
-              ) : (
-                <span style={{ fontSize: 11, background: 'rgba(16,185,129,0.15)', padding: '4px 10px', borderRadius: 20, border: '1px solid #10b981', color: '#10b981', fontWeight: 'bold' }}>
-                  BLOQUEADO
-                </span>
-              )}
-            </div>
 
-            {/* Vehicle Card */}
-            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 14, padding: 16 }}>
-              <p style={{ margin: '0 0 6px 0', fontSize: 11, color: '#64748b', fontWeight: 'bold', textTransform: 'uppercase' }}>Alvo do comando:</p>
-              <h4 style={{ margin: 0, fontSize: 16, color: '#f1f5f9', fontWeight: 800 }}>{blockingRental.vehicle_info}</h4>
-              <p style={{ margin: '4px 0 0 0', fontSize: 12, color: '#94a3b8' }}>Locatário: {blockingRental.client_name} (Atraso pendente: R$ {Number(blockingRental.amount).toFixed(2)})</p>
-            </div>
-
-            {/* Simulated GPS & Handshake logs */}
-            <div style={{
-              flex: 1,
-              background: '#020308',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: 14,
-              padding: 16,
-              fontSize: 11.5,
-              color: '#34d399',
-              lineHeight: 1.6,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-              minHeight: 200,
-              maxHeight: 280,
-              overflowY: 'auto',
-              boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.9)'
-            }}>
-              {blockLogs.map((log, index) => (
-                <div key={index} style={{ wordBreak: 'break-all' }}>
-                  {log.includes('⚡') || log.includes('SUCESSO') ? (
-                    <span style={{ color: '#10b981', fontWeight: 'bold' }}>{log}</span>
-                  ) : log.includes('⚠️') || log.includes('ALERTA') ? (
-                    <span style={{ color: '#f59e0b', fontWeight: 'bold' }}>{log}</span>
-                  ) : (
-                    <span>{log}</span>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Progress bar */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#94a3b8', marginBottom: 6 }}>
-                <span>SINAL GNSS / SEGURANÇA</span>
-                <span style={{ fontWeight: 'bold' }}>{blockProgress}%</span>
-              </div>
-              <div style={{ width: '100%', height: 8, background: 'rgba(255,255,255,0.05)', borderRadius: 99, overflow: 'hidden' }}>
-                <div style={{ width: `${blockProgress}%`, height: '100%', background: blockProgress === 100 ? '#10b981' : '#ef4444', transition: 'width 0.4s ease-out' }} />
-              </div>
-            </div>
-
-            {/* Footer Buttons */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid rgba(239,68,68,0.2)', paddingTop: 16 }}>
-              <button
-                onClick={() => setBlockingRental(null)}
-                disabled={!isBlockComplete}
-                style={{
-                  padding: '10px 24px',
-                  borderRadius: 10,
-                  background: isBlockComplete ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : 'rgba(255,255,255,0.05)',
-                  border: 'none',
-                  color: isBlockComplete ? '#ffffff' : '#64748b',
-                  fontSize: 13,
-                  fontWeight: 800,
-                  cursor: isBlockComplete ? 'pointer' : 'not-allowed',
-                  boxShadow: isBlockComplete ? '0 4px 14px rgba(239,68,68,0.3)' : 'none'
-                }}
-              >
-                {isBlockComplete ? 'CONCLUIR PROTOCOLO' : 'BLOQUEANDO...'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* WhatsApp Pairing Modal */}
       {showWaPairModal && (
