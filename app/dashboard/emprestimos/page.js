@@ -298,17 +298,17 @@ export default function EmprestimosPage() {
 
       {/* Stats Row */}
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16, marginBottom: 24 }}>
-        <div style={{ ...cardStyle, borderLeft: '4px solid #3b82f6' }}>
-          <span style={{ fontSize: 12, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Capital Emprestado</span>
-          <h3 style={{ fontSize: 28, fontWeight: 900, color: '#ffffff', margin: '4px 0 0 0' }}>R$ {totalLent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
+        <div style={{ ...cardStyle, padding: '12px 16px', borderLeft: '4px solid #3b82f6' }}>
+          <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Capital Emprestado</span>
+          <h3 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', margin: '2px 0 0 0' }}>R$ {totalLent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
         </div>
-        <div style={{ ...cardStyle, borderLeft: '4px solid #ef4444' }}>
-          <span style={{ fontSize: 12, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Inadimplência Riscada</span>
-          <h3 style={{ fontSize: 28, fontWeight: 900, color: '#ffffff', margin: '4px 0 0 0' }}>R$ {totalOverdue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
+        <div style={{ ...cardStyle, padding: '12px 16px', borderLeft: '4px solid #ef4444' }}>
+          <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Inadimplência Riscada</span>
+          <h3 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', margin: '2px 0 0 0' }}>R$ {totalOverdue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
         </div>
-        <div style={{ ...cardStyle, borderLeft: '4px solid #10b981' }}>
-          <span style={{ fontSize: 12, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Juros Diários Acumulados</span>
-          <h3 style={{ fontSize: 28, fontWeight: 900, color: '#10b981', margin: '4px 0 0 0' }}>R$ {totalAccruedInterest.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
+        <div style={{ ...cardStyle, padding: '12px 16px', borderLeft: '4px solid #10b981' }}>
+          <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Juros Diários Acumulados</span>
+          <h3 style={{ fontSize: 24, fontWeight: 900, color: '#10b981', margin: '2px 0 0 0' }}>R$ {totalAccruedInterest.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
         </div>
       </div>
 
