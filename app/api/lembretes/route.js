@@ -137,8 +137,8 @@ export async function POST(request) {
               },
               body: JSON.stringify({
                 number: waNumber,
-                options: { delay: 1200, linkPreview: true },
-                textMessage: { text: finalMessage }
+                text: finalMessage,
+                delay: 1200
               })
             });
             clearTimeout(timeoutId);
@@ -163,8 +163,8 @@ export async function POST(request) {
                   },
                   body: JSON.stringify({
                     number: waNumber,
-                    options: { delay: 1200, linkPreview: true },
-                    textMessage: { text: finalMessage }
+                    text: finalMessage,
+                    delay: 1200
                   })
                 });
                 clearTimeout(retryTimeoutId);
