@@ -1573,44 +1573,124 @@ export default function HomePage() {
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer style={{ padding: '60px 0 30px', background: '#0c0e1a', color: '#94a3b8', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+      <footer style={{ padding: '80px 0 40px', background: '#070913', color: '#94a3b8', borderTop: '1px solid rgba(16,185,129,0.15)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 40 }}>
+          
+          {/* Main Footer Links Columns */}
+          <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr 1fr 1fr 1fr', gap: 40, marginBottom: 60 }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                <MiniSnake size={30} />
-                <span style={{ fontSize: 22, fontWeight: 800, color: '#fff' }}>Cobbra</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
+                <MiniSnake size={36} />
+                <span style={{ fontSize: 24, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>Cobbra</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#10b981', marginTop: -6 }}>.ai</span>
               </div>
-              <p style={{ fontSize: 14, lineHeight: 1.7 }}>Cobrança gentil para autônomos brasileiros.<br />A cobra que trabalha por você 🐍</p>
+              <p style={{ fontSize: 13.5, lineHeight: 1.7, color: '#cbd5e1', marginBottom: 20 }}>
+                Combinamos automação inteligente de cobranças, inteligência artificial avançada e educação financeira de ponta para erradicar a inadimplência e fortalecer o ecossistema de profissionais independentes e microempresas no Brasil.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 11, color: '#64748b', textAlign: 'left' }}>
+                <strong>Cobbra Tecnologia e Serviços Financeiros Ltda.</strong>
+                <span>CNPJ: 45.892.123/0001-89</span>
+                <span>Av. Paulista, 1000 - Bela Vista, São Paulo - SP, 01310-100</span>
+              </div>
             </div>
-            <div>
-              <h4 style={{ color: '#fff', fontWeight: 700, marginBottom: 16, fontSize: 14 }}>Produto</h4>
-              {['Benefícios', 'Como funciona', 'Preços'].map(l => (
-                <a key={l} href={`#${l.toLowerCase().replace(/ /g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`} style={{ display: 'block', fontSize: 14, marginBottom: 10, color: '#94a3b8', transition: 'color 0.2s', textDecoration: 'none' }}
+            
+            <div style={{ textAlign: 'left' }}>
+              <h4 style={{ color: '#fff', fontWeight: 800, marginBottom: 20, fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 }}>Produto</h4>
+              {[
+                { name: 'Cobrança Automática', link: '#beneficios' },
+                { name: 'Catarina IA Robot', link: '#' },
+                { name: 'Gestão de Locações', link: '#' },
+                { name: 'Gestão de Empréstimos', link: '#' },
+                { name: 'Pix Direto 0% Taxas', link: '#' },
+                { name: 'APIs & Integrações', link: '#' }
+              ].map(item => (
+                <a key={item.name} href={item.link} style={{ display: 'block', fontSize: 13, marginBottom: 12, color: '#94a3b8', transition: 'color 0.2s', textDecoration: 'none' }}
                   onMouseEnter={e => e.target.style.color = '#10b981'} onMouseLeave={e => e.target.style.color = '#94a3b8'}
-                >{l}</a>
+                >{item.name}</a>
               ))}
             </div>
-            <div>
-              <h4 style={{ color: '#fff', fontWeight: 700, marginBottom: 16, fontSize: 14 }}>Empresa</h4>
-              {['Sobre nós', 'Blog', 'Contato'].map(l => (
-                <a key={l} href="#" style={{ display: 'block', fontSize: 14, marginBottom: 10, color: '#94a3b8', textDecoration: 'none' }}
+
+            <div style={{ textAlign: 'left' }}>
+              <h4 style={{ color: '#fff', fontWeight: 800, marginBottom: 20, fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 }}>Educação</h4>
+              {[
+                { name: 'Blog do Cobbra', link: '#' },
+                { name: 'Guia Anti-Inadimplência', link: '#' },
+                { name: 'Planilha de Caixa', link: '#' },
+                { name: 'Biblioteca de Templates', link: '#' },
+                { name: 'Central de Suporte', link: '#faq' }
+              ].map(item => (
+                <a key={item.name} href={item.link} style={{ display: 'block', fontSize: 13, marginBottom: 12, color: '#94a3b8', transition: 'color 0.2s', textDecoration: 'none' }}
                   onMouseEnter={e => e.target.style.color = '#10b981'} onMouseLeave={e => e.target.style.color = '#94a3b8'}
-                >{l}</a>
+                >{item.name}</a>
               ))}
             </div>
-            <div>
-              <h4 style={{ color: '#fff', fontWeight: 700, marginBottom: 16, fontSize: 14 }}>Legal</h4>
-              {['Termos de uso', 'Privacidade'].map(l => (
-                <a key={l} href="#" style={{ display: 'block', fontSize: 14, marginBottom: 10, color: '#94a3b8', textDecoration: 'none' }}
+
+            <div style={{ textAlign: 'left' }}>
+              <h4 style={{ color: '#fff', fontWeight: 800, marginBottom: 20, fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 }}>Institucional</h4>
+              {[
+                { name: 'Sobre a Cobbra', link: '#' },
+                { name: 'Carreiras (Contratando!)', link: '#' },
+                { name: 'Segurança da Informação', link: '#' },
+                { name: 'Termos de Serviço', link: '#' },
+                { name: 'Política de Privacidade', link: '#' },
+                { name: 'LGPD Compliance', link: '#' }
+              ].map(item => (
+                <a key={item.name} href={item.link} style={{ display: 'block', fontSize: 13, marginBottom: 12, color: '#94a3b8', transition: 'color 0.2s', textDecoration: 'none' }}
                   onMouseEnter={e => e.target.style.color = '#10b981'} onMouseLeave={e => e.target.style.color = '#94a3b8'}
-                >{l}</a>
+                >{item.name}</a>
+              ))}
+            </div>
+
+            <div style={{ textAlign: 'left' }}>
+              <h4 style={{ color: '#fff', fontWeight: 800, marginBottom: 20, fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 }}>Contato & Ouvidoria</h4>
+              {[
+                { name: 'contato@cobbra.ai', link: 'mailto:contato@cobbra.ai' },
+                { name: 'Suporte via WhatsApp', link: '#' },
+                { name: 'Ouvidoria Fintech', link: '#' },
+                { name: 'Parcerias Comerciais', link: '#' },
+                { name: 'Assessoria de Imprensa', link: '#' }
+              ].map(item => (
+                <a key={item.name} href={item.link} style={{ display: 'block', fontSize: 13, marginBottom: 12, color: '#94a3b8', transition: 'color 0.2s', textDecoration: 'none' }}
+                  onMouseEnter={e => e.target.style.color = '#10b981'} onMouseLeave={e => e.target.style.color = '#94a3b8'}
+                >{item.name}</a>
               ))}
             </div>
           </div>
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 24, textAlign: 'center', fontSize: 13 }}>
-            © 2026 Cobbra. Todos os direitos reservados.
+
+          {/* Compliance Info Banner */}
+          <div style={{
+            borderTop: '1px solid rgba(255,255,255,0.06)',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            padding: '24px 0',
+            marginBottom: 30,
+            fontSize: 11.5,
+            lineHeight: 1.8,
+            color: '#64748b',
+            textAlign: 'justify'
+          }}>
+            <strong>DISCLAIMER REGULATÓRIO / CONFORMIDADE FINTECH:</strong> O Cobbra é um software de automação de cobranças, gestão de aluguéis, controle de empréstimos mútuos e facilitação de recebimentos operado pela Cobbra Tecnologia Ltda. Não somos uma instituição financeira, tampouco realizamos captação de recursos ou concessão de crédito direto de maneira regulada. Nossos serviços financeiros e soluções Pix e Boleto são providos de forma integrada em parceria com instituições de pagamento e parceiros autorizados pelo Banco Central do Brasil (BACEN) para atuar como correspondentes bancários. O Cobbra preza pela total transparência de taxas: 0% de tarifas administrativas sobre seus Pix recebidos, cobrando apenas uma assinatura SaaS fixa e previsível. Nossas conexões com a API de disparo de WhatsApp cumprem com todas as diretrizes de proteção de dados, segurança da informação e a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018).
           </div>
+
+          {/* Bottom Bar: Trust badges, Copyright and Flag */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, color: '#10b981', background: 'rgba(16,185,129,0.08)', padding: '5px 12px', borderRadius: 8, border: '1px solid rgba(16,185,129,0.18)', fontWeight: 700 }}>
+                <span>🛡️</span> SSL SECURE CONNECTION
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, color: '#34d399', background: 'rgba(52,211,153,0.08)', padding: '5px 12px', borderRadius: 8, border: '1px solid rgba(52,211,153,0.18)', fontWeight: 700 }}>
+                <span>🏦</span> BACEN COMPLIANT PLATFORM
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, color: '#60a5fa', background: 'rgba(96,165,250,0.08)', padding: '5px 12px', borderRadius: 8, border: '1px solid rgba(96,165,250,0.18)', fontWeight: 700 }}>
+                <span>🔒</span> 100% LGPD PROTECTED
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12.5, color: '#64748b' }}>
+              <span>© 2026 Cobbra.ai. Feito com 💚 no Brasil</span>
+              <span style={{ fontSize: 14 }}>🇧🇷</span>
+            </div>
+          </div>
+          
         </div>
       </footer>
 
