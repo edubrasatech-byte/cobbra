@@ -271,7 +271,7 @@ export default function EmprestimosPage() {
       )}
 
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 16 : 0, justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', marginBottom: 24 }}>
         <div>
           <h2 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px' }}>💰 Gestão de Crédito & Empréstimos</h2>
           <p style={{ fontSize: 14, color: '#64748b', marginTop: 2 }}>Controle carteiras alocadas, calcule acúmulo diário de juros e mitigue risco de inadimplência.</p>
@@ -280,7 +280,8 @@ export default function EmprestimosPage() {
         <button 
           onClick={() => setShowModal(true)}
           style={{
-            padding: '10px 18px',
+            width: isMobile ? '100%' : 'auto',
+            padding: '12px 18px',
             borderRadius: 10,
             background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
             border: 'none',
@@ -315,67 +316,138 @@ export default function EmprestimosPage() {
       <div style={cardStyle}>
         <h3 style={{ fontSize: 16, fontWeight: 800, color: '#ffffff', marginBottom: 16 }}>Carteira de Mutuários</h3>
         
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 600 }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>📋 Contrato / Detalhes</th>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>👥 Mutuário</th>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>💰 Valor Nominal</th>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>⚡ Juros Diários</th>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>📈 Juros Acumulados</th>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>🏷️ Nível de Risco</th>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700, textAlign: 'right' }}>Ação</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loans.map((l, idx) => {
-                const interest = calcInterest(l);
-                const risk = getPayerRisk(l);
-                return (
-                  <tr key={l.id || idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                    <td style={{ padding: '16px 10px', fontSize: 13.5, fontWeight: 700, color: '#f1f5f9' }}>{l.loan_info}</td>
-                    <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1' }}>
-                      <p style={{ margin: 0, fontWeight: 600 }}>{l.client_name}</p>
-                      <span style={{ fontSize: 10.5, color: '#64748b' }}>{l.client_phone}</span>
-                    </td>
-                    <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1', fontWeight: 700 }}>
-                      R$ {Number(l.amount).toFixed(2)}
-                    </td>
-                    <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1' }}>
-                      {l.daily_interest_rate || 0.1}% / dia
-                    </td>
-                    <td style={{ padding: '16px 10px', fontSize: 13.5, color: interest > 0 ? '#ef4444' : '#64748b', fontWeight: 700 }}>
-                      {interest > 0 ? `R$ ${interest.toFixed(2)}` : 'R$ 0,00'}
-                    </td>
-                    <td style={{ padding: '16px 10px' }}>
-                      <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 20, color: risk.c, background: risk.bg, fontWeight: 700 }}>
-                        {risk.l}
-                      </span>
-                    </td>
-                    <td style={{ padding: '16px 10px', textAlign: 'right' }}>
-                      <button 
-                        onClick={() => triggerAlert(l)}
-                        style={{
-                          padding: '6px 12px',
-                          background: 'rgba(16,185,129,0.08)',
-                          border: '1px solid rgba(16,185,129,0.2)',
-                          color: '#10b981',
-                          borderRadius: 8,
-                          fontSize: 11,
-                          fontWeight: 700,
-                          cursor: 'pointer'
-                        }}
-                      >
-                        ⚡ Notificar WhatsApp
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        {isMobile ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {loans.map((l, idx) => {
+              const interest = calcInterest(l);
+              const risk = getPayerRisk(l);
+              return (
+                <div 
+                  key={l.id || idx} 
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.02)',
+                    border: '1px solid rgba(255, 255, 255, 0.06)',
+                    borderRadius: 16,
+                    padding: 16,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 12
+                  }}
+                >
+                  {/* Card Header: Loan + Risk */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#f1f5f9' }}>{l.loan_info}</h4>
+                      <p style={{ margin: '2px 0 0 0', fontSize: 11, color: '#64748b' }}>Vencimento: {new Date(l.due_date).toLocaleDateString('pt-BR')}</p>
+                    </div>
+                    <span style={{ fontSize: 10, padding: '4px 8px', borderRadius: 20, color: risk.c, background: risk.bg, fontWeight: 700 }}>
+                      {risk.l}
+                    </span>
+                  </div>
+
+                  {/* Card Details: Borrower, Nominal, Interest */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '10px 0' }}>
+                    <div>
+                      <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>MUTUÁRIO</span>
+                      <p style={{ margin: '2px 0 0 0', fontSize: 12.5, fontWeight: 600, color: '#cbd5e1' }}>{l.client_name}</p>
+                      <span style={{ fontSize: 10, color: '#64748b' }}>{l.client_phone}</span>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>CRÉDITO</span>
+                      <p style={{ margin: '2px 0 0 0', fontSize: 12.5, fontWeight: 700, color: '#f1f5f9' }}>R$ {Number(l.amount).toFixed(2)}</p>
+                      <p style={{ margin: '1px 0 0 0', fontSize: 10, color: interest > 0 ? '#ef4444' : '#64748b', fontWeight: 600 }}>
+                        Juros: {interest > 0 ? `+R$ ${interest.toFixed(2)}` : 'R$ 0,00'}
+                      </p>
+                      <span style={{ fontSize: 9, color: '#a7f3d0' }}>({l.daily_interest_rate || 0.1}% / dia)</span>
+                    </div>
+                  </div>
+
+                  {/* Card Actions */}
+                  <div style={{ display: 'flex' }}>
+                    <button 
+                      onClick={() => triggerAlert(l)}
+                      style={{
+                        flex: 1,
+                        padding: '10px',
+                        background: 'rgba(16,185,129,0.08)',
+                        border: '1px solid rgba(16,185,129,0.2)',
+                        color: '#10b981',
+                        borderRadius: 8,
+                        fontSize: 11.5,
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      ⚡ Notificar WhatsApp
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 600 }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>📋 Contrato / Detalhes</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>👥 Mutuário</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>💰 Valor Nominal</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>⚡ Juros Diários</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>📈 Juros Acumulados</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>🏷️ Nível de Risco</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700, textAlign: 'right' }}>Ação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loans.map((l, idx) => {
+                  const interest = calcInterest(l);
+                  const risk = getPayerRisk(l);
+                  return (
+                    <tr key={l.id || idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                      <td style={{ padding: '16px 10px', fontSize: 13.5, fontWeight: 700, color: '#f1f5f9' }}>{l.loan_info}</td>
+                      <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1' }}>
+                        <p style={{ margin: 0, fontWeight: 600 }}>{l.client_name}</p>
+                        <span style={{ fontSize: 10.5, color: '#64748b' }}>{l.client_phone}</span>
+                      </td>
+                      <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1', fontWeight: 700 }}>
+                        R$ {Number(l.amount).toFixed(2)}
+                      </td>
+                      <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1' }}>
+                        {l.daily_interest_rate || 0.1}% / dia
+                      </td>
+                      <td style={{ padding: '16px 10px', fontSize: 13.5, color: interest > 0 ? '#ef4444' : '#64748b', fontWeight: 700 }}>
+                        {interest > 0 ? `R$ ${interest.toFixed(2)}` : 'R$ 0,00'}
+                      </td>
+                      <td style={{ padding: '16px 10px' }}>
+                        <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 20, color: risk.c, background: risk.bg, fontWeight: 700 }}>
+                          {risk.l}
+                        </span>
+                      </td>
+                      <td style={{ padding: '16px 10px', textAlign: 'right' }}>
+                        <button 
+                          onClick={() => triggerAlert(l)}
+                          style={{
+                            padding: '6px 12px',
+                            background: 'rgba(16,185,129,0.08)',
+                            border: '1px solid rgba(16,185,129,0.2)',
+                            color: '#10b981',
+                            borderRadius: 8,
+                            fontSize: 11,
+                            fontWeight: 700,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          ⚡ Notificar WhatsApp
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Register Loan Modal */}
@@ -426,7 +498,7 @@ export default function EmprestimosPage() {
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 10 }}>
                 <div>
                   <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>WhatsApp Mutuário</label>
                   <input 
@@ -461,7 +533,7 @@ export default function EmprestimosPage() {
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 10 }}>
                 <div>
                   <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Valor Emprestado (R$)</label>
                   <input 

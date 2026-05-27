@@ -942,65 +942,75 @@ export default function CobrancasPage() {
               </div>
 
               {/* Printable sheet container */}
-              <div 
-                id="printable-contract-sheet" 
-                className="bg-white text-[#1e293b] p-8 rounded-xl shadow-inner mb-6 font-serif leading-relaxed text-xs max-h-[50vh] overflow-y-auto"
-              >
-                <h2 className="text-center text-sm font-extrabold mb-6 uppercase border-b-2 border-[#0f172a] pb-2">
-                  INSTRUMENTO PARTICULAR DE PRESTAÇÃO DE SERVIÇOS
-                </h2>
-                
-                <p className="text-justify mb-4">Pelo presente instrumento particular, de um lado:</p>
-                <p className="text-justify mb-4">
-                  <strong>CONTRATADA:</strong> <strong>{user?.business_name || user?.name || 'PRESTADOR DE SERVIÇOS'}</strong>, doravante denominada simplesmente CONTRATADA.
-                </p>
-                <p className="text-justify mb-4">E de outro lado:</p>
-                <p className="text-justify mb-4">
-                  <strong>CONTRATANTE:</strong> <strong>{c.client_name || 'N/A'}</strong>, {client.document ? `inscrito(a) no CPF/CNPJ sob o nº ${client.document},` : ''} {client.address ? `residente e domiciliado(a) em ${client.address},` : ''} doravante denominado simplesmente CONTRATANTE.
-                </p>
-                <p className="text-justify mb-4">Têm, entre si, justo e contratado o seguinte:</p>
+              {c.contract_text ? (
+                <div 
+                  id="printable-contract-sheet" 
+                  className="bg-white text-[#1e293b] p-8 rounded-xl shadow-inner mb-6 font-monospace leading-relaxed text-xs max-h-[50vh] overflow-y-auto"
+                  style={{ whiteSpace: 'pre-wrap', textAlign: 'left', fontFamily: 'monospace' }}
+                >
+                  {c.contract_text}
+                </div>
+              ) : (
+                <div 
+                  id="printable-contract-sheet" 
+                  className="bg-white text-[#1e293b] p-8 rounded-xl shadow-inner mb-6 font-serif leading-relaxed text-xs max-h-[50vh] overflow-y-auto"
+                >
+                  <h2 className="text-center text-sm font-extrabold mb-6 uppercase border-b-2 border-[#0f172a] pb-2">
+                    INSTRUMENTO PARTICULAR DE PRESTAÇÃO DE SERVIÇOS
+                  </h2>
+                  
+                  <p className="text-justify mb-4">Pelo presente instrumento particular, de um lado:</p>
+                  <p className="text-justify mb-4">
+                    <strong>CONTRATADA:</strong> <strong>{user?.business_name || user?.name || 'PRESTADOR DE SERVIÇOS'}</strong>, doravante denominada simplesmente CONTRATADA.
+                  </p>
+                  <p className="text-justify mb-4">E de outro lado:</p>
+                  <p className="text-justify mb-4">
+                    <strong>CONTRATANTE:</strong> <strong>{c.client_name || 'N/A'}</strong>, {client.document ? `inscrito(a) no CPF/CNPJ sob o nº ${client.document},` : ''} {client.address ? `residente e domiciliado(a) em ${client.address},` : ''} doravante denominado simplesmente CONTRATANTE.
+                  </p>
+                  <p className="text-justify mb-4">Têm, entre si, justo e contratado o seguinte:</p>
 
-                <h3 className="text-xs font-bold mt-4 mb-2 uppercase border-b border-slate-300 pb-1">
-                  CLÁUSULA PRIMEIRA – DO OBJETO
-                </h3>
-                <p className="text-justify mb-4">
-                  O objeto del presente contrato consiste na realização dos seguintes serviços / fornecimento de produtos pela CONTRATADA: <strong>{c.description || 'Prestação de serviços diversos conforme combinado'}</strong>.
-                </p>
+                  <h3 className="text-xs font-bold mt-4 mb-2 uppercase border-b border-slate-300 pb-1">
+                    CLÁUSULA PRIMEIRA – DO OBJETO
+                  </h3>
+                  <p className="text-justify mb-4">
+                    O objeto del presente contrato consiste na realização dos seguintes serviços / fornecimento de produtos pela CONTRATADA: <strong>{c.description || 'Prestação de serviços diversos conforme combinado'}</strong>.
+                  </p>
 
-                <h3 className="text-xs font-bold mt-4 mb-2 uppercase border-b border-slate-300 pb-1">
-                  CLÁUSULA SEGUNDA – DO VALOR E DO VENCIMENTO
-                </h3>
-                <p className="text-justify mb-4">
-                  Pela prestação dos serviços referidos na cláusula anterior, a CONTRATANTE pagará à CONTRATADA o valor bruto de <strong>{fmt(c.amount)}</strong>, com vencimento impreterivelmente em <strong>{dueDateFormatted}</strong>, através de <strong>{c.payment_method?.toUpperCase()}</strong>.
-                </p>
+                  <h3 className="text-xs font-bold mt-4 mb-2 uppercase border-b border-slate-300 pb-1">
+                    CLÁUSULA SEGUNDA – DO VALOR E DO VENCIMENTO
+                  </h3>
+                  <p className="text-justify mb-4">
+                    Pela prestação dos serviços referidos na cláusula anterior, a CONTRATANTE pagará à CONTRATADA o valor bruto de <strong>{fmt(c.amount)}</strong>, com vencimento impreterivelmente em <strong>{dueDateFormatted}</strong>, através de <strong>{c.payment_method?.toUpperCase()}</strong>.
+                  </p>
 
-                <h3 className="text-xs font-bold mt-4 mb-2 uppercase border-b border-slate-300 pb-1">
-                  CLÁUSULA TERCEIRA – DOS ENCARGOS POR ATRASO
-                </h3>
-                <p className="text-justify mb-4">
-                  Em caso de inadimplemento da parcela referida na cláusula segunda até a data estabelecida, serão aplicados juros diários moratórios de <strong>{c.daily_interest_rate || 0}% ao dia</strong> pro rata die, a contar do primeiro dia subsequente ao vencimento até o dia de seu integral pagamento.
-                </p>
+                  <h3 className="text-xs font-bold mt-4 mb-2 uppercase border-b border-slate-300 pb-1">
+                    CLÁUSULA TERCEIRA – DOS ENCARGOS POR ATRASO
+                  </h3>
+                  <p className="text-justify mb-4">
+                    Em caso de inadimplemento da parcela referida na cláusula segunda até a data estabelecida, serão aplicados juros diários moratórios de <strong>{c.daily_interest_rate || 0}% ao dia</strong> pro rata die, a contar do primeiro dia subsequente ao vencimento até o dia de seu integral pagamento.
+                  </p>
 
-                <h3 className="text-xs font-bold mt-4 mb-2 uppercase border-b border-slate-300 pb-1">
-                  CLÁUSULA QUARTA – DO FORO
-                </h3>
-                <p className="text-justify mb-4">
-                  Fica eleito o foro da comarca da CONTRATADA para dirimir quaisquer controvérsias que possam originar-se deste contrato, com exclusão de qualquer outro por mais privilegiado que seja.
-                </p>
+                  <h3 className="text-xs font-bold mt-4 mb-2 uppercase border-b border-slate-300 pb-1">
+                    CLÁUSULA QUARTA – DO FORO
+                  </h3>
+                  <p className="text-justify mb-4">
+                    Fica eleito o foro da comarca da CONTRATADA para dirimir quaisquer controvérsias que possam originar-se deste contrato, com exclusão de qualquer outro por mais privilegiado que seja.
+                  </p>
 
-                <p className="text-justify mt-6 mb-12">
-                  E, por estarem assim justas e acordadas, as partes firmam o presente instrumento na data de <strong>{formattedDate}</strong>.
-                </p>
+                  <p className="text-justify mt-6 mb-12">
+                    E, por estarem assim justas e acordadas, as partes firmam o presente instrumento na data de <strong>{formattedDate}</strong>.
+                  </p>
 
-                <div className="grid grid-cols-2 gap-8 mt-12">
-                  <div className="border-t border-slate-800 text-center pt-2 font-bold text-[10px]">
-                    CONTRATANTE<br />{c.client_name}
-                  </div>
-                  <div className="border-t border-slate-800 text-center pt-2 font-bold text-[10px]">
-                    CONTRATADA<br />{user?.business_name || user?.name || 'PRESTADOR'}
+                  <div className="grid grid-cols-2 gap-8 mt-12">
+                    <div className="border-t border-slate-800 text-center pt-2 font-bold text-[10px]">
+                      CONTRATANTE<br />{c.client_name}
+                    </div>
+                    <div className="border-t border-slate-800 text-center pt-2 font-bold text-[10px]">
+                      CONTRATADA<br />{user?.business_name || user?.name || 'PRESTADOR'}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Actions */}
               <div className="flex gap-3 justify-end pt-1">

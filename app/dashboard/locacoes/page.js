@@ -343,7 +343,7 @@ Contrato sujeito a alterações pela Catarina IA.`
       )}
 
       {/* Header Panel */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 16 : 0, justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', marginBottom: 24 }}>
         <div>
           <h2 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px' }}>🚗 Painel de Locações e Frotas</h2>
           <p style={{ fontSize: 14, color: '#64748b', marginTop: 2 }}>Gerencie carros alugados, gere contratos jurídicos e notifique diárias via WhatsApp.</p>
@@ -352,7 +352,8 @@ Contrato sujeito a alterações pela Catarina IA.`
         <button 
           onClick={() => setShowModal(true)}
           style={{
-            padding: '10px 18px',
+            width: isMobile ? '100%' : 'auto',
+            padding: '12px 18px',
             borderRadius: 10,
             background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
             border: 'none',
@@ -387,101 +388,203 @@ Contrato sujeito a alterações pela Catarina IA.`
       <div style={cardStyle}>
         <h3 style={{ fontSize: 16, fontWeight: 800, color: '#ffffff', marginBottom: 16 }}>Controle de Frota Sincronizado</h3>
         
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 600 }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>🚗 Veículo</th>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>👥 Locatário</th>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>💰 Valor Aluguel</th>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>📅 Devolução</th>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>🏷️ Status</th>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700, textAlign: 'center' }}>📄 Contrato</th>
-                <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700, textAlign: 'right' }}>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rentals.map((r, idx) => {
-                const config = statusConfig[r.status] || statusConfig.pending;
-                return (
-                  <tr key={r.id || idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                    <td style={{ padding: '16px 10px', fontSize: 13.5, fontWeight: 700, color: '#f1f5f9' }}>{r.vehicle_info}</td>
-                    <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1' }}>
-                      <p style={{ margin: 0, fontWeight: 600 }}>{r.client_name}</p>
-                      <span style={{ fontSize: 10.5, color: '#64748b' }}>{r.client_phone}</span>
-                    </td>
-                    <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1' }}>
-                      <p style={{ margin: 0, fontWeight: 700 }}>R$ {Number(r.amount).toFixed(2)}</p>
-                      <p style={{ margin: '2px 0 0 0', fontSize: 10.5, color: '#94a3b8', fontWeight: 500 }}>Caução: R$ {Number(r.deposit_amount || 0).toFixed(2)}</p>
-                      <span style={{ fontSize: 9.5, color: '#10b981' }}>{recurrenceConfig[r.recurrence] || 'Recorrente'}</span>
-                    </td>
-                    <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1' }}>
-                      {new Date(r.due_date).toLocaleDateString('pt-BR')}
-                    </td>
-                    <td style={{ padding: '16px 10px' }}>
-                      <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 20, color: config.c, background: config.bg, fontWeight: 700 }}>
-                        {config.l}
-                      </span>
-                    </td>
-                    <td style={{ padding: '16px 10px', textAlign: 'center' }}>
-                      <button 
-                        onClick={() => handleOpenContract(r)}
-                        style={{
-                          padding: '6px 12px',
-                          background: 'rgba(255,255,255,0.04)',
-                          border: '1px solid rgba(255,255,255,0.08)',
-                          color: '#e2e8f0',
-                          borderRadius: 8,
-                          fontSize: 11.5,
-                          fontWeight: 700,
-                          cursor: 'pointer'
-                        }}
-                      >
-                        📄 Ver Contrato
-                      </button>
-                    </td>
-                    <td style={{ padding: '16px 10px', textAlign: 'right' }}>
-                      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+        {isMobile ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {rentals.map((r, idx) => {
+              const config = statusConfig[r.status] || statusConfig.pending;
+              return (
+                <div 
+                  key={r.id || idx} 
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.02)',
+                    border: '1px solid rgba(255, 255, 255, 0.06)',
+                    borderRadius: 16,
+                    padding: 16,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 12
+                  }}
+                >
+                  {/* Card Header: Vehicle + Status */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#f1f5f9' }}>{r.vehicle_info}</h4>
+                      <p style={{ margin: '2px 0 0 0', fontSize: 11, color: '#64748b' }}>Devolução: {new Date(r.due_date).toLocaleDateString('pt-BR')}</p>
+                    </div>
+                    <span style={{ fontSize: 10, padding: '4px 8px', borderRadius: 20, color: config.c, background: config.bg, fontWeight: 700 }}>
+                      {config.l}
+                    </span>
+                  </div>
+
+                  {/* Card Details: Payer + Value */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '10px 0' }}>
+                    <div>
+                      <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>LOCATÁRIO</span>
+                      <p style={{ margin: '2px 0 0 0', fontSize: 12.5, fontWeight: 600, color: '#cbd5e1' }}>{r.client_name}</p>
+                      <span style={{ fontSize: 10, color: '#64748b' }}>{r.client_phone}</span>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>ALUGUEL</span>
+                      <p style={{ margin: '2px 0 0 0', fontSize: 12.5, fontWeight: 700, color: '#f1f5f9' }}>R$ {Number(r.amount).toFixed(2)}</p>
+                      <p style={{ margin: '1px 0 0 0', fontSize: 10, color: '#94a3b8' }}>Caução: R$ {Number(r.deposit_amount || 0).toFixed(2)}</p>
+                    </div>
+                  </div>
+
+                  {/* Card Actions */}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    <button 
+                      onClick={() => handleOpenContract(r)}
+                      style={{
+                        flex: 1,
+                        minWidth: '90px',
+                        padding: '8px 10px',
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        color: '#cbd5e1',
+                        borderRadius: 8,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      📄 Contrato
+                    </button>
+                    <button 
+                      onClick={() => triggerAlert('diaria', r)}
+                      style={{
+                        flex: 1,
+                        minWidth: '90px',
+                        padding: '8px 10px',
+                        background: 'rgba(16,185,129,0.08)',
+                        border: '1px solid rgba(16,185,129,0.2)',
+                        color: '#10b981',
+                        borderRadius: 8,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      📱 Cobrar Pix
+                    </button>
+                    <button 
+                      onClick={() => triggerAlert('return', r)}
+                      style={{
+                        flex: 1,
+                        minWidth: '90px',
+                        padding: '8px 10px',
+                        background: 'rgba(59,130,246,0.08)',
+                        border: '1px solid rgba(59,130,246,0.2)',
+                        color: '#3b82f6',
+                        borderRadius: 8,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      🚗 Retorno
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 600 }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>🚗 Veículo</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>👥 Locatário</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>💰 Valor Aluguel</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>📅 Devolução</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>🏷️ Status</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700, textAlign: 'center' }}>📄 Contrato</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700, textAlign: 'right' }}>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rentals.map((r, idx) => {
+                  const config = statusConfig[r.status] || statusConfig.pending;
+                  return (
+                    <tr key={r.id || idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                      <td style={{ padding: '16px 10px', fontSize: 13.5, fontWeight: 700, color: '#f1f5f9' }}>{r.vehicle_info}</td>
+                      <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1' }}>
+                        <p style={{ margin: 0, fontWeight: 600 }}>{r.client_name}</p>
+                        <span style={{ fontSize: 10.5, color: '#64748b' }}>{r.client_phone}</span>
+                      </td>
+                      <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1' }}>
+                        <p style={{ margin: 0, fontWeight: 700 }}>R$ {Number(r.amount).toFixed(2)}</p>
+                        <p style={{ margin: '2px 0 0 0', fontSize: 10.5, color: '#94a3b8', fontWeight: 500 }}>Caução: R$ {Number(r.deposit_amount || 0).toFixed(2)}</p>
+                        <span style={{ fontSize: 9.5, color: '#10b981' }}>{recurrenceConfig[r.recurrence] || 'Recorrente'}</span>
+                      </td>
+                      <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1' }}>
+                        {new Date(r.due_date).toLocaleDateString('pt-BR')}
+                      </td>
+                      <td style={{ padding: '16px 10px' }}>
+                        <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 20, color: config.c, background: config.bg, fontWeight: 700 }}>
+                          {config.l}
+                        </span>
+                      </td>
+                      <td style={{ padding: '16px 10px', textAlign: 'center' }}>
                         <button 
-                          onClick={() => triggerAlert('diaria', r)}
-                          title="Cobrar Valor no WhatsApp"
+                          onClick={() => handleOpenContract(r)}
                           style={{
                             padding: '6px 12px',
-                            background: 'rgba(16,185,129,0.08)',
-                            border: '1px solid rgba(16,185,129,0.2)',
-                            color: '#10b981',
+                            background: 'rgba(255,255,255,0.04)',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            color: '#e2e8f0',
                             borderRadius: 8,
-                            fontSize: 11,
+                            fontSize: 11.5,
                             fontWeight: 700,
                             cursor: 'pointer'
                           }}
                         >
-                          📱 Cobrar Pix
+                          📄 Ver Contrato
                         </button>
-                        <button 
-                          onClick={() => triggerAlert('return', r)}
-                          title="Notificar Prazo de Devolução"
-                          style={{
-                            padding: '6px 12px',
-                            background: 'rgba(59,130,246,0.08)',
-                            border: '1px solid rgba(59,130,246,0.2)',
-                            color: '#3b82f6',
-                            borderRadius: 8,
-                            fontSize: 11,
-                            fontWeight: 700,
-                            cursor: 'pointer'
-                          }}
-                        >
-                          🚗 Retorno
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                      </td>
+                      <td style={{ padding: '16px 10px', textAlign: 'right' }}>
+                        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                          <button 
+                            onClick={() => triggerAlert('diaria', r)}
+                            title="Cobrar Valor no WhatsApp"
+                            style={{
+                              padding: '6px 12px',
+                              background: 'rgba(16,185,129,0.08)',
+                              border: '1px solid rgba(16,185,129,0.2)',
+                              color: '#10b981',
+                              borderRadius: 8,
+                              fontSize: 11,
+                              fontWeight: 700,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            📱 Cobrar Pix
+                          </button>
+                          <button 
+                            onClick={() => triggerAlert('return', r)}
+                            title="Notificar Prazo de Devolução"
+                            style={{
+                              padding: '6px 12px',
+                              background: 'rgba(59,130,246,0.08)',
+                              border: '1px solid rgba(59,130,246,0.2)',
+                              color: '#3b82f6',
+                              borderRadius: 8,
+                              fontSize: 11,
+                              fontWeight: 700,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            🚗 Retorno
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Register New Lease Modal */}
@@ -535,7 +638,7 @@ Contrato sujeito a alterações pela Catarina IA.`
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 10 }}>
                 <div>
                   <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>CPF ou CNPJ do Locatário</label>
                   <input 
@@ -572,7 +675,7 @@ Contrato sujeito a alterações pela Catarina IA.`
               </div>
 
               {/* Vehicle Detail */}
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr 1fr', gap: 10 }}>
                 <div>
                   <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Modelo do Veículo</label>
                   <input 
@@ -608,7 +711,7 @@ Contrato sujeito a alterações pela Catarina IA.`
               </div>
 
               {/* Recurrence Selection, Pricing and Deposit */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 10 }}>
                 <div>
                   <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Periodicidade</label>
                   <select 
