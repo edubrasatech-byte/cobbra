@@ -1,6 +1,43 @@
 import { query, run, generateId } from '@/lib/db';
 import { sendEmail } from '@/lib/mailer';
 
+// Helper to dynamically get the instance-specific token using the global token
+async function getInstanceToken(evoUrl, globalToken, instanceName) {
+  try {
+    const baseUrl = evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl;
+    let res;
+    try {
+      res = await fetch(`${baseUrl}/instance/fetchInstances`, {
+        headers: { 'apikey': globalToken }
+      });
+    } catch (e) {
+      if (baseUrl.includes(':8080')) {
+        const fallbackUrl = baseUrl.replace(':8080', '');
+        console.log(`[TOKEN RESOLVER SELF-HEALING]: Port 8080 failed. Retrying on port 80: ${fallbackUrl}`);
+        res = await fetch(`${fallbackUrl}/instance/fetchInstances`, {
+          headers: { 'apikey': globalToken }
+        });
+      } else {
+        throw e;
+      }
+    }
+
+    if (res && res.ok) {
+      const instances = await res.json();
+      if (Array.isArray(instances)) {
+        const inst = instances.find(i => i.name === instanceName || i.instanceName === instanceName);
+        if (inst && inst.token) {
+          console.log(`[TOKEN RESOLVER] Dynamically resolved token for instance ${instanceName}`);
+          return inst.token;
+        }
+      }
+    }
+  } catch (e) {
+    console.error('[TOKEN RESOLVER ERROR]', e);
+  }
+  return null;
+}
+
 // Rota protegida: POST /api/cron/send-reminders?secret=SEU_SECRET
 export async function POST(request) {
   try {
@@ -138,11 +175,12 @@ export async function POST(request) {
               let response;
               
               try {
+                const instanceToken = await getInstanceToken(activeEvoUrl, evolutionToken, 'cobroo-session') || evolutionToken;
                 response = await fetch(`${activeEvoUrl}/message/sendText/cobroo-session`, {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
-                    'apikey': evolutionToken
+                    'apikey': instanceToken
                   },
                   body: JSON.stringify({
                     number: fullPhone,
@@ -156,11 +194,12 @@ export async function POST(request) {
                   activeEvoUrl = activeEvoUrl.replace(':8080', '');
                   console.log(`[SELF-HEALING CRON]: Connection failed on port 8080. Retrying send on port 80: ${activeEvoUrl}`);
                   
+                  const retryInstanceToken = await getInstanceToken(activeEvoUrl, evolutionToken, 'cobroo-session') || evolutionToken;
                   response = await fetch(`${activeEvoUrl}/message/sendText/cobroo-session`, {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
-                      'apikey': evolutionToken
+                      'apikey': retryInstanceToken
                     },
                     body: JSON.stringify({
                       number: fullPhone,

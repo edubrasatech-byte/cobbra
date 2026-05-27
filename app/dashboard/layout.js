@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useId } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import Chatbot from '../components/Chatbot';
+import Chatbot, { formatMessageText } from '../components/Chatbot';
 
 const NAV_ITEMS = [
   { href: '/dashboard', icon: '📊', label: 'Visão Geral' },
@@ -1199,7 +1199,7 @@ export default function DashboardLayout({ children }) {
               {copilotResponse && !copilotLoading && !copilotSuccessMsg && (
                 <div className="space-y-4 flex-shrink-0">
                   <p className="text-slate-300 text-xs leading-relaxed bg-slate-900/60 p-3 rounded-lg border border-slate-800/40">
-                    {copilotResponse.responseMessage}
+                    {formatMessageText(copilotResponse.responseMessage)}
                   </p>
 
                   {(copilotResponse.intent === 'create_charge' || copilotResponse.intent === 'create_daily_billing') ? (

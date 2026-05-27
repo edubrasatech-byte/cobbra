@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 
-function formatMessageText(text, isUser = false) {
+export function formatMessageText(text, isUser = false) {
   if (!text) return '';
   const parts = text.split('**');
   return parts.map((part, index) => {

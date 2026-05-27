@@ -1,6 +1,43 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { run, queryOne, generateId } from '@/lib/db';
 
+// Helper to dynamically get the instance-specific token using the global token
+async function getInstanceToken(evoUrl, globalToken, instanceName) {
+  try {
+    const baseUrl = evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl;
+    let res;
+    try {
+      res = await fetch(`${baseUrl}/instance/fetchInstances`, {
+        headers: { 'apikey': globalToken }
+      });
+    } catch (e) {
+      if (baseUrl.includes(':8080')) {
+        const fallbackUrl = baseUrl.replace(':8080', '');
+        console.log(`[TOKEN RESOLVER SELF-HEALING]: Port 8080 failed. Retrying on port 80: ${fallbackUrl}`);
+        res = await fetch(`${fallbackUrl}/instance/fetchInstances`, {
+          headers: { 'apikey': globalToken }
+        });
+      } else {
+        throw e;
+      }
+    }
+
+    if (res && res.ok) {
+      const instances = await res.json();
+      if (Array.isArray(instances)) {
+        const inst = instances.find(i => i.name === instanceName || i.instanceName === instanceName);
+        if (inst && inst.token) {
+          console.log(`[TOKEN RESOLVER] Dynamically resolved token for instance ${instanceName}`);
+          return inst.token;
+        }
+      }
+    }
+  } catch (e) {
+    console.error('[TOKEN RESOLVER ERROR]', e);
+  }
+  return null;
+}
+
 // GET /api/whatsapp/connect - Get status or generate QR Code
 export async function GET(request) {
   try {
@@ -32,17 +69,18 @@ export async function GET(request) {
       try {
 
         // Check if the instance already has an open/active connection
+        const instanceToken = await getInstanceToken(baseUrl, evoToken, instance) || evoToken;
         let stateRes;
         try {
           stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
-            headers: { 'apikey': evoToken }
+            headers: { 'apikey': instanceToken }
           });
         } catch (fetchErr) {
           if (baseUrl.includes(':8080')) {
             baseUrl = baseUrl.replace(':8080', '');
             console.log(`[SELF-HEALING GET]: Port 8080 failed. Retrying on port 80: ${baseUrl}`);
             stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
-              headers: { 'apikey': evoToken }
+              headers: { 'apikey': instanceToken }
             });
           } else {
             throw fetchErr;
@@ -72,7 +110,7 @@ export async function GET(request) {
 
         // Request a connection QR Code from Evolution API
         const connectRes = await fetch(`${baseUrl}/instance/connect/${instance}`, {
-          headers: { 'apikey': evoToken }
+          headers: { 'apikey': instanceToken }
         });
 
         if (connectRes.ok) {
@@ -134,17 +172,18 @@ export async function POST(request) {
         try {
 
           // Check connection state
+          const instanceToken = await getInstanceToken(baseUrl, evoToken, instance) || evoToken;
           let stateRes;
           try {
             stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
-              headers: { 'apikey': evoToken }
+              headers: { 'apikey': instanceToken }
             });
           } catch (fetchErr) {
             if (baseUrl.includes(':8080')) {
               baseUrl = baseUrl.replace(':8080', '');
               console.log(`[SELF-HEALING POST]: Port 8080 failed. Retrying on port 80: ${baseUrl}`);
               stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
-                headers: { 'apikey': evoToken }
+                headers: { 'apikey': instanceToken }
               });
             } else {
               throw fetchErr;
@@ -172,7 +211,7 @@ export async function POST(request) {
           });
 
           const connectRes = await fetch(`${baseUrl}/instance/connect/${instance}`, {
-            headers: { 'apikey': evoToken }
+            headers: { 'apikey': instanceToken }
           });
 
           if (connectRes.ok) {
@@ -240,10 +279,11 @@ export async function DELETE(request) {
     if (evoUrl && evoToken) {
       try {
         const baseUrl = evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl;
+        const instanceToken = await getInstanceToken(baseUrl, evoToken, instance) || evoToken;
         // Terminate session on the central VPS Evolution API server
         await fetch(`${baseUrl}/instance/delete/${instance}`, {
           method: 'DELETE',
-          headers: { 'apikey': evoToken }
+          headers: { 'apikey': instanceToken }
         });
       } catch (e) {
         console.error("[EVOLUTION API DELETE ERROR]:", e);
