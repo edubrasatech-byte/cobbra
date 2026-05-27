@@ -163,6 +163,52 @@ export async function POST(request) {
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 seconds timeout
           
+          // Helper to send Pix extras (QR Code image & raw copyable code separately)
+          const sendPixExtras = async (baseUrl, instName, token, phoneNum, code) => {
+            if (!code) return;
+            // 1. Send the QR Code Image
+            try {
+              const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(code)}&.png`;
+              await fetch(`${baseUrl}/message/sendMedia/${instName}`, {
+                method: 'POST',
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'apikey': token
+                },
+                body: JSON.stringify({
+                  number: phoneNum,
+                  mediatype: "image",
+                  mimetype: "image/png",
+                  fileName: "qrcode.png",
+                  media: qrCodeUrl,
+                  caption: "📸 Aponte a câmera do celular para pagar via Pix!"
+                })
+              });
+              console.log(`[EVOLUTION API] Successfully sent Pix QR Code image to ${phoneNum}`);
+            } catch (qrErr) {
+              console.error("[EVOLUTION API] Failed to send Pix QR Code image:", qrErr);
+            }
+
+            // 2. Send the RAW Pix Copia e Cola as a separate message for easy tap-and-hold copy-paste
+            try {
+              await fetch(`${baseUrl}/message/sendText/${instName}`, {
+                method: 'POST',
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'apikey': token
+                },
+                body: JSON.stringify({
+                  number: phoneNum,
+                  text: code,
+                  delay: 800
+                })
+              });
+              console.log(`[EVOLUTION API] Successfully sent raw Pix Copia e Cola message to ${phoneNum}`);
+            } catch (pixErr) {
+              console.error("[EVOLUTION API] Failed to send raw Pix Copia e Cola:", pixErr);
+            }
+          };
+
           try {
             const instanceToken = await getInstanceToken(activeEvoUrl, evoToken, instance) || evoToken;
             response = await fetch(`${activeEvoUrl}/message/sendText/${instance}`, {
@@ -179,6 +225,10 @@ export async function POST(request) {
               })
             });
             clearTimeout(timeoutId);
+            
+            if (response && response.ok) {
+              await sendPixExtras(activeEvoUrl, instance, instanceToken, waNumber, pixCode);
+            }
           } catch (e) {
             clearTimeout(timeoutId);
             
@@ -206,6 +256,10 @@ export async function POST(request) {
                   })
                 });
                 clearTimeout(retryTimeoutId);
+                
+                if (response && response.ok) {
+                  await sendPixExtras(activeEvoUrl, instance, retryInstanceToken, waNumber, pixCode);
+                }
               } catch (retryErr) {
                 clearTimeout(retryTimeoutId);
                 console.error("[EVOLUTION API SELF-HEALING] Retry also failed:", retryErr);
