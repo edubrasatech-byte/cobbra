@@ -835,7 +835,7 @@ export default function DashboardLayout({ children }) {
 
               {/* Stripe-style Notification Center */}
               {showNotifications && (
-                <div className="fixed md:absolute right-4 md:right-0 top-16 md:top-12 w-[calc(100vw-32px)] md:w-96 bg-[#0E1220]/80 backdrop-blur-lg border border-slate-800/80 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[450px]">
+                <div className="fixed md:absolute right-4 md:right-0 top-16 md:top-12 w-[calc(100vw-32px)] md:w-96 bg-[#0C0E1A] border border-slate-800/80 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[450px]">
                   
                   {/* Header info */}
                   <div className="bg-slate-950/40 border-b border-slate-800/40 flex justify-between items-center" style={{ paddingLeft: '20px', paddingRight: '20px', paddingTop: '14px', paddingBottom: '14px' }}>
