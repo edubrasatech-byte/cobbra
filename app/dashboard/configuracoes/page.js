@@ -616,7 +616,7 @@ export default function ConfiguracoesPage() {
                     <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
                     <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 10 }}>Integração Exclusiva</h3>
                     <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 24, maxWidth: 360, margin: '0 auto 24px', lineHeight: 1.6 }}>
-                      A conexão com seu próprio número comercial do WhatsApp (Z-API) e servidor de e-mail SMTP próprio está disponível exclusivamente para assinantes do plano **Cobra Pro**.
+                      A conexão com seu próprio número comercial do WhatsApp (Z-API) e servidor de e-mail SMTP próprio está disponível exclusivamente para assinantes do plano <strong>Cobra Pro</strong>.
                     </p>
                     <button type="button" onClick={() => { setSelectedInt(null); setActiveTab('plan'); }} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter' }}>
                       Ver Planos de Upgrade

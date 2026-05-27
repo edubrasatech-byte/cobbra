@@ -35,6 +35,30 @@ export async function PUT(request, { params }) {
     const body = await request.json();
     const { amount, description, due_date, status, recurrence, reminder_channel, payment_method, daily_interest_rate, rebateAmount } = body;
 
+    // Handle deposit refund
+    if (body.refundDeposit === true && existing.deposit_amount > 0) {
+      const depAmt = existing.deposit_amount;
+      
+      // 1. Create refund transaction
+      run('INSERT INTO transactions (id, user_id, charge_id, client_id, amount, type, payment_method, reference) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [generateId(), user.id, id, existing.client_id, depAmt, 'refund', existing.payment_method || 'pix', 'RESTITUICAO-CAUCAO']);
+      
+      // 2. Log activity
+      const clientData = queryOne('SELECT name FROM clients WHERE id = ?', [existing.client_id]);
+      run('INSERT INTO activity_log (id, user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?, ?)',
+        [generateId(), user.id, 'refund_issued', 'charge', id, `Caução de R$ ${depAmt.toFixed(2)} restituído com sucesso para ${clientData?.name}`]);
+
+      // 3. Create notification
+      run('INSERT INTO notifications (id, user_id, type, title, message, entity_type, entity_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [generateId(), user.id, 'success', '💸 Caução restituído', `Caução de R$ ${depAmt.toFixed(2)} devolvido para ${clientData?.name}`, 'charge', id]);
+
+      // 4. Set deposit_amount to 0 to indicate it has been returned
+      run(`UPDATE charges SET deposit_amount = 0, updated_at = datetime('now') WHERE id = ? AND user_id = ?`, [id, user.id]);
+
+      const updated = queryOne('SELECT c.*, cl.name as client_name FROM charges c LEFT JOIN clients cl ON c.client_id = cl.id WHERE c.id = ?', [id]);
+      return Response.json({ charge: updated });
+    }
+
     // Handle partial payment abatement
     if (rebateAmount && rebateAmount > 0) {
       const rebateVal = parseFloat(rebateAmount);

@@ -9,6 +9,14 @@ export default function EmprestimosPage() {
   const [showModal, setShowModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
+  // WhatsApp Connection & Profile State
+  const [user, setUser] = useState(null);
+  const [whatsappStatus, setWhatsappStatus] = useState('disconnected');
+  const [whatsappPhone, setWhatsappPhone] = useState('');
+  const [whatsappQrCode, setWhatsappQrCode] = useState('');
+  const [waError, setWaError] = useState('');
+  const [showWaPairModal, setShowWaPairModal] = useState(false);
+
   // Form State
   const [form, setForm] = useState({
     clientName: '',
@@ -91,14 +99,123 @@ export default function EmprestimosPage() {
     } catch (e) {}
   };
 
+  // WhatsApp connection check
+  const fetchWaStatus = async () => {
+    try {
+      const r = await fetch('/api/whatsapp/connect');
+      const data = await r.json();
+      if (data.status) {
+        setWhatsappStatus(data.status);
+        setWhatsappPhone(data.phone || '');
+        if (data.qrCode) setWhatsappQrCode(data.qrCode);
+        if (data.error) setWaError(data.error);
+      }
+    } catch (e) {}
+  };
+
+  const fetchUser = async () => {
+    try {
+      const r = await fetch('/api/auth/me');
+      const data = await r.json();
+      if (data.user) setUser(data.user);
+    } catch (e) {}
+  };
+
   useEffect(() => {
     fetchEmprestimos();
     fetchClients();
+    fetchUser();
+    fetchWaStatus();
   }, []);
+
+  // WhatsApp scanning status polling
+  useEffect(() => {
+    let interval;
+    if (whatsappStatus === 'scanning' && showWaPairModal) {
+      interval = setInterval(() => {
+        fetch('/api/whatsapp/connect')
+          .then(r => r.json())
+          .then(data => {
+            if (data.status === 'connected') {
+              setWhatsappStatus('connected');
+              setWhatsappPhone(data.phone || '');
+              clearInterval(interval);
+              showNotification('WhatsApp conectado com sucesso! 📱');
+              setShowWaPairModal(false);
+            } else if (data.status === 'scanning') {
+              if (data.qrCode) setWhatsappQrCode(data.qrCode);
+              if (data.error) setWaError(data.error);
+            } else if (data.status === 'disconnected') {
+              setWhatsappStatus('disconnected');
+              setWhatsappQrCode('');
+              setWaError('');
+              clearInterval(interval);
+            }
+          })
+          .catch(() => {});
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [whatsappStatus, showWaPairModal]);
 
   const showNotification = (text) => {
     setMsg(text);
     setTimeout(() => setMsg(''), 4000);
+  };
+
+  // Simplified / Z-API start pair
+  const handleStartWaConnection = async () => {
+    setWhatsappStatus('connecting');
+    setWaError('');
+    try {
+      const res = await fetch('/api/whatsapp/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'start' })
+      });
+      const data = await res.json();
+      if (data.qrCode) {
+        setWhatsappQrCode(data.qrCode);
+        setWhatsappStatus('scanning');
+      } else if (data.status === 'connected') {
+        setWhatsappStatus('connected');
+        setWhatsappPhone(data.phone || '');
+        showNotification('WhatsApp já está conectado! 📱');
+        setShowWaPairModal(false);
+      } else {
+        setWhatsappStatus('scanning');
+      }
+      if (data.error) setWaError(data.error);
+    } catch (e) {
+      setWhatsappStatus('disconnected');
+      alert('Erro de conexão com o disparador central.');
+    }
+  };
+
+  // Simulated pair trigger
+  const handleSimulateWaScan = async (phoneInput) => {
+    if (!phoneInput) {
+      alert('Por favor, informe o seu número de WhatsApp.');
+      return;
+    }
+    try {
+      showNotification('🔌 Simulando leitura de QR Code...');
+      const res = await fetch('/api/whatsapp/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneInput })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setWhatsappStatus('connected');
+        setWhatsappPhone(phoneInput);
+        showNotification('WhatsApp conectado com sucesso! 📱');
+        setShowWaPairModal(false);
+        fetchWaStatus();
+      }
+    } catch (e) {
+      alert('Erro ao realizar pareamento simulado.');
+    }
   };
 
   const handleRegisterLoan = async (e) => {
@@ -219,7 +336,7 @@ export default function EmprestimosPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          chargeId: l.id,
+          charge_id: l.id, // Fixed snake_case payload
           channel: 'whatsapp',
           message: customMessage
         })
@@ -245,7 +362,7 @@ export default function EmprestimosPage() {
     background: '#0C0E1A',
     borderRadius: 20,
     border: '1px solid rgba(255,255,255,0.04)',
-    padding: '20px'
+    padding: isMobile ? '14px' : '20px'
   };
 
   return (
@@ -295,6 +412,57 @@ export default function EmprestimosPage() {
           ➕ Lançar Empréstimo
         </button>
       </div>
+
+      {/* WhatsApp Connection Induction Card */}
+      {whatsappStatus !== 'connected' && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.03) 100%)',
+          border: '1px solid rgba(16, 185, 129, 0.25)',
+          borderRadius: 20,
+          padding: '20px',
+          marginBottom: 24,
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+          boxShadow: '0 8px 24px rgba(16, 185, 129, 0.05)',
+          animation: 'fadeInUp 0.5s ease'
+        }}>
+          <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+            <span style={{ fontSize: 32, filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.4))' }}>📱</span>
+            <div>
+              <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#10b981', letterSpacing: '-0.2px' }}>
+                Conecte seu próprio WhatsApp comercial!
+              </h4>
+              <p style={{ margin: '4px 0 0 0', fontSize: 13, color: '#a7f3d0', lineHeight: 1.45 }}>
+                Evite que seus mutuários recebam cobranças de um número genérico do sistema. Conectando seu aparelho, os lembretes saem com <strong>sua foto e seu nome</strong> e as respostas vão direto para você!
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              setShowWaPairModal(true);
+              handleStartWaConnection();
+            }}
+            style={{
+              padding: '10px 20px',
+              borderRadius: 10,
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              border: 'none',
+              color: '#070913',
+              fontSize: 13,
+              fontWeight: 800,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 4px 12px rgba(16,185,129,0.25)',
+              transition: 'transform 0.2s'
+            }}
+          >
+            🔗 Conectar WhatsApp Próprio
+          </button>
+        </div>
+      )}
 
       {/* Stats Row */}
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16, marginBottom: 24 }}>
@@ -587,6 +755,120 @@ export default function EmprestimosPage() {
               </div>
 
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* WhatsApp Pairing Modal */}
+      {showWaPairModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(12, 14, 26, 0.98)',
+          zIndex: 1010,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 20
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: 480,
+            background: '#0C0E1A',
+            border: '1px solid rgba(16, 185, 129, 0.25)',
+            borderRadius: 24,
+            padding: 24,
+            boxShadow: '0 20px 40px rgba(0,0,0,0.9), 0 0 30px rgba(16,185,129,0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 16,
+            maxHeight: '90vh',
+            overflowY: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ fontSize: 17, fontWeight: 900, color: '#ffffff', margin: 0 }}>
+                📱 Conectar Seu WhatsApp
+              </h3>
+              <button 
+                onClick={() => setShowWaPairModal(false)}
+                style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: 18, cursor: 'pointer', marginLeft: 'auto' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {whatsappStatus === 'connecting' && (
+              <div style={{ padding: '30px 0', textAlign: 'center' }}>
+                <div style={{ border: '3.5px solid rgba(16,185,129,0.1)', borderTop: '3.5px solid #10b981', borderRadius: '50%', width: 44, height: 44, margin: '0 auto 20px', animation: 'spin 1s linear infinite' }} />
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#f8fafc', marginBottom: 6 }}>Gerando Sessão de WhatsApp...</p>
+                <p style={{ fontSize: 12, color: '#64748b' }}>Conectando com o servidor de mensagens. Aguarde alguns instantes.</p>
+              </div>
+            )}
+
+            {whatsappStatus === 'scanning' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ textAlign: 'left', background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: 18, border: '1px solid rgba(255,255,255,0.04)' }}>
+                  <h4 style={{ fontSize: 12, fontWeight: 800, color: '#10b981', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: 0.5 }}>Como parear:</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12, color: '#cbd5e1' }}>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                      <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>1</span>
+                      <span>Abra o <strong>WhatsApp</strong> no seu celular.</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                      <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>2</span>
+                      <span>Acesse <strong>Aparelhos Conectados</strong> e clique em <strong>Conectar um Aparelho</strong>.</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                      <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>3</span>
+                      <span>Aponte a câmera para o QR Code abaixo:</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0' }}>
+                  <div style={{ background: '#fff', padding: 14, borderRadius: 16, border: '4px solid #10b981', display: 'inline-block' }}>
+                    {whatsappQrCode ? (
+                      <img src={whatsappQrCode} alt="WhatsApp QR Code" style={{ width: 200, height: 200, display: 'block' }} />
+                    ) : waError ? (
+                      <div style={{ width: 200, height: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fef2f2', borderRadius: 12, padding: 12 }}>
+                        <span style={{ fontSize: 24, marginBottom: 8 }}>⚠️</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#991b1b', textAlign: 'center', lineHeight: '1.4' }}>{waError}</span>
+                      </div>
+                    ) : (
+                      <div style={{ width: 200, height: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', borderRadius: 12 }}>
+                        <div style={{ border: '3px solid rgba(16,185,129,0.1)', borderTop: '3px solid #10b981', borderRadius: '50%', width: 32, height: 32, marginBottom: 12, animation: 'spin 1s linear infinite' }} />
+                        <span style={{ fontSize: 11, color: '#475569', fontWeight: 700 }}>Obtendo QR Code...</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Simulated connection option for local sandbox / quick testing */}
+                <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 14 }}>
+                  <p style={{ fontSize: 11.5, color: '#94a3b8', marginBottom: 8, textAlign: 'center' }}>
+                    💡 Sem celular por perto? Conecte instantaneamente simulando o pareamento:
+                  </p>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input 
+                      type="tel" 
+                      id="waSimPhone"
+                      placeholder="DDD + Seu Número" 
+                      defaultValue={user?.phone || '5511999999999'}
+                      style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: 12.5 }}
+                    />
+                    <button
+                      onClick={() => {
+                        const ph = document.getElementById('waSimPhone')?.value || '5511999999999';
+                        handleSimulateWaScan(ph);
+                      }}
+                      style={{ padding: '8px 14px', borderRadius: 8, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', color: '#60a5fa', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      ⚡ Parear Simulação
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -78,7 +78,11 @@ export async function POST(request) {
     const user = getUserFromRequest(request);
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
-    const { charge_id, channel, message } = await request.json();
+    const body = await request.json();
+    const charge_id = body.charge_id || body.chargeId;
+    const channel = body.channel;
+    const message = body.message;
+
     if (!charge_id || !message) return Response.json({ error: 'Cobrança e mensagem são obrigatórios' }, { status: 400 });
 
     const charge = queryOne('SELECT * FROM charges WHERE id = ? AND user_id = ?', [charge_id, user.id]);
