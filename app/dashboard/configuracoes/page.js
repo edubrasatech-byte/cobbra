@@ -58,14 +58,14 @@ export default function ConfiguracoesPage() {
     late5d: false
   });
 
-  // Resource Usage Stats (New)
+  // Resource Usage Stats (Dynamic)
   const [usageStats, setUsageStats] = useState({
-    whatsappSent: 347,
-    whatsappLimit: 1000,
-    vehicles: 4,
-    vehiclesLimit: 20,
-    aiContracts: 12,
-    aiContractsLimit: 20
+    whatsappSent: 0,
+    whatsappLimit: 100,
+    vehicles: 0,
+    vehiclesLimit: 5,
+    aiContracts: 0,
+    aiContractsLimit: 5
   });
 
   useEffect(() => {
@@ -114,6 +114,9 @@ export default function ConfiguracoesPage() {
           }
           setUsageStats(prev => ({
             ...prev,
+            whatsappSent: d.usage?.whatsappSent || 0,
+            vehicles: d.usage?.vehicles || 0,
+            aiContracts: d.usage?.aiContracts || 0,
             whatsappLimit: waLim,
             vehiclesLimit: vehLim,
             aiContractsLimit: aiLim

@@ -9,9 +9,21 @@ export async function GET(request) {
       return Response.json({ error: 'Não autenticado' }, { status: 401 });
     }
 
-    return Response.json({ user }, { status: 200 });
+    // Query real resource usage stats from the database
+    const waSent = queryOne("SELECT COUNT(*) as count FROM reminders WHERE user_id = ? AND channel = 'whatsapp'", [user.id]);
+    const vehCount = queryOne("SELECT COUNT(*) as count FROM charges WHERE user_id = ? AND vehicle_info IS NOT NULL AND vehicle_info != ''", [user.id]);
+    const contractsCount = queryOne("SELECT COUNT(*) as count FROM charges WHERE user_id = ? AND contract_text IS NOT NULL AND contract_text != ''", [user.id]);
+
+    return Response.json({ 
+      user,
+      usage: {
+        whatsappSent: waSent?.count || 0,
+        vehicles: vehCount?.count || 0,
+        aiContracts: contractsCount?.count || 0
+      }
+    }, { status: 200 });
   } catch (error) {
-    return Response.json({ error: 'Erro interno' }, { status: 500 });
+    return Response.json({ error: error.message }, { status: 500 });
   }
 }
 
