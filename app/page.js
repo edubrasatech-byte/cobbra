@@ -1597,12 +1597,12 @@ export default function HomePage() {
             <div style={{ textAlign: 'left' }}>
               <h4 style={{ color: '#fff', fontWeight: 800, marginBottom: 20, fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 }}>Produto</h4>
               {[
-                { name: 'Cobrança Automática', link: '#beneficios' },
-                { name: 'Catarina IA Robot', link: '#' },
-                { name: 'Gestão de Locações', link: '#' },
-                { name: 'Gestão de Empréstimos', link: '#' },
-                { name: 'Pix Direto 0% Taxas', link: '#' },
-                { name: 'APIs & Integrações', link: '#' }
+                { name: 'Cobrança Automática', link: '/produto/cobranca-automatica' },
+                { name: 'Catarina IA Robot', link: '/produto/catarina-ia' },
+                { name: 'Gestão de Locações', link: '/produto/locacoes' },
+                { name: 'Gestão de Empréstimos', link: '/produto/emprestimos' },
+                { name: 'Pix Direto 0% Taxas', link: '/produto/pix' },
+                { name: 'APIs & Integrações', link: '/produto/api' }
               ].map(item => (
                 <a key={item.name} href={item.link} style={{ display: 'block', fontSize: 13, marginBottom: 12, color: '#94a3b8', transition: 'color 0.2s', textDecoration: 'none' }}
                   onMouseEnter={e => e.target.style.color = '#10b981'} onMouseLeave={e => e.target.style.color = '#94a3b8'}
@@ -1613,10 +1613,10 @@ export default function HomePage() {
             <div style={{ textAlign: 'left' }}>
               <h4 style={{ color: '#fff', fontWeight: 800, marginBottom: 20, fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 }}>Educação</h4>
               {[
-                { name: 'Blog do Cobbra', link: '#' },
-                { name: 'Guia Anti-Inadimplência', link: '#' },
-                { name: 'Planilha de Caixa', link: '#' },
-                { name: 'Biblioteca de Templates', link: '#' },
+                { name: 'Blog do Cobbra', link: '/educacao/blog' },
+                { name: 'Guia Anti-Inadimplência', link: '/educacao/guia-anti-inadimplencia' },
+                { name: 'Planilha de Caixa', link: '/educacao/planilha-caixa' },
+                { name: 'Biblioteca de Templates', link: '/educacao/templates' },
                 { name: 'Central de Suporte', link: '#faq' }
               ].map(item => (
                 <a key={item.name} href={item.link} style={{ display: 'block', fontSize: 13, marginBottom: 12, color: '#94a3b8', transition: 'color 0.2s', textDecoration: 'none' }}
@@ -1628,12 +1628,11 @@ export default function HomePage() {
             <div style={{ textAlign: 'left' }}>
               <h4 style={{ color: '#fff', fontWeight: 800, marginBottom: 20, fontSize: 13, textTransform: 'uppercase', letterSpacing: 0.5 }}>Institucional</h4>
               {[
-                { name: 'Sobre a Cobbra', link: '#' },
-                { name: 'Carreiras (Contratando!)', link: '#' },
-                { name: 'Segurança da Informação', link: '#' },
-                { name: 'Termos de Serviço', link: '#' },
-                { name: 'Política de Privacidade', link: '#' },
-                { name: 'LGPD Compliance', link: '#' }
+                { name: 'Sobre a Cobbra', link: '/institucional/sobre' },
+                { name: 'Segurança da Informação', link: '/institucional/seguranca' },
+                { name: 'Termos de Serviço', link: '/legal/termos' },
+                { name: 'Política de Privacidade', link: '/legal/privacidade' },
+                { name: 'LGPD Compliance', link: '/legal/lgpd' }
               ].map(item => (
                 <a key={item.name} href={item.link} style={{ display: 'block', fontSize: 13, marginBottom: 12, color: '#94a3b8', transition: 'color 0.2s', textDecoration: 'none' }}
                   onMouseEnter={e => e.target.style.color = '#10b981'} onMouseLeave={e => e.target.style.color = '#94a3b8'}
@@ -1646,9 +1645,9 @@ export default function HomePage() {
               {[
                 { name: 'contato@cobbra.ai', link: 'mailto:contato@cobbra.ai' },
                 { name: 'Suporte via WhatsApp', link: '#' },
-                { name: 'Ouvidoria Fintech', link: '#' },
-                { name: 'Parcerias Comerciais', link: '#' },
-                { name: 'Assessoria de Imprensa', link: '#' }
+                { name: 'Ouvidoria Fintech', link: '/institucional/ouvidoria' },
+                { name: 'Parcerias Comerciais', link: '/institucional/parcerias' },
+                { name: 'Assessoria de Imprensa', link: '/institucional/imprensa' }
               ].map(item => (
                 <a key={item.name} href={item.link} style={{ display: 'block', fontSize: 13, marginBottom: 12, color: '#94a3b8', transition: 'color 0.2s', textDecoration: 'none' }}
                   onMouseEnter={e => e.target.style.color = '#10b981'} onMouseLeave={e => e.target.style.color = '#94a3b8'}
