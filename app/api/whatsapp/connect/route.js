@@ -53,82 +53,91 @@ export async function GET(request) {
     const phone = userData?.whatsapp_phone || null;
     const instance = userData?.whatsapp_instance || `cobbra_inst_${user.id.substring(0, 8)}`;
 
-    if (status === 'disconnected') {
-      return Response.json({ status: 'disconnected', phone: null, instance: null });
-    }
-
-    let qrCode = null;
-    let qrError = null;
     const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL || process.env.EVOLUTION_API_URL;
     const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
     let baseUrl = evoUrl ? (evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl) : '';
 
     if (!evoUrl || !evoToken) {
-      qrError = 'Evolution API não configurada nas variáveis de ambiente do servidor (EVOLUTION_API_URL / EVOLUTION_API_TOKEN).';
-    } else {
-      try {
+      return Response.json({
+        status,
+        phone,
+        instance,
+        error: 'Evolution API não configurada nas variáveis de ambiente do servidor.'
+      });
+    }
 
-        // Check if the instance already has an open/active connection
-        const instanceToken = await getInstanceToken(baseUrl, evoToken, instance) || evoToken;
-        let stateRes;
-        try {
+    try {
+      // 1. Check if the instance already has an open/active connection on VPS
+      const instanceToken = await getInstanceToken(baseUrl, evoToken, instance) || evoToken;
+      let stateRes;
+      try {
+        stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
+          headers: { 'apikey': instanceToken }
+        });
+      } catch (fetchErr) {
+        if (baseUrl.includes(':8080')) {
+          baseUrl = baseUrl.replace(':8080', '');
+          console.log(`[SELF-HEALING GET]: Port 8080 failed. Retrying on port 80: ${baseUrl}`);
           stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
             headers: { 'apikey': instanceToken }
           });
-        } catch (fetchErr) {
-          if (baseUrl.includes(':8080')) {
-            baseUrl = baseUrl.replace(':8080', '');
-            console.log(`[SELF-HEALING GET]: Port 8080 failed. Retrying on port 80: ${baseUrl}`);
-            stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
-              headers: { 'apikey': instanceToken }
-            });
-          } else {
-            throw fetchErr;
-          }
+        } else {
+          throw fetchErr;
         }
-
-        if (stateRes.ok) {
-          const stateData = await stateRes.json();
-          const isConnected = stateData?.instance?.state === 'open';
-
-          if (isConnected) {
-            status = 'connected';
-            run(
-              "UPDATE users SET whatsapp_status = 'connected', whatsapp_instance = ?, updated_at = datetime('now') WHERE id = ?",
-              [instance, user.id]
-            );
-            return Response.json({ status: 'connected', phone, instance });
-          }
-        }
-
-        // If not connected, make sure the instance exists or create it
-        await fetch(`${baseUrl}/instance/create`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'apikey': evoToken },
-          body: JSON.stringify({ instanceName: instance, integration: "WHATSAPP-BAILEYS", qrcode: true })
-        });
-
-        // Request a connection QR Code from Evolution API
-        const connectRes = await fetch(`${baseUrl}/instance/connect/${instance}`, {
-          headers: { 'apikey': instanceToken }
-        });
-
-        if (connectRes.ok) {
-          const connectData = await connectRes.json();
-          qrCode = connectData?.base64 || connectData?.code || null;
-        }
-
-        if (!qrCode) {
-          qrError = 'Servidor Evolution não retornou QR Code. Tente reiniciar a conexão.';
-        }
-      } catch (e) {
-        console.error("[EVOLUTION API ERROR]:", e);
-        qrError = `Erro de comunicação com a VPS em "${baseUrl}". Detalhes: ${e.message}`;
       }
+
+      if (stateRes && stateRes.ok) {
+        const stateData = await stateRes.json();
+        const isConnected = stateData?.instance?.state === 'open';
+
+        if (isConnected) {
+          status = 'connected';
+          // Heal the database status!
+          run(
+            "UPDATE users SET whatsapp_status = 'connected', whatsapp_instance = ?, whatsapp_phone = ?, updated_at = datetime('now') WHERE id = ?",
+            [instance, phone || '5511999999999', user.id]
+          );
+          return Response.json({ status: 'connected', phone: phone || '5511999999999', instance });
+        }
+      }
+    } catch (e) {
+      console.error("[EVOLUTION API GET STATUS ERROR]:", e);
     }
 
-    if (status === 'connected') {
-      return Response.json({ status, phone, instance });
+    // If it's not connected on VPS and database status is disconnected, return disconnected directly
+    if (status === 'disconnected') {
+      return Response.json({ status: 'disconnected', phone: null, instance: null });
+    }
+
+    // Otherwise, if database status is scanning/connected (but VPS was not open), try to fetch the QR Code to continue
+    let qrCode = null;
+    let qrError = null;
+
+    try {
+      // Make sure the instance exists or create it
+      await fetch(`${baseUrl}/instance/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': evoToken },
+        body: JSON.stringify({ instanceName: instance, integration: "WHATSAPP-BAILEYS", qrcode: true })
+      });
+
+      const instanceToken = await getInstanceToken(baseUrl, evoToken, instance) || evoToken;
+      // Request a connection QR Code from Evolution API
+      const connectRes = await fetch(`${baseUrl}/instance/connect/${instance}`, {
+        headers: { 'apikey': instanceToken }
+      });
+
+      if (connectRes.ok) {
+        const connectData = await connectRes.json();
+        qrCode = connectData?.base64 || connectData?.code || null;
+      }
+
+      if (!qrCode) {
+        qrError = 'Servidor Evolution não retornou QR Code. Tente reiniciar a conexão.';
+      }
+    } catch (e) {
+      console.error("[EVOLUTION API ERROR]:", e);
+      qrError = `Erro de comunicação com a VPS em "${baseUrl}". Detalhes: ${e.message}`;
     }
 
     return Response.json({

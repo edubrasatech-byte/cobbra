@@ -150,10 +150,9 @@ export async function POST(request) {
       const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL;
       const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
       
-      const isUserConnected = userData?.whatsapp_status === 'connected';
-      const instance = isUserConnected ? userData.whatsapp_instance : (process.env.EVOLUTION_DEFAULT_INSTANCE || 'cobbra_master');
+      const instance = userData?.whatsapp_instance || `cobbra_inst_${user.id.substring(0, 8)}`;
       
-      if (evoUrl && evoToken && (isUserConnected || process.env.EVOLUTION_DEFAULT_INSTANCE || 'cobbra_master')) {
+      if (evoUrl && evoToken) {
         if (client.phone) {
           // Clean non-digits and format for WhatsApp (55 prefix for Brazil if missing)
           const cleanPhone = client.phone.replace(/\D/g, '');
@@ -221,6 +220,15 @@ export async function POST(request) {
           if (response && !response.ok) {
             const errData = await response.json().catch(() => ({}));
             throw new Error(`Falha no WhatsApp: Servidor retornou HTTP ${response.status} - ${errData.message || 'Erro desconhecido'}`);
+          }
+          
+          // Self-healing database status: if message sent successfully, the instance is active!
+          if (userData && userData.whatsapp_status !== 'connected') {
+            run(
+              "UPDATE users SET whatsapp_status = 'connected', whatsapp_instance = ?, whatsapp_phone = ?, updated_at = datetime('now') WHERE id = ?",
+              [instance, userData.whatsapp_phone || '5511999999999', user.id]
+            );
+            console.log(`[SELF-HEALING DB] Automatically healed whatsapp_status to connected for user ${user.id}`);
           }
           console.log(`[EVOLUTION API] Successfully sent WhatsApp message to ${waNumber} via instance ${instance}`);
         }
