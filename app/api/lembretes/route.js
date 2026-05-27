@@ -111,7 +111,7 @@ export async function POST(request) {
     if (finalChannel === 'whatsapp' || finalChannel === 'both') {
       const userData = queryOne('SELECT whatsapp_status, whatsapp_instance, whatsapp_phone FROM users WHERE id = ?', [user.id]);
       const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL;
-      const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN;
+      const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
       
       const isUserConnected = userData?.whatsapp_status === 'connected';
       const instance = isUserConnected ? userData.whatsapp_instance : (process.env.EVOLUTION_DEFAULT_INSTANCE || 'cobbra_master');

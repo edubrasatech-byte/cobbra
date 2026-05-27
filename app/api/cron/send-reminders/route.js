@@ -127,7 +127,7 @@ export async function POST(request) {
         // --- DISPARO DE WHATSAPP REAL (VIA EVOLUTION API NA VPS) ---
         if (charge.reminder_channel === 'whatsapp' || charge.reminder_channel === 'both') {
           const evolutionUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL;
-          const evolutionToken = process.env.EVOLUTION_API_GLOBAL_TOKEN;
+          const evolutionToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
 
           if (evolutionUrl && evolutionToken) {
             try {
