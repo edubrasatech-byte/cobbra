@@ -44,46 +44,7 @@ export default function EmprestimosPage() {
       // Filter charges that are loans (have loan_info)
       const loanCharges = (data.charges || []).filter(c => c.loan_info !== null && c.loan_info !== '');
       
-      if (loanCharges.length > 0) {
-        setLoans(loanCharges);
-      } else {
-        // Fallbacks/Demo data to show immediately to prospective loan managers!
-        setLoans([
-          {
-            id: 'loan-demo-001',
-            client_name: 'Roberto Camargo',
-            client_phone: '(11) 98888-3333',
-            amount: 5000.00,
-            due_date: new Date(Date.now() - 432000000).toISOString().split('T')[0], // 5 days ago
-            daily_interest_rate: 0.2, // 0.2% a day
-            loan_info: 'Empréstimo Pessoal - Parcela 1/3',
-            status: 'overdue',
-            recurrence: 'once'
-          },
-          {
-            id: 'loan-demo-002',
-            client_name: 'Karina Mendes',
-            client_phone: '(11) 91111-2222',
-            amount: 2500.00,
-            due_date: new Date(Date.now() + 172800000).toISOString().split('T')[0], // in 2 days
-            daily_interest_rate: 0.15,
-            loan_info: 'Microcrédito Comercial - Parcela Única',
-            status: 'pending',
-            recurrence: 'once'
-          },
-          {
-            id: 'loan-demo-003',
-            client_name: 'Juliana Portes',
-            client_phone: '(11) 97777-5555',
-            amount: 1500.00,
-            due_date: new Date(Date.now() - 864000000).toISOString().split('T')[0],
-            daily_interest_rate: 0.1,
-            loan_info: 'Financiamento Equipamento - Parcela 2/6',
-            status: 'paid',
-            recurrence: 'monthly'
-          }
-        ]);
-      }
+      setLoans(loanCharges);
     } catch (e) {
       console.error(e);
     } finally {
@@ -192,31 +153,7 @@ export default function EmprestimosPage() {
     }
   };
 
-  // Simulated pair trigger
-  const handleSimulateWaScan = async (phoneInput) => {
-    if (!phoneInput) {
-      alert('Por favor, informe o seu número de WhatsApp.');
-      return;
-    }
-    try {
-      showNotification('🔌 Simulando leitura de QR Code...');
-      const res = await fetch('/api/whatsapp/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneInput })
-      });
-      const data = await res.json();
-      if (data.success) {
-        setWhatsappStatus('connected');
-        setWhatsappPhone(phoneInput);
-        showNotification('WhatsApp conectado com sucesso! 📱');
-        setShowWaPairModal(false);
-        fetchWaStatus();
-      }
-    } catch (e) {
-      alert('Erro ao realizar pareamento simulado.');
-    }
-  };
+
 
   const handleRegisterLoan = async (e) => {
     e.preventDefault();
@@ -843,30 +780,7 @@ export default function EmprestimosPage() {
                   </div>
                 </div>
 
-                {/* Simulated connection option for local sandbox / quick testing */}
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 14 }}>
-                  <p style={{ fontSize: 11.5, color: '#94a3b8', marginBottom: 8, textAlign: 'center' }}>
-                    💡 Sem celular por perto? Conecte instantaneamente simulando o pareamento:
-                  </p>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <input 
-                      type="tel" 
-                      id="waSimPhone"
-                      placeholder="DDD + Seu Número" 
-                      defaultValue={user?.phone || '5511999999999'}
-                      style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: 12.5 }}
-                    />
-                    <button
-                      onClick={() => {
-                        const ph = document.getElementById('waSimPhone')?.value || '5511999999999';
-                        handleSimulateWaScan(ph);
-                      }}
-                      style={{ padding: '8px 14px', borderRadius: 8, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', color: '#60a5fa', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
-                    >
-                      ⚡ Parear Simulação
-                    </button>
-                  </div>
-                </div>
+
               </div>
             )}
           </div>

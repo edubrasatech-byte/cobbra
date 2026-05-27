@@ -98,6 +98,14 @@ export async function GET(request) {
             [instance, phone || '5511999999999', user.id]
           );
           return Response.json({ status: 'connected', phone: phone || '5511999999999', instance });
+        } else if (status === 'connected') {
+          // Heal the database status: if db status is 'connected' but VPS is not open, then it is disconnected!
+          status = 'disconnected';
+          run(
+            "UPDATE users SET whatsapp_status = 'disconnected', whatsapp_phone = NULL, whatsapp_instance = NULL, updated_at = datetime('now') WHERE id = ?",
+            [user.id]
+          );
+          return Response.json({ status: 'disconnected', phone: null, instance: null });
         }
       }
     } catch (e) {
@@ -152,120 +160,90 @@ export async function GET(request) {
   }
 }
 
-// POST /api/whatsapp/connect - Trigger connect start or simulated scan connection
+// POST /api/whatsapp/connect - Trigger connect start
 export async function POST(request) {
   try {
     const user = getUserFromRequest(request);
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
-    const body = await request.json();
-    const { phone, action } = body;
+    const body = await request.json().catch(() => ({}));
+    const { action } = body;
     const instance = `cobbra_inst_${user.id.substring(0, 8)}`;
 
-    if (action === 'start' || !phone) {
-      // START NEW CONNECTION
-      run(
-        "UPDATE users SET whatsapp_status = 'scanning', whatsapp_instance = ?, updated_at = datetime('now') WHERE id = ?",
-        [instance, user.id]
-      );
+    // START NEW CONNECTION
+    run(
+      "UPDATE users SET whatsapp_status = 'scanning', whatsapp_instance = ?, updated_at = datetime('now') WHERE id = ?",
+      [instance, user.id]
+    );
 
-      let qrCode = null;
-      let qrError = null;
-      const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL || process.env.EVOLUTION_API_URL;
-      const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
-      let baseUrl = evoUrl ? (evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl) : '';
+    let qrCode = null;
+    let qrError = null;
+    const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL || process.env.EVOLUTION_API_URL;
+    const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
+    let baseUrl = evoUrl ? (evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl) : '';
 
-      if (!evoUrl || !evoToken) {
-        qrError = 'Evolution API não configurada nas variáveis de ambiente do servidor (EVOLUTION_API_URL / EVOLUTION_API_TOKEN).';
-      } else {
+    if (!evoUrl || !evoToken) {
+      qrError = 'Evolution API não configurada nas variáveis de ambiente do servidor (EVOLUTION_API_URL / EVOLUTION_API_TOKEN).';
+    } else {
+      try {
+        // Check connection state
+        const instanceToken = await getInstanceToken(baseUrl, evoToken, instance) || evoToken;
+        let stateRes;
         try {
-
-          // Check connection state
-          const instanceToken = await getInstanceToken(baseUrl, evoToken, instance) || evoToken;
-          let stateRes;
-          try {
+          stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
+            headers: { 'apikey': instanceToken }
+          });
+        } catch (fetchErr) {
+          if (baseUrl.includes(':8080')) {
+            baseUrl = baseUrl.replace(':8080', '');
+            console.log(`[SELF-HEALING POST]: Port 8080 failed. Retrying on port 80: ${baseUrl}`);
             stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
               headers: { 'apikey': instanceToken }
             });
-          } catch (fetchErr) {
-            if (baseUrl.includes(':8080')) {
-              baseUrl = baseUrl.replace(':8080', '');
-              console.log(`[SELF-HEALING POST]: Port 8080 failed. Retrying on port 80: ${baseUrl}`);
-              stateRes = await fetch(`${baseUrl}/instance/connectionState/${instance}`, {
-                headers: { 'apikey': instanceToken }
-              });
-            } else {
-              throw fetchErr;
-            }
+          } else {
+            throw fetchErr;
           }
-
-          let isConnected = false;
-          if (stateRes.ok) {
-            const stateData = await stateRes.json();
-            isConnected = stateData?.instance?.state === 'open';
-          }
-
-          if (isConnected) {
-            run(
-              "UPDATE users SET whatsapp_status = 'connected', whatsapp_instance = ?, updated_at = datetime('now') WHERE id = ?",
-              [instance, user.id]
-            );
-            return Response.json({ success: true, status: 'connected', instance });
-          }
-
-          await fetch(`${baseUrl}/instance/create`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'apikey': evoToken },
-            body: JSON.stringify({ instanceName: instance, integration: "WHATSAPP-BAILEYS", qrcode: true })
-          });
-
-          const connectRes = await fetch(`${baseUrl}/instance/connect/${instance}`, {
-            headers: { 'apikey': instanceToken }
-          });
-
-          if (connectRes.ok) {
-            const connectData = await connectRes.json();
-            qrCode = connectData?.base64 || connectData?.code || null;
-          }
-
-          if (!qrCode) {
-            qrError = 'Servidor Evolution não retornou QR Code. Tente reiniciar a conexão.';
-          }
-        } catch (e) {
-          console.error("[EVOLUTION API START ERROR]:", e);
-          qrError = `Erro de comunicação com a VPS em "${baseUrl}". Detalhes: ${e.message}`;
         }
-      }
 
-      return Response.json({ success: true, status: 'scanning', qrCode, error: qrError, instance });
+        let isConnected = false;
+        if (stateRes.ok) {
+          const stateData = await stateRes.json();
+          isConnected = stateData?.instance?.state === 'open';
+        }
+
+        if (isConnected) {
+          run(
+            "UPDATE users SET whatsapp_status = 'connected', whatsapp_instance = ?, updated_at = datetime('now') WHERE id = ?",
+            [instance, user.id]
+          );
+          return Response.json({ success: true, status: 'connected', instance });
+        }
+
+        await fetch(`${baseUrl}/instance/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': evoToken },
+          body: JSON.stringify({ instanceName: instance, integration: "WHATSAPP-BAILEYS", qrcode: true })
+        });
+
+        const connectRes = await fetch(`${baseUrl}/instance/connect/${instance}`, {
+          headers: { 'apikey': instanceToken }
+        });
+
+        if (connectRes.ok) {
+          const connectData = await connectRes.json();
+          qrCode = connectData?.base64 || connectData?.code || null;
+        }
+
+        if (!qrCode) {
+          qrError = 'Servidor Evolution não retornou QR Code. Tente reiniciar a conexão.';
+        }
+      } catch (e) {
+        console.error("[EVOLUTION API START ERROR]:", e);
+        qrError = `Erro de comunicação com a VPS em "${baseUrl}". Detalhes: ${e.message}`;
+      }
     }
 
-    // SIMULATED PAIRING
-    const cleanPhone = phone || user.phone || '5511999999999';
-
-    // Simulate Evolution API webhook callback that switches status to connected
-    run(
-      `UPDATE users SET 
-        whatsapp_status = 'connected', 
-        whatsapp_phone = ?, 
-        whatsapp_instance = ?,
-        updated_at = datetime('now') 
-       WHERE id = ?`,
-      [cleanPhone, instance, user.id]
-    );
-
-    // Log activity
-    run(
-      'INSERT INTO activity_log (id, user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?, ?)',
-      [generateId(), user.id, 'whatsapp_connected', 'user', user.id, `WhatsApp pareado com sucesso no número ${cleanPhone}`]
-    );
-
-    // In-app Notification
-    run('INSERT INTO notifications (id, user_id, type, title, message, entity_type, entity_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [generateId(), user.id, 'success', '📱 WhatsApp Conectado!', `Seu número ${cleanPhone} foi conectado com sucesso pelo nosso disparador central.`, 'user', user.id]
-    );
-
-    return Response.json({ success: true, status: 'connected', phone: cleanPhone, instance });
+    return Response.json({ success: true, status: 'scanning', qrCode, error: qrError, instance });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

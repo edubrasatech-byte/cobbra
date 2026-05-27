@@ -1084,109 +1084,58 @@ export default function ConfiguracoesPage() {
                 </div>
               </div>
 
-              {/* Plan Grid */}
+              {/* Plan Box */}
               <div style={cardS}>
                 <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', marginBottom: 8, letterSpacing: '-0.3px' }}>💎 Upgrade de Assinatura</h3>
-                <p style={{ fontSize: 13, color: '#64748b', marginBottom: 24 }}>Escolha o plano ideal para a escala de cobranças do seu negócio.</p>
+                <p style={{ fontSize: 13, color: '#64748b', marginBottom: 24 }}>Sua assinatura única garante acesso ilimitado a todas as ferramentas e recursos da plataforma.</p>
                 
                 {/* Active Plan Header */}
                 <div style={{ background: 'rgba(16,185,129,0.06)', borderRadius: 16, padding: 20, border: '1px solid rgba(16,185,129,0.18)', marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
                   <div>
                     <span style={{ fontSize: 9.5, fontWeight: 800, padding: '3px 10px', borderRadius: 6, background: '#059669', color: '#fff', textTransform: 'uppercase' }}>
-                      {user?.plan || 'starter'}
+                      {user?.plan === 'cobra_pro' ? 'Assinatura Ativa' : 'Período de Teste'}
                     </span>
                     <h4 style={{ fontSize: 16, fontWeight: 900, color: '#fff', marginTop: 8 }}>
-                      Plano Atual: {user?.plan === 'cobra_pro' ? 'Cobra Pro' : user?.plan === 'crescimento' ? 'Crescimento' : 'Starter'}
+                      Plano Completo Ilimitado
                     </h4>
                   </div>
                   <p style={{ fontSize: 24, fontWeight: 900, color: '#10b981', margin: 0 }}>
-                    {user?.plan === 'cobra_pro' ? 'R$ 49,90' : user?.plan === 'crescimento' ? 'R$ 19,90' : 'R$ 9,90'}
+                    R$ 49,90
                     <span style={{ fontSize: 13, color: '#64748b', fontWeight: 500 }}>/mês</span>
                   </p>
                 </div>
 
-                {/* Grid of 3 Plans */}
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16 }}>
-                  
-                  {/* Starter Plan */}
-                  <div style={{ background: 'rgba(255,255,255,0.01)', border: user?.plan === 'starter' ? '2.5px solid #059669' : '1.5px solid rgba(255,255,255,0.04)', borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20 }}>
+                {/* Single Plan Card */}
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.01)', border: '2.5px solid #059669', borderRadius: 16, padding: 24, display: 'flex', flexDirection: 'column', gap: 20, width: '100%', maxWidth: 440 }}>
                     <div>
-                      <h5 style={{ fontSize: 15, fontWeight: 800, color: '#fff', margin: 0 }}>Starter</h5>
-                      <p style={{ fontSize: 20, fontWeight: 900, color: '#e2e8f0', margin: '8px 0' }}>R$ 9,90<span style={{ fontSize: 11, color: '#64748b', fontWeight: 500 }}>/mês</span></p>
-                      <p style={{ fontSize: 12, color: '#64748b', margin: '0 0 16px 0', lineHeight: 1.4 }}>Ideal para quem está iniciando.</p>
-                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        <p style={{ fontSize: 12, color: '#cbd5e1', margin: 0 }}>✓ Até 3 cobranças simultâneas</p>
-                        <p style={{ fontSize: 12, color: '#cbd5e1', margin: 0 }}>✓ WhatsApp + E-mail</p>
-                        <p style={{ fontSize: 12, color: '#cbd5e1', margin: 0 }}>✓ Chave Pix direto</p>
+                      <h5 style={{ fontSize: 16, fontWeight: 800, color: '#fff', margin: 0 }}>Plano Completo Ilimitado</h5>
+                      <p style={{ fontSize: 24, fontWeight: 900, color: '#e2e8f0', margin: '8px 0' }}>R$ 49,90<span style={{ fontSize: 12, color: '#64748b', fontWeight: 500 }}>/mês</span></p>
+                      <p style={{ fontSize: 12.5, color: '#64748b', margin: '0 0 16px 0', lineHeight: 1.4 }}>Escala ilimitada de cobranças, mensagens via WhatsApp e e-mail com Pix 100% livre de taxas.</p>
+                      
+                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        <p style={{ fontSize: 13, color: '#cbd5e1', margin: 0 }}>✓ Cobranças e Tomadores ILIMITADOS</p>
+                        <p style={{ fontSize: 13, color: '#cbd5e1', margin: 0 }}>✓ Envio de Lembretes no WhatsApp & E-mail</p>
+                        <p style={{ fontSize: 13, color: '#cbd5e1', margin: 0 }}>✓ Robô Financeiro Catarina IA Integrado</p>
+                        <p style={{ fontSize: 13, color: '#cbd5e1', margin: 0 }}>✓ Relatórios Avançados e Análise de Risco</p>
+                        <p style={{ fontSize: 13, color: '#cbd5e1', margin: 0 }}>✓ Gestão de Locações e Financiamentos</p>
                       </div>
                     </div>
-                    <button 
-                      onClick={() => handlePlanChange('starter')}
-                      disabled={user?.plan === 'starter'}
-                      style={{
-                        width: '100%', padding: '10px', borderRadius: 8,
-                        background: user?.plan === 'starter' ? 'rgba(5,150,105,0.1)' : 'rgba(255,255,255,0.04)',
-                        color: user?.plan === 'starter' ? '#10b981' : '#fff', border: 'none', fontWeight: 700,
-                        cursor: user?.plan === 'starter' ? 'default' : 'pointer', transition: 'all 0.2s', fontSize: 11.5
-                      }}
-                    >
-                      {user?.plan === 'starter' ? 'Plano Ativo' : 'Downgrade'}
-                    </button>
-                  </div>
-
-                  {/* Crescimento Plan */}
-                  <div style={{ background: 'rgba(255,255,255,0.01)', border: user?.plan === 'crescimento' ? '2.5px solid #059669' : '1.5px solid rgba(255,255,255,0.04)', borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20, position: 'relative' }}>
-                    <span style={{ position: 'absolute', top: -10, right: 16, fontSize: 9, background: '#059669', color: '#fff', padding: '2px 8px', borderRadius: 6, fontWeight: 800 }}>RECOMENDADO</span>
-                    <div>
-                      <h5 style={{ fontSize: 15, fontWeight: 800, color: '#fff', margin: 0 }}>Crescimento</h5>
-                      <p style={{ fontSize: 20, fontWeight: 900, color: '#e2e8f0', margin: '8px 0' }}>R$ 19,90<span style={{ fontSize: 11, color: '#64748b', fontWeight: 500 }}>/mês</span></p>
-                      <p style={{ fontSize: 12, color: '#64748b', margin: '0 0 16px 0', lineHeight: 1.4 }}>Autonomia para o fluxo financeiro.</p>
-                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        <p style={{ fontSize: 12, color: '#cbd5e1', margin: 0 }}>✓ Até 20 cobranças simultâneas</p>
-                        <p style={{ fontSize: 12, color: '#cbd5e1', margin: 0 }}>✓ WhatsApp + E-mail próprio</p>
-                        <p style={{ fontSize: 12, color: '#cbd5e1', margin: 0 }}>✓ Suporte priorizado</p>
-                      </div>
-                    </div>
-                    <button 
-                      onClick={() => handlePlanChange('crescimento')}
-                      disabled={user?.plan === 'crescimento'}
-                      style={{
-                        width: '100%', padding: '10px', borderRadius: 8,
-                        background: user?.plan === 'crescimento' ? 'rgba(5,150,105,0.1)' : 'linear-gradient(135deg, #059669 0%, #0d9488 100%)',
-                        color: user?.plan === 'crescimento' ? '#10b981' : '#fff', border: 'none', fontWeight: 700,
-                        cursor: user?.plan === 'crescimento' ? 'default' : 'pointer', transition: 'all 0.2s', fontSize: 11.5
-                      }}
-                    >
-                      {user?.plan === 'crescimento' ? 'Plano Ativo' : user?.plan === 'cobra_pro' ? 'Downgrade' : 'Fazer Upgrade'}
-                    </button>
-                  </div>
-
-                  {/* Cobra Pro Plan */}
-                  <div style={{ background: 'rgba(255,255,255,0.01)', border: user?.plan === 'cobra_pro' ? '2.5px solid #059669' : '1.5px solid rgba(255,255,255,0.04)', borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 20 }}>
-                    <div>
-                      <h5 style={{ fontSize: 15, fontWeight: 800, color: '#fff', margin: 0 }}>Cobra Pro</h5>
-                      <p style={{ fontSize: 20, fontWeight: 900, color: '#e2e8f0', margin: '8px 0' }}>R$ 49,90<span style={{ fontSize: 11, color: '#64748b', fontWeight: 500 }}>/mês</span></p>
-                      <p style={{ fontSize: 12, color: '#64748b', margin: '0 0 16px 0', lineHeight: 1.4 }}>Escala ilimitada de cobranças.</p>
-                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        <p style={{ fontSize: 12, color: '#cbd5e1', margin: 0 }}>✓ Cobranças ILIMITADAS</p>
-                        <p style={{ fontSize: 12, color: '#cbd5e1', margin: 0 }}>✓ WhatsApp + E-mail + Pix</p>
-                        <p style={{ fontSize: 12, color: '#cbd5e1', margin: 0 }}>✓ Suporte 24h & Relatórios</p>
-                      </div>
-                    </div>
+                    
                     <button 
                       onClick={() => handlePlanChange('cobra_pro')}
                       disabled={user?.plan === 'cobra_pro'}
                       style={{
-                        width: '100%', padding: '10px', borderRadius: 8,
+                        width: '100%', padding: '12px', borderRadius: 10,
                         background: user?.plan === 'cobra_pro' ? 'rgba(5,150,105,0.1)' : 'linear-gradient(135deg, #059669 0%, #0d9488 100%)',
                         color: user?.plan === 'cobra_pro' ? '#10b981' : '#fff', border: 'none', fontWeight: 700,
-                        cursor: user?.plan === 'cobra_pro' ? 'default' : 'pointer', transition: 'all 0.2s', fontSize: 11.5
+                        cursor: user?.plan === 'cobra_pro' ? 'default' : 'pointer', transition: 'all 0.2s', fontSize: 13,
+                        boxShadow: user?.plan === 'cobra_pro' ? 'none' : '0 4px 14px rgba(16,185,129,0.3)'
                       }}
                     >
-                      {user?.plan === 'cobra_pro' ? 'Plano Ativo' : 'Fazer Upgrade'}
+                      {user?.plan === 'cobra_pro' ? 'Assinatura Ativa ✓' : 'Ativar Assinatura Ilimitada'}
                     </button>
                   </div>
-
                 </div>
               </div>
 

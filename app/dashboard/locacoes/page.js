@@ -51,80 +51,7 @@ export default function LocacoesPage() {
       // Filter charges that are rentals (have vehicle_info)
       const rentalCharges = (data.charges || []).filter(c => c.vehicle_info !== null && c.vehicle_info !== '');
       
-      if (rentalCharges.length > 0) {
-        setRentals(rentalCharges);
-      } else {
-        // Fallbacks/Demo data to show immediately with contract text!
-        setRentals([
-          {
-            id: 'loc-demo-001',
-            client_name: 'Guilherme Santos',
-            client_phone: '(11) 98888-7777',
-            amount: 140.00,
-            deposit_amount: 1000.00,
-            vehicle_info: 'Chevrolet Onix (QXW-9E12)',
-            due_date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // tomorrow
-            status: 'pending',
-            recurrence: 'weekly',
-            contract_text: `CONTRATO DE ADESÃO DE LOCAÇÃO DE VEÍCULO AUTOMOTOR
-
-LOCADOR: Administradora de Frotas Integrada
-LOCATÁRIO: Guilherme Santos | CPF/CNPJ: 345.987.123-00 | WhatsApp: (11) 98888-7777
-
-CLÁUSULA 1 - DO OBJETO E VEÍCULO
-O objeto deste instrumento é a locação temporária do veículo automotor caracterizado como:
-- VEÍCULO: Chevrolet Onix (QXW-9E12)
-O veículo é entregue em perfeito estado de conservação, funcionamento, limpeza e com tanque de combustível cheio, devendo ser devolvido nas mesmas condições.
-
-CLÁUSULA 2 - DO PREÇO, CRONOGRAMA E PAGAMENTO
-2.1. O locatário pagará ao locador o valor ajustado de R$ 140.00 (SEMANAL) para a utilização do veículo, acrescido de R$ 1000.00 de Depósito de Caução contratual.
-2.2. O vencimento acordado do aluguel é em ${new Date(Date.now() + 86400000).toLocaleDateString('pt-BR')}.
-2.3. O ATRASO NO PAGAMENTO SUPERIOR A 24 (VINTE E QUATRO) HORAS constitui inadimplemento contratual imediato e grave (Mora).
-2.4. EM CASO DE MORA, fica o locador plenamente autorizado, de forma extrajudicial e sem necessidade de aviso prévio:
-  a) A efetuar o BLOQUEIO FÍSICO e RASTREAMENTO do veículo por via remota;
-  b) A realizar a BUSCA E APREENSÃO imediata do veículo onde quer que este se encontre, arcando o locatário com todas as custas de guincho e depósito.
-
-CLÁUSULA 3 - DA RESPONSABILIDADE CIVIL E CRIMINAL
-3.1. O locatário assume integral responsabilidade civil e criminal por quaisquer danos causados ao veículo, a si próprio ou a terceiros durante o período de posse.
-3.2. Todas as infrações de trânsito cometidas no período da locação são de responsabilidade exclusiva do locatário, autorizando o locador a efetuar a indicação de condutor e cobrança regressiva dos valores das multas acrescidas de 20% de taxa administrativa.
-
-CLÁUSULA 4 - DA DEVOLUÇÃO E RENOVAÇÃO
-4.1. O veículo deverá ser devolvido impreterivelmente na data limite pactuada.
-4.2. A não devolução na data limite e a ausência de prorrogação formal autorizam o locador a registrar boletim de ocorrência policial por apropriação indébita.
-
-Contrato gerado eletronicamente.
-Sujeito a alterações negociadas diretamente com a Catarina IA.`
-          },
-          {
-            id: 'loc-demo-002',
-            client_name: 'Amanda Vasconcellos',
-            client_phone: '(11) 91234-5678',
-            amount: 850.00,
-            deposit_amount: 1200.00,
-            vehicle_info: 'Jeep Compass (FGB-3A45)',
-            due_date: new Date(Date.now() - 172800000).toISOString().split('T')[0], // 2 days ago
-            status: 'overdue',
-            recurrence: 'weekly',
-            contract_text: `CONTRATO DE ADESÃO DE LOCAÇÃO DE VEÍCULO AUTOMOTOR
-
-LOCADOR: Administradora de Frotas Integrada
-LOCATÁRIO: Amanda Vasconcellos | CPF/CNPJ: 456.123.789-11 | WhatsApp: (11) 91234-5678
-
-CLÁUSULA 1 - DO OBJETO E VEÍCULO
-O objeto deste instrumento é a locação temporária do veículo automotor caracterizado como:
-- VEÍCULO: Jeep Compass (FGB-3A45)
-O veículo é entregue em perfeito estado de conservação e limpeza.
-
-CLÁUSULA 2 - DO PREÇO, CRONOGRAMA E PAGAMENTO
-2.1. O locatário pagará ao locador o valor ajustado de R$ 850.00 (SEMANAL).
-2.2. O vencimento acordado do aluguel foi em ${new Date(Date.now() - 172800000).toLocaleDateString('pt-BR')}.
-2.3. O ATRASO NO PAGAMENTO SUPERIOR A 24 (VINTE E QUATRO) HORAS constitui inadimplemento contratual imediato e grave (Mora).
-2.4. EM CASO DE MORA, o locador efetuará o bloqueio físico e busca e apreensão.
-
-Contrato sujeito a alterações pela Catarina IA.`
-          }
-        ]);
-      }
+      setRentals(rentalCharges);
     } catch (e) {
       console.error(e);
     } finally {
@@ -233,31 +160,7 @@ Contrato sujeito a alterações pela Catarina IA.`
     }
   };
 
-  // Simulated pair trigger
-  const handleSimulateWaScan = async (phoneInput) => {
-    if (!phoneInput) {
-      alert('Por favor, informe o seu número de WhatsApp.');
-      return;
-    }
-    try {
-      showNotification('🔌 Simulando leitura de QR Code...');
-      const res = await fetch('/api/whatsapp/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneInput })
-      });
-      const data = await res.json();
-      if (data.success) {
-        setWhatsappStatus('connected');
-        setWhatsappPhone(phoneInput);
-        showNotification('WhatsApp conectado com sucesso! 📱');
-        setShowWaPairModal(false);
-        fetchWaStatus();
-      }
-    } catch (e) {
-      alert('Erro ao realizar pareamento simulado.');
-    }
-  };
+
 
   // Confirm Return / Devolução (Item 3)
   const handleConfirmReturn = async (rental) => {
@@ -1295,30 +1198,7 @@ Contrato sujeito a alterações pela Catarina IA.`
                   </div>
                 </div>
 
-                {/* Simulated connection option for local sandbox / quick testing */}
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 14 }}>
-                  <p style={{ fontSize: 11.5, color: '#94a3b8', marginBottom: 8, textAlign: 'center' }}>
-                    💡 Sem celular por perto? Conecte instantaneamente simulando o pareamento:
-                  </p>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <input 
-                      type="tel" 
-                      id="waSimPhone"
-                      placeholder="DDD + Seu Número" 
-                      defaultValue={user?.phone || '5511999999999'}
-                      style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: 12.5 }}
-                    />
-                    <button
-                      onClick={() => {
-                        const ph = document.getElementById('waSimPhone')?.value || '5511999999999';
-                        handleSimulateWaScan(ph);
-                      }}
-                      style={{ padding: '8px 14px', borderRadius: 8, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', color: '#60a5fa', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
-                    >
-                      ⚡ Parear Simulação
-                    </button>
-                  </div>
-                </div>
+
               </div>
             )}
           </div>

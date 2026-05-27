@@ -8,16 +8,15 @@ export default function CadastroPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const [chosenPlan, setChosenPlan] = useState('starter'); // defaults to starter
+  const [chosenPlan, setChosenPlan] = useState('cobra_pro'); // defaults to Cobra Pro
 
   // Load URL plan parameter safely on mount (client-side only to prevent Next.js hydration issues)
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const plan = params.get('plan');
-      if (plan && ['starter', 'crescimento', 'cobra_pro', 'pro'].includes(plan)) {
-        setChosenPlan(plan);
-      }
+      // All paths map to cobra_pro for the unified plan overhaul
+      setChosenPlan('cobra_pro');
     }
   }, []);
 
@@ -102,9 +101,9 @@ export default function CadastroPage() {
   };
 
   const planNames = {
-    starter: 'Plano Starter (3 dias grátis)',
-    crescimento: 'Plano Crescimento (3 dias grátis)',
-    cobra_pro: 'Plano Cobra Pro (3 dias grátis)'
+    starter: 'Plano Completo Ilimitado (3 dias grátis)',
+    crescimento: 'Plano Completo Ilimitado (3 dias grátis)',
+    cobra_pro: 'Plano Completo Ilimitado (3 dias grátis)'
   };
 
   return (
@@ -243,7 +242,7 @@ export default function CadastroPage() {
             }}>
               <div>
                 <span style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase', opacity: 0.8, letterSpacing: '0.5px' }}>Mensalidade</span>
-                <h4 style={{ margin: '1px 0 0 0', fontSize: 16, fontWeight: 800 }}>R$ 19,90/mês</h4>
+                <h4 style={{ margin: '1px 0 0 0', fontSize: 16, fontWeight: 800 }}>R$ 49,90/mês</h4>
                 <span style={{ fontSize: 7, opacity: 0.7, fontStyle: 'italic' }}>*Cobrado apenas após o período grátis</span>
               </div>
 

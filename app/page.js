@@ -386,6 +386,7 @@ export default function HomePage() {
   const [beforeAfterTab, setBeforeAfterTab] = useState('after');
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [billingCycle, setBillingCycle] = useState('mensal');
+  const [featuresOpen, setFeaturesOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -1332,105 +1333,138 @@ export default function HomePage() {
             <span style={{ fontSize: 28 }}>💡</span>
             <p style={{ fontSize: 14, color: '#10b981', lineHeight: 1.6, textAlign: 'left', margin: 0 }}>
               Se você tem <strong>10 clientes</strong> pagando R$ 200/mês e 20% estão atrasados, você perde
-              {' '}<strong>R$ 400/mês</strong> em inadimplência. O plano Crescimento custa apenas <strong>{billingCycle === 'anual' ? 'R$ 15,90/mês' : 'R$ 19,90/mês'}</strong>.
-              {' '}Isso é um <strong style={{ color: '#10b981', fontSize: 16 }}>ROI de {billingCycle === 'anual' ? '2.415%' : '2.011%'}</strong> no primeiro mês.
+              {' '}<strong>R$ 400/mês</strong> em inadimplência. O Plano Completo Ilimitado custa apenas <strong>{billingCycle === 'anual' ? 'R$ 39,90/mês' : 'R$ 49,90/mês'}</strong>.
+              {' '}Isso é um <strong style={{ color: '#10b981', fontSize: 16 }}>ROI de {billingCycle === 'anual' ? '1.002%' : '801%'}</strong> no primeiro mês.
             </p>
           </div>
 
-          <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, alignItems: 'stretch' }}>
-            {/* Starter */}
-            <GlowCard style={{ padding: 36, textAlign: 'left' }}>
-              <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: '#ffffff' }}>Starter</h3>
-              <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20 }}>Para testar e começar a cobrar</p>
-              <div style={{ marginBottom: 4 }}>
-                <span style={{ fontSize: 42, fontWeight: 900, color: '#ffffff' }}>{billingCycle === 'anual' ? 'R$ 7,90' : 'R$ 9,90'}</span>
-                <span style={{ fontSize: 14, color: '#94a3b8' }}>/mês</span>
-              </div>
-              <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 4 }}>{billingCycle === 'anual' ? 'menos de R$ 0,26/dia' : 'menos de R$ 0,33/dia'}</p>
-              <p style={{ fontSize: 11, color: '#64748b', marginBottom: 24 }}>{billingCycle === 'anual' ? 'R$ 94,80 cobrado anualmente' : 'cobrado mensalmente'}</p>
-              <div style={{ flex: 1 }}>
-                {['Até 20 cobranças simultâneas', 'Lembretes por e-mail', 'Dashboard básico', 'Templates padrão', '1 chave Pix'].map((f, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, fontSize: 14, color: '#cbd5e1' }}>
-                    <span style={{ color: '#10b981' }}>✓</span> {f}
-                  </div>
-                ))}
-                {['WhatsApp', 'Relatórios', 'API'].map((f, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, fontSize: 14, color: 'rgba(255,255,255,0.15)' }}>
-                    <span>✗</span> {f}
-                  </div>
-                ))}
-              </div>
-              <a href={`/cadastro?plan=starter&cycle=${billingCycle}`} style={{
-                display: 'block', padding: '11px', borderRadius: 10, marginTop: 20,
-                border: '2px solid rgba(255,255,255,0.1)', color: '#ffffff', fontSize: 14, fontWeight: 700,
-                textAlign: 'center', transition: 'all 0.3s', textDecoration: 'none', background: '#0c0e1a'
-              }}
-                onMouseEnter={e => { e.target.style.borderColor = '#10b981'; e.target.style.color = '#10b981'; }}
-                onMouseLeave={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; e.target.style.color = '#ffffff'; }}
-              >Assinar Starter</a>
-            </GlowCard>
-
-            {/* Crescimento - POPULAR — com destaque visual forte */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'stretch', margin: '0 auto', maxWidth: 480 }}>
+            {/* Plano Completo Ilimitado Card */}
             <GlowCard className="pricing-featured" style={{
               borderRadius: 28, padding: '44px 36px',
               border: '3px solid #10b981', textAlign: 'left', position: 'relative',
               boxShadow: '0 24px 60px rgba(16,185,129,0.15)',
-              transform: 'scale(1.05)'
+              width: '100%'
             }}>
               <div style={{
                 position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)',
-                background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#fff',
+                background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff',
                 padding: '7px 22px', borderRadius: 100, fontSize: 12, fontWeight: 800, letterSpacing: 0.5,
-                boxShadow: '0 4px 12px rgba(245,158,11,0.4)', whiteSpace: 'nowrap', zIndex: 10
-              }}>⚡ MAIS POPULAR — MELHOR CUSTO-BENEFÍCIO</div>
-              <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4, color: '#fff' }}>Crescimento</h3>
-              <p style={{ fontSize: 13, color: '#a7f3d0', marginBottom: 20 }}>Para quem está crescendo e quer resultado rápido</p>
-              <div style={{ marginBottom: 4 }}>
-                <span style={{ fontSize: 48, fontWeight: 900, color: '#10b981' }}>{billingCycle === 'anual' ? 'R$ 15,90' : 'R$ 19,90'}</span>
-                <span style={{ fontSize: 14, color: '#a7f3d0' }}>/mês</span>
+                boxShadow: '0 4px 12px rgba(16,185,129,0.4)', whiteSpace: 'nowrap', zIndex: 10
+              }}>✨ 3 DIAS GRÁTIS — TESTE SEM COMPROMISSO</div>
+              <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4, color: '#fff', textAlign: 'center' }}>Plano Completo Ilimitado</h3>
+              <p style={{ fontSize: 13, color: '#a7f3d0', marginBottom: 20, textAlign: 'center' }}>Acesso a todas as ferramentas sem restrições ou limites</p>
+              
+              <div style={{ marginBottom: 4, textAlign: 'center' }}>
+                <span style={{ fontSize: 54, fontWeight: 900, color: '#10b981' }}>{billingCycle === 'anual' ? 'R$ 39,90' : 'R$ 49,90'}</span>
+                <span style={{ fontSize: 16, color: '#a7f3d0' }}>/mês</span>
               </div>
-              <p style={{ fontSize: 13, color: '#a7f3d0', marginBottom: 4 }}>{billingCycle === 'anual' ? 'menos de R$ 0,53/dia' : 'menos de R$ 0,67/dia'}</p>
-              <p style={{ fontSize: 11, color: '#68d391', marginBottom: 16 }}>{billingCycle === 'anual' ? 'R$ 190,80 cobrado anualmente' : 'cobrado mensalmente'}</p>
-              <div style={{ background: 'rgba(16,185,129,0.15)', borderRadius: 8, padding: '8px 12px', marginBottom: 24, fontSize: 13, color: '#a7f3d0', fontWeight: 600 }}>
-                {billingCycle === 'anual' ? '🔥 ROI médio de 2.500%+ no 1º mês' : '🔥 ROI médio de 2.000%+ no 1º mês'}
+              <p style={{ fontSize: 13, color: '#a7f3d0', marginBottom: 4, textAlign: 'center' }}>{billingCycle === 'anual' ? 'menos de R$ 1,33/dia' : 'menos de R$ 1,67/dia'}</p>
+              <p style={{ fontSize: 11, color: '#68d391', marginBottom: 16, textAlign: 'center' }}>{billingCycle === 'anual' ? 'R$ 478,80 cobrado anualmente' : 'cobrado mensalmente'}</p>
+              
+              <div style={{ background: 'rgba(16,185,129,0.15)', borderRadius: 8, padding: '8px 12px', marginBottom: 24, fontSize: 13, color: '#a7f3d0', fontWeight: 600, textAlign: 'center' }}>
+                🔥 Quotas 100% Ilimitadas · 0% de Taxas sobre Recebíveis
               </div>
-              <div style={{ flex: 1 }}>
-                {['Até 50 cobranças simultâneas', 'WhatsApp + e-mail automático', 'Dashboard completo', 'Templates personalizáveis', 'Relatórios de recebimento', 'Múltiplas chaves Pix', 'Suporte e-mail + WhatsApp'].map((f, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, fontSize: 14, color: '#d1fae5' }}>
-                    <span style={{ color: '#10b981', fontWeight: 800, fontSize: 16 }}>✓</span> {f}
-                  </div>
-                ))}
-              </div>
-              <a href={`/cadastro?plan=crescimento&cycle=${billingCycle}`} style={{
-                display: 'block', padding: '11px', borderRadius: 10, marginTop: 20,
-                background: '#10b981', color: '#070913', fontSize: 14, fontWeight: 800,
+              
+              <a href={`/cadastro?plan=cobra_pro&cycle=${billingCycle}`} style={{
+                display: 'block', padding: '14px', borderRadius: 10, marginTop: 20,
+                background: '#10b981', color: '#070913', fontSize: 15, fontWeight: 800,
                 textAlign: 'center', boxShadow: '0 4px 14px rgba(16,185,129,0.4)', transition: 'all 0.3s', textDecoration: 'none'
-              }}>Assinar agora — Começar a recuperar →</a>
+              }}>Começar Teste de 3 Dias Grátis</a>
+              <p style={{ fontSize: 11, color: '#64748b', marginTop: 12, textAlign: 'center' }}>Sem cartão de crédito necessário para o teste grátis</p>
             </GlowCard>
+          </div>
 
-            {/* Cobra Pro */}
-            <GlowCard style={{ padding: 36, textAlign: 'left', color: '#fff' }}>
-              <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, color: '#fff' }}>Cobra Pro</h3>
-              <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20 }}>Para quem quer o máximo</p>
-              <div style={{ marginBottom: 4 }}>
-                <span style={{ fontSize: 42, fontWeight: 900, color: '#10b981' }}>{billingCycle === 'anual' ? 'R$ 39,90' : 'R$ 49,90'}</span>
-                <span style={{ fontSize: 14, color: '#64748b' }}>/mês</span>
-              </div>
-              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 4 }}>{billingCycle === 'anual' ? 'menos de R$ 1,33/dia' : 'menos de R$ 1,67/dia'}</p>
-              <p style={{ fontSize: 11, color: '#64748b', marginBottom: 24 }}>{billingCycle === 'anual' ? 'R$ 478,80 cobrado anualmente' : 'cobrado mensalmente'}</p>
-              <div style={{ flex: 1 }}>
-                {['Cobranças ilimitadas', 'WhatsApp + e-mail', 'Dashboard completo', 'Templates ilimitados', 'Relatórios avançados', 'API para integrações', 'Webhooks em tempo real', 'Suporte prioritário WhatsApp', 'Multi-usuários'].map((f, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, fontSize: 14, color: '#cbd5e1' }}>
-                    <span style={{ color: '#10b981' }}>✓</span> {f}
+          {/* Collapsible Features Accordion */}
+          <div style={{ marginTop: 24, maxWidth: 540, margin: '24px auto 0 auto', textAlign: 'left' }}>
+            <button 
+              onClick={() => setFeaturesOpen(!featuresOpen)}
+              style={{
+                width: '100%',
+                padding: '16px 24px',
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(16, 185, 129, 0.25)',
+                borderRadius: 16,
+                color: '#fff',
+                fontSize: 16,
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                transition: 'all 0.3s ease',
+                fontFamily: 'Inter, sans-serif'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(16, 185, 129, 0.05)';
+                e.currentTarget.style.borderColor = '#10b981';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.25)';
+              }}
+            >
+              <span>📋 Funcionalidades do plano</span>
+              <span style={{
+                fontSize: 20,
+                transform: featuresOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.3s ease',
+                color: '#10b981'
+              }}>▼</span>
+            </button>
+            
+            <div style={{
+              maxHeight: featuresOpen ? '1000px' : '0px',
+              overflow: 'hidden',
+              transition: 'all 0.5s ease-in-out',
+              background: 'rgba(12, 14, 26, 0.5)',
+              border: featuresOpen ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid transparent',
+              borderTop: 'none',
+              borderRadius: '0 0 16px 16px',
+              padding: featuresOpen ? '20px 24px' : '0 24px'
+            }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12, marginBottom: 20 }}>
+                {[
+                  { text: '📱 Envio de Lembretes Automáticos via WhatsApp Comercial e E-mail', desc: 'Alertas amigáveis enviados no momento exato no e-mail e celular do devedor.' },
+                  { text: '🤖 Catarina IA (Geração de Mensagens Inteligentes)', desc: 'Escreva textos persuasivos e gentis adaptados ao humor do cliente e à dívida.' },
+                  { text: '🚗 Gestão de Locações com Contrato Rígido', desc: 'Gerencie aluguéis de veículos, imóveis ou equipamentos com controle rígido de prazos.' },
+                  { text: '💰 Gestão de Empréstimos com Juros Diários', desc: 'Calculadora integrada de juros diários acumulados para créditos e mútuos.' },
+                  { text: '🏦 Receba via Pix Direto na Sua Conta com 0% Taxas', desc: 'Sem intermediários, sem reter seu dinheiro. O cliente paga direto no seu Pix.' },
+                  { text: '📅 Timeline de Disparos Customizável', desc: 'Programe lembretes automáticos para antes, no dia e após o vencimento.' },
+                  { text: '📊 Relatórios Avançados e Análise de Risco', desc: 'Antecipe atrasos com análise preditiva da saúde financeira dos tomadores.' },
+                  { text: '⚡ Cobranças e Clientes Ilimitados', desc: 'Cadastre quantos clientes e faturas desejar, sem limite de volume.' }
+                ].map((f, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                    <span style={{ color: '#10b981', fontWeight: 'bold', fontSize: 16, marginTop: 1 }}>✓</span>
+                    <div>
+                      <strong style={{ display: 'block', fontSize: 14, color: '#f8fafc' }}>{f.text}</strong>
+                      <span style={{ fontSize: 12, color: '#94a3b8' }}>{f.desc}</span>
+                    </div>
                   </div>
                 ))}
               </div>
-              <a href={`/cadastro?plan=cobrapro&cycle=${billingCycle}`} style={{
-                display: 'block', padding: '11px', borderRadius: 10, marginTop: 20,
-                background: '#10b981', color: '#070913', fontSize: 14, fontWeight: 700,
-                textAlign: 'center', boxShadow: '0 4px 12px rgba(16,185,129,0.3)', transition: 'all 0.3s', textDecoration: 'none'
-              }}>Assinar Cobra Pro →</a>
-            </GlowCard>
+              
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16, display: 'flex', justifyContent: 'center' }}>
+                <a 
+                  href={`/cadastro?plan=cobra_pro&cycle=${billingCycle}`}
+                  style={{
+                    display: 'inline-block',
+                    padding: '12px 32px',
+                    borderRadius: 10,
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    color: '#070913',
+                    fontSize: 14,
+                    fontWeight: 800,
+                    textAlign: 'center',
+                    boxShadow: '0 4px 14px rgba(16,185,129,0.3)',
+                    transition: 'all 0.3s',
+                    textDecoration: 'none'
+                  }}
+                >
+                  Assine agora
+                </a>
+              </div>
+            </div>
           </div>
 
           <p style={{ fontSize: 13, color: '#64748b', marginTop: 40, textAlign: 'center' }}>Todos os planos: 0% sobre o valor recebido · Cancele quando quiser · Pix 100% na sua conta</p>

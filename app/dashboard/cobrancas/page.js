@@ -174,30 +174,7 @@ export default function CobrancasPage() {
     }
   };
 
-  const handleSimulateWaScan = async (phoneInput) => {
-    if (!phoneInput) {
-      alert('Por favor, informe o seu número de WhatsApp.');
-      return;
-    }
-    try {
-      triggerToast('🔌 Simulando leitura de QR Code...', 'loading');
-      const res = await fetch('/api/whatsapp/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneInput })
-      });
-      const data = await res.json();
-      if (data.success) {
-        setWhatsappStatus('connected');
-        setWhatsappPhone(phoneInput);
-        triggerToast('WhatsApp conectado com sucesso! 📱', 'success');
-        setShowWaPairModal(false);
-        fetchWaStatus();
-      }
-    } catch (e) {
-      alert('Erro ao realizar pareamento simulado.');
-    }
-  };
+
 
   async function createCharge(e) {
     e.preventDefault();
@@ -1273,30 +1250,7 @@ export default function CobrancasPage() {
                   </div>
                 </div>
 
-                {/* Simulated connection option for local sandbox / quick testing */}
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 14 }}>
-                  <p style={{ fontSize: 11.5, color: '#94a3b8', marginBottom: 8, textAlign: 'center', fontFamily: 'sans-serif' }}>
-                    💡 Sem celular por perto? Conecte instantaneamente simulando o pareamento:
-                  </p>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <input 
-                      type="tel" 
-                      id="waSimPhone"
-                      placeholder="DDD + Seu Número" 
-                      defaultValue={user?.phone || '5511999999999'}
-                      style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: 12.5 }}
-                    />
-                    <button
-                      onClick={() => {
-                        const ph = document.getElementById('waSimPhone')?.value || '5511999999999';
-                        handleSimulateWaScan(ph);
-                      }}
-                      style={{ padding: '8px 14px', borderRadius: 8, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', color: '#60a5fa', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'sans-serif' }}
-                    >
-                      ⚡ Parear Simulação
-                    </button>
-                  </div>
-                </div>
+
               </div>
             )}
           </div>
