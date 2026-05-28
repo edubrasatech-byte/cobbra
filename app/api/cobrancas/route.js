@@ -119,7 +119,7 @@ export async function POST(request) {
       const todayStr = new Date().toLocaleDateString('pt-BR');
       const dueStr = new Date(due_date).toLocaleDateString('pt-BR');
       
-      finalContractText = `CONTRATO DE ADESÃO DE LOCAÇÃO DE VEÍCULO AUTOMOTOR
+      finalContractText = `CONTRATO PARTICULAR DE LOCAÇÃO DE VEÍCULO AUTOMOTOR PARA FINS COMERCIAIS
 
 LOCADOR: ${user.business_name || 'Administradora de Frotas Integrada'}
 LOCATÁRIO: ${client.name} | CPF/CNPJ: ${client.document || 'Não cadastrado'} | WhatsApp: ${client.phone || 'Não cadastrado'}
@@ -127,27 +127,34 @@ LOCATÁRIO: ${client.name} | CPF/CNPJ: ${client.document || 'Não cadastrado'} |
 CLÁUSULA 1 - DO OBJETO E VEÍCULO
 O objeto deste instrumento é a locação temporária do veículo automotor caracterizado como:
 - VEÍCULO: ${vehicle_info}
-O veículo é entregue em perfeito estado de conservação, funcionamento, limpeza e com tanque de combustível cheio, devendo ser devolvido nas mesmas condições.
+1.1. O LOCATÁRIO declara receber o veículo em perfeitas condições de uso, segurança, higiene e conservação, com pneus e estepe regulamentares, comprometendo-se a devolvê-lo no mesmo estado.
+1.2. É terminantemente PROIBIDA a sublocação, empréstimo, cessão ou transferência da posse do veículo a terceiros sob qualquer pretexto, sob pena de rescisão contratual imediata e multa penal de R$ 2.000,00, sem prejuízo de perdas e danos.
 
-CLÁUSULA 2 - DO PREÇO, CRONOGRAMA E PAGAMENTO
-2.1. O locatário pagará ao locador o valor ajustado de R$ ${Number(amount).toFixed(2)} (${recurrenceLabel}) para a utilização do veículo.
+CLÁUSULA 2 - DO PREÇO, CAUÇÃO E REGRAS FINANCEIRAS
+2.1. O LOCATÁRIO pagará ao LOCADOR o valor ajustado de R$ ${Number(amount).toFixed(2)} (${recurrenceLabel}) para a utilização do veículo.
 2.2. O vencimento acordado do aluguel é em ${dueStr}.
-2.3. O ATRASO NO PAGAMENTO SUPERIOR A 24 (VINTE E QUATRO) HORAS constitui inadimplemento contratual imediato e grave (Mora).
-2.4. EM CASO DE MORA, fica o locador plenamente autorizado, de forma extrajudicial e sem necessidade de aviso prévio:
-  a) A efetuar o BLOQUEIO FÍSICO e RASTREAMENTO do veículo por via remota;
-  b) A realizar a BUSCA E APREENSÃO imediata do veículo onde quer que este se encontre, arcando o locatário com todas as custas de guincho e depósito.
-2.5. A TÍTULO DE CAUÇÃO/GARANTIA LOCATÍCIA, o locatário realiza neste ato o depósito de R$ ${Number(deposit_amount || 0).toFixed(2)}, valor este que será restituído integralmente ao locatário após o término do contrato e devolução do veículo em perfeito estado de conservação e sem infrações pendentes.
+2.3. A TÍTULO DE CAUÇÃO/GARANTIA LOCATÍCIA, o LOCATÁRIO realiza neste ato o depósito de R$ ${Number(deposit_amount || 0).toFixed(2)}. Fica o LOCADOR autorizado a reter este valor total ou parcialmente para abatimento de danos mecânicos, avarias de lataria, furos de pneus, multas de trânsito ou saldos de aluguéis em atraso.
+2.4. Caso não haja avarias ou débitos, a caução será devolvida integralmente no prazo de 15 (quinze) dias após a devolução física do veículo.
 
-CLÁUSULA 3 - DA RESPONSABILIDADE CIVIL E CRIMINAL
-3.1. O locatário assume integral responsabilidade civil e criminal por quaisquer danos causados ao veículo, a si próprio ou a terceiros durante o período de posse.
-3.2. Todas as infrações de trânsito cometidas no período da locação são de responsabilidade exclusiva do locatário, autorizando o locador a efetuar a indicação de condutor e cobrança regressiva dos valores das multas acrescidas de 20% de taxa administrativa.
+CLÁUSULA 3 - DAS INFRAÇÕES DE TRÂNSITO E MULTAS
+3.1. Todas as infrações de trânsito cometidas durante o período de vigência deste contrato são de responsabilidade exclusiva e integral do LOCATÁRIO.
+3.2. O LOCATÁRIO desde já autoriza e outorga poderes para que o LOCADOR efetue a indicação de condutor junto aos órgãos de trânsito (Detran, PRF, etc.).
+3.3. O valor nominal de qualquer multa será reembolsado pelo LOCATÁRIO acrescido de uma taxa administrativa de 20% (vinte por cento), autorizando-se o lançamento automático de cobrança ou abatimento do saldo de caução.
 
-CLÁUSULA 4 - DA DEVOLUÇÃO E RENOVAÇÃO
-4.1. O veículo deverá ser devolvido impreterivelmente na data limite pactuada de ${dueStr}.
-4.2. A não devolução na data limite e a ausência de prorrogação formal autorizam o locador a registrar boletim de ocorrência policial por apropriação indébita.
+CLÁUSULA 4 - DO INADIMPLEMENTO E PROTOCOLO DE RETOMADA
+4.1. O atraso no pagamento do aluguel semanal ou mensal por prazo superior a 24 (vinte e quatro) horas constitui inadimplemento grave (Mora).
+4.2. EM CASO DE MORA, fica o LOCADOR plenamente autorizado, de forma extrajudicial e independentemente de notificação prévia:
+  a) A efetuar o BLOQUEIO FÍSICO DO MOTOR e o RASTREAMENTO do veículo via satélite/GPRS;
+  b) A realizar a RETOMADA E REINTEGRAÇÃO de posse imediata do veículo onde quer que este se encontre, correndo por conta exclusiva do LOCATÁRIO todas as despesas com chaveiro, guincho, reboque e depósito oficial.
 
-Contrato gerado eletronicamente em ${todayStr}.
-Sujeito a alterações negociadas diretamente com a Catarina IA.`;
+CLÁUSULA 5 - DA MANUTENÇÃO E REVISÕES
+5.1. O LOCATÁRIO compromete-se a parar o veículo e notificar imediatamente o LOCADOR para a realização de troca de óleo e revisões periódicas obrigatórias a cada 10.000 KM rodados.
+5.2. O descumprimento do agendamento de revisões ou a negligência com avisos de painel (temperatura, óleo, freios) gerará multa civil de R$ 500,00, além da responsabilidade integral por eventual dano mecânico ao motor.
+5.3. Danos decorrentes de mau uso, negligência ou sinistro (colisão) sem cobertura de seguro serão arcados integralmente pelo LOCATÁRIO, incluindo lucros cessantes pelo período que o carro permanecer imobilizado na oficina.
+
+CLÁUSULA 6 - DA DEVOLUÇÃO E CLÁUSULA PENAL
+6.1. O veículo deverá ser devolvido impreterivelmente na data limite pactuada de ${dueStr}.
+6.2. A não devolução do veículo no prazo acordado sem autorização expressa por escrito do LOCADOR constituirá CRIME DE APROPRIAÇÃO INDÉBITA (Art. 168 do Código Penal Brasileiro), autorizando o LOCADOR a registrar boletim de ocorrência policial e acionar as autoridades de segurança pública para fins de busca, apreensão e prisão do infrator.`;
     }
 
     const id = generateId();
