@@ -42,12 +42,72 @@ function ProgressBar({ current, total }) {
 }
 
 export default function ObrasPage() {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [projectId, setProjectId] = useState(null);
   const [countdown, setCountdown] = useState(0);
   const [bleed, setBleed] = useState(40); // mirrors layout horizontalPadding
   const [isMobile, setIsMobile] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+
+  const loadProjects = async () => {
+    setProjectsLoading(true);
+    try {
+      const res = await fetch('/api/ai/budget-generator');
+      const data = await res.json();
+      if (data.projects) {
+        setProjects(data.projects);
+      }
+    } catch (e) {
+      console.error("Falha ao buscar projetos", e);
+    } finally {
+      setProjectsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProjects();
+  }, []);
+
+  const handleLoadProject = async (projId) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/ai/budget-generator?project_id=${projId}`);
+      const data = await res.json();
+      if (data.project) {
+        const p = data.project;
+        setProjectId(p.id);
+        setHtmlContent(p.content_html);
+        setProjectType(p.name.replace('Obra - ', ''));
+        setClientName(p.client_name || '');
+        setClientDoc(p.client_doc || '');
+        setClientAddress(p.client_address || '');
+        setChatHistory([{ role: 'ai', text: '✅ Contrato reaberto! Você pode continuar lapidando escrevendo qualquer alteração no chat abaixo.' }]);
+        setStep(4);
+      } else {
+        alert('Erro ao carregar o projeto.');
+      }
+    } catch (e) {
+      alert('Erro de conexão ao reabrir.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteProject = async (projId) => {
+    if (!confirm('Deseja realmente excluir este contrato? Esta ação é irreversível.')) return;
+    try {
+      const res = await fetch(`/api/ai/budget-generator?project_id=${projId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setProjects(prev => prev.filter(p => p.id !== projId));
+      } else {
+        alert('Erro ao excluir.');
+      }
+    } catch (e) {
+      alert('Erro de conexão ao excluir.');
+    }
+  };
 
   useEffect(() => {
     const check = () => {
@@ -169,7 +229,7 @@ CONDIÇÕES: ${notes}
       if (data.html) {
         setHtmlContent(data.html);
         setImages([]);
-        setChatHistory(p => [...p, { role: 'ai', text: '✅ Documento atualizado! Revise a prévia ao lado.' }]);
+        setChatHistory(p => [...p, { role: 'ai', text: data.ai_response || '✅ Documento atualizado! Revise a prévia ao lado.' }]);
       }
     } catch { setChatHistory(p => [...p, { role: 'ai', text: '❌ Erro ao editar. Tente novamente.' }]); }
     finally { setLoading(false); clearInterval(countdownRef.current); setCountdown(0); }
@@ -238,10 +298,115 @@ CONDIÇÕES: ${notes}
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", color: '#f1f5f9' }}>
 
-      <div style={{ marginBottom: 32 }}>
-        <h2 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px' }}>🏗️ Obras e Orçamentos</h2>
-        <p style={{ fontSize: 14, color: '#64748b', marginTop: 2 }}>Gere propostas comerciais, diários de obra e contratos inteligentes com o Catarina Copilot.</p>
+      <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+        <div>
+          <h2 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px' }}>🏗️ Obras e Orçamentos</h2>
+          <p style={{ fontSize: 14, color: '#64748b', marginTop: 2 }}>Gere propostas comerciais, diários de obra e contratos inteligentes com o Catarina Copilot.</p>
+        </div>
+        {step > 0 && (
+          <button 
+            onClick={() => { setStep(0); loadProjects(); }}
+            style={{ ...btnGhost, padding: '8px 16px', borderRadius: 10, fontSize: 12, cursor: 'pointer' }}
+          >
+            ← Voltar ao Painel
+          </button>
+        )}
       </div>
+
+      {/* ── STEP 0: DASHBOARD GERAL DE OBRAS ── */}
+      {step === 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* Header Action Row */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Seus Contratos e Orçamentos Salvos
+            </span>
+            <button 
+              onClick={() => { setStep(1); setHtmlContent(''); setProjectId(null); setExportedCount(0); setImages([]); setNotes(''); setProjectType(''); setServices([]); setContractorName(''); setContractorCnpj(''); setContractorAddress(''); setClientName(''); setClientDoc(''); setClientAddress(''); setChatHistory([]); }}
+              style={{ ...btnPrimary, padding: '12px 20px', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 14px rgba(16,185,129,0.2)' }}
+            >
+              <span>🏗️</span> Criar Nova Obra
+            </button>
+          </div>
+
+          {projectsLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justify: 'center', padding: '60px 0' }}>
+              <div style={{ width: 32, height: 32, border: '4px solid rgba(16,185,129,0.2)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 12 }}></div>
+              <p style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>Buscando seus contratos salvos...</p>
+            </div>
+          ) : projects.length === 0 ? (
+            <div style={{ background: '#0c0e1a', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 20, padding: '60px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: 40, marginBottom: 16 }}>📝</span>
+              <h3 style={{ fontSize: 16, fontWeight: 800, color: '#fff', margin: 0 }}>Nenhum contrato gerado ainda</h3>
+              <p style={{ fontSize: 13, color: '#64748b', marginTop: 6, maxWidth: 360, lineHeight: 1.5 }}>
+                Crie seu primeiro projeto de engenharia ou reforma com o Catarina Copilot para automatizar seus escopos, termos e medições Pix.
+              </p>
+              <button 
+                onClick={() => setStep(1)}
+                style={{ ...btnPrimary, padding: '10px 18px', borderRadius: 8, marginTop: 16 }}
+              >
+                Começar Agora
+              </button>
+            </div>
+          ) : (
+            <div style={{ background: '#0c0e1a', border: '1px solid #1e293b', borderRadius: 16, overflow: 'hidden' }}>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid #1e293b', background: '#0f172a' }}>
+                      <th style={{ padding: '14px 18px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', fontSize: 10 }}>Nome do Projeto</th>
+                      <th style={{ padding: '14px 18px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', fontSize: 10 }}>Cliente</th>
+                      <th style={{ padding: '14px 18px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', fontSize: 10 }}>Status</th>
+                      <th style={{ padding: '14px 18px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', fontSize: 10 }}>Versão</th>
+                      <th style={{ padding: '14px 18px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', fontSize: 10, textAlign: 'right' }}>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {projects.map(p => (
+                      <tr key={p.id} style={{ borderBottom: '1px solid rgba(30,41,59,0.5)', transition: 'background 0.15s' }}>
+                        <td style={{ padding: '16px 18px', fontWeight: 700, color: '#fff' }}>
+                          <span style={{ marginRight: 6 }}>🏗️</span> {p.name}
+                        </td>
+                        <td style={{ padding: '16px 18px', color: '#cbd5e1' }}>
+                          {p.client_name === 'Cliente Avulso' ? <span style={{ color: '#64748b', fontStyle: 'italic' }}>Avulso</span> : p.client_name}
+                        </td>
+                        <td style={{ padding: '16px 18px' }}>
+                          <span style={{ 
+                            background: p.status === 'completed' ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)',
+                            color: p.status === 'completed' ? '#34d399' : '#f59e0b',
+                            padding: '4px 8px', borderRadius: 20, fontSize: 11, fontWeight: 700
+                          }}>
+                            {p.status === 'budgeting' ? 'Orçamento' : p.status === 'in_progress' ? 'Em Andamento' : 'Concluído'}
+                          </span>
+                        </td>
+                        <td style={{ padding: '16px 18px', color: '#64748b', fontWeight: 600 }}>
+                          v{p.version || 1}
+                        </td>
+                        <td style={{ padding: '16px 18px', textAlign: 'right' }}>
+                          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                            <button 
+                              onClick={() => handleLoadProject(p.id)}
+                              style={{ ...btnPrimary, padding: '6px 12px', borderRadius: 8, fontSize: 11 }}
+                            >
+                              Lapidar Orçamento
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteProject(p.id)}
+                              style={{ ...btnGhost, padding: '6px 12px', borderRadius: 8, fontSize: 11, color: '#f87171' }}
+                            >
+                              Excluir
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── STEP 1: ESCOPO ── */}
       {step === 1 && (
@@ -262,20 +427,13 @@ CONDIÇÕES: ${notes}
               onFocus={e => e.target.style.borderColor = '#10b981'}
               onBlur={e => e.target.style.borderColor = '#1e293b'}
             />
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
-              {['Residência unifamiliar', 'Reforma comercial', 'Impermeabilização', 'Galpão logístico'].map(ex => (
-                <button key={ex} onClick={() => setProjectType(ex)}
-                  style={{ ...btnGhost, padding: '6px 12px', fontSize: 11, borderRadius: 8 }}>
-                  {ex}
-                </button>
-              ))}
-            </div>
+
           </div>
 
           <div>
             <label style={stepStyle.label}>Serviços incluídos</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {['Lavação de Fachada', 'Pintura Externa', 'Impermeabilização', 'Tratamento de Ferragem', 'Troca de Telhado', 'Fundação e Estrutura', 'Acabamento Interno', 'Elétrica e Hidráulica'].map(s => {
+              {['Lavação de Fachada', 'Pintura Externa', 'Impermeabilização', 'Tratamento de Ferragem', 'Troca de Telhado', 'Fundação e Estrutura', 'Acabamento Interno', 'Elétrica e Hidráulica', 'Outros'].map(s => {
                 const sel = services.includes(s);
                 return (
                   <button key={s} onClick={() => setServices(p => sel ? p.filter(x => x !== s) : [...p, s])}
@@ -356,17 +514,9 @@ CONDIÇÕES: ${notes}
           {/* Step 3 condições inline */}
           <div style={{ background: '#0b1220', border: '1px solid #1e293b', borderRadius: 12, padding: 16 }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>💰 Condições Financeiras</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
-              {[
-                { l: '30/30/40', t: 'Valor total R$ [valor]. Pagamento: 30% entrada, 30% Medição 1 (30 dias), 40% entrega (60 dias).' },
-                { l: '50/50', t: 'Valor total R$ [valor]. 50% no início e 50% na entrega final da obra.' },
-                { l: '3x mensais', t: 'Valor total R$ [valor] em 3 parcelas mensais iguais: 30, 60 e 90 dias.' },
-                { l: 'Medição semanal', t: 'Valor total R$ [valor]. Pagamento semanal por avanço físico, medições às sextas.' },
-              ].map(t => (
-                <button key={t.l} onClick={() => setNotes(t.t)}
-                  style={{ ...btnGhost, padding: '7px 14px', fontSize: 12, borderRadius: 8 }}>{t.l}</button>
-              ))}
-            </div>
+            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 10, fontWeight: 500 }}>
+              Explique aqui como e de que forma você vai receber pelo projeto.
+            </p>
             <textarea style={stepStyle.textarea}
               placeholder="Descreva valor total, forma de pagamento e prazos. Ex: Valor total R$ 120.000. Pagamento 30% entrada, saldo em 2 medições..."
               value={notes} onChange={e => setNotes(e.target.value)} />
@@ -502,38 +652,29 @@ CONDIÇÕES: ${notes}
                 <span style={{ fontSize: 9, color: '#64748b', background: '#1e293b', padding: '2px 8px', borderRadius: 20, fontWeight: 700, letterSpacing: '0.05em' }}>IA</span>
               </div>
 
-              {/* Sugestões em formato de carrossel horizontal compacto */}
-              <div style={{ padding: '10px 12px', borderBottom: '1px solid #1e293b', flexShrink: 0 }}>
-                <p style={{ fontSize: 9, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Sugestões rápidas</p>
-                <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 6, scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="scrollbar-none">
-                  {PROMPT_SUGGESTIONS.map((s, i) => (
-                    <button key={i} onClick={() => handleChatEdit(s.text)} disabled={loading}
-                      style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: 6, 
-                        padding: '6px 10px', 
-                        background: '#0f172a', 
-                        border: '1px solid #1e293b', 
-                        borderRadius: 8, 
-                        cursor: loading ? 'wait' : 'pointer', 
-                        whiteSpace: 'nowrap', 
-                        flexShrink: 0, 
-                        opacity: loading ? 0.5 : 1, 
-                        transition: 'border-color 0.15s' 
-                      }}
-                      onMouseEnter={e => !loading && (e.currentTarget.style.borderColor = '#10b981')}
-                      onMouseLeave={e => (e.currentTarget.style.borderColor = '#1e293b')}
-                    >
-                      <span style={{ fontSize: 13 }}>{s.icon}</span>
-                      <span style={{ fontSize: 11, color: '#94a3b8' }}>{s.text}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Histórico do chat */}
-              <div style={{ flex: 1, overflowY: 'auto', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ flex: 1, overflowY: 'auto', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8, position: 'relative' }}>
+                {chatHistory.length <= 1 && (
+                  <div style={{ 
+                    position: 'absolute', 
+                    inset: '20px', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    textAlign: 'center', 
+                    opacity: 0.18,
+                    pointerEvents: 'none',
+                    userSelect: 'none'
+                  }}>
+                    <span style={{ fontSize: 32, marginBottom: 8 }}>🐍</span>
+                    <p style={{ fontSize: 13, fontWeight: 700, margin: 0, color: '#fff' }}>Catarina Copilot Ativa</p>
+                    <p style={{ fontSize: 11, marginTop: 4, lineHeight: 1.4, color: '#94a3b8' }}>
+                      Escreva abaixo as alterações que deseja fazer no contrato.<br />
+                      Ex: "Altere o valor para R$ 90.000" ou "Adicione garantia de 5 anos".
+                    </p>
+                  </div>
+                )}
                 {chatHistory.map((m, i) => (
                   <div key={i} style={{
                     padding: '8px 12px', borderRadius: 10, fontSize: 11, lineHeight: 1.5, maxWidth: '95%',
@@ -600,7 +741,7 @@ CONDIÇÕES: ${notes}
               </p>
               <button onClick={handleExportCharges} disabled={exportLoading}
                 style={{ ...btnPrimary, width: '100%', padding: '10px 0', borderRadius: 8, fontSize: 12, opacity: exportLoading ? 0.7 : 1 }}>
-                {exportLoading ? '⏳ Extraindo...' : exportedCount > 0 ? `✅ ${exportedCount} Parcelas Exportadas` : '💸 Extrair Parcelas de Medição'}
+                {exportLoading ? '⏳ Extraindo...' : exportedCount > 0 ? `✅ ${exportedCount} Pagamentos Exportados` : '💸 Extrair Pagamentos'}
               </button>
             </div>
 

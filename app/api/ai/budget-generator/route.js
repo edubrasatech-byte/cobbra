@@ -1,5 +1,5 @@
 import { getUserFromRequest } from '@/lib/auth';
-import { run, queryOne, generateId } from '@/lib/db';
+import { run, query, queryOne, generateId } from '@/lib/db';
 
 // Garante que as tabelas existem em produção
 try {
@@ -26,6 +26,64 @@ try {
   console.error("Erro ao criar tabelas na rota:", e);
 }
 
+export async function GET(request) {
+  try {
+    const user = getUserFromRequest(request);
+    if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
+
+    const { searchParams } = new URL(request.url);
+    const projectId = searchParams.get('project_id');
+
+    if (projectId) {
+      // Load specific project
+      const project = queryOne(`
+        SELECT p.*, c.name as client_name, c.document as client_doc, c.address as client_address, d.content_html, d.version
+        FROM projects p
+        LEFT JOIN clients c ON p.client_id = c.id
+        LEFT JOIN documents d ON d.project_id = p.id
+        WHERE p.user_id = ? AND p.id = ?
+        LIMIT 1
+      `, [user.id, projectId]);
+
+      if (!project) return Response.json({ error: 'Projeto não encontrado' }, { status: 404 });
+      return Response.json({ project });
+    }
+
+    // List all projects
+    const projects = query(`
+      SELECT p.*, c.name as client_name, d.content_html, d.version
+      FROM projects p
+      LEFT JOIN clients c ON p.client_id = c.id
+      LEFT JOIN documents d ON d.project_id = p.id AND d.type = 'budget'
+      WHERE p.user_id = ?
+      ORDER BY p.created_at DESC
+    `, [user.id]);
+
+    return Response.json({ projects });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    const user = getUserFromRequest(request);
+    if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
+
+    const { searchParams } = new URL(request.url);
+    const projectId = searchParams.get('project_id');
+
+    if (!projectId) return Response.json({ error: 'Falta o ID do projeto' }, { status: 400 });
+
+    run("DELETE FROM projects WHERE user_id = ? AND id = ?", [user.id, projectId]);
+    run("DELETE FROM documents WHERE project_id = ?", [projectId]);
+
+    return Response.json({ success: true });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+}
+
 export async function POST(request) {
   try {
     const user = getUserFromRequest(request);
@@ -43,7 +101,7 @@ export async function POST(request) {
 
     if (action === 'generate_initial') {
       const systemPrompt = `Crie um orçamento técnico estruturado em HTML limpo e profissional baseado nas informações abaixo.
-Use tom corporativo, adicione cláusulas de garantia (NBR 15.575), prazos e obrigações, e formate de forma que possa ser impresso e entregue ao cliente.
+Use tom corporativo, adicione cláusulas de garantia adequadas (caso o serviço 'Outros' esteja selecionado, elabore um contrato de prestação de serviços genérico altamente profissional, caso contrário use NBR 15.575), prazos e obrigações, e formate de forma que possa ser impresso e entregue ao cliente.
 ATENÇÃO: Não mencione que você é uma IA ou "Catarina" no texto do contrato. O emitente é a empresa de Construção Civil. O contrato deve ser extremamente detalhado e extenso.
 
 Tipo de Obra: ${project_type}
@@ -129,7 +187,10 @@ A saída deve ser EXCLUSIVAMENTE código HTML (sem blocos markdown). O HTML deve
        const systemPrompt = `Você é a Catarina, uma IA Orçamentista Sênior. 
 Abaixo está o conteúdo HTML atual de um orçamento. O usuário solicitou a seguinte alteração: "${prompt}".
 Se o usuário anexou imagens, incorpore-as na seção adequada do HTML (como laudo fotográfico) usando tags <img src="..." style="max-width:100%; border-radius:8px; margin-bottom:8px;" /> com o data-uri fornecido na imagem.
-ATENÇÃO: Retorne APENAS o novo código HTML atualizado. Não use larguras fixas (ex: width: 800px), seja 100% responsivo. Não mencione que você é uma IA no corpo do contrato.`;
+
+Você deve responder rigorosamente com um objeto JSON puro (sem usar blocos markdown \`\`\`json ou \`\`\`), contendo exatamente dois campos:
+1. "html": O código HTML completo atualizado com a alteração solicitada. Não use larguras fixas, seja 100% responsivo.
+2. "ai_response": Uma resposta extremamente amigável, ágil e curta em português, personificada como Catarina, explicando brevemente o que você alterou no contrato (ex: "Removi a pintura interna conforme solicitado e recalculei as somas!").`;
 
       let parts = [{ text: systemPrompt + '\n\nHTML Atual:\n' + notes }];
 
@@ -155,12 +216,25 @@ ATENÇÃO: Retorne APENAS o novo código HTML atualizado. Não use larguras fixa
 
       if (!response.ok) throw new Error('Erro na API Gemini');
       const data = await response.json();
-      aiContent = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      aiContent = aiContent.replace(/^```html\n?/, '').replace(/```$/, '').trim();
+      let aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      aiText = aiText.replace(/^```json\n?/, '').replace(/```$/, '').trim();
 
-      run("UPDATE documents SET content_html = ?, version = version + 1 WHERE project_id = ? AND type = ?", [aiContent, project_id, 'budget']);
+      let html = '';
+      let aiResponse = '✅ Documento atualizado! Revise a prévia ao lado.';
 
-      return Response.json({ html: aiContent });
+      try {
+        const parsed = JSON.parse(aiText);
+        html = parsed.html || '';
+        aiResponse = parsed.ai_response || '✅ Documento atualizado!';
+      } catch (e) {
+        // Fallback se o parse falhar
+        console.warn("Falha ao parsear JSON do Copilot, usando fallback de HTML bruto", e);
+        html = aiText.replace(/^```html\n?/, '').replace(/```$/, '').trim();
+      }
+
+      run("UPDATE documents SET content_html = ?, version = version + 1 WHERE project_id = ? AND type = ?", [html, project_id, 'budget']);
+
+      return Response.json({ html, ai_response: aiResponse });
     }
 
     if (action === 'export_charges') {
