@@ -46,6 +46,18 @@ export default function ObrasPage() {
   const [loading, setLoading] = useState(false);
   const [projectId, setProjectId] = useState(null);
   const [countdown, setCountdown] = useState(0);
+  const [bleed, setBleed] = useState(40); // mirrors layout horizontalPadding
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      setBleed(window.innerWidth >= 768 ? 40 : 24);
+      setIsMobile(window.innerWidth < 1024);
+    };
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   // Step 1 - Escopo
   const [projectType, setProjectType] = useState('');
@@ -115,7 +127,10 @@ CONDIÇÕES: ${notes}
           project_type: projectType,
           services,
           notes: fullNotes,
-          images: images.map(i => ({ mime: i.mime, base64: i.base64 }))
+          images: images.map(i => ({ mime: i.mime, base64: i.base64 })),
+          client_name: clientName,
+          client_doc: clientDoc,
+          client_address: clientAddress
         })
       });
       const data = await res.json();
@@ -183,6 +198,11 @@ CONDIÇÕES: ${notes}
   // ────────────────────────── RENDER ──────────────────────────
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", color: '#f1f5f9' }}>
+
+      <div style={{ marginBottom: 32 }}>
+        <h2 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px' }}>🏗️ Obras e Orçamentos</h2>
+        <p style={{ fontSize: 14, color: '#64748b', marginTop: 2 }}>Gere propostas comerciais, diários de obra e contratos inteligentes com o Catarina Copilot.</p>
+      </div>
 
       {/* ── STEP 1: ESCOPO ── */}
       {step === 1 && (
@@ -329,10 +349,29 @@ CONDIÇÕES: ${notes}
 
       {/* ── STEP 4: EDITOR ── */}
       {step === 4 && (
-        <div style={{ display: 'flex', gap: 16, width: '100%', height: 'calc(100vh - 160px)', minHeight: 600 }}>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: isMobile ? 'column' : 'row', 
+          gap: 16, 
+          width: `calc(100% + ${bleed * 2}px)`, 
+          marginLeft: -bleed, 
+          padding: `0 ${bleed}px`, 
+          height: isMobile ? 'auto' : 'calc(100vh - 160px)', 
+          minHeight: isMobile ? 'none' : 600, 
+          boxSizing: 'border-box' 
+        }}>
 
           {/* PREVIEW */}
-          <div style={{ flex: 2, display: 'flex', flexDirection: 'column', borderRadius: 12, overflow: 'hidden', border: '1px solid #1e293b', minWidth: 0 }}>
+          <div style={{ 
+            flex: isMobile ? 'none' : 2, 
+            height: isMobile ? '500px' : '100%', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            borderRadius: 12, 
+            overflow: 'hidden', 
+            border: '1px solid #1e293b', 
+            minWidth: 0 
+          }}>
             {/* Barra do documento */}
             <div style={{ background: '#0f172a', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1e293b', flexShrink: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -369,10 +408,27 @@ CONDIÇÕES: ${notes}
           </div>
 
           {/* PAINEL COPILOT */}
-          <div style={{ width: 300, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ 
+            width: isMobile ? '100%' : 300, 
+            flexShrink: 0, 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: 12,
+            height: isMobile ? 'auto' : '100%'
+          }}>
 
             {/* Chat box */}
-            <div style={{ flex: 1, background: '#0c0e1a', border: '1px solid #1e293b', borderRadius: 12, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
+            <div style={{ 
+              flex: isMobile ? 'none' : 1, 
+              height: isMobile ? '450px' : 'auto',
+              background: '#0c0e1a', 
+              border: '1px solid #1e293b', 
+              borderRadius: 12, 
+              display: 'flex', 
+              flexDirection: 'column', 
+              overflow: 'hidden', 
+              minHeight: 0 
+            }}>
 
               {/* Header */}
               <div style={{ padding: '12px 16px', borderBottom: '1px solid #1e293b', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
@@ -380,18 +436,31 @@ CONDIÇÕES: ${notes}
                 <span style={{ fontSize: 9, color: '#64748b', background: '#1e293b', padding: '2px 8px', borderRadius: 20, fontWeight: 700, letterSpacing: '0.05em' }}>IA</span>
               </div>
 
-              {/* Sugestões */}
+              {/* Sugestões em formato de carrossel horizontal compacto */}
               <div style={{ padding: '10px 12px', borderBottom: '1px solid #1e293b', flexShrink: 0 }}>
-                <p style={{ fontSize: 9, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Clique para aplicar</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <p style={{ fontSize: 9, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Sugestões rápidas</p>
+                <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 6, scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="scrollbar-none">
                   {PROMPT_SUGGESTIONS.map((s, i) => (
                     <button key={i} onClick={() => handleChatEdit(s.text)} disabled={loading}
-                      style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '7px 10px', background: '#0f172a', border: '1px solid #1e293b', borderRadius: 8, cursor: loading ? 'wait' : 'pointer', textAlign: 'left', opacity: loading ? 0.5 : 1, transition: 'border-color 0.15s' }}
+                      style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: 6, 
+                        padding: '6px 10px', 
+                        background: '#0f172a', 
+                        border: '1px solid #1e293b', 
+                        borderRadius: 8, 
+                        cursor: loading ? 'wait' : 'pointer', 
+                        whiteSpace: 'nowrap', 
+                        flexShrink: 0, 
+                        opacity: loading ? 0.5 : 1, 
+                        transition: 'border-color 0.15s' 
+                      }}
                       onMouseEnter={e => !loading && (e.currentTarget.style.borderColor = '#10b981')}
                       onMouseLeave={e => (e.currentTarget.style.borderColor = '#1e293b')}
                     >
-                      <span style={{ fontSize: 13, flexShrink: 0 }}>{s.icon}</span>
-                      <span style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.4 }}>{s.text}</span>
+                      <span style={{ fontSize: 13 }}>{s.icon}</span>
+                      <span style={{ fontSize: 11, color: '#94a3b8' }}>{s.text}</span>
                     </button>
                   ))}
                 </div>
