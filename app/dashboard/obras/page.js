@@ -298,17 +298,19 @@ CONDIÇÕES: ${notes}
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", color: '#f1f5f9' }}>
 
-      <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ marginBottom: isMobile ? 16 : 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <h2 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px' }}>🏗️ Obras e Orçamentos</h2>
-          <p style={{ fontSize: 14, color: '#64748b', marginTop: 2 }}>Gere propostas comerciais, diários de obra e contratos inteligentes com o Catarina Copilot.</p>
+          <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px', margin: 0 }}>🏗️ Obras e Orçamentos</h2>
+          {!isMobile && (
+            <p style={{ fontSize: 14, color: '#64748b', marginTop: 2, marginBottom: 0 }}>Gere propostas comerciais, diários de obra e contratos inteligentes com o Catarina Copilot.</p>
+          )}
         </div>
         {step > 0 && (
           <button 
             onClick={() => { setStep(0); loadProjects(); }}
-            style={{ ...btnGhost, padding: '8px 16px', borderRadius: 10, fontSize: 12, cursor: 'pointer' }}
+            style={{ ...btnGhost, padding: '8px 14px', borderRadius: 10, fontSize: 11, cursor: 'pointer' }}
           >
-            ← Voltar ao Painel
+            ← Painel
           </button>
         )}
       </div>
@@ -348,7 +350,54 @@ CONDIÇÕES: ${notes}
                 Começar Agora
               </button>
             </div>
+          ) : isMobile ? (
+            /* 📱 Mobile First Card List */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {projects.map(p => (
+                <div key={p.id} style={{ background: '#0c0e1a', border: '1px solid #1e293b', borderRadius: 16, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <h4 style={{ fontSize: 14, fontWeight: 800, color: '#fff', margin: 0 }}>
+                        🏗️ {p.name}
+                      </h4>
+                      <p style={{ fontSize: 12, color: '#94a3b8', margin: '4px 0 0 0' }}>
+                        Cliente: {p.client_name === 'Cliente Avulso' ? 'Avulso' : p.client_name}
+                      </p>
+                    </div>
+                    <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, background: '#1e293b', padding: '2px 6px', borderRadius: 6 }}>
+                      v{p.version || 1}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 12 }}>
+                    <span style={{ 
+                      background: p.status === 'completed' ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)',
+                      color: p.status === 'completed' ? '#34d399' : '#f59e0b',
+                      padding: '3px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700
+                    }}>
+                      {p.status === 'budgeting' ? 'Orçamento' : p.status === 'in_progress' ? 'Em Andamento' : 'Concluído'}
+                    </span>
+
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button 
+                        onClick={() => handleLoadProject(p.id)}
+                        style={{ ...btnPrimary, padding: '6px 12px', borderRadius: 8, fontSize: 11 }}
+                      >
+                        Lapidar
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteProject(p.id)}
+                        style={{ ...btnGhost, padding: '6px 12px', borderRadius: 8, fontSize: 11, color: '#f87171' }}
+                      >
+                        Excluir
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
+            /* 🖥️ Desktop Table view */
             <div style={{ background: '#0c0e1a', border: '1px solid #1e293b', borderRadius: 16, overflow: 'hidden' }}>
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
@@ -618,7 +667,7 @@ CONDIÇÕES: ${notes}
                 </div>
               ) : (
                 <div dangerouslySetInnerHTML={{ __html: htmlContent }}
-                  style={{ padding: '40px 48px', fontSize: 13, lineHeight: 1.75, fontFamily: 'Georgia, serif', color: '#111' }} />
+                  style={{ padding: isMobile ? '24px 16px' : '40px 48px', fontSize: 13, lineHeight: 1.75, fontFamily: 'Georgia, serif', color: '#111' }} />
               )}
             </div>
           </div>
