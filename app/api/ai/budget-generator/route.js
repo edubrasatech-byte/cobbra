@@ -216,20 +216,24 @@ Você deve responder rigorosamente com um objeto JSON puro (sem usar blocos mark
 
       if (!response.ok) throw new Error('Erro na API Gemini');
       const data = await response.json();
-      let aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      aiText = aiText.replace(/^```json\n?/, '').replace(/```$/, '').trim();
+      let jsonText = aiText;
+      const firstBrace = aiText.indexOf('{');
+      const lastBrace = aiText.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        jsonText = aiText.substring(firstBrace, lastBrace + 1);
+      }
 
       let html = '';
       let aiResponse = '✅ Documento atualizado! Revise a prévia ao lado.';
 
       try {
-        const parsed = JSON.parse(aiText);
+        const parsed = JSON.parse(jsonText);
         html = parsed.html || '';
         aiResponse = parsed.ai_response || '✅ Documento atualizado!';
       } catch (e) {
         // Fallback se o parse falhar
         console.warn("Falha ao parsear JSON do Copilot, usando fallback de HTML bruto", e);
-        html = aiText.replace(/^```html\n?/, '').replace(/```$/, '').trim();
+        html = aiText.replace(/^```html\n?/, '').replace(/```$/, '').replace(/^```json\n?/, '').trim();
       }
 
       run("UPDATE documents SET content_html = ?, version = version + 1 WHERE project_id = ? AND type = ?", [html, project_id, 'budget']);
