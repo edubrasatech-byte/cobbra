@@ -93,6 +93,16 @@ const NAV_ICONS = {
       <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
     </svg>
   ),
+  '/dashboard/obras': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 22h20" />
+      <path d="M8 22V8" />
+      <path d="M16 22V8" />
+      <path d="M4 12h16" />
+      <path d="M4 16h16" />
+      <path d="M8 4l8-2v4Z" />
+    </svg>
+  ),
   '/dashboard/admin': (colorClass) => (
     <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -525,7 +535,7 @@ export default function DashboardLayout({ children }) {
   } else if (user?.business_niche === 'emprestimo') {
     dynamicNavItems.splice(3, 0, { href: '/dashboard/emprestimos', icon: '💸', label: 'Empréstimos' });
   } else if (user?.business_niche === 'construcao_civil') {
-    dynamicNavItems.splice(3, 0, { href: '/dashboard/obras', icon: '🏗️', label: 'Obras' });
+    dynamicNavItems.splice(1, 0, { href: '/dashboard/obras', icon: '🏗️', label: 'Obras' });
   }
 
   const navItems = user?.role === 'admin_senior' || user?.role === 'admin'
