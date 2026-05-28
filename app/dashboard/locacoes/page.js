@@ -26,6 +26,7 @@ export default function LocacoesPage() {
     clientEmail: '',
     clientPhone: '',
     clientDocument: '', // CPF/CNPJ
+    vehicleId: '',
     vehicleModel: '',
     vehiclePlate: '',
     vehicleColor: '',
@@ -277,6 +278,22 @@ export default function LocacoesPage() {
       });
       if (res.ok) {
         showNotification(`🚗 Veículo devolvido e aluguel liquidado com sucesso!`);
+        
+        // Auto-change physical vehicle status back to 'available'
+        const plateMatch = rental.vehicle_info?.match(/\(([^)]+)\)/);
+        const plate = plateMatch ? plateMatch[1].toUpperCase().trim() : '';
+        if (plate) {
+          const matchingVehicle = vehicles.find(v => v.plate.toUpperCase().trim() === plate);
+          if (matchingVehicle) {
+            await fetch('/api/locacoes/vehicles', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: matchingVehicle.id, status: 'available' })
+            });
+            fetchVehicles();
+          }
+        }
+
         fetchLocacoes();
       } else {
         const err = await res.json();
@@ -382,12 +399,24 @@ export default function LocacoesPage() {
       if (!chargeRes.ok) throw new Error(chargeData.error || 'Erro ao lançar locação');
 
       showNotification('🚗 Locação cadastrada e Contrato Rígido gerado automaticamente!');
+      
+      // 3. Automatically set vehicle status to 'rented' if chosen from frota
+      if (form.vehicleId) {
+        await fetch('/api/locacoes/vehicles', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: form.vehicleId, status: 'rented' })
+        });
+        fetchVehicles();
+      }
+
       setShowModal(false);
       setForm({
         clientName: '',
         clientEmail: '',
         clientPhone: '',
         clientDocument: '',
+        vehicleId: '',
         vehicleModel: '',
         vehiclePlate: '',
         vehicleColor: '',
@@ -1202,6 +1231,41 @@ export default function LocacoesPage() {
                   placeholder="email@cliente.com" 
                   style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
                 />
+              </div>
+
+              {/* Seleção de Veículo Disponível na Frota */}
+              <div>
+                <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Selecionar Carro da Frota (Disponíveis)</label>
+                <select 
+                  value={form.vehicleId}
+                  onChange={e => {
+                    const selectedId = e.target.value;
+                    const matching = vehicles.find(v => v.id === selectedId);
+                    if (matching) {
+                      setForm({
+                        ...form,
+                        vehicleId: matching.id,
+                        vehicleModel: matching.model,
+                        vehiclePlate: matching.plate,
+                        vehicleColor: matching.color
+                      });
+                    } else {
+                      setForm({
+                        ...form,
+                        vehicleId: '',
+                        vehicleModel: '',
+                        vehiclePlate: '',
+                        vehicleColor: ''
+                      });
+                    }
+                  }}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13, cursor: 'pointer' }}
+                >
+                  <option value="">-- Cadastrar veículo avulso (digitar abaixo) --</option>
+                  {vehicles.filter(v => v.status === 'available').map(v => (
+                    <option key={v.id} value={v.id}>{v.model} - {v.plate} ({v.color})</option>
+                  ))}
+                </select>
               </div>
 
               {/* Vehicle Detail */}
