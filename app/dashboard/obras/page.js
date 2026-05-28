@@ -263,8 +263,15 @@ export default function ObrasPage() {
             </p>
           </div>
 
-          <button onClick={() => setStep(2)} disabled={!projectType.trim()}
-            className={"p-4 font-bold rounded-xl transition-all text-sm " + (!projectType.trim() ? 'bg-slate-800 text-slate-600 cursor-not-allowed' : 'bg-emerald-500 text-black shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_28px_rgba(16,185,129,0.45)] hover:scale-[1.01]')}>
+          <button
+            onClick={() => setStep(2)}
+            disabled={!projectType.trim()}
+            className="p-4 font-bold rounded-xl transition-all text-sm"
+            style={projectType.trim()
+              ? { background: '#10b981', color: '#070913', boxShadow: '0 4px 20px rgba(16,185,129,0.35)' }
+              : { background: '#1e293b', color: '#475569', cursor: 'not-allowed', border: '1px solid #334155' }
+            }
+          >
             Próximo Passo →
           </button>
         </div>
@@ -316,9 +323,22 @@ export default function ObrasPage() {
           </div>
 
           <div className="flex gap-3">
-            <button onClick={() => setStep(1)} className="flex-1 p-3.5 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-700 transition-colors text-sm">← Voltar</button>
-            <button onClick={handleGenerate} disabled={loading}
-              className="flex-[2] p-3.5 font-bold rounded-xl text-sm transition-all disabled:opacity-60 disabled:cursor-wait bg-emerald-500 text-black shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_28px_rgba(16,185,129,0.45)] hover:scale-[1.01]">
+            <button
+              onClick={() => setStep(1)}
+              className="flex-1 p-3.5 font-bold rounded-xl text-sm transition-colors"
+              style={{ background: '#1e293b', color: '#f1f5f9' }}
+            >
+              ← Voltar
+            </button>
+            <button
+              onClick={handleGenerate}
+              disabled={loading}
+              className="flex-[2] p-3.5 font-bold rounded-xl text-sm transition-all"
+              style={loading
+                ? { background: '#065f46', color: '#6ee7b7', cursor: 'wait', opacity: 0.8 }
+                : { background: '#10b981', color: '#070913', boxShadow: '0 4px 20px rgba(16,185,129,0.35)' }
+              }
+            >
               {loading
                 ? `⏳ Catarina gerando... ${countdown > 0 ? `(~${countdown}s)` : ''}`
                 : '✨ Gerar Proposta com IA'}
