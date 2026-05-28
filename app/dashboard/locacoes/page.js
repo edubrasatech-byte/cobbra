@@ -35,6 +35,98 @@ export default function LocacoesPage() {
     recurrence: 'weekly' // Default weekly recurrence
   });
 
+  // === VEHICLE RENTAL PREMIUM MODULE STATES ===
+  const [activeTab, setActiveTab] = useState('contracts'); // 'contracts' | 'fleet' | 'fines' | 'escrow' | 'split'
+  const [vehicles, setVehicles] = useState([]);
+  const [vehiclesLoading, setVehiclesLoading] = useState(true);
+  const [showVehicleModal, setShowVehicleModal] = useState(false);
+  const [vehicleForm, setVehicleForm] = useState({
+    model: '',
+    plate: '',
+    color: '',
+    year: '',
+    renavam: '',
+    chassis: '',
+    current_km: '',
+    oil_change_interval_km: '10000',
+    insurance_policy: '',
+    insurance_expires_at: '',
+    investor_name: '',
+    investor_split_rate: ''
+  });
+
+  const fetchVehicles = async () => {
+    setVehiclesLoading(true);
+    try {
+      const res = await fetch('/api/locacoes/vehicles');
+      const data = await res.json();
+      if (data.vehicles) setVehicles(data.vehicles);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setVehiclesLoading(false);
+    }
+  };
+
+  const handleRegisterVehicle = async (e) => {
+    e.preventDefault();
+    if (!vehicleForm.model || !vehicleForm.plate || !vehicleForm.color) {
+      alert('Modelo, Placa e Cor são campos obrigatórios.');
+      return;
+    }
+    try {
+      const res = await fetch('/api/locacoes/vehicles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(vehicleForm)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showNotification('🚗 Veículo cadastrado com sucesso na frota!');
+        setShowVehicleModal(false);
+        setVehicleForm({
+          model: '', plate: '', color: '', year: '', renavam: '', chassis: '',
+          current_km: '', oil_change_interval_km: '10000', insurance_policy: '',
+          insurance_expires_at: '', investor_name: '', investor_split_rate: ''
+        });
+        fetchVehicles();
+      } else {
+        alert(data.error || 'Erro ao cadastrar veículo.');
+      }
+    } catch (err) {
+      alert('Erro de conexão ao salvar veículo.');
+    }
+  };
+
+  const handleDeleteVehicle = async (id) => {
+    if (!confirm('Deseja realmente remover este veículo da frota?')) return;
+    try {
+      const res = await fetch(`/api/locacoes/vehicles?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        showNotification('🗑️ Veículo removido da frota.');
+        fetchVehicles();
+      } else {
+        alert('Erro ao excluir veículo.');
+      }
+    } catch (e) {
+      alert('Erro de conexão ao excluir.');
+    }
+  };
+
+  const handleUpdateVehicleStatus = async (id, newStatus) => {
+    try {
+      const res = await fetch('/api/locacoes/vehicles', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status: newStatus })
+      });
+      if (res.ok) {
+        showNotification(`🚗 Status do veículo atualizado para: ${newStatus === 'available' ? 'Disponível' : newStatus === 'maintenance' ? 'Em Manutenção' : newStatus}`);
+        fetchVehicles();
+      }
+    } catch (e) {}
+  };
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 640);
     handleResize();
@@ -94,6 +186,7 @@ export default function LocacoesPage() {
     fetchClients();
     fetchUser();
     fetchWaStatus();
+    fetchVehicles();
   }, []);
 
   // WhatsApp scanning status polling
@@ -506,8 +599,44 @@ export default function LocacoesPage() {
         </div>
       )}
 
-      {/* Grid Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16, marginBottom: 24 }}>
+      {/* Tab Selector Navigation */}
+      <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 24, gap: 16, overflowX: 'auto', paddingBottom: 6 }} className="scrollbar-none">
+        {[
+          { id: 'contracts', label: '📊 Ativos & Contratos' },
+          { id: 'fleet', label: '🚗 Sua Frota' },
+          { id: 'fines', label: '🧾 Multas & Infrações' },
+          { id: 'escrow', label: '💸 Caução & Custódias' },
+          { id: 'split', label: '📈 Repasses' }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '0 0 10px 0',
+              fontSize: 13,
+              fontWeight: activeTab === tab.id ? 700 : 500,
+              color: activeTab === tab.id ? '#10b981' : '#64748b',
+              cursor: 'pointer',
+              position: 'relative',
+              whiteSpace: 'nowrap',
+              transition: 'color 0.2s'
+            }}
+          >
+            {tab.label}
+            {activeTab === tab.id && (
+              <span style={{ position: 'absolute', bottom: -1, left: 0, right: 0, height: 2, background: '#10b981', borderRadius: 4 }} />
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab: Contracts & Active Rentals */}
+      {activeTab === 'contracts' && (
+        <>
+          {/* Grid Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16, marginBottom: 24 }}>
         <div style={{ ...cardStyle, padding: '12px 16px', borderLeft: '4px solid #10b981' }}>
           <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Veículos em Uso</span>
           <h3 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', margin: '2px 0 0 0' }}>{activeCount}</h3>
@@ -818,6 +947,172 @@ export default function LocacoesPage() {
           </div>
         )}
       </div>
+        </>
+      )}
+
+      {/* Tab: Sua Frota (Fleet Control) */}
+      {activeTab === 'fleet' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Frota de Veículos Cadastrada
+            </span>
+            <button 
+              onClick={() => setShowVehicleModal(true)}
+              style={{ ...btnPrimary, padding: '10px 16px', borderRadius: 10, fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}
+            >
+              <span>🚗</span> Cadastrar Carro
+            </button>
+          </div>
+
+          {vehiclesLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 0' }}>
+              <div style={{ width: 32, height: 32, border: '4px solid rgba(16,185,129,0.2)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 12 }}></div>
+              <p style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>Buscando frota de veículos...</p>
+            </div>
+          ) : vehicles.length === 0 ? (
+            <div style={{ background: '#0C0E1A', border: '1px dashed rgba(255,255,255,0.06)', borderRadius: 20, padding: 40, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: 36, marginBottom: 12 }}>🚗</span>
+              <h4 style={{ margin: '0 0 4px 0', color: '#fff', fontSize: 15, fontWeight: 800 }}>Nenhum veículo cadastrado na frota</h4>
+              <p style={{ fontSize: 12, color: '#64748b', margin: 0, maxWidth: 360, lineHeight: 1.5 }}>Adicione os carros de sua propriedade ou de investidores parceiros para iniciar o controle físico, KM e seguros.</p>
+              <button 
+                onClick={() => setShowVehicleModal(true)}
+                style={{ ...btnPrimary, padding: '10px 16px', borderRadius: 8, marginTop: 16 }}
+              >
+                Cadastrar Primeiro Veículo
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16 }}>
+              {vehicles.map(v => {
+                const limitKm = (v.last_oil_change_km || 0) + (v.oil_change_interval_km || 10000);
+                const isOilNear = (v.current_km >= limitKm - 1000);
+                const isOverdue = (v.current_km >= limitKm);
+
+                return (
+                  <div key={v.id} style={{ ...cardStyle, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#fff' }}>🚗 {v.model}</h4>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#10b981', background: 'rgba(16,185,129,0.08)', padding: '2px 6px', borderRadius: 6, display: 'inline-block', marginTop: 4 }}>
+                          {v.plate}
+                        </span>
+                      </div>
+                      <span style={{ 
+                        fontSize: 10, padding: '4px 8px', borderRadius: 20, fontWeight: 700,
+                        color: v.status === 'rented' ? '#3b82f6' : v.status === 'maintenance' ? '#f59e0b' : v.status === 'damaged' ? '#ef4444' : '#10b981',
+                        background: v.status === 'rented' ? 'rgba(59,130,246,0.08)' : v.status === 'maintenance' ? 'rgba(245,158,11,0.08)' : v.status === 'damaged' ? 'rgba(239,68,68,0.08)' : 'rgba(16,185,129,0.08)'
+                      }}>
+                        {v.status === 'rented' ? 'Alugado' : v.status === 'maintenance' ? 'Oficina' : v.status === 'damaged' ? 'Batido' : 'Disponível'}
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11.5, color: '#cbd5e1', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10 }}>
+                      <p style={{ margin: 0 }}><strong>KM Atual:</strong> {v.current_km?.toLocaleString('pt-BR')} KM</p>
+                      <p style={{ margin: 0 }}><strong>Cor/Ano:</strong> {v.color} • {v.year || 'N/D'}</p>
+                      {v.investor_name && <p style={{ margin: 0, color: '#38bdf8' }}><strong>Investidor:</strong> {v.investor_name} ({v.investor_split_rate}%)</p>}
+                    </div>
+
+                    {/* Oil Change Progress Bar */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 4 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 600 }}>
+                        <span style={{ color: isOverdue ? '#ef4444' : isOilNear ? '#f59e0b' : '#64748b' }}>
+                          {isOverdue ? '🚨 Óleo Vencido!' : isOilNear ? '⚠️ Troca de Óleo Próxima' : '🔧 Troca de Óleo'}
+                        </span>
+                        <span style={{ color: '#cbd5e1' }}>{v.current_km} / {limitKm} KM</span>
+                      </div>
+                      <div style={{ width: '100%', height: 6, background: 'rgba(255,255,255,0.04)', borderRadius: 3, overflow: 'hidden' }}>
+                        <div style={{ 
+                          height: '100%', 
+                          width: `${Math.min(100, Math.max(5, ((v.current_km - v.last_oil_change_km) / v.oil_change_interval_km) * 100))}%`,
+                          background: isOverdue ? '#ef4444' : isOilNear ? '#f59e0b' : '#10b981',
+                          borderRadius: 3
+                        }} />
+                      </div>
+                    </div>
+
+                    {/* Insurance Policy */}
+                    {v.insurance_policy && (
+                      <div style={{ fontSize: 10.5, color: '#64748b', background: 'rgba(255,255,255,0.01)', padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.02)' }}>
+                        🔒 Seguro: {v.insurance_policy}<br />
+                        📅 Vence: {v.insurance_expires_at ? new Date(v.insurance_expires_at).toLocaleDateString('pt-BR') : 'N/D'}
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div style={{ display: 'flex', gap: 6, borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10, marginTop: 'auto' }}>
+                      {v.status === 'available' && (
+                        <button 
+                          onClick={() => handleUpdateVehicleStatus(v.id, 'maintenance')}
+                          style={{ ...btnGhost, flex: 1, padding: '6px 0', fontSize: 11, borderRadius: 8 }}
+                        >
+                          🔧 Enviar p/ Oficina
+                        </button>
+                      )}
+                      {v.status === 'maintenance' && (
+                        <button 
+                          onClick={() => handleUpdateVehicleStatus(v.id, 'available')}
+                          style={{ ...btnPrimary, flex: 1, padding: '6px 0', fontSize: 11, borderRadius: 8 }}
+                        >
+                          ✅ Disponibilizar
+                        </button>
+                      )}
+                      <button 
+                        onClick={async () => {
+                          const newKm = prompt('Atualizar KM do veículo:', v.current_km);
+                          if (newKm && !isNaN(parseInt(newKm))) {
+                            const res = await fetch('/api/locacoes/vehicles', {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ id: v.id, current_km: parseInt(newKm) })
+                            });
+                            if (res.ok) {
+                              showNotification('KM atualizado!');
+                              fetchVehicles();
+                            }
+                          }
+                        }}
+                        style={{ ...btnGhost, flex: 1, padding: '6px 0', fontSize: 11, borderRadius: 8 }}
+                      >
+                        📈 Ajustar KM
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteVehicle(v.id)}
+                        style={{ ...btnGhost, padding: '6px 10px', borderRadius: 8, fontSize: 11, color: '#f87171' }}
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Placeholders for Fines, Escrow and Split tabs */}
+      {activeTab === 'fines' && (
+        <div style={cardStyle} className="text-center">
+          <span style={{ fontSize: 32 }}>🧾</span>
+          <h4 style={{ margin: '12px 0 4px 0', color: '#fff', fontSize: 15, fontWeight: 800 }}>Gestão de Multas (Catarina Fine Finder)</h4>
+          <p style={{ fontSize: 12, color: '#64748b', margin: 0, maxWidth: 360, margin: '0 auto', lineHeight: 1.5 }}>Módulo de busca inteligente de condutor na multa e faturamento automático de infrações ativo em breve na próxima fase.</p>
+        </div>
+      )}
+      {activeTab === 'escrow' && (
+        <div style={cardStyle} className="text-center">
+          <span style={{ fontSize: 32 }}>💸</span>
+          <h4 style={{ margin: '12px 0 4px 0', color: '#fff', fontSize: 15, fontWeight: 800 }}>Custódia de Caução & Extratos</h4>
+          <p style={{ fontSize: 12, color: '#64748b', margin: 0, maxWidth: 360, margin: '0 auto', lineHeight: 1.5 }}>Módulo de controle de depósitos em custódia e amortização de parcelas ativo em breve na próxima fase.</p>
+        </div>
+      )}
+      {activeTab === 'split' && (
+        <div style={cardStyle} className="text-center">
+          <span style={{ fontSize: 32 }}>📈</span>
+          <h4 style={{ margin: '12px 0 4px 0', color: '#fff', fontSize: 15, fontWeight: 800 }}>Repasse para Investidores</h4>
+          <p style={{ fontSize: 12, color: '#64748b', margin: 0, maxWidth: 360, margin: '0 auto', lineHeight: 1.5 }}>Módulo de split e comissão líquida de faturamento para parceiros de carros ativo em breve na próxima fase.</p>
+        </div>
+      )}
 
       {/* Register New Lease Modal */}
       {showModal && (
@@ -1201,6 +1496,209 @@ export default function LocacoesPage() {
 
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Register New Vehicle Modal */}
+      {showVehicleModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(12, 14, 26, 0.96)',
+          zIndex: 1000,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 20
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: 540,
+            background: '#0C0E1A',
+            border: '1px solid rgba(255,255,255,0.06)',
+            borderRadius: 24,
+            padding: 24,
+            boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 14,
+            maxHeight: '90vh',
+            overflowY: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ fontSize: 18, fontWeight: 900, color: '#ffffff', margin: 0 }}>🚗 Cadastrar Carro na Frota</h3>
+              <button 
+                onClick={() => setShowVehicleModal(false)}
+                style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: 18, cursor: 'pointer', marginLeft: 'auto' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleRegisterVehicle} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              
+              {/* Vehicle basic data */}
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr 1fr', gap: 10 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Modelo do Veículo *</label>
+                  <input 
+                    type="text" 
+                    value={vehicleForm.model} 
+                    onChange={e => setVehicleForm({...vehicleForm, model: e.target.value})} 
+                    placeholder="Ex: Fiat Uno 1.0" 
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                    required 
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Placa *</label>
+                  <input 
+                    type="text" 
+                    value={vehicleForm.plate} 
+                    onChange={e => setVehicleForm({...vehicleForm, plate: e.target.value})} 
+                    placeholder="ABC1D23" 
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                    required 
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Cor *</label>
+                  <input 
+                    type="text" 
+                    value={vehicleForm.color} 
+                    onChange={e => setVehicleForm({...vehicleForm, color: e.target.value})} 
+                    placeholder="Branco" 
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                    required 
+                  />
+                </div>
+              </div>
+
+              {/* Technical detail */}
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 10 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Ano Modelo</label>
+                  <input 
+                    type="number" 
+                    value={vehicleForm.year} 
+                    onChange={e => setVehicleForm({...vehicleForm, year: e.target.value})} 
+                    placeholder="2020" 
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>KM Atual Inicial</label>
+                  <input 
+                    type="number" 
+                    value={vehicleForm.current_km} 
+                    onChange={e => setVehicleForm({...vehicleForm, current_km: e.target.value})} 
+                    placeholder="45000" 
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Intervalo Troca Óleo (KM)</label>
+                  <input 
+                    type="number" 
+                    value={vehicleForm.oil_change_interval_km} 
+                    onChange={e => setVehicleForm({...vehicleForm, oil_change_interval_km: e.target.value})} 
+                    placeholder="10000" 
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                  />
+                </div>
+              </div>
+
+              {/* Legal data */}
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 10 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Código Renavam</label>
+                  <input 
+                    type="text" 
+                    value={vehicleForm.renavam} 
+                    onChange={e => setVehicleForm({...vehicleForm, renavam: e.target.value})} 
+                    placeholder="01234567890" 
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Número do Chassi</label>
+                  <input 
+                    type="text" 
+                    value={vehicleForm.chassis} 
+                    onChange={e => setVehicleForm({...vehicleForm, chassis: e.target.value})} 
+                    placeholder="9BDXXXXXX..." 
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                  />
+                </div>
+              </div>
+
+              {/* Insurance */}
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: 10 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Apólice do Seguro</label>
+                  <input 
+                    type="text" 
+                    value={vehicleForm.insurance_policy} 
+                    onChange={e => setVehicleForm({...vehicleForm, insurance_policy: e.target.value})} 
+                    placeholder="Porto Seguro - Apólice 12345" 
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Vencimento do Seguro</label>
+                  <input 
+                    type="date" 
+                    value={vehicleForm.insurance_expires_at} 
+                    onChange={e => setVehicleForm({...vehicleForm, insurance_expires_at: e.target.value})} 
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                  />
+                </div>
+              </div>
+
+              {/* Investor data */}
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: 10 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Investidor Dono do Carro (Opcional)</label>
+                  <input 
+                    type="text" 
+                    value={vehicleForm.investor_name} 
+                    onChange={e => setVehicleForm({...vehicleForm, investor_name: e.target.value})} 
+                    placeholder="Ex: Tio Carlos" 
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Split Investidor (%)</label>
+                  <input 
+                    type="number" 
+                    step="0.1" 
+                    value={vehicleForm.investor_split_rate} 
+                    onChange={e => setVehicleForm({...vehicleForm, investor_split_rate: e.target.value})} 
+                    placeholder="80.0" 
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                  />
+                </div>
+              </div>
+
+              {/* Submit Buttons */}
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 10 }}>
+                <button 
+                  type="button" 
+                  onClick={() => setShowVehicleModal(false)}
+                  style={{ ...btnGhost, padding: '10px 20px', borderRadius: 8 }}
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  style={{ ...btnPrimary, padding: '10px 20px', borderRadius: 8, boxShadow: '0 4px 12px rgba(16,185,129,0.2)' }}
+                >
+                  Salvar Carro 🚗
+                </button>
+              </div>
+
+            </form>
           </div>
         </div>
       )}
