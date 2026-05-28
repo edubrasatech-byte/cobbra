@@ -524,6 +524,8 @@ export default function DashboardLayout({ children }) {
     dynamicNavItems.splice(3, 0, { href: '/dashboard/locacoes', icon: '🚗', label: 'Locações' });
   } else if (user?.business_niche === 'emprestimo') {
     dynamicNavItems.splice(3, 0, { href: '/dashboard/emprestimos', icon: '💸', label: 'Empréstimos' });
+  } else if (user?.business_niche === 'construcao_civil') {
+    dynamicNavItems.splice(3, 0, { href: '/dashboard/obras', icon: '🏗️', label: 'Obras' });
   }
 
   const navItems = user?.role === 'admin_senior' || user?.role === 'admin'

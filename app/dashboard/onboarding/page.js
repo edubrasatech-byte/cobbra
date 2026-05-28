@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const NICHES = [
+  { id: 'construcao_civil', label: '🏗️ Construção Civil & Reformas', desc: 'Geração de orçamentos por IA, laudos e diários de obra inteligentes.', rigor: 'neutral', popular: true },
   { id: 'locacao_veiculos', label: '🚗 Locação de Veículos', desc: 'Controle de diárias, alertas de quilometragem e devolução da frota.', rigor: 'neutral', popular: true },
   { id: 'emprestimo', label: '💰 Empréstimos e Finanças', desc: 'Controle de parcelas, juros diários estritos e termos contratuais.', rigor: 'firm', popular: true },
   { id: 'clinica', label: '🩺 Clínica e Consultório', desc: 'Régua de cobrança altamente diplomática para preservar a relação médica.', rigor: 'gentle' },
@@ -103,6 +104,16 @@ export default function OnboardingPage() {
     const amount = 'R$ 150,00';
     const date = 'amanhã';
     
+    if (niche === 'construcao_civil') {
+      if (rigor === 'gentle') {
+        return `Oi ${cName}! 🏗️ Passando para enviar o boleto Pix da medição de hoje da obra (${amount}). Vence ${date}. Fique à vontade para tirar dúvidas! Link: {link}`;
+      } else if (rigor === 'firm') {
+        return `Atenção ${cName}. 🏗️ Fatura de medição de obra no valor de ${amount} vence ${date}. O não pagamento pode acarretar pausa na prestação de serviço. Pague via Pix: {link}`;
+      } else {
+        return `Olá ${cName}, enviamos a cobrança da medição atual da obra no valor de ${amount} com vencimento para ${date}. Segue link de pagamento Pix: {link}`;
+      }
+    }
+
     if (niche === 'locacao_veiculos') {
       const vehicle = 'Fiat Uno (ABC-1234)';
       if (rigor === 'gentle') {
