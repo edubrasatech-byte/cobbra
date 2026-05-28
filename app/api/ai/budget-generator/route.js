@@ -1,6 +1,31 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { run, queryOne, generateId } from '@/lib/db';
 
+// Garante que as tabelas existem em produção
+try {
+  run(`CREATE TABLE IF NOT EXISTS projects (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    client_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    status TEXT DEFAULT 'budgeting',
+    total_value REAL DEFAULT 0,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  )`);
+  run(`CREATE TABLE IF NOT EXISTS documents (
+    id TEXT PRIMARY KEY,
+    project_id TEXT NOT NULL,
+    type TEXT DEFAULT 'budget',
+    content_html TEXT,
+    version INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  )`);
+} catch (e) {
+  console.error("Erro ao criar tabelas na rota:", e);
+}
+
 export async function POST(request) {
   try {
     const user = getUserFromRequest(request);

@@ -41,6 +41,8 @@ export default function ObrasPage() {
         setHtmlContent(data.html);
         setProjectId(data.project_id);
         setStep(3);
+      } else if (data.error) {
+        alert('Erro da API: ' + data.error);
       }
     } catch (e) {
       alert('Erro ao gerar orçamento.');
