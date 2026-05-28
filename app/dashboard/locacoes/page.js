@@ -479,6 +479,9 @@ export default function LocacoesPage() {
   const overdueCount = rentals.filter(r => r.status === 'overdue').length;
   const paidCount = rentals.filter(r => r.status === 'paid').length;
 
+  const btnPrimary = { background: '#10b981', color: '#070913', border: 'none', fontWeight: 700, borderRadius: 12, cursor: 'pointer', fontSize: 14, transition: 'opacity 0.2s' };
+  const btnGhost = { background: '#1e293b', color: '#cbd5e1', border: '1px solid #334155', fontWeight: 700, borderRadius: 12, cursor: 'pointer', fontSize: 14 };
+
   const cardStyle = {
     background: '#0C0E1A',
     borderRadius: 20,
