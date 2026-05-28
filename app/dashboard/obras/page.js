@@ -132,7 +132,7 @@ export default function ObrasPage() {
                 );
               })}
             </div>
-            <button onClick={() => setStep(2)} className="mt-4 p-4 bg-emerald-500 text-[#070913] font-bold rounded-xl shadow-[0_4px_20px_rgba(16,185,129,0.3)]">Próximo Passo</button>
+            <button onClick={() => setStep(2)} style={{ background: '#10b981', color: '#070913' }} className="mt-4 p-4 font-bold rounded-xl shadow-[0_4px_20px_rgba(16,185,129,0.3)]">Próximo Passo</button>
           </div>
         )}
 
@@ -147,7 +147,7 @@ export default function ObrasPage() {
             />
             <div className="flex gap-4">
               <button onClick={() => setStep(1)} className="flex-1 p-4 bg-slate-800 text-white font-bold rounded-xl">Voltar</button>
-              <button onClick={handleGenerate} disabled={loading} className="flex-[2] p-4 bg-emerald-500 text-[#070913] font-bold rounded-xl shadow-[0_4px_20px_rgba(16,185,129,0.3)]">
+              <button onClick={handleGenerate} disabled={loading} style={{ background: '#10b981', color: '#070913' }} className="flex-[2] p-4 font-bold rounded-xl shadow-[0_4px_20px_rgba(16,185,129,0.3)]">
                 {loading ? 'Catarina Gerando (10s)...' : '✨ Gerar Proposta Automática'}
               </button>
             </div>
@@ -184,7 +184,7 @@ export default function ObrasPage() {
                     onChange={e => setChatInput(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleChatEdit()}
                   />
-                  <button onClick={handleChatEdit} disabled={loading} className="p-3 bg-emerald-500 text-[#070913] rounded-lg font-bold text-xs">Enviar</button>
+                  <button onClick={handleChatEdit} disabled={loading} style={{ background: '#10b981', color: '#070913' }} className="p-3 rounded-lg font-bold text-xs">Enviar</button>
                 </div>
               </div>
 
