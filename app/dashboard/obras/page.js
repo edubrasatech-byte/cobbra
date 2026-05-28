@@ -2,22 +2,44 @@
 import { useState, useRef, useEffect } from 'react';
 
 const PROMPT_SUGGESTIONS = [
-  { icon: '💰', text: 'Troque o valor do contrato para R$ 80.000' },
+  { icon: '💰', text: 'Altere o valor total para R$ 80.000' },
   { icon: '📅', text: 'Adicione multa de 2% por atraso no pagamento' },
   { icon: '🏗️', text: 'Inclua cláusula de garantia de 5 anos NBR 15.575' },
   { icon: '🖼️', text: 'Insira o laudo fotográfico com as imagens enviadas' },
-  { icon: '🔄', text: 'Altere o prazo de entrega para 90 dias corridos' },
+  { icon: '🔄', text: 'Mude o prazo de entrega para 90 dias corridos' },
   { icon: '✍️', text: 'Adicione campo de assinatura e data ao final' },
   { icon: '🧱', text: 'Troque a marca da tinta de Suvinil para Coral' },
   { icon: '📋', text: 'Inclua escopo detalhado de limpeza pós-obra' },
 ];
 
-const POWER_TIPS = [
-  { icon: '📸', title: 'Anexe fotos da vistoria', desc: 'Envie imagens reais da obra. A IA insere um laudo fotográfico técnico automático no contrato.' },
-  { icon: '💵', title: 'Parcelas automáticas', desc: 'Após aprovar o orçamento, clique em "Extrair Parcelas" para criar cobranças Pix de cada medição.' },
-  { icon: '✏️', title: 'Edição em linguagem natural', desc: 'Diga o que quer mudar como numa conversa. "Aumente a mão de obra em 15%" ou "Remova o item de escorramento".' },
-  { icon: '📄', title: 'Contratos NBR prontos', desc: 'Toda proposta já inclui cláusulas de garantia NBR 15.575, responsabilidades e penalidades legais.' },
-];
+const stepStyle = {
+  outer: { display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 680 },
+  label: { fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 6 },
+  input: { width: '100%', padding: '12px 14px', background: '#0f172a', border: '1px solid #1e293b', borderRadius: 10, color: '#f1f5f9', fontSize: 14, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 0.2s' },
+  textarea: { width: '100%', padding: '12px 14px', background: '#0f172a', border: '1px solid #1e293b', borderRadius: 10, color: '#f1f5f9', fontSize: 14, outline: 'none', fontFamily: 'inherit', resize: 'none', boxSizing: 'border-box', minHeight: 100 },
+  row: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 },
+};
+
+function ProgressBar({ current, total }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+      {Array.from({ length: total }, (_, i) => i + 1).map((n, idx) => (
+        <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{
+            width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 11, fontWeight: 800, flexShrink: 0,
+            background: current > n ? '#059669' : current === n ? '#10b981' : '#1e293b',
+            color: current > n ? '#fff' : current === n ? '#000' : '#475569',
+          }}>
+            {current > n ? '✓' : n}
+          </div>
+          {idx < total - 1 && <div style={{ width: 32, height: 2, background: current > n ? '#10b981' : '#1e293b', borderRadius: 1 }} />}
+        </div>
+      ))}
+      <span style={{ marginLeft: 8, fontSize: 12, color: '#64748b' }}>Passo {current} de {total}</span>
+    </div>
+  );
+}
 
 export default function ObrasPage() {
   const [step, setStep] = useState(1);
@@ -25,55 +47,65 @@ export default function ObrasPage() {
   const [projectId, setProjectId] = useState(null);
   const [countdown, setCountdown] = useState(0);
 
-  // Form
+  // Step 1 - Escopo
   const [projectType, setProjectType] = useState('');
   const [services, setServices] = useState([]);
+
+  // Step 2 - Partes do contrato
+  const [contractorName, setContractorName] = useState('');
+  const [contractorCnpj, setContractorCnpj] = useState('');
+  const [contractorAddress, setContractorAddress] = useState('');
+  const [clientName, setClientName] = useState('');
+  const [clientDoc, setClientDoc] = useState('');
+  const [clientAddress, setClientAddress] = useState('');
+
+  // Step 3 - Condições financeiras
   const [notes, setNotes] = useState('');
 
-  // Editor
+  // Step 4 - Editor
   const [htmlContent, setHtmlContent] = useState('');
   const [chatInput, setChatInput] = useState('');
   const [images, setImages] = useState([]);
-  const [showTips, setShowTips] = useState(false);
-
   const [exportLoading, setExportLoading] = useState(false);
   const [exportedCount, setExportedCount] = useState(0);
+  const [chatHistory, setChatHistory] = useState([]);
 
   const fileInputRef = useRef(null);
   const countdownRef = useRef(null);
+  const chatEndRef = useRef(null);
 
-  // ---------- Countdown timer ----------
-  const startCountdown = (seconds) => {
-    setCountdown(seconds);
+  const startCountdown = (s) => {
+    setCountdown(s);
     clearInterval(countdownRef.current);
     countdownRef.current = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) { clearInterval(countdownRef.current); return 0; }
-        return prev - 1;
-      });
+      setCountdown(p => { if (p <= 1) { clearInterval(countdownRef.current); return 0; } return p - 1; });
     }, 1000);
   };
 
   useEffect(() => () => clearInterval(countdownRef.current), []);
 
-  // ---------- Image upload ----------
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatHistory]);
+
   const handleImageUpload = (e) => {
     Array.from(e.target.files).forEach(file => {
       const reader = new FileReader();
       reader.onload = (ev) => {
-        const b64 = ev.target.result.split(',')[1];
-        setImages(prev => [...prev, { mime: file.type, base64: b64, preview: ev.target.result }]);
+        setImages(prev => [...prev, { mime: file.type, base64: ev.target.result.split(',')[1], preview: ev.target.result, name: file.name }]);
       };
       reader.readAsDataURL(file);
     });
   };
 
-  const removeImage = (i) => setImages(prev => prev.filter((_, idx) => idx !== i));
-
-  // ---------- Generate ----------
   const handleGenerate = async () => {
     setLoading(true);
     startCountdown(30);
+    const fullNotes = `
+CONTRATADA: ${contractorName} | CNPJ: ${contractorCnpj} | Endereço: ${contractorAddress}
+CONTRATANTE: ${clientName} | CPF/CNPJ: ${clientDoc} | Endereço: ${clientAddress}
+CONDIÇÕES: ${notes}
+    `.trim();
     try {
       const res = await fetch('/api/ai/budget-generator', {
         method: 'POST',
@@ -82,36 +114,29 @@ export default function ObrasPage() {
           action: 'generate_initial',
           project_type: projectType,
           services,
-          notes,
+          notes: fullNotes,
           images: images.map(i => ({ mime: i.mime, base64: i.base64 }))
         })
       });
       const data = await res.json();
-      clearInterval(countdownRef.current);
-      setCountdown(0);
+      clearInterval(countdownRef.current); setCountdown(0);
       if (data.html) {
         setHtmlContent(data.html);
         setProjectId(data.project_id);
-        setStep(3);
-      } else {
-        alert('Erro da API: ' + (data.error || 'resposta inválida'));
-      }
-    } catch {
-      clearInterval(countdownRef.current);
-      setCountdown(0);
-      alert('Erro ao gerar orçamento. Verifique sua conexão.');
-    } finally {
-      setLoading(false);
-    }
+        setChatHistory([{ role: 'ai', text: '✅ Contrato gerado! Clique nas sugestões ou escreva abaixo para ajustar qualquer cláusula, valor ou prazo.' }]);
+        setStep(4);
+      } else alert('Erro: ' + (data.error || 'resposta inválida'));
+    } catch { alert('Erro ao gerar. Verifique sua conexão.'); }
+    finally { setLoading(false); clearInterval(countdownRef.current); setCountdown(0); }
   };
 
-  // ---------- Chat edit ----------
   const handleChatEdit = async (inputOverride) => {
-    const input = inputOverride || chatInput;
-    if (!input.trim()) return;
+    const input = (inputOverride || chatInput).trim();
+    if (!input) return;
+    setChatInput('');
+    setChatHistory(p => [...p, { role: 'user', text: input }]);
     setLoading(true);
     startCountdown(20);
-    setChatInput('');
     try {
       const res = await fetch('/api/ai/budget-generator', {
         method: 'POST',
@@ -125,19 +150,16 @@ export default function ObrasPage() {
         })
       });
       const data = await res.json();
-      clearInterval(countdownRef.current);
-      setCountdown(0);
-      if (data.html) { setHtmlContent(data.html); setImages([]); }
-    } catch {
-      clearInterval(countdownRef.current);
-      setCountdown(0);
-      alert('Erro ao editar orçamento.');
-    } finally {
-      setLoading(false);
-    }
+      clearInterval(countdownRef.current); setCountdown(0);
+      if (data.html) {
+        setHtmlContent(data.html);
+        setImages([]);
+        setChatHistory(p => [...p, { role: 'ai', text: '✅ Documento atualizado! Revise a prévia ao lado.' }]);
+      }
+    } catch { setChatHistory(p => [...p, { role: 'ai', text: '❌ Erro ao editar. Tente novamente.' }]); }
+    finally { setLoading(false); clearInterval(countdownRef.current); setCountdown(0); }
   };
 
-  // ---------- Export charges ----------
   const handleExportCharges = async () => {
     if (!projectId) return;
     setExportLoading(true);
@@ -148,325 +170,308 @@ export default function ObrasPage() {
         body: JSON.stringify({ action: 'export_charges', project_id: projectId })
       });
       const data = await res.json();
-      if (data.success) {
-        setExportedCount(data.count);
-        alert(`Sucesso! ${data.count} cobrança(s) criada(s) no painel, sincronizadas com os prazos de medição.`);
-      } else {
-        alert('Erro ao exportar: ' + data.error);
-      }
-    } catch {
-      alert('Erro na integração com cobranças.');
-    } finally {
-      setExportLoading(false);
-    }
+      if (data.success) { setExportedCount(data.count); alert(`✅ ${data.count} cobrança(s) criada(s) no painel Pix!`); }
+      else alert('Erro: ' + data.error);
+    } catch { alert('Erro na exportação.'); }
+    finally { setExportLoading(false); }
   };
 
-  // ---------- Progress bar component ----------
-  const ProgressBar = ({ current }) => (
-    <div className="flex items-center gap-2 text-xs mb-6">
-      {[{ n: 1, label: 'Escopo' }, { n: 2, label: 'Condições' }, { n: 3, label: 'Documento IA' }].map(({ n, label }, idx) => (
-        <div key={n} className="flex items-center gap-2 flex-shrink-0">
-          <div className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] flex-shrink-0 ${current > n ? 'bg-emerald-600 text-white' : current === n ? 'bg-emerald-500 text-black' : 'bg-slate-800 text-slate-500'}`}>
-            {current > n ? '✓' : n}
-          </div>
-          <span className={current === n ? 'text-emerald-400 font-semibold' : 'text-slate-500'}>{label}</span>
-          {idx < 2 && <div className="w-8 h-px bg-slate-800 mx-1" />}
-        </div>
-      ))}
-    </div>
-  );
+  const btnPrimary = { background: '#10b981', color: '#070913', border: 'none', fontWeight: 700, borderRadius: 12, cursor: 'pointer', fontSize: 14, transition: 'opacity 0.2s' };
+  const btnGhost = { background: '#1e293b', color: '#cbd5e1', border: '1px solid #334155', fontWeight: 700, borderRadius: 12, cursor: 'pointer', fontSize: 14 };
+  const btnDisabled = { background: '#1e293b', color: '#475569', border: '1px solid #334155', fontWeight: 700, borderRadius: 12, cursor: 'not-allowed', fontSize: 14, opacity: 0.6 };
 
-  // ======= RENDER =======
+  // ────────────────────────── RENDER ──────────────────────────
   return (
-    <div className="flex flex-col gap-0 h-full">
+    <div style={{ fontFamily: "'Inter', sans-serif", color: '#f1f5f9' }}>
 
-      {/* PAGE HEADER — dentro do layout do dashboard */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-extrabold text-white flex items-center gap-2">🏗️ Construtor Catarina IA</h2>
-          <p className="text-sm text-slate-400 mt-0.5">Orçamentos e contratos profissionais gerados por IA em segundos</p>
-        </div>
-        <button
-          onClick={() => setShowTips(!showTips)}
-          className="text-[11px] font-semibold text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 rounded-lg hover:bg-emerald-500/20 transition-all flex items-center gap-1.5 flex-shrink-0"
-        >
-          💡 {showTips ? 'Ocultar dicas' : 'Ver o que posso fazer'}
-        </button>
-      </div>
-
-      {/* DICAS EXPANSÍVEIS */}
-      {showTips && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-6 p-4 bg-[#0b1220] border border-slate-800 rounded-xl">
-          <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider col-span-full mb-1">⚡ O que esta ferramenta faz</p>
-          {POWER_TIPS.map((tip, i) => (
-            <div key={i} className="bg-slate-900/60 border border-slate-800 rounded-xl p-3 flex flex-col gap-1.5">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">{tip.icon}</span>
-                <span className="text-xs font-bold text-white">{tip.title}</span>
-              </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed">{tip.desc}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* ===== STEP 1 ===== */}
+      {/* ── STEP 1: ESCOPO ── */}
       {step === 1 && (
-        <div className="flex flex-col gap-5 max-w-2xl">
-          <ProgressBar current={1} />
+        <div style={stepStyle.outer}>
+          <ProgressBar current={1} total={3} />
+          <div>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#fff', margin: 0 }}>O que vamos construir ou reformar?</h2>
+            <p style={{ color: '#64748b', fontSize: 13, marginTop: 4 }}>Descreva o projeto. Quanto mais detalhe, mais preciso o contrato.</p>
+          </div>
 
           <div>
-            <h3 className="text-base font-bold text-white mb-0.5">O que vamos construir ou reformar?</h3>
-            <p className="text-sm text-slate-400">Descreva o projeto. Quanto mais detalhes, mais preciso o contrato.</p>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Nome do projeto</label>
+            <label style={stepStyle.label}>Descrição do projeto</label>
             <input
-              className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl outline-none focus:border-emerald-500 text-white placeholder-slate-600 text-sm transition-colors"
-              placeholder="Ex: Prédio Residencial 10 andares – Jardim de Sintra, SP"
+              style={stepStyle.input}
+              placeholder="Ex: Pintura externa de prédio residencial 10 andares – Jardim de Sintra, SP"
               value={projectType}
               onChange={e => setProjectType(e.target.value)}
+              onFocus={e => e.target.style.borderColor = '#10b981'}
+              onBlur={e => e.target.style.borderColor = '#1e293b'}
             />
-            <div className="flex flex-wrap gap-2 mt-1">
-              {['Residência unifamiliar 150m²', 'Reforma comercial – escritório', 'Impermeabilização de cobertura', 'Construção de galpão logístico'].map(ex => (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+              {['Residência unifamiliar', 'Reforma comercial', 'Impermeabilização', 'Galpão logístico'].map(ex => (
                 <button key={ex} onClick={() => setProjectType(ex)}
-                  className="text-[11px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-400 hover:border-emerald-500/50 hover:text-emerald-300 transition-all">
+                  style={{ ...btnGhost, padding: '6px 12px', fontSize: 11, borderRadius: 8 }}>
                   {ex}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Serviços incluídos</label>
-            <div className="flex flex-wrap gap-2">
+          <div>
+            <label style={stepStyle.label}>Serviços incluídos</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {['Lavação de Fachada', 'Pintura Externa', 'Impermeabilização', 'Tratamento de Ferragem', 'Troca de Telhado', 'Fundação e Estrutura', 'Acabamento Interno', 'Elétrica e Hidráulica'].map(s => {
                 const sel = services.includes(s);
                 return (
-                  <label key={s} className={"px-3 py-2 rounded-xl border cursor-pointer transition-all text-sm select-none " + (sel ? "bg-emerald-500/15 border-emerald-500 text-emerald-300 font-semibold" : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600")}>
-                    <input type="checkbox" className="hidden" onChange={e => {
-                      if (e.target.checked) setServices(p => [...p, s]);
-                      else setServices(p => p.filter(x => x !== s));
-                    }} />
+                  <button key={s} onClick={() => setServices(p => sel ? p.filter(x => x !== s) : [...p, s])}
+                    style={{ padding: '8px 14px', borderRadius: 10, border: sel ? '1.5px solid #10b981' : '1px solid #1e293b', background: sel ? 'rgba(16,185,129,0.12)' : '#0f172a', color: sel ? '#34d399' : '#94a3b8', fontSize: 13, cursor: 'pointer', fontWeight: sel ? 700 : 400, transition: 'all 0.15s' }}>
                     {s}
-                  </label>
+                  </button>
                 );
               })}
             </div>
           </div>
 
-          <div className="flex items-start gap-3 bg-blue-500/5 border border-blue-500/15 rounded-xl p-3.5">
-            <span className="text-blue-400 text-base mt-0.5">💡</span>
-            <p className="text-[11px] text-blue-200/60 leading-relaxed">
-              <strong className="text-blue-300">Dica:</strong> No próximo passo você informa valores, prazos e condições de pagamento. A IA estrutura cláusulas contratuais completas a partir dessas informações.
-            </p>
-          </div>
-
           <button
             onClick={() => setStep(2)}
             disabled={!projectType.trim()}
-            className="p-4 font-bold rounded-xl transition-all text-sm"
-            style={projectType.trim()
-              ? { background: '#10b981', color: '#070913', boxShadow: '0 4px 20px rgba(16,185,129,0.35)' }
-              : { background: '#1e293b', color: '#475569', cursor: 'not-allowed', border: '1px solid #334155' }
-            }
-          >
+            style={{ ...(projectType.trim() ? btnPrimary : btnDisabled), padding: '14px 24px', boxShadow: projectType.trim() ? '0 4px 20px rgba(16,185,129,0.3)' : 'none' }}>
             Próximo Passo →
           </button>
         </div>
       )}
 
-      {/* ===== STEP 2 ===== */}
+      {/* ── STEP 2: PARTES DO CONTRATO ── */}
       {step === 2 && (
-        <div className="flex flex-col gap-5 max-w-2xl">
-          <ProgressBar current={2} />
-
+        <div style={stepStyle.outer}>
+          <ProgressBar current={2} total={3} />
           <div>
-            <h3 className="text-base font-bold text-white mb-0.5">Condições Comerciais & Financeiras</h3>
-            <p className="text-sm text-slate-400">Informe valores, prazos e formas de pagamento para o contrato.</p>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#fff', margin: 0 }}>Quem assina o contrato?</h2>
+            <p style={{ color: '#64748b', fontSize: 13, marginTop: 4 }}>Essas informações serão inseridas diretamente nas cláusulas do contrato.</p>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Modelos rápidos de condições (clique para preencher)</label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {[
-                { label: '30 / 30 / 40', desc: 'Entrada + Medição + Entrega', template: 'Valor total R$ [inserir]. Pagamento: 30% entrada, 30% Medição 1 (30 dias), 40% entrega final (60 dias).' },
-                { label: '50 / 50', desc: 'Entrada e entrega', template: 'Valor total R$ [inserir]. 50% no início e 50% na entrega da obra.' },
-                { label: '3x iguais mensais', desc: 'Parcelas mensais fixas', template: 'Valor total R$ [inserir], dividido em 3 parcelas mensais iguais com vencimento em 30, 60 e 90 dias.' },
-                { label: 'Medição semanal', desc: 'Cobranças por avanço físico', template: 'Valor total R$ [inserir]. Pagamento semanal conforme avanço físico, medições às sextas-feiras.' },
-              ].map((t, i) => (
-                <button key={i} onClick={() => setNotes(t.template)}
-                  className="text-left px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all group">
-                  <div className="text-xs font-bold text-white group-hover:text-emerald-300">{t.label}</div>
-                  <div className="text-[10px] text-slate-500">{t.desc}</div>
-                </button>
-              ))}
+          {/* CONTRATADA */}
+          <div style={{ background: '#0b1220', border: '1px solid #1e293b', borderRadius: 12, padding: 16 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>🏢 Sua Empresa (Contratada / Prestador de Serviço)</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div>
+                <label style={stepStyle.label}>Nome ou razão social da empresa</label>
+                <input style={stepStyle.input} placeholder="Ex: Silva Construções e Reformas Ltda." value={contractorName} onChange={e => setContractorName(e.target.value)}
+                  onFocus={e => e.target.style.borderColor = '#10b981'} onBlur={e => e.target.style.borderColor = '#1e293b'} />
+              </div>
+              <div style={stepStyle.row}>
+                <div>
+                  <label style={stepStyle.label}>CNPJ / CPF</label>
+                  <input style={stepStyle.input} placeholder="00.000.000/0001-00" value={contractorCnpj} onChange={e => setContractorCnpj(e.target.value)}
+                    onFocus={e => e.target.style.borderColor = '#10b981'} onBlur={e => e.target.style.borderColor = '#1e293b'} />
+                </div>
+                <div>
+                  <label style={stepStyle.label}>Endereço</label>
+                  <input style={stepStyle.input} placeholder="Rua, Nº, Cidade - UF" value={contractorAddress} onChange={e => setContractorAddress(e.target.value)}
+                    onFocus={e => e.target.style.borderColor = '#10b981'} onBlur={e => e.target.style.borderColor = '#1e293b'} />
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Ou descreva livremente</label>
-            <textarea
-              className="p-3.5 h-28 bg-slate-900 border border-slate-800 rounded-xl outline-none focus:border-emerald-500 resize-none text-sm text-white placeholder-slate-600 transition-colors"
-              placeholder="Ex: Valor total R$ 150.000. Pagamento 30% entrada, 30% após 30 dias e 40% na entrega. Prazo 90 dias corridos."
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-            />
+          {/* CONTRATANTE */}
+          <div style={{ background: '#0b1220', border: '1px solid #1e293b', borderRadius: 12, padding: 16 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>👤 Cliente (Contratante / Tomador do Serviço)</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div>
+                <label style={stepStyle.label}>Nome completo ou razão social do cliente</label>
+                <input style={stepStyle.input} placeholder="Ex: João Carlos de Oliveira" value={clientName} onChange={e => setClientName(e.target.value)}
+                  onFocus={e => e.target.style.borderColor = '#10b981'} onBlur={e => e.target.style.borderColor = '#1e293b'} />
+              </div>
+              <div style={stepStyle.row}>
+                <div>
+                  <label style={stepStyle.label}>CPF / CNPJ do cliente</label>
+                  <input style={stepStyle.input} placeholder="000.000.000-00" value={clientDoc} onChange={e => setClientDoc(e.target.value)}
+                    onFocus={e => e.target.style.borderColor = '#10b981'} onBlur={e => e.target.style.borderColor = '#1e293b'} />
+                </div>
+                <div>
+                  <label style={stepStyle.label}>Endereço da obra</label>
+                  <input style={stepStyle.input} placeholder="Rua, Nº, Cidade - UF" value={clientAddress} onChange={e => setClientAddress(e.target.value)}
+                    onFocus={e => e.target.style.borderColor = '#10b981'} onBlur={e => e.target.style.borderColor = '#1e293b'} />
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-start gap-3 bg-emerald-500/5 border border-emerald-500/15 rounded-xl p-3.5">
-            <span className="text-emerald-400 text-base mt-0.5">🪄</span>
-            <p className="text-[11px] text-emerald-200/60 leading-relaxed">
-              <strong className="text-emerald-300">Após gerar,</strong> você pode pedir à Catarina para alterar qualquer detalhe — mudar um valor, trocar um fornecedor, adicionar cláusula — e ela reescreve o documento na hora.
-            </p>
+          {/* Step 3 condições inline */}
+          <div style={{ background: '#0b1220', border: '1px solid #1e293b', borderRadius: 12, padding: 16 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>💰 Condições Financeiras</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+              {[
+                { l: '30/30/40', t: 'Valor total R$ [valor]. Pagamento: 30% entrada, 30% Medição 1 (30 dias), 40% entrega (60 dias).' },
+                { l: '50/50', t: 'Valor total R$ [valor]. 50% no início e 50% na entrega final da obra.' },
+                { l: '3x mensais', t: 'Valor total R$ [valor] em 3 parcelas mensais iguais: 30, 60 e 90 dias.' },
+                { l: 'Medição semanal', t: 'Valor total R$ [valor]. Pagamento semanal por avanço físico, medições às sextas.' },
+              ].map(t => (
+                <button key={t.l} onClick={() => setNotes(t.t)}
+                  style={{ ...btnGhost, padding: '7px 14px', fontSize: 12, borderRadius: 8 }}>{t.l}</button>
+              ))}
+            </div>
+            <textarea style={stepStyle.textarea}
+              placeholder="Descreva valor total, forma de pagamento e prazos. Ex: Valor total R$ 120.000. Pagamento 30% entrada, saldo em 2 medições..."
+              value={notes} onChange={e => setNotes(e.target.value)} />
           </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={() => setStep(1)}
-              className="flex-1 p-3.5 font-bold rounded-xl text-sm transition-colors"
-              style={{ background: '#1e293b', color: '#f1f5f9' }}
-            >
-              ← Voltar
-            </button>
-            <button
-              onClick={handleGenerate}
-              disabled={loading}
-              className="flex-[2] p-3.5 font-bold rounded-xl text-sm transition-all"
-              style={loading
-                ? { background: '#065f46', color: '#6ee7b7', cursor: 'wait', opacity: 0.8 }
-                : { background: '#10b981', color: '#070913', boxShadow: '0 4px 20px rgba(16,185,129,0.35)' }
-              }
-            >
-              {loading
-                ? `⏳ Catarina gerando... ${countdown > 0 ? `(~${countdown}s)` : ''}`
-                : '✨ Gerar Proposta com IA'}
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button onClick={() => setStep(1)} style={{ ...btnGhost, flex: 1, padding: '13px 0' }}>← Voltar</button>
+            <button onClick={handleGenerate} disabled={loading || !contractorName.trim() || !clientName.trim()}
+              style={{
+                ...(loading || !contractorName.trim() || !clientName.trim() ? btnDisabled : btnPrimary),
+                flex: 2, padding: '13px 0',
+                boxShadow: (!loading && contractorName.trim() && clientName.trim()) ? '0 4px 20px rgba(16,185,129,0.3)' : 'none'
+              }}>
+              {loading ? `⏳ Gerando contrato... ${countdown > 0 ? `(~${countdown}s)` : ''}` : '✨ Gerar Contrato com IA'}
             </button>
           </div>
         </div>
       )}
 
-      {/* ===== STEP 3: EDITOR ===== */}
-      {step === 3 && (
-        <div className="flex flex-col lg:flex-row gap-4 w-full" style={{ height: 'calc(100vh - 220px)', minHeight: 500 }}>
+      {/* ── STEP 4: EDITOR ── */}
+      {step === 4 && (
+        <div style={{ display: 'flex', gap: 16, width: '100%', height: 'calc(100vh - 160px)', minHeight: 600 }}>
 
-          {/* PREVIEW DO DOCUMENTO */}
-          <div className="flex-[2] flex flex-col rounded-xl overflow-hidden border border-slate-700 shadow-xl" style={{ minWidth: 0 }}>
-            <div className="bg-slate-800 px-4 py-2.5 flex items-center justify-between border-b border-slate-700 flex-shrink-0">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-500/60" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-                <div className="w-3 h-3 rounded-full bg-emerald-500/60" />
-                <span className="text-[11px] text-slate-400 ml-2 font-medium">Pré-visualização do Contrato</span>
+          {/* PREVIEW */}
+          <div style={{ flex: 2, display: 'flex', flexDirection: 'column', borderRadius: 12, overflow: 'hidden', border: '1px solid #1e293b', minWidth: 0 }}>
+            {/* Barra do documento */}
+            <div style={{ background: '#0f172a', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1e293b', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(239,68,68,0.5)' }} />
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(234,179,8,0.5)' }} />
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(16,185,129,0.5)' }} />
+                <span style={{ fontSize: 11, color: '#64748b', marginLeft: 8 }}>Pré-visualização do Contrato</span>
               </div>
-              {loading && countdown > 0 && (
-                <div className="flex items-center gap-1.5 text-[11px] text-amber-400">
-                  <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                  IA processando... {countdown}s
-                </div>
-              )}
+              {loading && <span style={{ fontSize: 11, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b', display: 'inline-block', animation: 'pulse 1s infinite' }} />
+                Catarina processando... {countdown > 0 ? `${countdown}s` : ''}
+              </span>}
             </div>
-            <div className="flex-1 overflow-y-auto bg-white">
+            {/* Conteúdo */}
+            <div style={{ flex: 1, overflow: 'auto', background: '#fff' }}>
               {loading ? (
-                <div className="flex flex-col items-center justify-center h-full py-20 text-black opacity-40">
-                  <div className="animate-spin text-5xl mb-4">🐍</div>
-                  <p className="font-bold text-sm">Catarina reescrevendo o documento...</p>
-                  <p className="text-xs text-gray-500 mt-1">Aplicando normas NBR e recalculando cláusulas</p>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#374151', opacity: 0.5 }}>
+                  <div style={{ fontSize: 40, marginBottom: 12, animation: 'spin 1s linear infinite' }}>🐍</div>
+                  <p style={{ fontWeight: 700, margin: 0 }}>Catarina reescrevendo o documento...</p>
                   {countdown > 0 && (
-                    <div className="mt-4 flex items-center gap-2">
-                      <div className="w-32 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-500 rounded-full transition-all duration-1000" style={{ width: `${(1 - countdown / 30) * 100}%` }} />
+                    <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{ width: 140, height: 4, background: '#e5e7eb', borderRadius: 2, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', background: '#10b981', borderRadius: 2, transition: 'width 1s linear', width: `${Math.min(100, (1 - countdown / 30) * 100)}%` }} />
                       </div>
-                      <span className="text-xs text-gray-400">~{countdown}s</span>
+                      <span style={{ fontSize: 12, color: '#6b7280' }}>~{countdown}s</span>
                     </div>
                   )}
                 </div>
               ) : (
-                <div
-                  dangerouslySetInnerHTML={{ __html: htmlContent }}
-                  className="prose max-w-none text-sm p-6 md:p-10 text-black"
-                  style={{ fontFamily: 'Georgia, serif', lineHeight: 1.7 }}
-                />
+                <div dangerouslySetInnerHTML={{ __html: htmlContent }}
+                  style={{ padding: '40px 48px', fontSize: 13, lineHeight: 1.75, fontFamily: 'Georgia, serif', color: '#111' }} />
               )}
             </div>
           </div>
 
-          {/* PAINEL LATERAL */}
-          <div className="lg:w-72 xl:w-80 flex flex-col gap-3 flex-shrink-0">
+          {/* PAINEL COPILOT */}
+          <div style={{ width: 300, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-            {/* CATARINA COPILOT */}
-            <div className="bg-[#0C0E1A] rounded-xl border border-slate-800 p-4 flex flex-col flex-1 shadow-lg overflow-hidden">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 mb-3 flex-shrink-0">
-                <h3 className="font-bold text-emerald-400 text-sm">Catarina Copilot 🪄</h3>
-                <span className="text-[9px] text-slate-500 bg-slate-800 px-2 py-0.5 rounded-full font-semibold tracking-wider">IA</span>
+            {/* Chat box */}
+            <div style={{ flex: 1, background: '#0c0e1a', border: '1px solid #1e293b', borderRadius: 12, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
+
+              {/* Header */}
+              <div style={{ padding: '12px 16px', borderBottom: '1px solid #1e293b', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+                <span style={{ fontWeight: 700, color: '#10b981', fontSize: 13 }}>Catarina Copilot 🪄</span>
+                <span style={{ fontSize: 9, color: '#64748b', background: '#1e293b', padding: '2px 8px', borderRadius: 20, fontWeight: 700, letterSpacing: '0.05em' }}>IA</span>
               </div>
 
               {/* Sugestões */}
-              <div className="mb-3 flex-shrink-0">
-                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Clique para aplicar instantaneamente</p>
-                <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-0.5">
+              <div style={{ padding: '10px 12px', borderBottom: '1px solid #1e293b', flexShrink: 0 }}>
+                <p style={{ fontSize: 9, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Clique para aplicar</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                   {PROMPT_SUGGESTIONS.map((s, i) => (
                     <button key={i} onClick={() => handleChatEdit(s.text)} disabled={loading}
-                      className="flex items-start gap-2 text-left px-2.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/40 transition-all group disabled:opacity-40 disabled:cursor-wait">
-                      <span className="text-sm mt-0.5 flex-shrink-0">{s.icon}</span>
-                      <span className="text-[11px] text-slate-400 group-hover:text-slate-200 leading-snug">{s.text}</span>
+                      style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '7px 10px', background: '#0f172a', border: '1px solid #1e293b', borderRadius: 8, cursor: loading ? 'wait' : 'pointer', textAlign: 'left', opacity: loading ? 0.5 : 1, transition: 'border-color 0.15s' }}
+                      onMouseEnter={e => !loading && (e.currentTarget.style.borderColor = '#10b981')}
+                      onMouseLeave={e => (e.currentTarget.style.borderColor = '#1e293b')}
+                    >
+                      <span style={{ fontSize: 13, flexShrink: 0 }}>{s.icon}</span>
+                      <span style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.4 }}>{s.text}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
+              {/* Histórico do chat */}
+              <div style={{ flex: 1, overflowY: 'auto', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {chatHistory.map((m, i) => (
+                  <div key={i} style={{
+                    padding: '8px 12px', borderRadius: 10, fontSize: 11, lineHeight: 1.5, maxWidth: '95%',
+                    alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
+                    background: m.role === 'user' ? 'rgba(16,185,129,0.15)' : '#1e293b',
+                    color: m.role === 'user' ? '#34d399' : '#94a3b8',
+                    border: m.role === 'user' ? '1px solid rgba(16,185,129,0.25)' : '1px solid #334155',
+                  }}>
+                    {m.text}
+                  </div>
+                ))}
+                {loading && (
+                  <div style={{ padding: '8px 12px', background: '#1e293b', borderRadius: 10, fontSize: 11, color: '#64748b', display: 'flex', alignItems: 'center', gap: 6, alignSelf: 'flex-start' }}>
+                    <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>🐍</span>
+                    Catarina está pensando...
+                  </div>
+                )}
+                <div ref={chatEndRef} />
+              </div>
+
               {/* Imagens anexadas */}
               {images.length > 0 && (
-                <div className="flex gap-1.5 flex-wrap mb-2 flex-shrink-0">
+                <div style={{ padding: '6px 12px', display: 'flex', gap: 6, flexWrap: 'wrap', borderTop: '1px solid #1e293b', flexShrink: 0 }}>
                   {images.map((img, idx) => (
-                    <div key={idx} className="relative w-10 h-10 rounded-lg border border-slate-700 overflow-hidden flex-shrink-0">
-                      <img src={img.preview} alt="upload" className="w-full h-full object-cover" />
-                      <button onClick={() => removeImage(idx)} className="absolute inset-0 bg-black/60 text-white text-[10px] flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">✕</button>
+                    <div key={idx} style={{ position: 'relative', width: 36, height: 36, borderRadius: 6, overflow: 'hidden', border: '1px solid #334155' }}>
+                      <img src={img.preview} alt="foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button onClick={() => setImages(p => p.filter((_, i) => i !== idx))}
+                        style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: 10, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        ✕
+                      </button>
                     </div>
                   ))}
                 </div>
               )}
 
-              {/* Input livre */}
-              <div className="flex-shrink-0 border-t border-slate-800 pt-3 mt-auto">
-                <p className="text-[10px] text-slate-500 mb-2">Ou escreva livremente:</p>
-                <div className="flex gap-1.5">
-                  <input type="file" multiple accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageUpload} />
-                  <button onClick={() => fileInputRef.current?.click()} title="Anexar foto da vistoria"
-                    className="p-2 bg-slate-800 border border-slate-700 rounded-lg text-sm hover:bg-slate-700 transition-colors flex-shrink-0">
-                    📷
-                  </button>
-                  <input
-                    className="flex-1 min-w-0 p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs outline-none focus:border-emerald-500 text-white placeholder-slate-600 transition-colors"
-                    placeholder="Ex: Adicione garantia de 5 anos..."
-                    value={chatInput}
-                    onChange={e => setChatInput(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleChatEdit()}
-                  />
-                  <button onClick={() => handleChatEdit()} disabled={loading || !chatInput.trim()}
-                    className="p-2 bg-emerald-500 text-black rounded-lg font-bold text-xs disabled:opacity-40 disabled:cursor-wait hover:bg-emerald-400 transition-colors flex-shrink-0 px-3">
-                    →
-                  </button>
-                </div>
+              {/* Input */}
+              <div style={{ padding: '10px 12px', borderTop: '1px solid #1e293b', display: 'flex', gap: 8, flexShrink: 0 }}>
+                <input type="file" multiple accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageUpload} />
+                <button onClick={() => fileInputRef.current?.click()} title="Anexar foto da vistoria"
+                  style={{ ...btnGhost, padding: '8px 10px', borderRadius: 8, fontSize: 15, flexShrink: 0 }}>
+                  📷
+                </button>
+                <input
+                  style={{ flex: 1, minWidth: 0, padding: '8px 12px', background: '#0f172a', border: '1px solid #1e293b', borderRadius: 8, fontSize: 12, color: '#f1f5f9', outline: 'none', fontFamily: 'inherit' }}
+                  placeholder="Ex: Adicione garantia de 5 anos..."
+                  value={chatInput}
+                  onChange={e => setChatInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && !loading && handleChatEdit()}
+                  onFocus={e => e.target.style.borderColor = '#10b981'}
+                  onBlur={e => e.target.style.borderColor = '#1e293b'}
+                />
+                <button onClick={() => handleChatEdit()} disabled={loading || !chatInput.trim()}
+                  style={{ ...(loading || !chatInput.trim() ? btnDisabled : btnPrimary), padding: '8px 14px', borderRadius: 8, fontSize: 14, flexShrink: 0 }}>
+                  →
+                </button>
               </div>
             </div>
 
-            {/* MÓDULO FINANCEIRO */}
-            <div className="bg-emerald-500/10 rounded-xl border border-emerald-500/30 p-4 flex-shrink-0">
-              <h3 className="font-bold text-emerald-400 mb-1 text-sm flex items-center gap-1.5">⚡ Sincronização Financeira</h3>
-              <p className="text-[11px] text-emerald-200/70 mb-3 leading-relaxed">
-                Orçamento aprovado? A IA extrai as parcelas e cria <strong>cobranças Pix</strong> direto no painel.
+            {/* Sincronização financeira */}
+            <div style={{ background: 'rgba(16,185,129,0.07)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 12, padding: 16, flexShrink: 0 }}>
+              <p style={{ fontWeight: 700, color: '#10b981', fontSize: 13, marginBottom: 6 }}>⚡ Sincronização Financeira</p>
+              <p style={{ fontSize: 11, color: 'rgba(167,243,208,0.6)', marginBottom: 12, lineHeight: 1.5 }}>
+                Orçamento aprovado? A IA extrai as parcelas e cria cobranças Pix direto no painel.
               </p>
               <button onClick={handleExportCharges} disabled={exportLoading}
-                className="w-full p-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg font-bold text-xs shadow-md shadow-emerald-500/20 hover:scale-[1.02] transition-all disabled:opacity-60 disabled:cursor-wait flex items-center justify-center gap-2">
+                style={{ ...btnPrimary, width: '100%', padding: '10px 0', borderRadius: 8, fontSize: 12, opacity: exportLoading ? 0.7 : 1 }}>
                 {exportLoading ? '⏳ Extraindo...' : exportedCount > 0 ? `✅ ${exportedCount} Parcelas Exportadas` : '💸 Extrair Parcelas de Medição'}
               </button>
             </div>
 
-            {/* NOVO ORÇAMENTO */}
-            <button onClick={() => { setStep(1); setHtmlContent(''); setProjectId(null); setExportedCount(0); setImages([]); setNotes(''); setProjectType(''); setServices([]); }}
-              className="text-[11px] text-slate-500 hover:text-slate-300 transition-colors text-center py-1 flex-shrink-0">
+            {/* Novo orçamento */}
+            <button onClick={() => { setStep(1); setHtmlContent(''); setProjectId(null); setExportedCount(0); setImages([]); setNotes(''); setProjectType(''); setServices([]); setContractorName(''); setContractorCnpj(''); setContractorAddress(''); setClientName(''); setClientDoc(''); setClientAddress(''); setChatHistory([]); }}
+              style={{ background: 'transparent', border: 'none', color: '#475569', fontSize: 12, cursor: 'pointer', padding: '4px 0', textAlign: 'center' }}>
               ← Criar novo orçamento
             </button>
           </div>
