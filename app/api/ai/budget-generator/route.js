@@ -32,7 +32,7 @@ export async function POST(request) {
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
     const body = await request.json();
-    const { action, project_id, client_id, project_type, services, notes, prompt } = body;
+    const { action, project_id, client_id, project_type, services, notes, prompt, images } = body;
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) return Response.json({ error: 'API Key não configurada' }, { status: 500 });
@@ -42,22 +42,35 @@ export async function POST(request) {
     let aiContent = '';
 
     if (action === 'generate_initial') {
-      const systemPrompt = `Você é a Catarina, uma IA Orçamentista Sênior em Construção Civil.
-Crie um orçamento técnico estruturado em HTML limpo e profissional baseado nas informações abaixo.
-Use tom profissional, adicione cláusulas de garantia (NBR 15.575) e formatado de forma que possa ser impresso e enviado ao cliente.
+      const systemPrompt = `Crie um orçamento técnico estruturado em HTML limpo e profissional baseado nas informações abaixo.
+Use tom corporativo, adicione cláusulas de garantia (NBR 15.575), prazos e obrigações, e formate de forma que possa ser impresso e entregue ao cliente.
+ATENÇÃO: Não mencione que você é uma IA ou "Catarina" no texto do contrato. O emitente é a empresa de Construção Civil. O contrato deve ser extremamente detalhado e extenso.
 
 Tipo de Obra: ${project_type}
 Serviços: ${services.join(', ')}
 Observações Comerciais (Pagamento): ${notes}
 
-A saída deve ser EXCLUSIVAMENTE código HTML (sem blocos markdown). O HTML deve conter cabeçalho, escopo, proposta técnica e comercial, e considerações finais.`;
+A saída deve ser EXCLUSIVAMENTE código HTML (sem blocos markdown). O HTML deve conter cabeçalho, escopo, proposta técnica e comercial, e considerações finais. Não use larguras fixas (ex: width: 800px), use porcentagens (ex: width: 100%) para ser responsivo.`;
+
+      let parts = [{ text: systemPrompt }];
+      
+      if (images && images.length > 0) {
+        images.forEach(img => {
+           parts.push({
+             inlineData: {
+               mimeType: img.mime,
+               data: img.base64
+             }
+           });
+        });
+      }
 
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: systemPrompt }] }],
-          generationConfig: { temperature: 0.2 }
+          contents: [{ role: 'user', parts: parts }],
+          generationConfig: { temperature: 0.3 }
         })
       });
 
@@ -79,16 +92,28 @@ A saída deve ser EXCLUSIVAMENTE código HTML (sem blocos markdown). O HTML deve
     if (action === 'edit_document') {
        const systemPrompt = `Você é a Catarina, uma IA Orçamentista Sênior. 
 Abaixo está o conteúdo HTML atual de um orçamento. O usuário solicitou a seguinte alteração: "${prompt}".
-Retorne APENAS o novo código HTML atualizado. Não use blocos de marcação.`;
+Se o usuário anexou imagens, incorpore-as na seção adequada do HTML (como laudo fotográfico) usando tags <img src="..." style="max-width:100%; border-radius:8px; margin-bottom:8px;" /> com o data-uri fornecido na imagem.
+ATENÇÃO: Retorne APENAS o novo código HTML atualizado. Não use larguras fixas (ex: width: 800px), seja 100% responsivo. Não mencione que você é uma IA no corpo do contrato.`;
+
+      let parts = [{ text: systemPrompt + '\n\nHTML Atual:\n' + notes }];
+
+      if (images && images.length > 0) {
+        images.forEach(img => {
+           parts.push({
+             inlineData: {
+               mimeType: img.mime,
+               data: img.base64
+             }
+           });
+        });
+      }
 
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [
-            { role: 'user', parts: [{ text: systemPrompt + '\n\nHTML Atual:\n' + notes }] }
-          ],
-          generationConfig: { temperature: 0.2 }
+          contents: [{ role: 'user', parts: parts }],
+          generationConfig: { temperature: 0.3 }
         })
       });
 

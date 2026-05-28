@@ -14,9 +14,28 @@ export default function ObrasPage() {
   // Editor State
   const [htmlContent, setHtmlContent] = useState('');
   const [chatInput, setChatInput] = useState('');
+  const [images, setImages] = useState([]);
 
   const [exportLoading, setExportLoading] = useState(false);
   const [exportedCount, setExportedCount] = useState(0);
+
+  const fileInputRef = useRef(null);
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64String = event.target.result.split(',')[1];
+        setImages(prev => [...prev, { mime: file.type, base64: base64String, preview: event.target.result }]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeImage = (index) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
 
   // Auto-ajuste para o nicho de construção
   useEffect(() => {
@@ -33,7 +52,8 @@ export default function ObrasPage() {
           action: 'generate_initial',
           project_type: projectType,
           services,
-          notes
+          notes,
+          images: images.map(i => ({ mime: i.mime, base64: i.base64 }))
         })
       });
       const data = await res.json();
@@ -64,12 +84,14 @@ export default function ObrasPage() {
           action: 'edit_document',
           project_id: projectId,
           prompt: currentInput,
-          notes: htmlContent
+          notes: htmlContent,
+          images: images.map(i => ({ mime: i.mime, base64: i.base64 }))
         })
       });
       const data = await res.json();
       if (data.html) {
         setHtmlContent(data.html);
+        setImages([]); // clear images after sending
       }
     } catch (e) {
       alert('Erro ao editar orçamento.');
@@ -157,9 +179,9 @@ export default function ObrasPage() {
         )}
 
         {step === 3 && (
-          <div className="flex flex-col md:flex-row gap-6 flex-1 min-h-[600px] animate-fadeInUp">
+          <div className="flex flex-col md:flex-row gap-6 flex-1 min-h-[600px] animate-fadeInUp w-full max-w-[100vw] overflow-hidden">
             {/* PREVIEW */}
-            <div className="flex-[2] bg-white text-black p-8 rounded-xl overflow-y-auto max-h-[75vh] shadow-xl border border-slate-200">
+            <div className="flex-[2] bg-white text-black p-4 md:p-8 rounded-xl overflow-x-hidden overflow-y-auto max-h-[75vh] shadow-xl border border-slate-200 break-words w-full">
               {loading ? (
                 <div className="w-full h-full flex flex-col items-center justify-center opacity-50">
                   <div className="animate-spin text-4xl mb-4">🐍</div>
@@ -176,9 +198,22 @@ export default function ObrasPage() {
                 <h3 className="font-bold text-emerald-400 mb-2 border-b border-slate-800 pb-2">Catarina Copilot 🪄</h3>
                 <p className="text-[11px] text-slate-400 mb-4">Peça para a IA modificar cláusulas, recalcular valores ou alterar métodos.</p>
                 
-                <div className="flex-1 overflow-y-auto"></div>
+                <div className="flex-1 overflow-y-auto">
+                  {images.length > 0 && (
+                    <div className="flex gap-2 flex-wrap mb-2">
+                      {images.map((img, idx) => (
+                        <div key={idx} className="relative w-12 h-12 rounded border border-slate-700 overflow-hidden">
+                          <img src={img.preview} alt="upload" className="w-full h-full object-cover" />
+                          <button onClick={() => removeImage(idx)} className="absolute top-0 right-0 bg-red-500 text-white text-[8px] w-4 h-4 flex items-center justify-center">x</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
                 <div className="mt-4 flex gap-2">
+                  <input type="file" multiple accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageUpload} />
+                  <button onClick={() => fileInputRef.current?.click()} className="p-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-300 text-xs">📷</button>
                   <input 
                     className="flex-1 p-3 bg-slate-900 border border-slate-800 rounded-lg text-xs outline-none focus:border-emerald-500 text-white"
                     placeholder="Ex: Troque a marca da tinta para Coral..."
