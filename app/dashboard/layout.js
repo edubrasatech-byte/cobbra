@@ -738,7 +738,7 @@ export default function DashboardLayout({ children }) {
             <div className="w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center shadow shadow-emerald-500/10 select-none flex-shrink-0">
               <MiniSnake size={26} />
             </div>
-            <h1 className="text-sm md:text-base font-bold text-slate-100 tracking-tight">{pageTitle}</h1>
+            <h1 className="text-sm md:text-base font-bold text-slate-100 tracking-tight leading-none py-1">{pageTitle}</h1>
           </div>
 
           {/* 🔍 Catarina AI Engine: Flat Command Bar Widget */}
@@ -809,26 +809,28 @@ export default function DashboardLayout({ children }) {
               </svg>
             </button>
 
-            {/* Catarina AI Chatbot Toggle Button */}
-            <button 
-              onClick={() => setChatbotOpen(!chatbotOpen)}
-              className={`w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center cursor-pointer transition-all relative ${
-                chatbotOpen ? 'border-emerald-500/60 ring-1 ring-emerald-500/10' : ''
-              }`}
-              title="Conversar com a Catarina"
-              aria-label="Conversar com a Catarina"
-            >
-              <svg className={`w-5 h-5 transition-colors ${chatbotOpen ? 'text-[#10B981]' : 'text-slate-400 hover:text-emerald-400'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 11a9 9 0 0 1 18 0" />
-                <rect x="2" y="11" width="3" height="5" rx="1.5" fill="currentColor" />
-                <rect x="19" y="11" width="3" height="5" rx="1.5" fill="currentColor" />
-                <path d="M12 5c-3.866 0-7 2.686-7 6 0 1.942 1.077 3.655 2.766 4.708l-.766 2.292 2.766-.922A7.848 7.848 0 0 0 12 17c3.866 0 7-2.686 7-6s-3.134-6-7-6z" />
-                <path d="M19 16c0 1-1 2-2 2h-2" />
-                <circle cx="10" cy="11" r="1.5" fill="currentColor" />
-                <circle cx="14" cy="11" r="1.5" fill="currentColor" />
-              </svg>
-              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-slate-950 animate-pulse" />
-            </button>
+            {/* Catarina AI Chatbot Toggle Button (hidden on obras page to prevent overlapping with obras chat) */}
+            {pathname !== '/dashboard/obras' && (
+              <button 
+                onClick={() => setChatbotOpen(!chatbotOpen)}
+                className={`w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center cursor-pointer transition-all relative ${
+                  chatbotOpen ? 'border-emerald-500/60 ring-1 ring-emerald-500/10' : ''
+                }`}
+                title="Conversar com a Catarina"
+                aria-label="Conversar com a Catarina"
+              >
+                <svg className={`w-5 h-5 transition-colors ${chatbotOpen ? 'text-[#10B981]' : 'text-slate-400 hover:text-emerald-400'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 11a9 9 0 0 1 18 0" />
+                  <rect x="2" y="11" width="3" height="5" rx="1.5" fill="currentColor" />
+                  <rect x="19" y="11" width="3" height="5" rx="1.5" fill="currentColor" />
+                  <path d="M12 5c-3.866 0-7 2.686-7 6 0 1.942 1.077 3.655 2.766 4.708l-.766 2.292 2.766-.922A7.848 7.848 0 0 0 12 17c3.866 0 7-2.686 7-6s-3.134-6-7-6z" />
+                  <path d="M19 16c0 1-1 2-2 2h-2" />
+                  <circle cx="10" cy="11" r="1.5" fill="currentColor" />
+                  <circle cx="14" cy="11" r="1.5" fill="currentColor" />
+                </svg>
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-slate-950 animate-pulse" />
+              </button>
+            )}
  
             <div className="relative">
               <button 

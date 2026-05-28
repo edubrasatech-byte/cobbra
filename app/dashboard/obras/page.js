@@ -191,6 +191,45 @@ CONDIÇÕES: ${notes}
     finally { setExportLoading(false); }
   };
 
+  const handleDownloadPdf = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Por favor, permita pop-ups para fazer o download do PDF.');
+      return;
+    }
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Contrato - ${projectType || 'Obra'}</title>
+          <style>
+            body {
+              font-family: Georgia, serif;
+              padding: 40px;
+              color: #111;
+              line-height: 1.6;
+              font-size: 14px;
+            }
+            @media print {
+              body {
+                padding: 0;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          ${htmlContent}
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() { window.close(); }, 500);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
   const btnPrimary = { background: '#10b981', color: '#070913', border: 'none', fontWeight: 700, borderRadius: 12, cursor: 'pointer', fontSize: 14, transition: 'opacity 0.2s' };
   const btnGhost = { background: '#1e293b', color: '#cbd5e1', border: '1px solid #334155', fontWeight: 700, borderRadius: 12, cursor: 'pointer', fontSize: 14 };
   const btnDisabled = { background: '#1e293b', color: '#475569', border: '1px solid #334155', fontWeight: 700, borderRadius: 12, cursor: 'not-allowed', fontSize: 14, opacity: 0.6 };
@@ -380,10 +419,37 @@ CONDIÇÕES: ${notes}
                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(16,185,129,0.5)' }} />
                 <span style={{ fontSize: 11, color: '#64748b', marginLeft: 8 }}>Pré-visualização do Contrato</span>
               </div>
-              {loading && <span style={{ fontSize: 11, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b', display: 'inline-block', animation: 'pulse 1s infinite' }} />
-                Catarina processando... {countdown > 0 ? `${countdown}s` : ''}
-              </span>}
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                {!loading && htmlContent && (
+                  <button 
+                    onClick={handleDownloadPdf}
+                    style={{ 
+                      background: '#10b981', 
+                      color: '#070913', 
+                      border: 'none', 
+                      padding: '4px 10px', 
+                      borderRadius: 6, 
+                      fontSize: 11, 
+                      fontWeight: 700, 
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4,
+                      transition: 'opacity 0.2s'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = 0.9}
+                    onMouseLeave={e => e.currentTarget.style.opacity = 1}
+                  >
+                    📥 Baixar PDF
+                  </button>
+                )}
+                
+                {loading && <span style={{ fontSize: 11, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b', display: 'inline-block', animation: 'pulse 1s infinite' }} />
+                  Catarina processando... {countdown > 0 ? `${countdown}s` : ''}
+                </span>}
+              </div>
             </div>
             {/* Conteúdo */}
             <div style={{ flex: 1, overflow: 'auto', background: '#fff' }}>
@@ -488,11 +554,11 @@ CONDIÇÕES: ${notes}
                 <div ref={chatEndRef} />
               </div>
 
-              {/* Imagens anexadas */}
+              {/* Imagens anexadas em linha horizontal rolável para não empurrar o layout */}
               {images.length > 0 && (
-                <div style={{ padding: '6px 12px', display: 'flex', gap: 6, flexWrap: 'wrap', borderTop: '1px solid #1e293b', flexShrink: 0 }}>
+                <div style={{ padding: '6px 12px', display: 'flex', gap: 6, overflowX: 'auto', borderTop: '1px solid #1e293b', flexShrink: 0, scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="scrollbar-none">
                   {images.map((img, idx) => (
-                    <div key={idx} style={{ position: 'relative', width: 36, height: 36, borderRadius: 6, overflow: 'hidden', border: '1px solid #334155' }}>
+                    <div key={idx} style={{ position: 'relative', width: 36, height: 36, borderRadius: 6, overflow: 'hidden', border: '1px solid #334155', flexShrink: 0 }}>
                       <img src={img.preview} alt="foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       <button onClick={() => setImages(p => p.filter((_, i) => i !== idx))}
                         style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: 10, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
