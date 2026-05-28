@@ -1,5 +1,5 @@
 import { getUserFromRequest } from '@/lib/auth';
-import { run, generateId } from '@/lib/db';
+import { run, queryOne, generateId } from '@/lib/db';
 
 export async function POST(request) {
   try {
@@ -23,9 +23,9 @@ Use tom profissional, adicione cláusulas de garantia (NBR 15.575) e formatado d
 
 Tipo de Obra: ${project_type}
 Serviços: ${services.join(', ')}
-Observações: ${notes}
+Observações Comerciais (Pagamento): ${notes}
 
-A saída deve ser EXCLUSIVAMENTE código HTML (sem blocos markdown como \`\`\`html). O HTML deve conter cabeçalho, escopo, proposta técnica e comercial, e considerações finais. Não inclua a tag <html> ou <body>, apenas o conteúdo estruturado com <h1>, <h2>, <p>, <ul>.`;
+A saída deve ser EXCLUSIVAMENTE código HTML (sem blocos markdown). O HTML deve conter cabeçalho, escopo, proposta técnica e comercial, e considerações finais.`;
 
       const response = await fetch(url, {
         method: 'POST',
@@ -54,7 +54,7 @@ A saída deve ser EXCLUSIVAMENTE código HTML (sem blocos markdown como \`\`\`ht
     if (action === 'edit_document') {
        const systemPrompt = `Você é a Catarina, uma IA Orçamentista Sênior. 
 Abaixo está o conteúdo HTML atual de um orçamento. O usuário solicitou a seguinte alteração: "${prompt}".
-Retorne APENAS o novo código HTML atualizado. Não use blocos de marcação (como \`\`\`html).`;
+Retorne APENAS o novo código HTML atualizado. Não use blocos de marcação.`;
 
       const response = await fetch(url, {
         method: 'POST',
@@ -75,6 +75,59 @@ Retorne APENAS o novo código HTML atualizado. Não use blocos de marcação (co
       run("UPDATE documents SET content_html = ?, version = version + 1 WHERE project_id = ? AND type = ?", [aiContent, project_id, 'budget']);
 
       return Response.json({ html: aiContent });
+    }
+
+    if (action === 'export_charges') {
+      const doc = queryOne("SELECT content_html FROM documents WHERE project_id = ? AND type = 'budget' ORDER BY version DESC LIMIT 1", [project_id]);
+      if (!doc) return Response.json({ error: 'Orçamento não encontrado' }, { status: 404 });
+
+      // Ask Gemini to extract installments as JSON array
+      const systemPrompt = `Você é um analisador financeiro. Analise o contrato/orçamento HTML abaixo e extraia as parcelas de pagamento acordadas.
+Retorne EXCLUSIVAMENTE um array JSON puro (sem blocos markdown), onde cada objeto tem os campos:
+"amount" (número decimal), "description" (string, ex: "Entrada (30%) - Obra X"), "days_from_now" (inteiro, dias a partir de hoje para vencimento, 0 se imediato).
+Se não houver valores, retorne [].
+Contrato HTML:
+${doc.content_html}`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: systemPrompt }] }],
+          generationConfig: { temperature: 0.1 }
+        })
+      });
+
+      const data = await response.json();
+      let jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+      jsonText = jsonText.replace(/^```json\n?/, '').replace(/```$/, '').trim();
+
+      let installments = [];
+      try {
+        installments = JSON.parse(jsonText);
+      } catch(e) {
+        console.error("Falha ao parsear parcelas JSON", e);
+        return Response.json({ error: 'Falha ao extrair parcelas do orçamento.' }, { status: 500 });
+      }
+
+      const client = queryOne("SELECT client_id FROM projects WHERE id = ?", [project_id]);
+      const actualClientId = client?.client_id || 'avulso';
+
+      // Insert charges
+      let created = 0;
+      for (const inst of installments) {
+        const due = new Date();
+        due.setDate(due.getDate() + (inst.days_from_now || 0));
+        const dueStr = due.toISOString().split('T')[0];
+
+        run(
+          "INSERT INTO charges (id, user_id, client_id, amount, description, due_date, status, recurrence, payment_method) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+          [generateId(), user.id, actualClientId, inst.amount, inst.description, dueStr, 'pending', 'once', 'pix']
+        );
+        created++;
+      }
+
+      return Response.json({ success: true, count: created, installments });
     }
 
     return Response.json({ error: 'Ação inválida' }, { status: 400 });
