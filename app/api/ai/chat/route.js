@@ -120,6 +120,23 @@ Se o usuário perguntar sobre o seu faturamento, clientes, inadimplência, ou qu
           }
         }
 
+        if (isContractRequest && !targetRental) {
+          const activeRentals = query(
+            `SELECT c.*, cl.name as client_name 
+             FROM charges c 
+             JOIN clients cl ON c.client_id = cl.id 
+             WHERE c.user_id = ? AND c.vehicle_info IS NOT NULL`,
+            [user.id]
+          );
+          const listStr = activeRentals.map(r => `- ${r.client_name} (${r.vehicle_info})`).join('\n');
+          systemPrompt += `\n\nATENÇÃO - SOLICITAÇÃO DE ALTERAÇÃO DE CONTRATO SEM ALVO:
+O usuário deseja alterar um contrato de locação de veículo, mas o modelo de veículo, placa ou cliente citado por ele (se houver) não correspondeu perfeitamente a nenhuma das suas locações ativas atuais.
+Lista de locações ativas atuais do usuário no Cobbra:
+${listStr || 'Nenhuma locação ativa encontrada.'}
+
+Você deve listar amigavelmente estas locações para ele (se houver) e solicitar de forma muito educada que ele confirme qual veículo ou cliente ele deseja alterar o contrato (ex: "Não encontrei um veículo 'SDA'. Deseja alterar o contrato de Mariana Alves (Chevrolet Onix)?"). Não invente contratos nem diga que sua especialidade é apenas faturamento se houver locações disponíveis que ele queira alterar!`;
+        }
+
         if (targetRental) {
           systemPrompt += `\n\nATENÇÃO - SOLICITAÇÃO DE ALTERAÇÃO DE CONTRATO ATIVA:
 O usuário deseja alterar o contrato de locação do veículo de *${targetRental.client_name}* (${targetRental.vehicle_info}).

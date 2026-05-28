@@ -41,6 +41,94 @@ export default function LocacoesPage() {
   const [vehicles, setVehicles] = useState([]);
   const [vehiclesLoading, setVehiclesLoading] = useState(true);
   const [showVehicleModal, setShowVehicleModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedProfileVehicle, setSelectedProfileVehicle] = useState(null);
+  const [profileTimeline, setProfileTimeline] = useState([]);
+  const [profileDocs, setProfileDocs] = useState([]);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  
+  const handleOpenVehicleProfile = async (vehicle) => {
+    setSelectedProfileVehicle(vehicle);
+    setShowProfileModal(true);
+    setProfileTimeline([]);
+    setProfileDocs([]);
+    
+    // Fetch History Timeline
+    try {
+      const res = await fetch(`/api/locacoes/vehicles/history?vehicle_id=${vehicle.id}`);
+      const data = await res.json();
+      if (data.timeline) setProfileTimeline(data.timeline);
+    } catch (e) {
+      console.error(e);
+    }
+
+    // Fetch Attached Documents list
+    try {
+      const res = await fetch(`/api/locacoes/vehicles/documents?vehicle_id=${vehicle.id}`);
+      const data = await res.json();
+      if (data.documents) setProfileDocs(data.documents);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleUploadDocument = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.type !== 'application/pdf') {
+      alert('Apenas arquivos PDF são permitidos!');
+      return;
+    }
+
+    setUploadingDoc(true);
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const base64 = ev.target.result.split(',')[1];
+      try {
+        const res = await fetch('/api/locacoes/vehicles/documents', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            vehicle_id: selectedProfileVehicle.id,
+            name: file.name,
+            file_base64: base64
+          })
+        });
+        if (res.ok) {
+          showNotification('📝 PDF anexado com sucesso!');
+          // Refresh docs list
+          const docsRes = await fetch(`/api/locacoes/vehicles/documents?vehicle_id=${selectedProfileVehicle.id}`);
+          const docsData = await docsRes.json();
+          if (docsData.documents) setProfileDocs(docsData.documents);
+        } else {
+          alert('Erro ao anexar documento.');
+        }
+       } catch (err) {
+         alert('Erro de conexão ao enviar documento.');
+       } finally {
+         setUploadingDoc(false);
+       }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDownloadDocument = async (docId, name) => {
+    try {
+      const res = await fetch(`/api/locacoes/vehicles/documents/download?id=${docId}`);
+      const data = await res.json();
+      if (data.doc) {
+        const link = document.createElement('a');
+        link.href = `data:application/pdf;base64,${data.doc.file_base64}`;
+        link.download = name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (e) {
+      alert('Erro ao baixar documento.');
+    }
+  };
+
   const [vehicleForm, setVehicleForm] = useState({
     model: '',
     plate: '',
@@ -1072,7 +1160,13 @@ export default function LocacoesPage() {
                     )}
 
                     {/* Actions */}
-                    <div style={{ display: 'flex', gap: 6, borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10, marginTop: 'auto' }}>
+                    <div style={{ display: 'flex', gap: 6, borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10, marginTop: 'auto', flexWrap: 'wrap' }}>
+                      <button 
+                        onClick={() => handleOpenVehicleProfile(v)}
+                        style={{ ...btnPrimary, flex: '1 1 100%', padding: '8px 0', fontSize: 11, borderRadius: 8, background: 'rgba(16,185,129,0.12)', color: '#34d399', border: '1px solid rgba(16,185,129,0.2)', marginBottom: 4 }}
+                      >
+                        🔍 Ver Histórico & Documentos
+                      </button>
                       {v.status === 'available' && (
                         <button 
                           onClick={() => handleUpdateVehicleStatus(v.id, 'maintenance')}
@@ -1766,6 +1860,133 @@ export default function LocacoesPage() {
               </div>
 
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Vehicle Profile & Documents Modal */}
+      {showProfileModal && selectedProfileVehicle && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(12, 14, 26, 0.96)',
+          zIndex: 1000,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 20
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: 680,
+            background: '#0C0E1A',
+            border: '1px solid rgba(255,255,255,0.06)',
+            borderRadius: 24,
+            padding: 24,
+            boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 16,
+            maxHeight: '90vh',
+            overflowY: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 20 }}>🚗</span>
+                <h3 style={{ fontSize: 18, fontWeight: 900, color: '#ffffff', margin: 0 }}>
+                  Perfil do Veículo: {selectedProfileVehicle.model} ({selectedProfileVehicle.plate})
+                </h3>
+              </div>
+              <button 
+                onClick={() => {
+                  setShowProfileModal(false);
+                  setSelectedProfileVehicle(null);
+                }}
+                style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: 18, cursor: 'pointer', marginLeft: 'auto' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 16 }}>
+              {/* Left Column: Timeline History */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <h4 style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', margin: 0 }}>📈 Histórico de Utilização & Oficina</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 300, overflowY: 'auto', paddingRight: 4 }}>
+                  {profileTimeline.length === 0 ? (
+                    <p style={{ color: '#64748b', fontSize: 12, fontStyle: 'italic' }}>Nenhum evento registrado no histórico.</p>
+                  ) : (
+                    profileTimeline.map((evt, idx) => (
+                      <div key={idx} style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)', borderRadius: 12, padding: 12, fontSize: 12 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                          <span style={{ fontWeight: 700, color: evt.type === 'maintenance' ? '#f59e0b' : evt.type === 'fine' ? '#ef4444' : '#10b981' }}>
+                            {evt.title}
+                          </span>
+                          <span style={{ fontSize: 10.5, color: '#64748b' }}>
+                            {new Date(evt.date).toLocaleDateString('pt-BR')}
+                          </span>
+                        </div>
+                        <p style={{ margin: 0, color: '#cbd5e1', lineHeight: 1.4 }}>{evt.description}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column: Attached PDF Documents */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <h4 style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', margin: 0 }}>📝 Anexos & Documentos (PDF)</h4>
+                
+                {/* Upload Button */}
+                <div style={{ border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 12, padding: '12px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'rgba(255,255,255,0.005)' }}>
+                  <span style={{ fontSize: 20 }}>📥</span>
+                  <label style={{ cursor: uploadingDoc ? 'not-allowed' : 'pointer', fontSize: 12, color: '#10b981', fontWeight: 700 }}>
+                    {uploadingDoc ? 'Enviando documento...' : 'Clique para carregar novo PDF'}
+                    <input 
+                      type="file" 
+                      accept="application/pdf" 
+                      className="hidden" 
+                      disabled={uploadingDoc}
+                      onChange={handleUploadDocument} 
+                    />
+                  </label>
+                  <span style={{ fontSize: 10, color: '#64748b' }}>Orçamentos de oficina, vistorias ou contratos</span>
+                </div>
+
+                {/* List of PDFs */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 180, overflowY: 'auto', paddingRight: 4, marginTop: 4 }}>
+                  {profileDocs.length === 0 ? (
+                    <p style={{ color: '#64748b', fontSize: 12, fontStyle: 'italic', textAlign: 'center', padding: '10px 0' }}>Nenhum documento PDF anexado ainda.</p>
+                  ) : (
+                    profileDocs.map(doc => (
+                      <div key={doc.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 10, padding: '8px 12px', fontSize: 12 }}>
+                        <span style={{ color: '#cbd5e1', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '70%' }}>
+                          📄 {doc.name}
+                        </span>
+                        <button 
+                          onClick={() => handleDownloadDocument(doc.id, doc.name)}
+                          style={{ ...btnPrimary, padding: '4px 10px', borderRadius: 6, fontSize: 11 }}
+                        >
+                          Baixar PDF
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 12, marginTop: 4 }}>
+              <button 
+                onClick={() => {
+                  setShowProfileModal(false);
+                  setSelectedProfileVehicle(null);
+                }}
+                style={{ ...btnGhost, padding: '8px 16px', borderRadius: 8, fontSize: 12 }}
+              >
+                Fechar Perfil
+              </button>
+            </div>
           </div>
         </div>
       )}
