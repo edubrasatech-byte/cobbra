@@ -138,10 +138,15 @@ O documento deve conter as seguintes seções estruturadas com classes HTML sem�
 12. FORO: Eleição de Foro de comarca de Florianópolis - SC.
 13. ASSINATURAS: Blocos para Contratante, Contratada, Testemunhas e data.
 
-REGRAS DE ESTILIZAÇÃO HTML:
-- Retorne EXCLUSIVAMENTE o código HTML sem blocos de código markdown (\`\`\`html ... \`\`\`).
-- Use tags HTML semânticas e CSS inline limpo de tom editorial premium (família de fontes serifadas elegantes como Georgia, serif, line-height confortável de 1.6, e espaçamentos elegantes de margem).
-- Não limite a extensão das cláusulas, redija-as de forma completa, profissional e jurídica.`;
+REGRAS DE ESTILIZAÇÃO E DESIGN SYSTEM HTML (O DOCUMENTO DEVE SER DESLUMBRANTE, EXECUTIVO E PREMIUM):
+- O código retornado deve ser envolvido em uma tag <div> contendo um bloco <style> completo e extremamente profissional no início para dar o visual de um documento corporativo de altíssimo padrão.
+- Tipografia: Use fontes modernas e legíveis (ex: font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif para títulos e textos técnicos).
+- Cores: Use tons de alto requinte comercial. Detalhes, bordas-chave e botões no Verde Esmeralda oficial do Cobbra (#059669). Títulos em Slate Escuro (#1e293b). Fundos neutros em cinza claríssimo (#f8fafc).
+- Cabeçalho Premium: Crie uma seção inicial marcante em duas colunas. À esquerda, um badge verde de "PROPOSTA TÉCNICA E COMERCIAL" e o título do projeto em h1 grande e elegante. À direita, data e identificação. Abaixo, a "Qualificação das Partes" deve ser renderizada em dois cards com bordas arredondadas (border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; padding: 16px; margin-bottom: 20px) posicionados lado a lado (dois blocos inline-block ou flexbox de 48% de largura) detalhando a CONTRATADA (sua empresa) e o CONTRATANTE (cliente).
+- Tabelas de Escopo e Preços: Modernas e limpas. Use headers (th) com background #1e293b, cor #ffffff e padding de 12px. As células (td) devem ter padding de 12px e borda inferior fina (#e2e8f0). Use linhas zebradas (#f8fafc). Alinhe valores/quantidades à direita. Destaque o Total Geral com fundo verde clarinho (#ecfdf5), texto em negrito e borda dupla em cima e embaixo.
+- Cards de Destaque (Callouts): Use caixas elegantes (ex: background: #f0fdf4; border-left: 4px solid #059669; padding: 16px; border-radius: 4px 8px 8px 4px; margin: 20px 0) para ressaltar a Garantia Técnica de 5 Anos, as condições críticas de segurança/CREA e os marcos de pagamento.
+- Seção de Assinaturas: Perfeitamente alinhada em duas colunas paralelas (inline-block ou flexbox de 48% de largura) com linhas tracejadas finas, o nome de cada signatário por extenso, documento (CPF/CNPJ) e um campo para a data.
+- Retorne EXCLUSIVAMENTE o código HTML sem blocos de código markdown (\`\`\`html ... \`\`\`). As cláusulas devem ser completas, robustas, sérias e formais (sem placeholders ou abreviações).`;
 
       const contentList = [
         { type: 'text', text: systemPrompt }
@@ -229,7 +234,7 @@ REGRAS DE ESTILIZAÇÃO HTML:
 Você é 100% flexível, prestativa e extremamente colaborativa.
 FUNÇÕES PRINCIPAIS:
 1. ALTERAR, ADICIONAR ou REMOVER absolutamente qualquer item, valor, cláusula, marca de material, prazos ou termos comerciais no contrato HTML atual, agindo estritamente de acordo com o que o usuário solicitou.
-2. Manter a estrutura geral de tom e rigor técnico inspirados no orçamento de alto padrão do "Residencial Jardim de Sintra".
+2. Manter a estrutura geral de tom, o rigor técnico do modelo "Jardim de Sintra" e o design premium impecável (com bloco <style> no topo, cabeçalhos qualificados em duas colunas, tabelas modernas zebradas, cards de destaque callout verdes/slate e assinaturas elegantes).
 3. Se o usuário anexou imagens, incorpore-as no HTML usando tags <img src="..." style="max-width:100%; border-radius:8px; margin-bottom:8px;" /> com o data-uri correspondente.
 
 Instrução do Usuário para alteração no documento: "${prompt}".
