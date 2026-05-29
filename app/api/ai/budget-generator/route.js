@@ -100,15 +100,35 @@ export async function POST(request) {
     let aiContent = '';
 
     if (action === 'generate_initial') {
-      const systemPrompt = `Crie um orçamento técnico estruturado em HTML limpo e profissional baseado nas informações abaixo.
-Use tom corporativo, adicione cláusulas de garantia adequadas (caso o serviço 'Outros' esteja selecionado, elabore um contrato de prestação de serviços genérico altamente profissional, caso contrário use NBR 15.575), prazos e obrigações, e formate de forma que possa ser impresso e entregue ao cliente.
-ATENÇÃO: Não mencione que você é uma IA ou "Catarina" no texto do contrato. O emitente é a empresa de Construção Civil. O contrato deve ser extremamente detalhado e extenso.
+      const systemPrompt = `Você é um Engenheiro Civil e Advogado Especialista em Direito Imobiliário e Contratos de Empreitada da Construção Civil no Brasil.
+Crie um instrumento contratual e orçamento técnico extremamente robusto, extenso, formal e detalhado em formato HTML completo e limpo (pronto para impressão em PDF).
+O contrato deve ser formal, sério, sem resumos e escrito em linguagem técnica e jurídica impecável (tom corporativo).
+ATENÇÃO ABSOLUTA: Não mencione inteligência artificial, "Catarina" ou notas de geração automática. O emissor é a empresa Contratada.
 
-Tipo de Obra: ${project_type}
-Serviços: ${services.join(', ')}
-Observações Comerciais (Pagamento): ${notes}
+INFORMAÇÕES DA LOCAÇÃO/OBRA:
+- Tipo de Obra: ${project_type}
+- Serviços a serem executados: ${services.join(', ')}
+- Condições Comerciais, Valores e Formas de Pagamento: ${notes}
 
-A saída deve ser EXCLUSIVAMENTE código HTML (sem blocos markdown). O HTML deve conter cabeçalho, escopo, proposta técnica e comercial, e considerações finais. Não use larguras fixas (ex: width: 800px), use porcentagens (ex: width: 100%) para ser responsivo.`;
+REGRAS RÍGIDAS DE ESTRUTURA E CONTEÚDO QUE VOCÊ DEVE EXPANDIR E REDIGIR NA ÍNTEGRA:
+O documento deve conter no mínimo as seguintes seções estruturadas com classes HTML semânticas elegantes (tabelas para valores, listas ordenadas para obrigações, títulos fortes em h1/h2):
+
+1. CABEÇALHO DA PROPOSTA: Nome do documento "INSTRUMENTO PARTICULAR DE CONTRATO DE PRESTAÇÃO DE SERVIÇOS E EMPREITADA DE CONSTRUÇÃO CIVIL". Qualificação detalhada das partes (CONTRATANTE e CONTRATADA).
+2. CLÁUSULA 1 - DO OBJETO E ESCOPO TÉCNICO: Descrição minuciosa de cada um dos serviços selecionados (${services.join(', ')}). Explicar detalhadamente o método executivo de cada etapa da obra com rigor técnico.
+3. CLÁUSULA 2 - DA EXECUÇÃO, CRONOGRAMA E FISCALIZAÇÃO: Prazo de execução detalhado, regras para prorrogação por motivos de força maior ou intempéries climáticas, e como será feita a medição/fiscalização do andamento da obra.
+4. CLÁUSULA 3 - DO VALOR, CONDIÇÕES DE PAGAMENTO E MULTAS: Exibição dos valores comerciais estruturados em uma tabela HTML moderna. Condições e prazos exatos para os pagamentos descritos em "${notes}". Multa de 10% em caso de atraso de pagamento, acrescida de juros moratórios de 1% ao mês.
+5. CLÁUSULA 4 - DO FORNECIMENTO DE MATERIAIS, FERRAMENTAS E MÃO DE OBRA: Definir claramente as obrigações da CONTRATADA de fornecer mão de obra qualificada, uso obrigatório de EPIs (Equipamentos de Proteção Individual), e quem será responsável pelo fornecimento e transporte dos materiais e descarte de entulho.
+6. CLÁUSULA 5 - DA GARANTIA E ASSISTÊNCIA TÉCNICA (NBR 15.575): Estabelecer prazo de garantia técnica de 5 (cinco) anos para estabilidade e solidez da estrutura nos termos do Art. 618 do Código Civil Brasileiro e da norma ABNT NBR 15.575, e prazos específicos para acabamentos, vazamentos e infiltrações.
+7. CLÁUSULA 6 - DAS OBRIGAÇÕES DA CONTRATADA E DO CONTRATANTE: Listar em tópicos as obrigações da Contratada (limpeza periódica, segurança do trabalho, responsabilidade civil por danos a vizinhos ou ao imóvel) e do Contratante (liberar acesso ao imóvel, fornecer pontos de energia e água, efetuar pagamentos).
+8. CLÁUSULA 7 - DA RESCISÃO E CLÁUSULA PENAL: Multa penal compensatória de 20% (vinte por cento) sobre o valor total do contrato devida pela parte que der causa à rescisão prematura do instrumento ou abandono de obra.
+9. CLÁUSULA 8 - DO FORO: Eleição de foro de comarca para dirimir controvérsias.
+10. ASSINATURAS: Campos formais de assinatura para Contratante, Contratada e duas Testemunhas, com data e local.
+
+REGRAS DE ESTILIZAÇÃO HTML:
+- Retorne EXCLUSIVAMENTE o código HTML sem blocos de código markdown (\`\`\`html ... \`\`\`).
+- Use tags HTML semânticas: <h1>, <h2>, <p>, <ul>, <li>, <table>, <thead>, <tr>, <th>, <td>.
+- Estilize o HTML com CSS inline de forma elegante, moderna e limpa: use fontes serifadas elegantes para o corpo do contrato (ex: Georgia, serif), use espaçamento de linha confortável (line-height: 1.6), tabelas com bordas sutis e cabeçalhos escuros para a proposta comercial.
+- Não limite a extensão das cláusulas, redija-as de forma completa, profissional e jurídica.`;
 
       const contentList = [
         { type: 'text', text: systemPrompt }
