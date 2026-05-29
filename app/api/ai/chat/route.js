@@ -20,7 +20,7 @@ export async function POST(request) {
       return Response.json({ error: 'Mensagem é obrigatória' }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GROQ_API_KEY;
     let aiResponse = '';
     let isTicketOpened = false;
 
@@ -163,53 +163,51 @@ Plano ativo: ${user.plan || 'trial'}`;
 
     if (apiKey) {
       try {
-        // NATIVE DEPENDENCY-FREE FETCH CALL TO GEMINI API (using stable gemini-2.5-flash)
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        // NATIVE DEPENDENCY-FREE FETCH CALL TO GROQ API (using stable llama-3.3-70b-versatile)
+        const url = 'https://api.groq.com/openai/v1/chat/completions';
         
-        // Convert chat history format for Gemini API
-        const contents = [];
+        // Convert chat history format for OpenAI/Groq messages standard
+        const messages = [
+          { role: 'system', content: systemPrompt }
+        ];
         
-        // Filter out initial system messages from history to ensure it strictly starts with a 'user' turn
         const userAndModelHistory = history.filter((msg, idx) => {
-          // If the very first message is not from 'user', filter it out for Gemini validation
           if (idx === 0 && msg.sender !== 'user') return false;
           return true;
         });
 
-        // Inject history turns ensuring proper alternation
         userAndModelHistory.slice(-10).forEach(msg => {
-          contents.push({
-            role: msg.sender === 'user' ? 'user' : 'model',
-            parts: [{ text: msg.text }]
+          messages.push({
+            role: msg.sender === 'user' ? 'user' : 'assistant',
+            content: msg.text
           });
         });
 
-        // Append current message (guaranteed user turn at the end)
-        contents.push({
+        // Append current message
+        messages.push({
           role: 'user',
-          parts: [{ text: message }]
+          content: message
         });
 
         const response = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
           body: JSON.stringify({
-            systemInstruction: {
-              parts: [{ text: systemPrompt }]
-            },
-            contents,
-            generationConfig: {
-              maxOutputTokens: 800,
-              temperature: 0.7
-            }
+            model: 'llama-3.3-70b-versatile',
+            messages,
+            temperature: 0.7,
+            max_tokens: 1024
           })
         });
 
         if (response.ok) {
           const data = await response.json();
-          aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          aiResponse = data.choices?.[0]?.message?.content || '';
           if (!aiResponse) {
-            console.warn('[GEMINI CHAT WARNING] Gemini returned empty response or candidate safety block, falling back to rule-based reply.');
+            console.warn('[GROQ CHAT WARNING] Groq returned empty response, falling back to rule-based reply.');
             aiResponse = getFallbackReply(message);
           } else {
             const contractRegex = /```contract\s*([\s\S]*?)\s*```/i;
@@ -227,11 +225,11 @@ Plano ativo: ${user.plan || 'trial'}`;
           }
         } else {
           const errorText = await response.text();
-          console.error('[GEMINI API ERROR]', errorText);
+          console.error('[GROQ API ERROR]', errorText);
           aiResponse = getFallbackReply(message);
         }
       } catch (fetchError) {
-        console.error('[GEMINI FETCH EXCEPTION] Outgoing request failed, resorting to local offline brain:', fetchError);
+        console.error('[GROQ FETCH EXCEPTION] Outgoing request failed, resorting to local offline brain:', fetchError);
         aiResponse = getFallbackReply(message);
       }
     } else {

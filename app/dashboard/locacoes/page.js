@@ -46,6 +46,71 @@ export default function LocacoesPage() {
   const [profileTimeline, setProfileTimeline] = useState([]);
   const [profileDocs, setProfileDocs] = useState([]);
   const [uploadingDoc, setUploadingDoc] = useState(false);
+
+  // === VEHICLE FINES STATES & HANDLERS ===
+  const [fines, setFines] = useState([]);
+  const [finesLoading, setFinesLoading] = useState(true);
+  const [showFineModal, setShowFineModal] = useState(false);
+  const [fineForm, setFineForm] = useState({ vehicle_id: '', infraction_date: '', description: '', amount: '', points: '0' });
+  const [showFineWaModal, setShowFineWaModal] = useState(false);
+  const [fineWaText, setFineWaText] = useState('');
+  const [fineMatchedClientPhone, setFineMatchedClientPhone] = useState('');
+
+  const fetchFines = async () => {
+    setFinesLoading(true);
+    try {
+      const res = await fetch('/api/locacoes/fines');
+      const data = await res.json();
+      if (data.fines) setFines(data.fines);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setFinesLoading(false);
+    }
+  };
+
+  const handleRegisterFine = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/locacoes/fines', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fineForm)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showNotification('🧾 Multa registrada com sucesso!');
+        setShowFineModal(false);
+        setFineForm({ vehicle_id: '', infraction_date: '', description: '', amount: '', points: '0' });
+        fetchFines();
+        
+        // Open the editable Whatsapp message modal if driver matched!
+        if (data.matched && data.wa_message) {
+          setFineWaText(data.wa_message);
+          setFineMatchedClientPhone(data.client_phone || '');
+          setShowFineWaModal(true);
+        }
+      } else {
+        alert(data.error || 'Erro ao registrar multa.');
+      }
+    } catch (err) {
+      alert('Erro ao registrar multa.');
+    }
+  };
+
+  const handleConfirmFineIndication = async (fineId) => {
+    try {
+      const res = await fetch('/api/locacoes/fines', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: fineId, driver_indicated: 1 })
+      });
+      if (res.ok) {
+        showNotification('✅ Indicação de condutor confirmada!');
+        fetchFines();
+      }
+    } catch (e) {}
+  };
   
   const handleOpenVehicleProfile = async (vehicle) => {
     setSelectedProfileVehicle(vehicle);
@@ -276,6 +341,7 @@ export default function LocacoesPage() {
     fetchUser();
     fetchWaStatus();
     fetchVehicles();
+    fetchFines();
   }, []);
 
   // WhatsApp scanning status polling
@@ -1217,12 +1283,100 @@ export default function LocacoesPage() {
         </div>
       )}
 
-      {/* Placeholders for Fines, Escrow and Split tabs */}
+      {/* Tab: Multas & Infrações (Catarina Fine Finder) */}
       {activeTab === 'fines' && (
-        <div style={cardStyle} className="text-center">
-          <span style={{ fontSize: 32 }}>🧾</span>
-          <h4 style={{ margin: '12px 0 4px 0', color: '#fff', fontSize: 15, fontWeight: 800 }}>Gestão de Multas (Catarina Fine Finder)</h4>
-          <p style={{ fontSize: 12, color: '#64748b', margin: 0, maxWidth: 360, margin: '0 auto', lineHeight: 1.5 }}>Módulo de busca inteligente de condutor na multa e faturamento automático de infrações ativo em breve na próxima fase.</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Gestão de Multas de Trânsito
+            </span>
+            <button 
+              onClick={() => setShowFineModal(true)}
+              style={{ ...btnPrimary, padding: '10px 16px', borderRadius: 10, fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}
+            >
+              <span>🧾</span> Lançar Multa
+            </button>
+          </div>
+
+          {finesLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justify: 'center', padding: '60px 0' }}>
+              <div style={{ width: 32, height: 32, border: '4px solid rgba(16,185,129,0.2)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 12 }}></div>
+              <p style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>Buscando infrações de trânsito...</p>
+            </div>
+          ) : fines.length === 0 ? (
+            <div style={{ background: '#0C0E1A', border: '1px dashed rgba(255,255,255,0.06)', borderRadius: 20, padding: 40, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justify: 'center' }}>
+              <span style={{ fontSize: 36, marginBottom: 12 }}>🧾</span>
+              <h4 style={{ margin: '0 0 4px 0', color: '#fff', fontSize: 15, fontWeight: 800 }}>Nenhuma multa registrada</h4>
+              <p style={{ fontSize: 12, color: '#64748b', margin: 0, maxWidth: 360, lineHeight: 1.5 }}>Lançando multas na data e hora da infração, a Catarina localiza automaticamente o motorista correspondente de forma transparente.</p>
+              <button 
+                onClick={() => setShowFineModal(true)}
+                style={{ ...btnPrimary, padding: '10px 16px', borderRadius: 8, marginTop: 16 }}
+              >
+                Lançar Primeira Multa
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16 }}>
+              {fines.map(f => {
+                const markupAmount = f.amount * 1.20; // 20% mark-up
+                return (
+                  <div key={f.id} style={{ ...cardStyle, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#fff' }}>⚠️ {f.description}</h4>
+                        <p style={{ margin: '4px 0 0 0', fontSize: 11, color: '#cbd5e1' }}><strong>Carro:</strong> {f.model} • {f.plate}</p>
+                      </div>
+                      <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 6, background: 'rgba(239,68,68,0.08)', color: '#f87171', fontWeight: 700 }}>
+                        +{f.points} PTS CNH
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11.5, color: '#cbd5e1', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10 }}>
+                      <p style={{ margin: 0 }}><strong>Data Infração:</strong> {new Date(f.infraction_date).toLocaleString('pt-BR')}</p>
+                      <p style={{ margin: 0 }}><strong>Valor Nominal:</strong> R$ {f.amount?.toFixed(2)}</p>
+                      <p style={{ margin: 0, color: '#34d399' }}><strong>Reembolso (+20%):</strong> R$ {markupAmount?.toFixed(2)}</p>
+                      <p style={{ margin: 0, color: f.client_name ? '#cbd5e1' : '#64748b', fontStyle: f.client_name ? 'normal' : 'italic' }}>
+                        <strong>Motorista:</strong> {f.client_name || 'Não localizado pela data'}
+                      </p>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10, marginTop: 'auto' }}>
+                      <span style={{ 
+                        fontSize: 10, padding: '3px 8px', borderRadius: 20, fontWeight: 700,
+                        color: f.driver_indicated ? '#10b981' : '#f59e0b',
+                        background: f.driver_indicated ? 'rgba(16,185,129,0.08)' : 'rgba(245,158,11,0.08)'
+                      }}>
+                        {f.driver_indicated ? 'Condutor Indicado' : 'Aguardando Indicação'}
+                      </span>
+
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        {f.client_name && !f.driver_indicated && (
+                          <button 
+                            onClick={() => handleConfirmFineIndication(f.id)}
+                            style={{ ...btnPrimary, padding: '4px 8px', borderRadius: 6, fontSize: 10 }}
+                          >
+                            Indicar Detran
+                          </button>
+                        )}
+                        {f.client_name && f.wa_message && (
+                          <button 
+                            onClick={() => {
+                              setFineWaText(f.wa_message);
+                              setFineMatchedClientPhone(f.client_phone || '');
+                              setShowFineWaModal(true);
+                            }}
+                            style={{ ...btnGhost, padding: '4px 8px', borderRadius: 6, fontSize: 10, color: '#10b981', borderColor: 'rgba(16,185,129,0.2)' }}
+                          >
+                            Cobrar
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
       {activeTab === 'escrow' && (
@@ -1985,6 +2139,201 @@ export default function LocacoesPage() {
                 style={{ ...btnGhost, padding: '8px 16px', borderRadius: 8, fontSize: 12 }}
               >
                 Fechar Perfil
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lançar Nova Multa Modal */}
+      {showFineModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(12, 14, 26, 0.96)',
+          zIndex: 1000,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 20
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: 500,
+            background: '#0C0E1A',
+            border: '1px solid rgba(255,255,255,0.06)',
+            borderRadius: 24,
+            padding: 24,
+            boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 14,
+            maxHeight: '90vh',
+            overflowY: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ fontSize: 17, fontWeight: 900, color: '#ffffff', margin: 0 }}>🧾 Lançar Nova Multa de Trânsito</h3>
+              <button 
+                onClick={() => setShowFineModal(false)}
+                style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: 18, cursor: 'pointer', marginLeft: 'auto' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleRegisterFine} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              
+              <div>
+                <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Selecionar Veículo *</label>
+                <select 
+                  value={fineForm.vehicle_id}
+                  onChange={e => setFineForm({...fineForm, vehicle_id: e.target.value})}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13, cursor: 'pointer' }}
+                  required
+                >
+                  <option value="">-- Escolha o veículo autuado --</option>
+                  {vehicles.map(v => (
+                    <option key={v.id} value={v.id}>{v.model} - {v.plate}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 10 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Data & Hora da Infração *</label>
+                  <input 
+                    type="datetime-local" 
+                    value={fineForm.infraction_date}
+                    onChange={e => setFineForm({...fineForm, infraction_date: e.target.value})}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Pontos na CNH *</label>
+                  <input 
+                    type="number" 
+                    value={fineForm.points}
+                    onChange={e => setFineForm({...fineForm, points: e.target.value})}
+                    placeholder="4" 
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Descrição da Infração *</label>
+                <input 
+                  type="text" 
+                  value={fineForm.description}
+                  onChange={e => setFineForm({...fineForm, description: e.target.value})}
+                  placeholder="Ex: Transitar em velocidade superior à máxima permitida em até 20%" 
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                  required
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 4 }}>Valor Nominal da Multa (R$) *</label>
+                <input 
+                  type="number" 
+                  step="0.01"
+                  value={fineForm.amount}
+                  onChange={e => setFineForm({...fineForm, amount: e.target.value})}
+                  placeholder="130.16" 
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none', fontSize: 13 }}
+                  required
+                />
+                <span style={{ fontSize: 10.5, color: '#10b981', display: 'block', marginTop: 4 }}>
+                  💡 O sistema aplicará automaticamente a taxa de 20% de comissão administrativa e gerará faturamento de reembolso Pix para o condutor ativo naquela data.
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 10 }}>
+                <button 
+                  type="button" 
+                  onClick={() => setShowFineModal(false)}
+                  style={{ ...btnGhost, padding: '10px 20px', borderRadius: 8 }}
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  style={{ ...btnPrimary, padding: '10px 20px', borderRadius: 8, boxShadow: '0 4px 12px rgba(16,185,129,0.2)' }}
+                >
+                  Confirmar e Buscar Motorista 🔍
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Editable Whatsapp Message Modal */}
+      {showFineWaModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(12, 14, 26, 0.96)',
+          zIndex: 1000,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 20
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: 500,
+            background: '#0C0E1A',
+            border: '1px solid rgba(16,185,129,0.3)',
+            borderRadius: 24,
+            padding: 24,
+            boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 14,
+            maxHeight: '90vh',
+            overflowY: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ fontSize: 16, fontWeight: 900, color: '#ffffff', margin: 0 }}>💬 Personalizar Mensagem de WhatsApp</h3>
+              <button 
+                onClick={() => setShowFineWaModal(false)}
+                style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: 18, cursor: 'pointer', marginLeft: 'auto' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <span style={{ fontSize: 11, color: '#10b981', fontWeight: 700 }}>REVISE E EDITE ANTES DE ENVIAR:</span>
+              <textarea
+                value={fineWaText}
+                onChange={e => setFineWaText(e.target.value)}
+                style={{ width: '100%', height: 260, padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.3)', color: '#fff', outline: 'none', fontSize: 13, fontFamily: 'monospace', lineHeight: 1.5 }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 10 }}>
+              <button 
+                onClick={() => setShowFineWaModal(false)}
+                style={{ ...btnGhost, padding: '10px 20px', borderRadius: 8 }}
+              >
+                Fechar
+              </button>
+              <button 
+                onClick={() => {
+                  // Direct trigger WhatsApp send
+                  const cleanPhone = fineMatchedClientPhone.replace(/\D/g, '');
+                  const url = `https://api.whatsapp.com/send?phone=55${cleanPhone}&text=${encodeURIComponent(fineWaText)}`;
+                  window.open(url, '_blank');
+                  setShowFineWaModal(false);
+                }}
+                style={{ ...btnPrimary, padding: '10px 20px', borderRadius: 8, background: '#25D366', color: '#fff', boxShadow: '0 4px 12px rgba(37,211,102,0.2)' }}
+              >
+                Disparar WhatsApp 🟢
               </button>
             </div>
           </div>

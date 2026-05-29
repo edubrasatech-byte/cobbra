@@ -92,10 +92,10 @@ export async function POST(request) {
     const body = await request.json();
     const { action, project_id, client_id, project_type, services, notes, prompt, images, client_name, client_doc, client_address } = body;
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) return Response.json({ error: 'API Key não configurada' }, { status: 500 });
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) return Response.json({ error: 'API Key da Groq não configurada' }, { status: 500 });
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const url = 'https://api.groq.com/openai/v1/chat/completions';
 
     let aiContent = '';
 
@@ -110,31 +110,39 @@ Observações Comerciais (Pagamento): ${notes}
 
 A saída deve ser EXCLUSIVAMENTE código HTML (sem blocos markdown). O HTML deve conter cabeçalho, escopo, proposta técnica e comercial, e considerações finais. Não use larguras fixas (ex: width: 800px), use porcentagens (ex: width: 100%) para ser responsivo.`;
 
-      let parts = [{ text: systemPrompt }];
+      const contentList = [
+        { type: 'text', text: systemPrompt }
+      ];
       
       if (images && images.length > 0) {
         images.forEach(img => {
-           parts.push({
-             inlineData: {
-               mimeType: img.mime,
-               data: img.base64
-             }
-           });
+          contentList.push({
+            type: 'image_url',
+            image_url: {
+              url: `data:${img.mime};base64,${img.base64}`
+            }
+          });
         });
       }
 
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
         body: JSON.stringify({
-          contents: [{ role: 'user', parts: parts }],
-          generationConfig: { temperature: 0.3 }
+          model: images && images.length > 0 ? 'llama-3.2-11b-vision-preview' : 'llama-3.3-70b-versatile',
+          messages: [
+            { role: 'user', content: contentList }
+          ],
+          temperature: 0.3
         })
       });
 
-      if (!response.ok) throw new Error('Erro na API Gemini');
+      if (!response.ok) throw new Error('Erro na API da Groq');
       const data = await response.json();
-      aiContent = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      aiContent = data.choices?.[0]?.message?.content || '';
       aiContent = aiContent.replace(/^```html\n?/, '').replace(/```$/, '').trim();
 
       let actualClientId = client_id;
@@ -192,30 +200,42 @@ Você deve responder rigorosamente com um objeto JSON puro (sem usar blocos mark
 1. "html": O código HTML completo atualizado com a alteração solicitada. Não use larguras fixas, seja 100% responsivo.
 2. "ai_response": Uma resposta extremamente amigável, ágil e curta em português, personificada como Catarina, explicando brevemente o que você alterou no contrato (ex: "Removi a pintura interna conforme solicitado e recalculei as somas!").`;
 
-      let parts = [{ text: systemPrompt + '\n\nHTML Atual:\n' + notes }];
+      let modelToUse = 'llama-3.3-70b-versatile';
+      const contentList = [];
 
       if (images && images.length > 0) {
+        modelToUse = 'llama-3.2-11b-vision-preview';
+        contentList.push({ type: 'text', text: systemPrompt + '\n\nHTML Atual:\n' + notes });
         images.forEach(img => {
-           parts.push({
-             inlineData: {
-               mimeType: img.mime,
-               data: img.base64
-             }
-           });
+          contentList.push({
+            type: 'image_url',
+            image_url: {
+              url: `data:${img.mime};base64,${img.base64}`
+            }
+          });
         });
+      } else {
+        contentList.push({ type: 'text', text: systemPrompt + '\n\nHTML Atual:\n' + notes });
       }
 
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
         body: JSON.stringify({
-          contents: [{ role: 'user', parts: parts }],
-          generationConfig: { temperature: 0.3 }
+          model: modelToUse,
+          messages: [
+            { role: 'user', content: contentList }
+          ],
+          temperature: 0.3
         })
       });
 
-      if (!response.ok) throw new Error('Erro na API Gemini');
+      if (!response.ok) throw new Error('Erro na API da Groq');
       const data = await response.json();
+      const aiText = data.choices?.[0]?.message?.content || '';
       let jsonText = aiText;
       const firstBrace = aiText.indexOf('{');
       const lastBrace = aiText.lastIndexOf('}');
@@ -231,7 +251,6 @@ Você deve responder rigorosamente com um objeto JSON puro (sem usar blocos mark
         html = parsed.html || '';
         aiResponse = parsed.ai_response || '✅ Documento atualizado!';
       } catch (e) {
-        // Fallback se o parse falhar
         console.warn("Falha ao parsear JSON do Copilot, usando fallback de HTML bruto", e);
         html = aiText.replace(/^```html\n?/, '').replace(/```$/, '').replace(/^```json\n?/, '').trim();
       }
@@ -255,15 +274,22 @@ ${doc.content_html}`;
 
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
         body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: systemPrompt }] }],
-          generationConfig: { temperature: 0.1 }
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            { role: 'user', content: systemPrompt }
+          ],
+          temperature: 0.1
         })
       });
 
+      if (!response.ok) throw new Error('Erro ao extrair cobranças com Groq');
       const data = await response.json();
-      let jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+      let jsonText = data.choices?.[0]?.message?.content || '[]';
       jsonText = jsonText.replace(/^```json\n?/, '').replace(/```$/, '').trim();
 
       let installments = [];
