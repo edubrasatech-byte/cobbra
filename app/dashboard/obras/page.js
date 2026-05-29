@@ -50,6 +50,7 @@ export default function ObrasPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const loadProjects = async () => {
     setProjectsLoading(true);
@@ -68,7 +69,42 @@ export default function ObrasPage() {
 
   useEffect(() => {
     loadProjects();
+    fetch('/api/auth/me')
+      .then(res => res.json())
+      .then(data => {
+        if (data.user) {
+          setCurrentUser(data.user);
+        }
+      })
+      .catch(e => console.error("Erro ao carregar dados do usuário logado:", e));
   }, []);
+
+  const handleStartNewProject = () => {
+    setHtmlContent('');
+    setProjectId(null);
+    setExportedCount(0);
+    setImages([]);
+    setNotes('');
+    setProjectType('');
+    setServices([]);
+    
+    // Pre-populate contractor details using onboarding information
+    if (currentUser) {
+      setContractorName(currentUser.business_name || currentUser.name || '');
+      setContractorCnpj(currentUser.pix_key || '');
+      setContractorAddress(currentUser.business_description || '');
+    } else {
+      setContractorName('');
+      setContractorCnpj('');
+      setContractorAddress('');
+    }
+    
+    setClientName('');
+    setClientDoc('');
+    setClientAddress('');
+    setChatHistory([]);
+    setStep(1);
+  };
 
   const handleLoadProject = async (projId) => {
     setLoading(true);
@@ -324,7 +360,7 @@ CONDIÇÕES: ${notes}
               Seus Contratos e Orçamentos Salvos
             </span>
             <button 
-              onClick={() => { setStep(1); setHtmlContent(''); setProjectId(null); setExportedCount(0); setImages([]); setNotes(''); setProjectType(''); setServices([]); setContractorName(''); setContractorCnpj(''); setContractorAddress(''); setClientName(''); setClientDoc(''); setClientAddress(''); setChatHistory([]); }}
+              onClick={handleStartNewProject}
               style={{ ...btnPrimary, padding: '12px 20px', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 14px rgba(16,185,129,0.2)' }}
             >
               <span>🏗️</span> Criar Nova Obra
@@ -344,7 +380,7 @@ CONDIÇÕES: ${notes}
                 Crie seu primeiro projeto de engenharia ou reforma com o Catarina Copilot para automatizar seus escopos, termos e medições Pix.
               </p>
               <button 
-                onClick={() => setStep(1)}
+                onClick={handleStartNewProject}
                 style={{ ...btnPrimary, padding: '10px 18px', borderRadius: 8, marginTop: 16 }}
               >
                 Começar Agora

@@ -89,6 +89,8 @@ export async function POST(request) {
     const user = getUserFromRequest(request);
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
+    const dbUser = queryOne("SELECT * FROM users WHERE id = ?", [user.id]) || user;
+
     const body = await request.json();
     const { action, project_id, client_id, project_type, services, notes, prompt, images, client_name, client_doc, client_address } = body;
 
@@ -100,11 +102,23 @@ export async function POST(request) {
     let aiContent = '';
 
     if (action === 'generate_initial') {
+      const contractorNameVal = dbUser.business_name || dbUser.name || 'Sua Empresa';
+      const contractorCnpjVal = dbUser.pix_key || '';
+      const contractorPhoneVal = dbUser.phone || '';
+      const contractorEmailVal = dbUser.email || '';
+
       const systemPrompt = `Você é um Engenheiro Civil e Advogado Especialista em Direito Imobiliário e Contratos de Empreitada da Construção Civil no Brasil.
 Crie uma proposta técnica, comercial e orçamento técnico de alto padrão, robusto, extenso, formal e detalhado em formato HTML completo e limpo (pronto para impressão em PDF).
 Use como inspiração de tom, estrutura e rigor técnico o renomado modelo de orçamento da "JS Pintura & Engenharia" para o "Residencial Jardim de Sintra".
 O contrato deve ser formal, sério, sem resumos e escrito em linguagem técnica e jurídica impecável (tom corporativo).
 ATENÇÃO ABSOLUTA: Não mencione inteligência artificial, "Catarina" ou notas de geração automática no texto do contrato. O emissor é a empresa Contratada.
+
+DADOS DE ONBOARDING DA CONTRATADA (UTILIZAR OBRIGATORIAMENTE PARA A QUALIFICAÇÃO DA PARTE):
+- Razão Social / Nome da Empresa: ${contractorNameVal}
+- CNPJ / CPF / Chave Pix de Recebimento: ${contractorCnpjVal}
+- Telefone de Contato: ${contractorPhoneVal}
+- E-mail de Contato: ${contractorEmailVal}
+- Setor de Atuação: ${dbUser.business_niche || 'Construção Civil'}
 
 INFORMAÇÕES DA LOCAÇÃO/OBRA:
 - Tipo de Obra: ${project_type}
@@ -239,15 +253,20 @@ FUNÇÕES PRINCIPAIS:
 
 Instrução do Usuário para alteração no documento: "${prompt}".
 
-PERSONALIDADE DE CATARINA (PARA O CAMPO "ai_response"):
+PERSONALIDADE DE CATARINA (PARA O CHAT DE RESPOSTA):
 - O tom de Catarina no chat deve ser super caloroso, empático, natural, dinâmico e amigável, como uma parceira de trabalho inteligente e prestativa, e NUNCA como uma funcionária fria, mecânica ou seca.
 - Use emojis simpáticos (como 🐍, ✨, 🚀, 💡, 🛠️) de forma natural.
 - Trate o usuário de forma calorosa (ex: "Claro! Já fiz isso para você...", "Feito! Mudei o título para...", "Tudo pronto! Ajustei...").
 - Escreva respostas curtas, ágeis e cheias de energia positiva, evitando saudações robotizadas e apresentações corporativas longas. Vá direto ao ponto de forma humana e leve.
 
-Você deve responder rigorosamente com um objeto JSON puro (sem usar blocos markdown \`\`\`json ou \`\`\`), contendo exatamente dois campos:
-1. "html": O código HTML completo atualizado com a alteração solicitada. Não use larguras fixas, use porcentagens para ser 100% responsivo.
-2. "ai_response": A resposta calorosa, super simpática e intuitiva de Catarina no chat em português brasileiro, conforme as regras de personalidade acima (ex: "Oba! Mudei o título do contrato para 'Roberto' agora mesmo! Dê uma olhadinha na prévia ao lado! 🐍✨").`;
+COMO ESTRUTURAR SUA RESPOSTA (ATENÇÃO RIGOROSA):
+Você deve estruturar sua resposta exatamente em duas partes consecutivas:
+1. Sua mensagem curta de chat (como Catarina, simpática e explicativa, fora de qualquer bloco de código).
+2. O código HTML atualizado na íntegra, envolvido estritamente em um bloco de código markdown HTML:
+\`\`\`html
+[CÓDIGO HTML COMPLETO E ATUALIZADO AQUI]
+\`\`\`
+Não use o formato JSON. Escreva a mensagem de chat no início e depois o bloco de código HTML com as alterações feitas.`;
 
       let modelToUse = 'llama-3.3-70b-versatile';
       const contentList = [];
@@ -285,23 +304,44 @@ Você deve responder rigorosamente com um objeto JSON puro (sem usar blocos mark
       if (!response.ok) throw new Error('Erro na API da Groq');
       const data = await response.json();
       const aiText = data.choices?.[0]?.message?.content || '';
-      let jsonText = aiText;
-      const firstBrace = aiText.indexOf('{');
-      const lastBrace = aiText.lastIndexOf('}');
-      if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-        jsonText = aiText.substring(firstBrace, lastBrace + 1);
-      }
 
       let html = '';
       let aiResponse = '✅ Documento atualizado! Revise a prévia ao lado.';
 
-      try {
-        const parsed = JSON.parse(jsonText);
-        html = parsed.html || '';
-        aiResponse = parsed.ai_response || '✅ Documento atualizado!';
-      } catch (e) {
-        console.warn("Falha ao parsear JSON do Copilot, usando fallback de HTML bruto", e);
-        html = aiText.replace(/^```html\n?/, '').replace(/```$/, '').replace(/^```json\n?/, '').trim();
+      // Extract the HTML code block
+      const htmlBlockMatch = aiText.match(/```html\s*([\s\S]*?)\s*```/i);
+      if (htmlBlockMatch) {
+        html = htmlBlockMatch[1].trim();
+        // Remove the html block to get the conversational response
+        aiResponse = aiText.replace(/```html\s*([\s\S]*?)\s*```/i, '').trim();
+      } else {
+        // Fallback: search for any generic markdown block
+        const genericBlockMatch = aiText.match(/```(?:xml|xhtml)?\s*([\s\S]*?)\s*```/i);
+        if (genericBlockMatch) {
+          html = genericBlockMatch[1].trim();
+          aiResponse = aiText.replace(/```(?:xml|xhtml)?\s*([\s\S]*?)\s*```/i, '').trim();
+        } else {
+          // Fallback if no block is returned: assume the entire text might be HTML if it starts with <
+          if (aiText.trim().startsWith('<') || aiText.includes('<div') || aiText.includes('<table')) {
+            html = aiText.trim();
+            aiResponse = '✅ Documento atualizado com sucesso!';
+          } else {
+            // Keep the previous version if we couldn't find any HTML
+            const prevDoc = queryOne("SELECT content_html FROM documents WHERE project_id = ? AND type = 'budget' ORDER BY version DESC LIMIT 1", [project_id]);
+            html = prevDoc?.content_html || notes;
+            aiResponse = aiText.trim();
+          }
+        }
+      }
+
+      // Clean up the chat response (remove any residual backticks or markdown JSON markers)
+      aiResponse = aiResponse.replace(/```json\s*([\s\S]*?)\s*```/i, '')
+                             .replace(/```[\s\S]*?```/g, '')
+                             .replace(/[\{\}\[\]\n]+/g, ' ') // remove stray braces from failed JSON attempts
+                             .trim();
+
+      if (!aiResponse) {
+        aiResponse = '✅ Ajustei o documento de acordo com a sua solicitação! Dê uma olhadinha ao lado. 🐍✨';
       }
 
       run("UPDATE documents SET content_html = ?, version = version + 1 WHERE project_id = ? AND type = ?", [html, project_id, 'budget']);
