@@ -17,10 +17,66 @@ export default function AdminPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
 
+  // Bulk / Delete States
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+
+  // Outreach Robot States
+  const [outreachStatus, setOutreachStatus] = useState('disconnected');
+  const [outreachPhone, setOutreachPhone] = useState(null);
+  const [outreachQr, setOutreachQr] = useState(null);
+  const [outreachLoading, setOutreachLoading] = useState(false);
+  const [outreachError, setOutreachError] = useState(null);
+  const [triggerLoading, setTriggerLoading] = useState(false);
+
+  const [currentAdmin, setCurrentAdmin] = useState(null);
+
   const showToast = (msg) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(''), 4000);
   };
+
+  const loadOutreachStatus = async () => {
+    try {
+      const res = await fetch('/api/whatsapp/connect?type=outreach');
+      const json = await res.json();
+      setOutreachStatus(json.status || 'disconnected');
+      setOutreachPhone(json.phone || null);
+      setOutreachQr(json.qrCode || null);
+      setOutreachError(json.error || null);
+    } catch(e) {
+      console.error("Erro ao obter status do robô outreach", e);
+    }
+  };
+
+  const loadCurrentAdmin = async () => {
+    try {
+      const res = await fetch('/api/auth/me');
+      const json = await res.json();
+      if (json.user) {
+        setCurrentAdmin(json.user);
+      }
+    } catch(e) {
+      console.error("Erro ao obter dados do admin logado", e);
+    }
+  };
+
+  useEffect(() => {
+    loadCurrentAdmin();
+    loadOutreachStatus();
+  }, []);
+
+  useEffect(() => {
+    let interval;
+    if (outreachStatus === 'scanning') {
+      interval = setInterval(() => {
+        loadOutreachStatus();
+      }, 5000);
+    }
+    return () => clearInterval(interval);
+  }, [outreachStatus]);
 
   const loadData = async () => {
     setLoading(true);
@@ -106,6 +162,155 @@ export default function AdminPage() {
       setTimeout(() => {
         window.location.href = '/dashboard';
       }, 1500);
+    }
+  };
+
+  const handleConnectOutreach = async () => {
+    setOutreachLoading(true);
+    setOutreachError(null);
+    try {
+      const res = await fetch('/api/whatsapp/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'outreach' })
+      });
+      const json = await res.json();
+      if (json.success) {
+        setOutreachStatus(json.status || 'scanning');
+        setOutreachQr(json.qrCode || null);
+        setOutreachError(json.error || null);
+      } else {
+        setOutreachError(json.error || 'Erro ao inicializar conexão.');
+      }
+    } catch (e) {
+      setOutreachError('Erro de conexão ao iniciar pareamento.');
+    } finally {
+      setOutreachLoading(false);
+    }
+  };
+
+  const handleDisconnectOutreach = async () => {
+    if (!confirm('Tem certeza que deseja desconectar o número do Robô Catarina Outbound?')) return;
+    setOutreachLoading(true);
+    try {
+      const res = await fetch('/api/whatsapp/connect', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'outreach' })
+      });
+      const json = await res.json();
+      if (json.success) {
+        setOutreachStatus('disconnected');
+        setOutreachPhone(null);
+        setOutreachQr(null);
+        showToast('🔌 Robô Catarina desconectado com sucesso!');
+      }
+    } catch (e) {
+      alert('Erro ao desconectar robô.');
+    } finally {
+      setOutreachLoading(false);
+    }
+  };
+
+  const handleTriggerOutreachCron = async () => {
+    setTriggerLoading(true);
+    try {
+      const res = await fetch('/api/cron/leads-outreach?secret=cobbra-secret-cron-key-2026');
+      const json = await res.json();
+      if (res.ok) {
+        if (json.mock) {
+          showToast(`🤖 [SIMULAÇÃO] Fila qualificada e cold pitch gerado para ${json.target?.name}!`);
+        } else if (json.status === 'sent') {
+          showToast(`🚀 Sucesso! Cold pitch disparado para ${json.recipient}!`);
+        } else {
+          showToast(`✅ ${json.message || 'Cron de prospecção executado!'}`);
+        }
+        loadData();
+      } else {
+        alert('Erro no cron: ' + (json.error || 'Erro desconhecido.'));
+      }
+    } catch (e) {
+      alert('Erro de rede ao acionar cron.');
+    } finally {
+      setTriggerLoading(false);
+    }
+  };
+
+  const handleDeleteIndividualUser = async () => {
+    if (!userToDelete) return;
+    setActionLoading(true);
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: userToDelete.id })
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        showToast(`🗑️ Usuário ${userToDelete.name} excluído com sucesso!`);
+        setUserToDelete(null);
+        setSelectedUserIds(prev => prev.filter(id => id !== userToDelete.id));
+        loadData();
+      } else {
+        alert('Erro: ' + (json.error || 'Falha ao excluir usuário.'));
+      }
+    } catch (e) {
+      alert('Erro de rede ao excluir usuário.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleBulkDeleteUsers = async () => {
+    if (selectedUserIds.length === 0) return;
+    if (deleteConfirmText !== 'EXCLUIR') {
+      alert('Por favor, digite EXCLUIR para confirmar a ação de segurança.');
+      return;
+    }
+    setActionLoading(true);
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userIds: selectedUserIds })
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        showToast(`🗑️ ${selectedUserIds.length} usuário(s) excluído(s) em lote!`);
+        setSelectedUserIds([]);
+        setShowBulkDeleteModal(false);
+        setDeleteConfirmText('');
+        loadData();
+      } else {
+        alert('Erro: ' + (json.error || 'Falha ao excluir usuários em massa.'));
+      }
+    } catch (e) {
+      alert('Erro de rede ao excluir usuários.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const isUserSelected = (id) => selectedUserIds.includes(id);
+
+  const handleToggleSelectUser = (id) => {
+    if (isUserSelected(id)) {
+      setSelectedUserIds(prev => prev.filter(uid => uid !== id));
+    } else {
+      setSelectedUserIds(prev => [...prev, id]);
+    }
+  };
+
+  const handleToggleSelectAll = (currentPageUsers) => {
+    const currentPageIds = currentPageUsers.map(u => u.id);
+    const allSelected = currentPageIds.every(id => selectedUserIds.includes(id));
+    if (allSelected) {
+      setSelectedUserIds(prev => prev.filter(id => !currentPageIds.includes(id)));
+    } else {
+      setSelectedUserIds(prev => {
+        const uniqueNewIds = currentPageIds.filter(id => !prev.includes(id));
+        return [...prev, ...uniqueNewIds];
+      });
     }
   };
 
@@ -225,7 +430,7 @@ export default function AdminPage() {
       </div>
 
       {/* ── SECTION 2: METRICS & GRAPHS ROW ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 20, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 28 }}>
         
         {/* SVG Plan Distribution Donut Chart */}
         <div style={{ background: '#0c0e1a', borderRadius: 16, border: '1px solid #1e293b', padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -327,6 +532,154 @@ export default function AdminPage() {
           </div>
         </div>
 
+        {/* 🤖 Robô Catarina Outbound Card */}
+        <div style={{ background: '#0c0e1a', borderRadius: 16, border: '1px solid #1e293b', padding: 24, display: 'flex', flexDirection: 'column', gap: 16, position: 'relative', overflow: 'hidden' }}>
+          
+          {/* Glowing Green Decorative Blur Background if Connected */}
+          {outreachStatus === 'connected' && (
+            <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: '#10b981', filter: 'blur(45px)', opacity: 0.15, pointerEvents: 'none' }} />
+          )}
+
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <h4 style={{ fontSize: 14, fontWeight: 800, color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+                🤖 Robô Catarina Outbound
+              </h4>
+              <span style={{ 
+                fontSize: 9, 
+                fontWeight: 800, 
+                padding: '3px 8px', 
+                borderRadius: 20, 
+                textTransform: 'uppercase',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                background: outreachStatus === 'connected' ? 'rgba(16,185,129,0.1)' : outreachStatus === 'scanning' ? 'rgba(245,158,11,0.1)' : 'rgba(239,68,68,0.1)',
+                color: outreachStatus === 'connected' ? '#34d399' : outreachStatus === 'scanning' ? '#fbbf24' : '#f87171',
+                border: outreachStatus === 'connected' ? '1px solid rgba(16,185,129,0.2)' : outreachStatus === 'scanning' ? '1px solid rgba(245,158,11,0.2)' : '1px solid rgba(239,68,68,0.2)'
+              }}>
+                {outreachStatus === 'connected' ? '🟢 Ativo' : outreachStatus === 'scanning' ? '🟡 Pareando' : '🔴 Off-line'}
+              </span>
+            </div>
+            <p style={{ fontSize: 11, color: '#64748b', margin: '4px 0 0 0' }}>Prospecção e cobranças ativas integradas à VPS</p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: 12, minHeight: 160, background: 'rgba(255,255,255,0.01)', border: '1px dashed #1e293b', borderRadius: 12, padding: 16 }}>
+            {outreachLoading ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 24, height: 24, border: '3px solid rgba(16,185,129,0.2)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>Comunicando com Evolution API...</span>
+              </div>
+            ) : outreachStatus === 'connected' ? (
+              <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 32 }}>✅</span>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#ffffff', margin: 0 }}>Número Pareado e Operacional!</p>
+                <p style={{ fontSize: 10, color: '#10b981', fontWeight: 800, margin: 0 }}>
+                  📞 {outreachPhone || 'WhatsApp Business'}
+                </p>
+                <p style={{ fontSize: 10, color: '#64748b', margin: '4px 0 0 0', maxWidth: 220, lineHeight: 1.4 }}>
+                  O robô está ativamente varrendo a fila de inadimplência qualificada para disparar cold pitches.
+                </p>
+              </div>
+            ) : outreachStatus === 'scanning' && outreachQr ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, width: '100%' }}>
+                <div style={{ background: '#ffffff', padding: 8, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.5)', display: 'inline-block' }}>
+                  <img src={outreachQr} alt="WhatsApp QR Code" style={{ width: 110, height: 110, display: 'block' }} />
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: '#ffffff', margin: 0 }}>Escaneie o QR Code</p>
+                  <p style={{ fontSize: 9, color: '#94a3b8', margin: '2px 0 0 0', maxWidth: 220, lineHeight: 1.3 }}>
+                    Abra o WhatsApp &gt; Aparelhos conectados &gt; Conectar um aparelho. Atualiza a cada 5s.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 28, opacity: 0.6 }}>🔌</span>
+                <p style={{ fontSize: 12, fontWeight: 700, color: '#cbd5e1', margin: 0 }}>Nenhum número conectado</p>
+                <p style={{ fontSize: 10, color: '#64748b', margin: 0, maxWidth: 200, lineHeight: 1.3 }}>
+                  Pareie um chip dedicado para a prospecção ativa de inadimplentes no WhatsApp.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {outreachError && (
+            <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, padding: '8px 12px', fontSize: 10, color: '#f87171', fontWeight: 600 }}>
+              ⚠️ {outreachError}
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: 8, marginTop: 'auto' }}>
+            {outreachStatus === 'connected' ? (
+              <button 
+                onClick={handleDisconnectOutreach}
+                disabled={outreachLoading}
+                style={{ 
+                  flex: 1, 
+                  background: 'rgba(239,68,68,0.1)', 
+                  border: '1px solid rgba(239,68,68,0.2)', 
+                  color: '#f87171', 
+                  borderRadius: 8, 
+                  padding: '8px 0', 
+                  fontSize: 11, 
+                  fontWeight: 700, 
+                  cursor: 'pointer',
+                  transition: 'background 0.2s'
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.18)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(239,68,68,0.1)'}
+              >
+                Desconectar
+              </button>
+            ) : (
+              <button 
+                onClick={handleConnectOutreach}
+                disabled={outreachLoading}
+                style={{ 
+                  flex: 1, 
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
+                  border: 'none', 
+                  color: '#070913', 
+                  borderRadius: 8, 
+                  padding: '8px 0', 
+                  fontSize: 11, 
+                  fontWeight: 800, 
+                  cursor: outreachLoading ? 'default' : 'pointer',
+                  boxShadow: '0 4px 10px rgba(16,185,129,0.15)',
+                  transition: 'opacity 0.2s'
+                }}
+                onMouseEnter={e => e.currentTarget.style.opacity = 0.9}
+                onMouseLeave={e => e.currentTarget.style.opacity = 1}
+              >
+                {outreachStatus === 'scanning' ? '🔄 Gerar Novo QR' : '🔗 Conectar Robô'}
+              </button>
+            )}
+            
+            <button 
+              onClick={handleTriggerOutreachCron}
+              disabled={triggerLoading || outreachStatus !== 'connected'}
+              style={{ 
+                flex: 1.2, 
+                background: outreachStatus === 'connected' ? '#1e293b' : '#0c0e1a', 
+                border: outreachStatus === 'connected' ? '1px solid #334155' : '1px solid #1e293b', 
+                color: outreachStatus === 'connected' ? '#f1f5f9' : '#475569', 
+                borderRadius: 8, 
+                padding: '8px 0', 
+                fontSize: 11, 
+                fontWeight: 700, 
+                cursor: (triggerLoading || outreachStatus !== 'connected') ? 'not-allowed' : 'pointer',
+                transition: 'background 0.2s'
+              }}
+              onMouseEnter={e => { if (outreachStatus === 'connected' && !triggerLoading) e.currentTarget.style.background = '#334155'; }}
+              onMouseLeave={e => { if (outreachStatus === 'connected' && !triggerLoading) e.currentTarget.style.background = '#1e293b'; }}
+            >
+              {triggerLoading ? '⏳ Disparando...' : '🚀 Disparar Agora'}
+            </button>
+          </div>
+
+        </div>
+
       </div>
 
       {/* ── SECTION 3: USERS LIST & TIMELINE TIMELINE ROW ── */}
@@ -375,11 +728,57 @@ export default function AdminPage() {
             </div>
           </div>
 
+          {/* Bulk Action Bar */}
+          {selectedUserIds.length > 0 && (
+            <div style={{ 
+              background: 'rgba(239, 68, 68, 0.08)', 
+              border: '1px solid rgba(239, 68, 68, 0.2)', 
+              borderRadius: 12, 
+              padding: '12px 18px', 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              boxShadow: '0 4px 15px rgba(239, 68, 68, 0.05)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 16 }}>⚠️</span>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: '#f87171' }}>
+                  {selectedUserIds.length} {selectedUserIds.length === 1 ? 'usuário selecionado' : 'usuários selecionados'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button 
+                  onClick={() => setSelectedUserIds([])}
+                  style={{ background: '#1e293b', border: '1px solid #334155', color: '#cbd5e1', fontSize: 11, fontWeight: 700, padding: '6px 12px', borderRadius: 8, cursor: 'pointer' }}
+                >
+                  Cancelar Seleção
+                </button>
+                <button 
+                  onClick={() => {
+                    setDeleteConfirmText('');
+                    setShowBulkDeleteModal(true);
+                  }}
+                  style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', border: 'none', color: '#ffffff', fontSize: 11, fontWeight: 800, padding: '6px 14px', borderRadius: 8, cursor: 'pointer', boxShadow: '0 4px 10px rgba(239, 68, 68, 0.2)' }}
+                >
+                  Excluir em Massa
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Table container */}
           <div style={{ background: '#0c0e1a', borderRadius: 16, border: '1px solid #1e293b', overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 800 }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #1e293b', background: 'rgba(255,255,255,0.01)' }}>
+                  <th style={{ padding: '12px 16px', width: 40, textAlign: 'left' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={users.length > 0 && users.filter(u => u.id !== currentAdmin?.id).every(u => selectedUserIds.includes(u.id))}
+                      onChange={() => handleToggleSelectAll(users.filter(u => u.id !== currentAdmin?.id))}
+                      style={{ cursor: 'pointer', accentColor: '#10b981' }}
+                    />
+                  </th>
                   {['Parceiro / Empresa', 'Acesso', 'Faturamento', 'Status', 'Clientes', 'Lembretes', 'Onboarding', 'Ações'].map(h => (
                     <th key={h} style={{ padding: '12px 16px', textAlign: 'left', color: '#64748b', fontWeight: 700, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
                   ))}
@@ -388,7 +787,7 @@ export default function AdminPage() {
               <tbody>
                 {users.length === 0 ? (
                   <tr>
-                    <td colSpan="8" style={{ textAlign: 'center', padding: '40px 0', color: '#64748b' }}>Nenhum usuário correspondente aos filtros</td>
+                    <td colSpan="9" style={{ textAlign: 'center', padding: '40px 0', color: '#64748b' }}>Nenhum usuário correspondente aos filtros</td>
                   </tr>
                 ) : (
                   users.map(u => {
@@ -400,15 +799,32 @@ export default function AdminPage() {
                                       u.plan === 'crescimento' ? 'Crescimento 🐍' : 
                                       u.plan.toUpperCase();
 
+                    const isSelf = u.id === currentAdmin?.id;
+
                     return (
-                      <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s' }} className="table-row-hover">
+                      <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s', background: isUserSelected(u.id) ? 'rgba(16,185,129,0.03)' : 'transparent' }} className="table-row-hover">
+                        <td style={{ padding: '12px 16px' }}>
+                          <input 
+                            type="checkbox" 
+                            disabled={isSelf}
+                            checked={isUserSelected(u.id)}
+                            onChange={() => handleToggleSelectUser(u.id)}
+                            style={{ cursor: isSelf ? 'not-allowed' : 'pointer', accentColor: '#10b981' }}
+                            title={isSelf ? 'Você não pode auto-selecionar ou excluir a si mesmo.' : ''}
+                          />
+                        </td>
                         <td style={{ padding: '12px 16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg,#059669,#0d9488)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 10 }}>
                               {u.name?.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase()}
                             </div>
                             <div>
-                              <p style={{ fontWeight: 700, color: '#ffffff', margin: 0, fontSize: 12.5 }}>{u.name}</p>
+                              <p style={{ fontWeight: 700, color: '#ffffff', margin: 0, fontSize: 12.5, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                {u.name}
+                                {isSelf && (
+                                  <span style={{ fontSize: 9, fontWeight: 800, color: '#070913', background: '#10b981', padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase' }}>Você</span>
+                                )}
+                              </p>
                               <p style={{ fontSize: 10, color: '#64748b', margin: 0 }}>{u.business_name || 'Sem Razão Social'}</p>
                             </div>
                           </div>
@@ -451,6 +867,24 @@ export default function AdminPage() {
                               style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', color: '#34d399', fontSize: 10, padding: '4px 8px', borderRadius: 6, fontWeight: 700, cursor: 'pointer' }}
                             >
                               🔑 Simular
+                            </button>
+                            <button 
+                              disabled={isSelf}
+                              onClick={() => setUserToDelete(u)}
+                              style={{ 
+                                background: isSelf ? '#0c0e1a' : 'rgba(239,68,68,0.1)', 
+                                border: isSelf ? '1px solid #1e293b' : '1px solid rgba(239,68,68,0.2)', 
+                                color: isSelf ? '#475569' : '#f87171', 
+                                fontSize: 10, 
+                                padding: '4px 8px', 
+                                borderRadius: 6, 
+                                fontWeight: 700, 
+                                cursor: isSelf ? 'not-allowed' : 'pointer',
+                                transition: 'background 0.2s'
+                              }}
+                              title={isSelf ? 'Você não pode excluir a si mesmo.' : 'Excluir usuário permanentemente'}
+                            >
+                              🗑️ Excluir
                             </button>
                           </div>
                         </td>
@@ -604,6 +1038,113 @@ export default function AdminPage() {
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* ── INDIVIDUAL DELETE CONFIRMATION MODAL ── */}
+      {userToDelete && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(7,9,19,0.8)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000, padding: 16 }}>
+          <div style={{ background: '#0c0e1a', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 20, width: '100%', maxWidth: 400, padding: 24, display: 'flex', flexDirection: 'column', gap: 20, boxShadow: '0 25px 50px rgba(0,0,0,0.6)' }}>
+            <div style={{ textAlign: 'center' }}>
+              <span style={{ fontSize: 40 }}>⚠️</span>
+              <h3 style={{ fontSize: 18, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px', margin: '12px 0 4px 0' }}>Excluir Usuário?</h3>
+              <p style={{ fontSize: 12, color: '#94a3b8', margin: 0, lineHeight: 1.5 }}>
+                Tem certeza que deseja excluir permanentemente o usuário <strong style={{ color: '#ffffff' }}>{userToDelete.name}</strong> ({userToDelete.email})?
+              </p>
+            </div>
+
+            <div style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 12, padding: 14, fontSize: 11, color: '#f87171', lineHeight: 1.5 }}>
+              <strong>Atenção:</strong> Esta ação é irreversível. A exclusão removerá todas as cobranças, clientes, históricos e conexões de WhatsApp associados a este usuário.
+            </div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button 
+                onClick={() => setUserToDelete(null)}
+                disabled={actionLoading}
+                style={{ 
+                  flex: 1, padding: '10px 0', borderRadius: 10, background: '#1e293b', border: '1px solid #334155', 
+                  color: '#cbd5e1', fontSize: 12, fontWeight: 700, cursor: 'pointer' 
+                }}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleDeleteIndividualUser}
+                disabled={actionLoading}
+                style={{ 
+                  flex: 1.2, padding: '10px 0', borderRadius: 10, background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', 
+                  border: 'none', color: '#ffffff', fontSize: 12, fontWeight: 800, cursor: actionLoading ? 'default' : 'pointer',
+                  boxShadow: '0 4px 14px rgba(239,68,68,0.2)'
+                }}
+              >
+                {actionLoading ? '⏳ Excluindo...' : 'Sim, Excluir'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── BULK DELETE CONFIRMATION MODAL ── */}
+      {showBulkDeleteModal && selectedUserIds.length > 0 && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(7,9,19,0.8)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000, padding: 16 }}>
+          <div style={{ background: '#0c0e1a', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 20, width: '100%', maxWidth: 440, padding: 24, display: 'flex', flexDirection: 'column', gap: 20, boxShadow: '0 25px 50px rgba(0,0,0,0.6)' }}>
+            <div>
+              <h3 style={{ fontSize: 18, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span>🚨</span> Excluir {selectedUserIds.length} Usuários em Lote
+              </h3>
+              <p style={{ fontSize: 11, color: '#64748b', margin: '4px 0 0 0' }}>Esta ação é extremamente perigosa e irreversível</p>
+            </div>
+
+            <div style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 12, padding: 14, fontSize: 11, color: '#f87171', lineHeight: 1.5 }}>
+              Você está prestes a deletar <strong style={{ color: '#ffffff' }}>{selectedUserIds.length} contas de usuários</strong> simultaneamente. Todos os dados associados (clientes, cobranças, conexões) serão permanentemente expurgados da base de dados.
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#cbd5e1', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+                Digite <strong style={{ color: '#ef4444' }}>EXCLUIR</strong> para confirmar:
+              </label>
+              <input 
+                type="text"
+                placeholder="EXCLUIR"
+                value={deleteConfirmText}
+                onChange={e => setDeleteConfirmText(e.target.value)}
+                style={{ 
+                  width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #1e293b', 
+                  background: '#1e293b', color: '#ffffff', fontSize: 12.5, outline: 'none', fontWeight: 700, textAlign: 'center',
+                  letterSpacing: '0.1em'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button 
+                onClick={() => {
+                  setShowBulkDeleteModal(false);
+                  setDeleteConfirmText('');
+                }}
+                disabled={actionLoading}
+                style={{ 
+                  flex: 1, padding: '10px 0', borderRadius: 10, background: '#1e293b', border: '1px solid #334155', 
+                  color: '#cbd5e1', fontSize: 12, fontWeight: 700, cursor: 'pointer' 
+                }}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleBulkDeleteUsers}
+                disabled={actionLoading || deleteConfirmText !== 'EXCLUIR'}
+                style={{ 
+                  flex: 2, padding: '10px 0', borderRadius: 10, 
+                  background: deleteConfirmText === 'EXCLUIR' ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : '#1e293b', 
+                  border: 'none', color: deleteConfirmText === 'EXCLUIR' ? '#ffffff' : '#64748b', fontSize: 12, fontWeight: 800, 
+                  cursor: (actionLoading || deleteConfirmText !== 'EXCLUIR') ? 'default' : 'pointer',
+                  boxShadow: deleteConfirmText === 'EXCLUIR' ? '0 4px 14px rgba(239,68,68,0.2)' : 'none'
+                }}
+              >
+                {actionLoading ? '⏳ Expurgando...' : 'Confirmar Exclusão em Massa'}
+              </button>
+            </div>
           </div>
         </div>
       )}
