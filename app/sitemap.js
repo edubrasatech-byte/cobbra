@@ -5,5 +5,6 @@ export default function sitemap() {
     { url: BASE_URL, lastModified: now, changeFrequency: 'weekly', priority: 1.0 },
     { url: `${BASE_URL}/cadastro`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${BASE_URL}/login`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${BASE_URL}/contrato-gratis`, lastModified: now, changeFrequency: 'weekly', priority: 0.95 },
   ];
 }

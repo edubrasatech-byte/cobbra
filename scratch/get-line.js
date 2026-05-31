@@ -1,10 +1,9 @@
 const fs = require('fs');
 const readline = require('readline');
-const path = require('path');
 
 const logPath = 'C:\\Users\\marci\\.gemini\\antigravity\\brain\\e2f865eb-76b0-40b9-9a5b-3fc861ea9522\\.system_generated\\logs\\transcript.jsonl';
 
-async function searchLog() {
+async function getLine() {
   const fileStream = fs.createReadStream(logPath);
   const rl = readline.createInterface({
     input: fileStream,
@@ -14,15 +13,13 @@ async function searchLog() {
   let lineCount = 0;
   for await (const line of rl) {
     lineCount++;
-    if (line.includes('gsk_')) {
-      const match = line.match(/(gsk_[^\s\"\'\`\}]+)/);
-      if (match) {
-        console.log(`✅ Linha ${lineCount} - Chave encontrada: ${match[1]}`);
-      } else {
-        console.log(`⚠️ Linha ${lineCount} contém 'gsk_' mas o regex falhou.`);
-      }
+    if (lineCount === 9050) {
+      console.log('--- LINE 9050 ---');
+      console.log(line);
+      console.log('-----------------');
+      break;
     }
   }
 }
 
-searchLog();
+getLine();

@@ -1,29 +1,19 @@
-const { Client } = require('ssh2');
-const conn = new Client();
+const fs = require('fs');
+const path = require('path');
 
-const VPS_CONFIG = {
-  host: '129.121.85.166',
-  port: 22,
-  username: 'root',
-  password: '476113@Etc'
-};
+console.log("🔍 Verificando variáveis de ambiente...");
+console.log("process.env.GROQ_API_KEY:", process.env.GROQ_API_KEY ? "DEFINIDA (escondida)" : "NÃO DEFINIDA");
 
-console.log('📋 Lendo variáveis de ambiente do container na VPS...');
-
-conn.on('ready', () => {
-  conn.exec('docker exec evolution_api env', (err, stream) => {
-    if (err) {
-      console.error('Erro:', err);
-      conn.end();
-      return;
+const files = ['.env', '.env.local', '.env.production', '.env.development'];
+files.forEach(file => {
+  const fullPath = path.join(__dirname, '..', file);
+  if (fs.existsSync(fullPath)) {
+    const content = fs.readFileSync(fullPath, 'utf8');
+    const match = content.match(/GROQ_API_KEY\s*=\s*(.+)/);
+    if (match) {
+      console.log(`✅ Achado em ${file}:`, match[1].trim());
+    } else {
+      console.log(`❌ Não achado em ${file}`);
     }
-    stream.on('close', () => {
-      conn.end();
-    }).on('data', (data) => {
-      console.log('\n--- VARIÁVEIS DE AMBIENTE ---');
-      console.log(data.toString());
-    }).stderr.on('data', (data) => {
-      console.error('STDERR:', data.toString());
-    });
-  });
-}).connect(VPS_CONFIG);
+  }
+});

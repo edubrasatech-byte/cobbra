@@ -29,10 +29,16 @@ try {
 export async function GET(request) {
   try {
     const user = getUserFromRequest(request);
-    if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
-
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get('project_id');
+    const guestSessionId = searchParams.get('guest_session_id');
+
+    let userId = user ? user.id : null;
+    if (!userId && guestSessionId && guestSessionId.startsWith('guest_')) {
+      userId = guestSessionId;
+    }
+
+    if (!userId) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
     if (projectId) {
       // Load specific project
@@ -43,7 +49,7 @@ export async function GET(request) {
         LEFT JOIN documents d ON d.project_id = p.id
         WHERE p.user_id = ? AND p.id = ?
         LIMIT 1
-      `, [user.id, projectId]);
+      `, [userId, projectId]);
 
       if (!project) return Response.json({ error: 'Projeto não encontrado' }, { status: 404 });
       return Response.json({ project });
@@ -57,7 +63,7 @@ export async function GET(request) {
       LEFT JOIN documents d ON d.project_id = p.id AND d.type = 'budget'
       WHERE p.user_id = ?
       ORDER BY p.created_at DESC
-    `, [user.id]);
+    `, [userId]);
 
     return Response.json({ projects });
   } catch (error) {
@@ -68,31 +74,47 @@ export async function GET(request) {
 export async function DELETE(request) {
   try {
     const user = getUserFromRequest(request);
-    if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
-
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get('project_id');
+    const guestSessionId = searchParams.get('guest_session_id');
 
+    let userId = user ? user.id : null;
+    if (!userId && guestSessionId && guestSessionId.startsWith('guest_')) {
+      userId = guestSessionId;
+    }
+
+    if (!userId) return Response.json({ error: 'Não autorizado' }, { status: 401 });
     if (!projectId) return Response.json({ error: 'Falta o ID do projeto' }, { status: 400 });
 
-    run("DELETE FROM projects WHERE user_id = ? AND id = ?", [user.id, projectId]);
+    run("DELETE FROM projects WHERE user_id = ? AND id = ?", [userId, projectId]);
     run("DELETE FROM documents WHERE project_id = ?", [projectId]);
 
     return Response.json({ success: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
-}
-
 export async function POST(request) {
   try {
     const user = getUserFromRequest(request);
-    if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
-
-    const dbUser = queryOne("SELECT * FROM users WHERE id = ?", [user.id]) || user;
-
     const body = await request.json();
-    const { action, project_id, client_id, project_type, services, notes, prompt, images, client_name, client_doc, client_address } = body;
+    const { action, project_id, client_id, project_type, services, notes, prompt, images, client_name, client_doc, client_address, guest_session_id } = body;
+
+    let userId = user ? user.id : null;
+    if (!userId && guest_session_id && guest_session_id.startsWith('guest_')) {
+      userId = guest_session_id;
+    }
+
+    if (!userId) return Response.json({ error: 'Não autorizado' }, { status: 401 });
+
+    if (action === 'export_charges' && userId.startsWith('guest_')) {
+      return Response.json({ error: 'Você precisa criar uma conta gratuita para exportar cobranças para o Pix.' }, { status: 403 });
+    }
+
+    // Get business/user info for the budget template
+    let dbUser = { name: 'Sua Empresa', business_name: 'Sua Empresa', pix_key: '', phone: '', email: '', business_niche: 'Geral' };
+    if (!userId.startsWith('guest_')) {
+      dbUser = queryOne("SELECT * FROM users WHERE id = ?", [userId]) || user;
+    }
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) return Response.json({ error: 'API Key da Groq não configurada' }, { status: 500 });
@@ -126,7 +148,7 @@ INFORMAÇÕES DA LOCAÇÃO/OBRA:
 - Condições Comerciais, Valores e Formas de Pagamento: ${notes}
 
 REGRAS RÍGIDAS DE ESTRUTURA INSPIRADAS NO MODELO JARDIM DE SINTRA (REDIGIR NA ÍNTEGRA):
-O documento deve conter as seguintes seções estruturadas com classes HTML semânticas elegantes (tabelas para valores, listas ordenadas para obrigações, títulos fortes em h1/h2):
+O documento deve conter as seguintes seções estruturadas com classes HTML semânticas elegantes (tabelas para valores, listas ordenadas para obrigações, títulos fortes in h1/h2):
 
 1. CABEÇALHO DA PROPOSTA: Nome do documento "INSTRUMENTO PARTICULAR DE PROPOSTA TÉCNICA, COMERCIAL E CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE ENGENHARIA E PINTURA EM GERAL". Qualificação das partes (CONTRATANTE e CONTRATADA).
 
@@ -155,7 +177,7 @@ O documento deve conter as seguintes seções estruturadas com classes HTML sem�
 REGRAS DE ESTILIZAÇÃO E DESIGN SYSTEM HTML (O DOCUMENTO DEVE SER DESLUMBRANTE, EXECUTIVO E PREMIUM):
 - O código retornado deve ser envolvido em uma tag <div> contendo um bloco <style> completo e extremamente profissional no início para dar o visual de um documento corporativo de altíssimo padrão.
 - Tipografia: Use fontes modernas e legíveis (ex: font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif para títulos e textos técnicos).
-- Cores: Use tons de alto requinte comercial. Detalhes, bordas-chave e botões no Verde Esmeralda oficial do Cobbra (#059669). Títulos em Slate Escuro (#1e293b). Fundos neutros em cinza claríssimo (#f8fafc).
+- Cores: Use tons de alto requinte comercial. Detalhes, bordas-chave e botões no Verde Esmeralda oficial do Cobbra (#059669). Títulos em Slate Escuro (#1e293b). Fundos neutros in cinza claríssimo (#f8fafc).
 - Cabeçalho Premium: Crie uma seção inicial marcante em duas colunas. À esquerda, um badge verde de "PROPOSTA TÉCNICA E COMERCIAL" e o título do projeto em h1 grande e elegante. À direita, data e identificação. Abaixo, a "Qualificação das Partes" deve ser renderizada em dois cards com bordas arredondadas (border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; padding: 16px; margin-bottom: 20px) posicionados lado a lado (dois blocos inline-block ou flexbox de 48% de largura) detalhando a CONTRATADA (sua empresa) e o CONTRATANTE (cliente).
 - Tabelas de Escopo e Preços: Modernas e limpas. Use headers (th) com background #1e293b, cor #ffffff e padding de 12px. As células (td) devem ter padding de 12px e borda inferior fina (#e2e8f0). Use linhas zebradas (#f8fafc). Alinhe valores/quantidades à direita. Destaque o Total Geral com fundo verde clarinho (#ecfdf5), texto em negrito e borda dupla em cima e embaixo.
 - Cards de Destaque (Callouts): Use caixas elegantes (ex: background: #f0fdf4; border-left: 4px solid #059669; padding: 16px; border-radius: 4px 8px 8px 4px; margin: 20px 0) para ressaltar a Garantia Técnica de 5 Anos, as condições críticas de segurança/CREA e os marcos de pagamento.
@@ -203,10 +225,10 @@ REGRAS DE ESTILIZAÇÃO E DESIGN SYSTEM HTML (O DOCUMENTO DEVE SER DESLUMBRANTE,
         // Try to find existing client by document or name
         let existingClient = null;
         if (client_doc) {
-          existingClient = queryOne("SELECT id FROM clients WHERE user_id = ? AND document = ?", [user.id, client_doc]);
+          existingClient = queryOne("SELECT id FROM clients WHERE user_id = ? AND document = ?", [userId, client_doc]);
         }
         if (!existingClient) {
-          existingClient = queryOne("SELECT id FROM clients WHERE user_id = ? AND name = ?", [user.id, client_name]);
+          existingClient = queryOne("SELECT id FROM clients WHERE user_id = ? AND name = ?", [userId, client_name]);
         }
 
         if (existingClient) {
@@ -216,18 +238,18 @@ REGRAS DE ESTILIZAÇÃO E DESIGN SYSTEM HTML (O DOCUMENTO DEVE SER DESLUMBRANTE,
           actualClientId = generateId();
           run(
             "INSERT INTO clients (id, user_id, name, document, address, category, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))",
-            [actualClientId, user.id, client_name, client_doc || '', client_address || '', 'Construção Civil']
+            [actualClientId, userId, client_name, client_doc || '', client_address || '', 'Construção Civil']
           );
         }
       }
 
       if (!actualClientId) {
-        const fallbackClientId = 'avulso-' + user.id;
+        const fallbackClientId = 'avulso-' + userId;
         const avulsoExists = queryOne("SELECT id FROM clients WHERE id = ?", [fallbackClientId]);
         if (!avulsoExists) {
           run(
             "INSERT INTO clients (id, user_id, name, document, category, created_at, updated_at) VALUES (?, ?, 'Cliente Avulso', '000.000.000-00', 'Geral', datetime('now'), datetime('now'))",
-            [fallbackClientId, user.id]
+            [fallbackClientId, userId]
           );
         }
         actualClientId = fallbackClientId;
@@ -235,7 +257,7 @@ REGRAS DE ESTILIZAÇÃO E DESIGN SYSTEM HTML (O DOCUMENTO DEVE SER DESLUMBRANTE,
 
       const newProjectId = project_id || generateId();
       if (!project_id) {
-        run("INSERT INTO projects (id, user_id, client_id, name) VALUES (?, ?, ?, ?)", [newProjectId, user.id, actualClientId, `Obra - ${project_type}`]);
+        run("INSERT INTO projects (id, user_id, client_id, name) VALUES (?, ?, ?, ?)", [newProjectId, userId, actualClientId, `Obra - ${project_type}`]);
       }
       const docId = generateId();
       run("INSERT INTO documents (id, project_id, type, content_html) VALUES (?, ?, ?, ?)", [docId, newProjectId, 'budget', aiContent]);
@@ -414,6 +436,17 @@ ${doc.content_html}`;
       }
 
       return Response.json({ success: true, count: created, installments });
+    }
+
+    if (action === 'link_guest_project') {
+      if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
+      if (!guest_session_id) return Response.json({ error: 'Falta o ID da sessão de convidado' }, { status: 400 });
+
+      // Update all projects and clients created by this guest session
+      run("UPDATE projects SET user_id = ? WHERE user_id = ?", [user.id, guest_session_id]);
+      run("UPDATE clients SET user_id = ? WHERE user_id = ?", [user.id, guest_session_id]);
+
+      return Response.json({ success: true, message: 'Projetos vinculados com sucesso!' });
     }
 
     return Response.json({ error: 'Ação inválida' }, { status: 400 });

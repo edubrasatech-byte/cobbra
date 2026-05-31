@@ -15,9 +15,18 @@ const NAV_ITEMS = [
   { href: '/dashboard/atualizacoes', icon: '🔄', label: 'Atualizações' },
 ];
 
+const LEADS_ITEM = { href: '/dashboard/leads', icon: '🔍', label: 'Prospecção' };
 const ADMIN_ITEM = { href: '/dashboard/admin', icon: '🛡️', label: 'Admin' };
 
 const NAV_ICONS = {
+  '/dashboard/leads': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      <line x1="8" y1="11" x2="14" y2="11" />
+      <line x1="11" y1="8" x2="11" y2="14" />
+    </svg>
+  ),
   '/dashboard': (colorClass) => (
     <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="7" height="9" rx="1.5" />
@@ -539,7 +548,7 @@ export default function DashboardLayout({ children }) {
   }
 
   const navItems = user?.role === 'admin_senior' || user?.role === 'admin'
-    ? [...dynamicNavItems, ADMIN_ITEM] : dynamicNavItems;
+    ? [...dynamicNavItems, LEADS_ITEM, ADMIN_ITEM] : dynamicNavItems;
 
   const pageTitle = navItems.find(i => i.href === pathname)?.label || 'Visão Geral';
 
