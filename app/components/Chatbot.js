@@ -431,7 +431,7 @@ export default function Chatbot({ isOpen, onClose }) {
 
         @media (max-width: 640px) {
           .chatbot-launcher-button {
-            bottom: 96px !important; /* Posicionamento mobile acima da nav bar de 80px */
+            bottom: 24px !important;
             right: 16px !important;
           }
         }

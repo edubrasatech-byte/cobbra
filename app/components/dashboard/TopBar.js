@@ -227,24 +227,7 @@ export default function TopBar({
             <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-slate-950 animate-pulse" />
           </button>
         )}
-        {/* Dynamic Theme Toggler (☀️/🌙) */}
-        <button 
-          onClick={toggleTheme}
-          className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center cursor-pointer transition-all active:scale-90"
-          title={theme === 'dark' ? "Ativar Modo Claro" : "Ativar Modo Escuro"}
-          aria-label="Alternar Tema"
-        >
-          {theme === 'dark' ? (
-            <svg className="w-4 h-4 text-slate-400 hover:text-amber-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="5" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-            </svg>
-          ) : (
-            <svg className="w-4 h-4 text-slate-500 hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-          )}
-        </button>
+
  
         {/* Notifications Popover Trigger */}
         <div className="relative">
