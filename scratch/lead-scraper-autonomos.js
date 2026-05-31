@@ -351,7 +351,8 @@ async function runMassiveOutboundPipeline() {
         console.error(`❌ Erro no processamento de "${target.niche}" em "${city}":`, err.message);
       }
 
-      await new Promise(r => setTimeout(r, 2000));
+      // Aumentado o intervalo de polidez para 6.5 segundos para evitar estouro de limite de requisições (Rate Limit Exceeded)
+      await new Promise(r => setTimeout(r, 6500));
     }
   }
 
