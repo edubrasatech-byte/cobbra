@@ -1,5 +1,5 @@
 export default function sitemap() {
-  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://cobbra.ai';
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://cobbra.com.br';
   const now = new Date().toISOString();
 
   const staticPages = [

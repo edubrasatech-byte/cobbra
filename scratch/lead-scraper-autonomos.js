@@ -82,7 +82,7 @@ function formatWhatsAppNumber(rawPhone) {
 
 function generatePersonalizedMessage(lead) {
   const name = lead.name.split(' ')[0];
-  const siteUrl = "https://cobbra.ai";
+  const siteUrl = "https://cobbra.com.br";
   
   // Sementes de variabilidade para a introdução e o fechamento
   const greetings = [
