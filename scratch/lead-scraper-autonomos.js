@@ -109,7 +109,7 @@ Vi seu anúncio de locação de veículo em ${lead.location}.
 Sabemos que gerenciar aluguel para Ubers e frotistas é um desafio: cobrar o boleto toda semana, controlar CNH vencida, consultar multas no dia/hora do motorista e torcer para o carro não sumir.
 
 Criamos o Cobbra.ai para resolver isso de forma 100% automática! 
-• Régua de cobrança semanal via WhatsApp com QR Code Pix (sem taxas!).
+• Sequência de cobrança semanal via WhatsApp com QR Code Pix (sem taxas!).
 • Sistema de controle de CNH e Vistoria Fotográfica na entrega e devolução.
 • Módulo de consulta de multas integrado.
 • Protocolo de Pânico: notificação extrajudicial em PDF gerada por IA na hora caso o cliente suma.
@@ -131,7 +131,7 @@ Conheça o Cobbra.ai, a tecnologia mais robusta para gerenciar suas parcelas:
 • Recorrências inteligentes: gere cobranças diárias, semanais ou mensais de forma simples.
 • Juros de mora configuráveis ao dia calculados automaticamente pós-vencimento.
 • Cobrança automática via WhatsApp com QR Code Pix direto pro seu Pix (taxa zero!).
-• Régua inteligente de avisos (1 dia antes, no dia do vencimento, e pós-atraso).
+• Sequência inteligente de avisos (1 dia antes, no dia do vencimento, e pós-atraso).
 
 Faça seu cadastro em 1 minuto e garanta 3 dias grátis para testar o sistema:
 👉 Registrar Grátis: ${siteUrl}/login
@@ -167,7 +167,7 @@ Ficar cobrando mensalidades de alunos no final do treino ou mandando mensagens m
 
 O Cobbra.ai profissionaliza suas mensalidades:
 • Cobrança recorrente no Pix (sem comprometer o limite do cartão do aluno).
-• Régua amigável via WhatsApp enviando o Pix com educação e carinho no dia certo.
+• Lembrete amigável via WhatsApp enviando o Pix com educação e carinho no dia certo.
 • Catarina IA: nossa inteligência cobra os atrasados de forma polida por você.
 • Painel de controle simples para saber quem pagou em tempo real no seu celular.
 
@@ -183,7 +183,7 @@ Localizamos sua prestação de serviços independentes na região de ${lead.loca
 
 Quem trabalha por conta própria sabe a dor que é realizar o serviço e sofrer com atrasos e esquecimento na hora do pagamento Pix. Mandar mensagem cobrando é chato e toma tempo.
 
-O Cobbra.ai automatiza toda a sua régua de cobrança no piloto automático:
+O Cobbra.ai automatiza toda a sua cobrança no piloto automático:
 • Envio automático de lembrete com QR Code Pix no dia e vencimento.
 • Cobrança amigável estruturada via WhatsApp pela nossa IA.
 • Dinheiro cai direto na sua chave Pix, sem taxas de intermediação de intermediários ou gateways.
