@@ -33,7 +33,7 @@ const CITIES = [
   'campinas'
 ];
 
-const BASE_URL = 'https://cobbra.ai';
+const BASE_URL = 'https://cobbra.com.br';
 const now = new Date().toISOString().split('T')[0];
 
 function generateSitemap() {
