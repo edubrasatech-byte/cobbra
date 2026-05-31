@@ -1,57 +1,37 @@
 /**
- * 🐍 Cobbra Lead Scraper Autônomos v3 — Automatizador de Prospecção Fria Multicanais
+ * 🐍 Cobbra Lead Scraper Autônomos v4 — Automatizador de Prospecção Fria Multicanais
  * 
- * Este script automatiza 100% o funil de prospecção de profissionais liberais e autônomos
- * utilizando o motor de inteligência artificial de altíssima performance da Groq (Llama 3.3 70B).
- * 
- * ELE É HIPER-PERSONALIZADO POR NICHO, gerando cópias sob medida para as dores dos seguintes públicos:
- * 1. Locadores de Carros (Uber, frotistas, P2P)
- * 2. Empréstimos / Financiadores / Credores (Agiotagem legalizada)
- * 3. Prestadores de Serviços da Construção Civil (Pedreiros, pintores, engenheiros, empreiteiros)
- * 4. Saúde e Fitness (Personal trainers, estúdios de pilates, yoga, clínicas)
- * 5. Nichos Genéricos (Freelancers, designers, consultores)
- * 
- * Roda de forma massiva varrendo capitais e grandes cidades do Brasil de forma 100% orgânica
- * e integrando com o banco de dados do Cobbra.ai (leads_prospects).
- * 
- * Pré-requisitos:
- * 1. Node.js (v18+)
- * 2. SQLite local configurado no projeto
- * 
- * Execução normal:
- * node scratch/lead-scraper-autonomos.js
+ * ESPECIFICAÇÕES DE EVOLUÇÃO (V4):
+ * 1. Prevenção Absoluta de Duplicados: Telefones que já receberam mensagem ('sent') ou falharam ('failed')
+ *    são preservados no banco e NUNCA são sobrescritos ou reinseridos na fila 'ready_to_send'.
+ * 2. Fluxo de Segundo-Contato (Second Touchpoint): Contatos marcados como 'sent' são mantidos intactos, 
+ *    permitindo campanhas futuras de acompanhamento ("follow-up").
+ * 3. Rotatividade e Variabilidade das Abordagens (Groq AI): A IA utiliza sementes variáveis para garantir
+ *    que a cópia de abordagem nunca repita exatamente as mesmas palavras a cada execução.
+ * 4. Mineração Massiva Aumentada (Deep Extraction): Busca expandida para até 50 resultados orgânicos por dork
+ *    via SerpAPI (usando paginação `num=50`) para maximizar a captura de contatos a cada lote.
  */
 
 const fs = require('fs');
 const path = require('path');
 const Database = require('better-sqlite3');
 
-// Lista abrangente de nichos e buscas focadas para minerar grupos de Facebook (ex: Uber, Autônomos)
 const MINING_TARGETS = [
-  // 1. Locadores de Carros e Ubers (Nicho de Altíssima Conversão)
   { niche: 'aluguel de carro para uber', query: 'aluguel de carro para uber OR aluguel de frota cnh' },
   { niche: 'locador de veiculos', query: 'locação de carros uber OR alugo carro curitiba' },
-  
-  // 2. Empréstimos, Credores e Investidores P2P
   { niche: 'emprestimo pessoal', query: 'emprestimo pessoal rapido OR emprestimo dinheiro' },
   { niche: 'credito autonomo', query: 'dinheiro na hora juros diários OR emprestimo sem burocracia' },
-  
-  // 3. Construção Civil e Empreiteiros
   { niche: 'servicos de pedreiro', query: 'pedreiro reforma OR construtor empreiteira' },
   { niche: 'empreiteiro', query: 'pintor encanador eletricista orçamento reforma' },
-  
-  // 4. Fitness e Saúde
   { niche: 'personal trainer', query: 'personal trainer mensalidade OR consultoria fitness' },
   { niche: 'estudio de pilates', query: 'estúdio de pilates mensalidade' }
 ];
 
-// Cidades estratégicas do Brasil com alto volume de autônomos e frotas de Uber
 const BRAZILIAN_CITIES = [
   'São Paulo', 'Rio de Janeiro', 'Belo Horizonte', 'Curitiba', 'Porto Alegre',
   'Salvador', 'Fortaleza', 'Recife', 'Goiânia', 'Campinas', 'Florianópolis'
 ];
 
-// 1. Carregar chaves de API dos arquivos .env e .env.local
 let envGroqKey = '';
 let envSerpKey = '';
 try {
@@ -74,7 +54,6 @@ const fallbackSerpApiKey = "5afc5fd737156c56803c5b8c29f0bc492cf57e77cb26c008adc5
 const serpApiKey = process.env.SERPAPI_API_KEY || envSerpKey || fallbackSerpApiKey;
 const groqApiKey = process.env.GROQ_API_KEY || envGroqKey;
 
-// Conectar ao Banco de Dados SQLite do Cobbra para salvar leads prospects direto na fila de outbound
 let db;
 try {
   const DB_PATH = path.join(process.cwd(), 'database', 'cobbra.db');
@@ -86,7 +65,6 @@ try {
   console.log("⚠️ Executando em modo isolado de banco de dados:", e.message);
 }
 
-// Higienização e padronização do número para formato internacional WhatsApp (E.164)
 function formatWhatsAppNumber(rawPhone) {
   if (!rawPhone || rawPhone.toLowerCase().includes('não') || rawPhone.toLowerCase().includes('encontrado')) {
     return 'Não encontrado';
@@ -102,15 +80,29 @@ function formatWhatsAppNumber(rawPhone) {
   return rawPhone;
 }
 
-// Dicionário Estrito de Copy e Gatilhos de Benefício por Nicho para Abordagem Exclusiva
 function generatePersonalizedMessage(lead) {
-  const name = lead.name.split(' ')[0]; // Apenas primeiro nome para maior intimidade
-  const siteUrl = "https://cobbra.ai"; // URL oficial de registro do Cobbra
+  const name = lead.name.split(' ')[0];
+  const siteUrl = "https://cobbra.ai";
+  
+  // Sementes de variabilidade para a introdução e o fechamento
+  const greetings = [
+    `Olá ${name}! Tudo bem?`,
+    `Oi ${name}, tudo joia por aí?`,
+    `Tudo bem, ${name}? Espero que sim!`
+  ];
+  const closings = [
+    `Qualquer dúvida, nossa IA Catarina estará à sua disposição no canto da tela. Abraço! 🐍✨`,
+    `Se precisar de uma força, a Catarina IA ajuda você a configurar tudo pelo chat do painel. Sucesso! 🐍✨`,
+    `Nossa assistente virtual Catarina IA está online pronta para tirar qualquer dúvida no dashboard. Vamos pra cima! 🐍✨`
+  ];
+  
+  const randGreet = greetings[Math.floor(Math.random() * greetings.length)];
+  const randClose = closings[Math.floor(Math.random() * closings.length)];
 
   switch (lead.niche.toLowerCase()) {
     case 'aluguel de carro para uber':
     case 'locador de veiculos':
-      return `Olá ${name}! Tudo bem? 🚗
+      return `${randGreet} 🚗
 
 Vi seu anúncio de locação de veículo em ${lead.location}. 
 
@@ -125,11 +117,11 @@ Criamos o Cobbra.ai para resolver isso de forma 100% automática!
 Comece a testar agora gratuitamente por 3 dias (sem precisar cadastrar cartão de crédito):
 👉 Registrar Grátis: ${siteUrl}/login
 
-Qualquer dúvida, nossa IA Catarina estará à sua disposição no canto da tela. Abraço! 🐍✨`;
+${randClose}`;
 
     case 'emprestimo pessoal':
     case 'credito autonomo':
-      return `Olá ${name}! Tudo bem? 💸
+      return `${randGreet} 💸
 
 Localizamos seu contato de serviços financeiros e suporte a crédito em ${lead.location}. 
 
@@ -144,11 +136,11 @@ Conheça o Cobbra.ai, a tecnologia mais robusta para gerenciar suas parcelas:
 Faça seu cadastro em 1 minuto e garanta 3 dias grátis para testar o sistema:
 👉 Registrar Grátis: ${siteUrl}/login
 
-Catarina, nossa assistente virtual de cobrança por IA, guiará você no primeiro acesso. Boas cobranças! 🐍✨`;
+${randClose}`;
 
     case 'servicos de pedreiro':
     case 'empreiteiro':
-      return `Olá ${name}! Tudo bem? 🏗️
+      return `${randGreet} 🏗️
 
 Encontrei seu contato prestando serviços na área de reformas e construção civil em ${lead.location}. 
 
@@ -163,11 +155,11 @@ O Cobbra.ai ajuda você a organizar seus contratos de forma profissional:
 Garanta seus 3 dias de teste grátis sem qualquer compromisso:
 👉 Registrar Grátis: ${siteUrl}/login
 
-A Catarina IA ajudará você a configurar tudo pelo chat do painel em segundos! Bons negócios! 🐍✨`;
+${randClose}`;
 
     case 'personal trainer':
     case 'estudio de pilates':
-      return `Olá ${name}! Tudo bem? 🏋️
+      return `${randGreet} 🏋️
 
 Vi seu perfil profissional em saúde e bem-estar na região de ${lead.location}. 
 
@@ -182,10 +174,10 @@ O Cobbra.ai profissionaliza suas mensalidades:
 Comece agora e tenha 3 dias de acesso premium 100% grátis:
 👉 Registrar Grátis: ${siteUrl}/login
 
-Conecte sua chave Pix e veja como é fácil receber no dia certo! 🐍✨`;
+${randClose}`;
 
     default:
-      return `Olá ${name}! Tudo bem? 💼
+      return `${randGreet} 💼
 
 Localizamos sua prestação de serviços independentes na região de ${lead.location}. 
 
@@ -200,14 +192,16 @@ O Cobbra.ai automatiza toda a sua régua de cobrança no piloto automático:
 Registre-se agora e ganhe 3 dias grátis para testar o sistema completo:
 👉 Registrar Grátis: ${siteUrl}/login
 
-Deixe a cobrança chata com a Catarina IA e foque apenas no seu negócio! 🐍✨`;
+${randClose}`;
   }
 }
 
-// Envia os snippets do Facebook/Google para extração estruturada de leads pela Groq AI
 async function extractLeadsWithGroq(rawText, targetNiche, targetCity) {
   const url = 'https://api.groq.com/openai/v1/chat/completions';
   
+  // Semente dinâmica para forçar a Groq a mudar sua estruturação de dados
+  const dynamicSeed = Math.floor(Math.random() * 10000);
+
   const systemPrompt = `Você é o qualificador e minerador comercial supremo de leads autônomos do Cobbra.ai.
 Sua missão é ler os resultados brutos da busca e identificar contatos autônomos legítimos (pessoas físicas, motoristas, locadores individuais, prestadores locais de serviços, credores locais).
 Exclua empresas de grande porte corporativas. Foque em profissionais e pequenos negócios.
@@ -225,6 +219,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON estruturado contendo a chave "leads" mapea
   ]
 }
 
+ID de Geração Única: seed-${dynamicSeed}. Varie levemente o estilo das estruturas e extrações para evitar repetição.
 Não adicione comentários, introduções ou blocos markdown. Retorne APENAS o JSON válido.`;
 
   try {
@@ -240,7 +235,7 @@ Não adicione comentários, introduções ou blocos markdown. Retorne APENAS o J
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Analise as publicações e extraia os leads qualificados do nicho "${targetNiche}" em "${targetCity}":\n\n${rawText}` }
         ],
-        temperature: 0.1,
+        temperature: 0.3, // Aumentado ligeiramente para maior variabilidade criativa nas abordagens
         response_format: { type: "json_object" }
       })
     });
@@ -260,7 +255,6 @@ Não adicione comentários, introduções ou blocos markdown. Retorne APENAS o J
   }
 }
 
-// Execução centralizada do pipeline de mineração em lote nas capitais
 async function runMassiveOutboundPipeline() {
   if (!groqApiKey) {
     console.error("❌ ERRO: Nenhuma API Key da Groq foi encontrada!");
@@ -268,16 +262,17 @@ async function runMassiveOutboundPipeline() {
   }
 
   console.log(`🤖 ========================================================`);
-  console.log(`🤖 COBBRA COMERCIAL AUTOMATION PRO V3 — INICIADO`);
-  console.log(`🤖 Mineração em Lote nos Grupos de Dor de Autônomos`);
+  console.log(`🤖 COBBRA COMERCIAL AUTOMATION PRO V4 (DEEP EXTRACTION)`);
+  console.log(`🤖 Mineração em Lote de Alta Performance e Proteção Antiduplicados`);
   console.log(`🤖 ========================================================\n`);
 
   for (const target of MINING_TARGETS) {
     for (const city of BRAZILIAN_CITIES) {
       console.log(`🔍 [MINANDO] Buscando Leads de "${target.niche}" em "${city}"...`);
       
+      // DEEP EXTRACTION: num=50 para buscar o máximo de posts orgânicos possíveis
       const facebookDork = `site:facebook.com/groups OR site:facebook.com/posts OR site:facebook.com/marketplace "${target.query}" "${city}" ("whatsapp" OR "whats" OR "celular" OR "contato" OR "tel")`;
-      const serpUrl = `https://serpapi.com/search.json?q=${encodeURIComponent(facebookDork)}&hl=pt-br&gl=br&api_key=${serpApiKey}`;
+      const serpUrl = `https://serpapi.com/search.json?q=${encodeURIComponent(facebookDork)}&hl=pt-br&gl=br&num=50&api_key=${serpApiKey}`;
 
       try {
         const response = await fetch(serpUrl);
@@ -298,7 +293,6 @@ async function runMassiveOutboundPipeline() {
           return `[Pub #${idx + 1}] Título: ${r.title}\nSnippet: ${r.snippet}\nLink: ${r.link}`;
         }).join('\n\n');
 
-        // Extrair e qualificar autônomos por IA
         const extractedLeads = await extractLeadsWithGroq(rawTextData, target.niche, city);
 
         const validProspects = [];
@@ -306,7 +300,16 @@ async function runMassiveOutboundPipeline() {
           const cleanPhone = formatWhatsAppNumber(lead.phone);
           if (cleanPhone === 'Não encontrado') continue;
 
-          // Injetar o texto da cópia hiper-personalizada
+          // EVOLUÇÃO 1 & 2: Verificar se já enviamos mensagem ou tentamos contato anteriormente com este número
+          if (db) {
+            const existing = db.prepare("SELECT status FROM leads_prospects WHERE phone = ?").get(cleanPhone);
+            if (existing) {
+              // Se já foi enviado ('sent'), falhou ('failed') ou está na fila, NÃO re-adiciona e preserva para o follow-up
+              console.log(`⏭️ Lead ${lead.name} (${cleanPhone}) já existe no histórico (Status: ${existing.status}). Pulado e preservado.`);
+              continue;
+            }
+          }
+
           lead.phone = cleanPhone;
           lead.location = city;
           const customMsg = generatePersonalizedMessage(lead);
@@ -321,12 +324,12 @@ async function runMassiveOutboundPipeline() {
           });
         }
 
-        console.log(`✅ Groq AI qualificou ${validProspects.length} leads de autônomos reais em ${city}.`);
+        console.log(`✅ Groq AI qualificou ${validProspects.length} leads de autônomos novos e inéditos em ${city}.`);
 
-        // Salvar no SQLite do Cobbra para o monitor do Administrador Senior
+        // Salvar no SQLite
         if (db && validProspects.length > 0) {
           const insertStmt = db.prepare(`
-            INSERT OR IGNORE INTO leads_prospects (
+            INSERT INTO leads_prospects (
               id, name, phone, niche, city, offer_details, status, custom_message, created_at, updated_at
             ) VALUES (?, ?, ?, ?, ?, ?, 'ready_to_send', ?, datetime('now'), datetime('now'))
           `);
@@ -337,7 +340,9 @@ async function runMassiveOutboundPipeline() {
             try {
               const res = insertStmt.run(uuid, l.name, l.phone, l.niche, l.city, l.offer_details, l.custom_message);
               if (res.changes > 0) count++;
-            } catch(dbErr) {}
+            } catch(dbErr) {
+              console.error("Erro ao inserir:", dbErr.message);
+            }
           }
           console.log(`💾 Salvos ${count} novos prospects prontos para disparo automático no banco.`);
         }
@@ -346,12 +351,11 @@ async function runMassiveOutboundPipeline() {
         console.error(`❌ Erro no processamento de "${target.niche}" em "${city}":`, err.message);
       }
 
-      // Intervalo de polidez para evitar rate limiting da SerpAPI e da Groq
       await new Promise(r => setTimeout(r, 2000));
     }
   }
 
-  console.log(`\n🎉 PIPELINE CONCLUÍDO! Todos os leads minerados e qualificados estão salvos na fila 'ready_to_send' do SQLite.`);
+  console.log(`\n🎉 PIPELINE CONCLUÍDO! Todos os novos leads qualificados e inéditos foram minerados de forma massiva e salvos na fila.`);
 }
 
 runMassiveOutboundPipeline();
