@@ -289,9 +289,10 @@ async function runMassiveOutboundPipeline() {
           continue;
         }
 
+        // Compactamos os dados de entrada para reduzir drasticamente o consumo de tokens (TPM)
         const rawTextData = organicResults.map((r, idx) => {
-          return `[Pub #${idx + 1}] Título: ${r.title}\nSnippet: ${r.snippet}\nLink: ${r.link}`;
-        }).join('\n\n');
+          return `[P#${idx + 1}] T: ${r.title.substring(0, 50)}\nS: ${(r.snippet || '').substring(0, 140)}`;
+        }).join('\n');
 
         const extractedLeads = await extractLeadsWithGroq(rawTextData, target.niche, city);
 
@@ -351,8 +352,8 @@ async function runMassiveOutboundPipeline() {
         console.error(`❌ Erro no processamento de "${target.niche}" em "${city}":`, err.message);
       }
 
-      // Aumentado o intervalo de polidez para 6.5 segundos para evitar estouro de limite de requisições (Rate Limit Exceeded)
-      await new Promise(r => setTimeout(r, 6500));
+      // Aumentado para 12 segundos para garantir total conformidade com a cota TPM (Tokens Per Minute) da Groq
+      await new Promise(r => setTimeout(r, 12000));
     }
   }
 
