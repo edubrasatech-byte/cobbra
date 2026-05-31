@@ -55,12 +55,43 @@ export async function GET(request) {
 
     // Global counts
     const totalUsers = queryOne('SELECT COUNT(*) as count FROM users');
-    const activeUsers = queryOne('SELECT COUNT(*) as count FROM users WHERE status = "active"');
-    const totalRevenue = queryOne('SELECT COALESCE(SUM(amount), 0) as total FROM transactions WHERE type = "income"');
+    const activeUsers = queryOne("SELECT COUNT(*) as count FROM users WHERE status = 'active'");
+    const totalRevenue = queryOne("SELECT COALESCE(SUM(amount), 0) as total FROM transactions WHERE type = 'income'");
     const totalCharges = queryOne('SELECT COUNT(*) as count FROM charges');
     const totalClients = queryOne('SELECT COUNT(*) as count FROM clients');
-    const newUsersThisWeek = queryOne('SELECT COUNT(*) as count FROM users WHERE created_at >= date("now", "-7 days")');
-    const newUsersThisMonth = queryOne('SELECT COUNT(*) as count FROM users WHERE created_at >= date("now", "-30 days")');
+    const newUsersThisWeek = queryOne("SELECT COUNT(*) as count FROM users WHERE created_at >= date('now', '-7 days')");
+    const newUsersThisMonth = queryOne("SELECT COUNT(*) as count FROM users WHERE created_at >= date('now', '-30 days')");
+
+    // Dynamic Financial Metrics (MRR, Churn, LTV) - Frente 14
+    const planPrices = {
+      trial: 0,
+      starter: 9.90,
+      crescimento: 19.90,
+      pro: 29.90,
+      cobra_pro: 49.90,
+      enterprise: 99.90
+    };
+    
+    const planCounts = query(`
+      SELECT plan, COUNT(*) as count 
+      FROM users 
+      WHERE status = 'active'
+      GROUP BY plan
+    `);
+    
+    let mrr = 0;
+    for (const pc of planCounts) {
+      const price = planPrices[pc.plan] || 0;
+      mrr += price * pc.count;
+    }
+
+    const inactiveCount = queryOne("SELECT COUNT(*) as count FROM users WHERE status != 'active'").count;
+    const totalCountVal = totalUsers.count || 1;
+    const churnRate = (inactiveCount / totalCountVal) * 100;
+
+    const activeCountVal = activeUsers.count || 1;
+    const arpu = mrr / activeCountVal;
+    const ltv = churnRate > 0 ? arpu / (churnRate / 100) : arpu * 24; // 24 months projection fallback if 0 churn
 
     // 1. ACTIVE ONLINE USERS (distinct users active in the last 10 minutes)
     const onlineUsers = queryOne(`
@@ -111,7 +142,10 @@ export async function GET(request) {
         newUsersThisMonth: newUsersThisMonth.count,
         onlineUsers: onlineUsers.count || 0,
         whatsappSent: waSent?.count || 0,
-        emailSent: emailSent?.count || 0
+        emailSent: emailSent?.count || 0,
+        mrr: mrr || 0,
+        churnRate: churnRate || 0,
+        ltv: ltv || 0
       },
       planDistribution: planDistributionRaw,
       recentRegistrations,
