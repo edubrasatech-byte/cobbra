@@ -82,7 +82,7 @@ export async function POST(request) {
 
           // Log in activity feed
           run(
-            'INSERT INTO activity_log (id, user_id, action, entity_type, entity_id, details, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))',
+            "INSERT INTO activity_log (id, user_id, action, entity_type, entity_id, details, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))",
             [
               generateId(),
               user.id,

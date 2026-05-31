@@ -93,6 +93,8 @@ export async function DELETE(request) {
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
+}
+
 export async function POST(request) {
   try {
     const user = getUserFromRequest(request);
