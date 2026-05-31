@@ -1,6 +1,6 @@
 import "./globals.css";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://cobbra.ai';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://cobbra.com.br';
 
 export const viewport = {
   width: 'device-width',
@@ -14,11 +14,11 @@ export const viewport = {
 export const metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: 'Cobbra — Automatize Cobranças e Acabe com a Inadimplência',
+    default: 'Cobbra — Automatize Cobranças por WhatsApp e receba direto no Pix',
     template: '%s | Cobbra'
   },
-  description: 'Envie cobranças gentis pelo WhatsApp e e-mail de forma automática. Receba 100% direto no Pix, sem taxas. Mais de 3.500 autônomos já usam o Cobbra para acabar com a inadimplência.',
-  keywords: ['cobrança automática', 'cobrança whatsapp', 'inadimplência', 'pix', 'autônomo', 'freelancer', 'lembrete de pagamento', 'cobroo', 'cobbra', 'gestão financeira', 'personal trainer', 'cobrança profissional'],
+  description: 'Cobranças inteligentes via WhatsApp integradas ao seu Pix com juros e recorrências configuráveis. Teste grátis por 3 dias sem cartão de crédito e acabe com a inadimplência de locações de veículos, empréstimos ou prestação de serviços.',
+  keywords: ['cobrança automática', 'cobrança whatsapp', 'inadimplência', 'pix', 'autônomo', 'freelancer', 'lembrete de pagamento', 'cobroo', 'cobbra', 'gestão financeira', 'personal trainer', 'cobrança profissional', 'locação de carros', 'recorrência diária'],
   authors: [{ name: 'Cobbra' }],
   creator: 'Cobbra',
   publisher: 'Cobbra',
@@ -32,14 +32,14 @@ export const metadata = {
     locale: 'pt_BR',
     url: BASE_URL,
     siteName: 'Cobbra',
-    title: 'Cobbra — Automatize Cobranças e Acabe com a Inadimplência',
-    description: 'Envie cobranças gentis pelo WhatsApp. Receba 100% direto no Pix, sem taxas. Grátis para começar.',
+    title: 'Cobbra — Automatize Cobranças e receba direto no seu Pix',
+    description: 'Envie cobranças gentis automáticas pelo WhatsApp. Sem intermediários, sem tarifas e direto no seu Pix. Crie seu cadastro e teste grátis por 3 dias agora!',
     images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Cobbra — Cobrança Automática pelo WhatsApp' }]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cobbra — Automatize Cobranças e Acabe com a Inadimplência',
-    description: 'Cobranças automáticas pelo WhatsApp. 0% sobre o que você recebe. Grátis para começar.',
+    title: 'Cobbra — Automatize Cobranças e receba direto no seu Pix',
+    description: 'Cobranças inteligentes via WhatsApp integradas ao seu Pix com juros e recorrências configuráveis. Teste grátis por 3 dias sem cartão de crédito.',
     images: ['/og-image.png']
   },
   icons: {
