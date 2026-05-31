@@ -35,6 +35,42 @@ export default function Chatbot({ isOpen, onClose }) {
   const messagesEndRef = useRef(null);
   const scrollContainerRef = useRef(null);
 
+  // Chave dinâmica para localStorage indexada por user.id para isolamento (Frente 9)
+  const storageKey = user ? `cobbra_chat_${user.id}` : 'cobbra_chat_guest';
+
+  // Carregar histórico de mensagens salvo no localStorage (Frente 9)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+          setMessages(JSON.parse(saved));
+        } else {
+          setMessages([
+            {
+              sender: 'bot',
+              text: 'Olá! Sou a Catarina AI. 🐍\n\nComo posso te ajudar com suporte ou automação de cobranças hoje?',
+              time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+            }
+          ]);
+        }
+      } catch (e) {
+        console.error('[CHATBOT LOCALSTORAGE LOAD ERROR]', e);
+      }
+    }
+  }, [storageKey]);
+
+  // Persistir mensagens no localStorage a cada atualização (Frente 9)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && messages.length > 0) {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(messages));
+      } catch (e) {
+        console.error('[CHATBOT LOCALSTORAGE SAVE ERROR]', e);
+      }
+    }
+  }, [messages, storageKey]);
+
   // Auto-scroll to bottom on new messages
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -261,6 +297,13 @@ export default function Chatbot({ isOpen, onClose }) {
       }
     ]);
     setFeedbacks({});
+    
+    // Limpar explicitamente o localStorage (Frente 9)
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem(storageKey);
+      } catch (e) {}
+    }
   };
 
   const handleCloseClick = () => {
@@ -279,10 +322,8 @@ export default function Chatbot({ isOpen, onClose }) {
         <button
           onClick={() => setInternalOpen(true)}
           aria-label="Abrir suporte Catarina AI"
+          className="chatbot-launcher-button"
           style={{
-            position: 'fixed',
-            bottom: 24,
-            right: 24,
             width: 60,
             height: 60,
             borderRadius: '50%',
@@ -292,18 +333,7 @@ export default function Chatbot({ isOpen, onClose }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: 'pointer',
-            zIndex: 9999,
-            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-            animation: 'chat-float 3s ease-in-out infinite'
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.transform = 'scale(1.1) translateY(-3px)';
-            e.currentTarget.style.boxShadow = '0 12px 35px rgba(16, 185, 129, 0.6), 0 0 25px rgba(16, 185, 129, 0.4)';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.transform = 'scale(1) translateY(0)';
-            e.currentTarget.style.boxShadow = '0 8px 30px rgba(16, 185, 129, 0.4), 0 0 15px rgba(16, 185, 129, 0.2)';
+            cursor: 'pointer'
           }}
         >
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -383,6 +413,27 @@ export default function Chatbot({ isOpen, onClose }) {
         }
         .chat-scrollbar::-webkit-scrollbar-thumb:hover {
           background: rgba(255,255,255,0.2);
+        }
+
+        .chatbot-launcher-button {
+          position: fixed !important;
+          bottom: 24px !important;
+          right: 24px !important;
+          z-index: 9999 !important;
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+          animation: chat-float 3s ease-in-out infinite !important;
+        }
+        
+        .chatbot-launcher-button:hover {
+          transform: scale(1.1) translateY(-3px) !important;
+          box-shadow: 0 12px 35px rgba(16, 185, 129, 0.6), 0 0 25px rgba(16, 185, 129, 0.4) !important;
+        }
+
+        @media (max-width: 640px) {
+          .chatbot-launcher-button {
+            bottom: 96px !important; /* Posicionamento mobile acima da nav bar de 80px */
+            right: 16px !important;
+          }
         }
 
         /* Responsive Premium Floating Card Box Styles */

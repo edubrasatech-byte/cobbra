@@ -11,14 +11,43 @@ export async function GET(request) {
     const user = getUserFromRequest(request);
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
-    const userData = queryOne(
-      'SELECT whatsapp_status, whatsapp_phone, whatsapp_instance FROM users WHERE id = ?',
-      [user.id]
-    );
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get('type');
+    const isOutreach = type === 'outreach';
 
-    let status = userData?.whatsapp_status || 'disconnected';
-    const phone = userData?.whatsapp_phone || null;
-    const instance = userData?.whatsapp_instance || `cobbra_inst_${user.id.substring(0, 8)}`;
+    const getSetting = (key) => {
+      const row = queryOne('SELECT value FROM settings WHERE user_id = ? AND key = ?', [user.id, key]);
+      return row ? row.value : null;
+    };
+
+    const setSetting = (key, value) => {
+      try {
+        run(
+          `INSERT INTO settings (id, user_id, key, value) VALUES (?, ?, ?, ?)
+           ON CONFLICT(user_id, key) DO UPDATE SET value = ?`,
+          [generateId(), user.id, key, value, value]
+        );
+      } catch(e) {
+        run('DELETE FROM settings WHERE user_id = ? AND key = ?', [user.id, key]);
+        run('INSERT INTO settings (id, user_id, key, value) VALUES (?, ?, ?, ?)', [generateId(), user.id, key, value]);
+      }
+    };
+
+    let status, phone, instance;
+
+    if (isOutreach) {
+      status = getSetting('outreach_whatsapp_status') || 'disconnected';
+      phone = getSetting('outreach_whatsapp_phone') || null;
+      instance = getSetting('outreach_whatsapp_instance') || 'cobbra-outreach';
+    } else {
+      const userData = queryOne(
+        'SELECT whatsapp_status, whatsapp_phone, whatsapp_instance FROM users WHERE id = ?',
+        [user.id]
+      );
+      status = userData?.whatsapp_status || 'disconnected';
+      phone = userData?.whatsapp_phone || null;
+      instance = userData?.whatsapp_instance || `cobbra_inst_${user.id.substring(0, 8)}`;
+    }
 
     const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL || process.env.EVOLUTION_API_URL;
     const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
@@ -60,18 +89,28 @@ export async function GET(request) {
         if (isConnected) {
           status = 'connected';
           // Heal the database status!
-          run(
-            "UPDATE users SET whatsapp_status = 'connected', whatsapp_instance = ?, whatsapp_phone = ?, updated_at = datetime('now') WHERE id = ?",
-            [instance, phone || '5511999999999', user.id]
-          );
+          if (isOutreach) {
+            setSetting('outreach_whatsapp_status', 'connected');
+            setSetting('outreach_whatsapp_phone', phone || '5511999999999');
+          } else {
+            run(
+              "UPDATE users SET whatsapp_status = 'connected', whatsapp_instance = ?, whatsapp_phone = ?, updated_at = datetime('now') WHERE id = ?",
+              [instance, phone || '5511999999999', user.id]
+            );
+          }
           return Response.json({ status: 'connected', phone: phone || '5511999999999', instance });
         } else if (status === 'connected') {
           // Heal the database status: if db status is 'connected' but VPS is not open, then it is disconnected!
           status = 'disconnected';
-          run(
-            "UPDATE users SET whatsapp_status = 'disconnected', whatsapp_phone = NULL, whatsapp_instance = NULL, updated_at = datetime('now') WHERE id = ?",
-            [user.id]
-          );
+          if (isOutreach) {
+            setSetting('outreach_whatsapp_status', 'disconnected');
+            setSetting('outreach_whatsapp_phone', null);
+          } else {
+            run(
+              "UPDATE users SET whatsapp_status = 'disconnected', whatsapp_phone = NULL, whatsapp_instance = NULL, updated_at = datetime('now') WHERE id = ?",
+              [user.id]
+            );
+          }
           return Response.json({ status: 'disconnected', phone: null, instance: null });
         }
       }
@@ -134,14 +173,34 @@ export async function POST(request) {
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
     const body = await request.json().catch(() => ({}));
-    const { action } = body;
-    const instance = `cobbra_inst_${user.id.substring(0, 8)}`;
+    const { action, type } = body;
+    const isOutreach = type === 'outreach';
+
+    const setSetting = (key, value) => {
+      try {
+        run(
+          `INSERT INTO settings (id, user_id, key, value) VALUES (?, ?, ?, ?)
+           ON CONFLICT(user_id, key) DO UPDATE SET value = ?`,
+          [generateId(), user.id, key, value, value]
+        );
+      } catch(e) {
+        run('DELETE FROM settings WHERE user_id = ? AND key = ?', [user.id, key]);
+        run('INSERT INTO settings (id, user_id, key, value) VALUES (?, ?, ?, ?)', [generateId(), user.id, key, value]);
+      }
+    };
+
+    const instance = isOutreach ? 'cobbra-outreach' : `cobbra_inst_${user.id.substring(0, 8)}`;
 
     // START NEW CONNECTION
-    run(
-      "UPDATE users SET whatsapp_status = 'scanning', whatsapp_instance = ?, updated_at = datetime('now') WHERE id = ?",
-      [instance, user.id]
-    );
+    if (isOutreach) {
+      setSetting('outreach_whatsapp_status', 'scanning');
+      setSetting('outreach_whatsapp_instance', instance);
+    } else {
+      run(
+        "UPDATE users SET whatsapp_status = 'scanning', whatsapp_instance = ?, updated_at = datetime('now') WHERE id = ?",
+        [instance, user.id]
+      );
+    }
 
     let qrCode = null;
     let qrError = null;
@@ -179,10 +238,14 @@ export async function POST(request) {
         }
 
         if (isConnected) {
-          run(
-            "UPDATE users SET whatsapp_status = 'connected', whatsapp_instance = ?, updated_at = datetime('now') WHERE id = ?",
-            [instance, user.id]
-          );
+          if (isOutreach) {
+            setSetting('outreach_whatsapp_status', 'connected');
+          } else {
+            run(
+              "UPDATE users SET whatsapp_status = 'connected', whatsapp_instance = ?, updated_at = datetime('now') WHERE id = ?",
+              [instance, user.id]
+            );
+          }
           return Response.json({ success: true, status: 'connected', instance });
         }
 
@@ -222,10 +285,38 @@ export async function DELETE(request) {
     const user = getUserFromRequest(request);
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
+    const body = await request.json().catch(() => ({}));
+    const { type } = body;
+    const isOutreach = type === 'outreach';
+
+    const getSetting = (key) => {
+      const row = queryOne('SELECT value FROM settings WHERE user_id = ? AND key = ?', [user.id, key]);
+      return row ? row.value : null;
+    };
+
+    const setSetting = (key, value) => {
+      try {
+        run(
+          `INSERT INTO settings (id, user_id, key, value) VALUES (?, ?, ?, ?)
+           ON CONFLICT(user_id, key) DO UPDATE SET value = ?`,
+          [generateId(), user.id, key, value, value]
+        );
+      } catch(e) {
+        run('DELETE FROM settings WHERE user_id = ? AND key = ?', [user.id, key]);
+        run('INSERT INTO settings (id, user_id, key, value) VALUES (?, ?, ?, ?)', [generateId(), user.id, key, value]);
+      }
+    };
+
     // Retrieve active connection info
-    const userData = queryOne('SELECT whatsapp_instance, whatsapp_phone FROM users WHERE id = ?', [user.id]);
-    const phone = userData?.whatsapp_phone || '';
-    const instance = userData?.whatsapp_instance || `cobbra_inst_${user.id.substring(0, 8)}`;
+    let phone, instance;
+    if (isOutreach) {
+      phone = getSetting('outreach_whatsapp_phone') || '';
+      instance = getSetting('outreach_whatsapp_instance') || 'cobbra-outreach';
+    } else {
+      const userData = queryOne('SELECT whatsapp_instance, whatsapp_phone FROM users WHERE id = ?', [user.id]);
+      phone = userData?.whatsapp_phone || '';
+      instance = userData?.whatsapp_instance || `cobbra_inst_${user.id.substring(0, 8)}`;
+    }
 
     const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL;
     const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN;
@@ -245,25 +336,31 @@ export async function DELETE(request) {
     }
 
     // Disconnect in database
-    run(
-      `UPDATE users SET 
-        whatsapp_status = 'disconnected', 
-        whatsapp_phone = NULL, 
-        whatsapp_instance = NULL,
-        updated_at = datetime('now') 
-       WHERE id = ?`,
-      [user.id]
-    );
+    if (isOutreach) {
+      setSetting('outreach_whatsapp_status', 'disconnected');
+      setSetting('outreach_whatsapp_phone', null);
+      setSetting('outreach_whatsapp_instance', null);
+    } else {
+      run(
+        `UPDATE users SET 
+          whatsapp_status = 'disconnected', 
+          whatsapp_phone = NULL, 
+          whatsapp_instance = NULL,
+          updated_at = datetime('now') 
+         WHERE id = ?`,
+        [user.id]
+      );
+    }
 
     // Log activity
     run(
       'INSERT INTO activity_log (id, user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?, ?)',
-      [generateId(), user.id, 'whatsapp_disconnected', 'user', user.id, `WhatsApp despareado do número ${phone}`]
+      [generateId(), user.id, 'whatsapp_disconnected', 'user', user.id, isOutreach ? `WhatsApp do Robô despareado` : `WhatsApp despareado do número ${phone}`]
     );
 
     // Notification
     run('INSERT INTO notifications (id, user_id, type, title, message, entity_type, entity_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [generateId(), user.id, 'info', '📱 WhatsApp Desconectado', `Sessão do número ${phone} foi despareada com sucesso nas configurações.`, 'user', user.id]
+      [generateId(), user.id, 'info', '📱 WhatsApp Desconectado', isOutreach ? `Sessão do Robô foi despareada com sucesso nas configurações.` : `Sessão do número ${phone} foi despareada com sucesso nas configurações.`, 'user', user.id]
     );
 
     return Response.json({ success: true, status: 'disconnected' });
@@ -271,3 +368,4 @@ export async function DELETE(request) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }
+

@@ -20,6 +20,25 @@ export async function POST(request) {
       return Response.json({ error: 'Mensagem é obrigatória' }, { status: 400 });
     }
 
+    // IA Prompt Guard: Sanitização contra injeções de prompt comuns (Frente 3)
+    const dangerousPatterns = [
+      /ignore\s+(as\s+)?instru[cç]ões/i,
+      /ignore\s+all\s+previous\s+instructions/i,
+      /esque[çc]a\s+o\s+que\s+eu\s+disse/i,
+      /forget\s+all\s+previous/i,
+      /you\s+are\s+now\s+a/i,
+      /aja\s+como\s+se/i,
+      /switch\s+to\s+admin\s+mode/i,
+      /developer\s+mode/i
+    ];
+    const isSuspicious = dangerousPatterns.some(pattern => pattern.test(message));
+    if (isSuspicious) {
+      return Response.json({
+        text: "Ops! Senti uma tentativa de alterar minhas diretrizes de segurança. Como a parceira inteligente oficial da Cobbra, sigo estritamente focada em ajudar você a gerenciar suas cobranças e acabar com a inadimplência! 🐍💚 Como posso te apoiar hoje com as ferramentas do sistema?",
+        ticketOpened: false
+      });
+    }
+
     const apiKey = process.env.GROQ_API_KEY;
     let aiResponse = '';
     let isTicketOpened = false;
@@ -183,7 +202,21 @@ Plano ativo: ${user.plan || 'trial'}`;
           return true;
         });
 
-        userAndModelHistory.slice(-10).forEach(msg => {
+        // Compactação inteligente de mensagens longas do histórico para economia de tokens (Frente 3)
+        const compressedHistory = userAndModelHistory.map(msg => {
+          let text = msg.text || '';
+          if (text.length > 800) {
+            const start = text.substring(0, 350);
+            const end = text.substring(text.length - 350);
+            text = `${start}\n... [conteúdo longo compactado pela Catarina para otimização de tokens] ...\n${end}`;
+          }
+          return {
+            ...msg,
+            text
+          };
+        });
+
+        compressedHistory.slice(-10).forEach(msg => {
           messages.push({
             role: msg.sender === 'user' ? 'user' : 'assistant',
             content: msg.text

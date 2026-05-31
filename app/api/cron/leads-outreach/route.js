@@ -207,6 +207,21 @@ export async function GET(request) {
       return Response.json({ error: 'Mensagem gerada pelo Groq está em branco.' }, { status: 500 });
     }
 
+    // 4.5 Check if Outreach WhatsApp is connected in settings
+    const adminUserRow = queryOne("SELECT id FROM users WHERE role = 'admin_senior' LIMIT 1");
+    const adminId = adminUserRow ? adminUserRow.id : 'admin-senior-001';
+    const statusRow = queryOne(
+      "SELECT value FROM settings WHERE user_id = ? AND key = 'outreach_whatsapp_status'",
+      [adminId]
+    );
+    const outreachStatus = statusRow ? statusRow.value : 'disconnected';
+
+    if (outreachStatus !== 'connected' && process.env.NODE_ENV === 'production') {
+      return Response.json({ 
+        error: 'O WhatsApp do Robô Catarina Outbound está desconectado. Por favor, conecte-o no Painel Admin.' 
+      }, { status: 400 });
+    }
+
     // 5. Send message via Evolution API
     const config = getEvolutionConfig();
     if (!config) {

@@ -1,5 +1,6 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { queryOne, run, generateId } from '@/lib/db';
+import { calcInterest } from '@/lib/finance';
 
 // GET /api/cobrancas/[id] - Get single charge
 export async function GET(request, { params }) {
@@ -16,7 +17,14 @@ export async function GET(request, { params }) {
     );
 
     if (!charge) return Response.json({ error: 'Cobrança não encontrada' }, { status: 404 });
-    return Response.json({ charge });
+    
+    // Enriquecer com amount_with_interest calculado no servidor (Frente 7)
+    const enrichedCharge = {
+      ...charge,
+      amount_with_interest: charge.amount + calcInterest(charge)
+    };
+    
+    return Response.json({ charge: enrichedCharge });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
@@ -113,16 +121,8 @@ export async function PUT(request, { params }) {
 
     if (status === 'paid' && existing.status !== 'paid') {
       paid_at = new Date().toISOString();
-      // Calculate amount with interest
-      let payAmount = existing.amount;
-      if (existing.daily_interest_rate > 0 && existing.due_date) {
-        const dueDate = new Date(existing.due_date);
-        const today = new Date();
-        const daysLate = Math.max(0, Math.floor((today - dueDate) / (1000 * 60 * 60 * 24)));
-        if (daysLate > 0) {
-          payAmount = existing.amount * (1 + (existing.daily_interest_rate / 100) * daysLate);
-        }
-      }
+      // Calculate amount with interest via central finance module (Frente 7)
+      const payAmount = existing.amount + calcInterest(existing);
       // Update client totals
       run('UPDATE clients SET total_paid = total_paid + ?, total_overdue = MAX(0, total_overdue - ?), last_payment_at = datetime(\'now\'), updated_at = datetime(\'now\') WHERE id = ?', 
         [payAmount, existing.amount, existing.client_id]);

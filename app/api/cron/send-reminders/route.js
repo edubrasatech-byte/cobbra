@@ -127,71 +127,25 @@ export async function POST(request) {
           }
         }
 
-        // --- DISPARO DE WHATSAPP REAL (VIA EVOLUTION API NA VPS) ---
+        // --- ENFILEIRAR DISPARO DE WHATSAPP (Frente 6 — Fila WhatsApp) ---
         if (charge.reminder_channel === 'whatsapp' || charge.reminder_channel === 'both') {
-          const evolutionUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL;
-          const evolutionToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
+          try {
+            const queueId = generateId();
+            // Limpar caracteres não numéricos do telefone
+            const formattedPhone = charge.client_phone.replace(/\D/g, '');
+            const fullPhone = formattedPhone.startsWith('55') ? formattedPhone : `55${formattedPhone}`;
 
-          if (evolutionUrl && evolutionToken) {
-            try {
-              const formattedPhone = charge.client_phone.replace(/\D/g, '');
-              const fullPhone = formattedPhone.startsWith('55') ? formattedPhone : `55${formattedPhone}`;
+            run(
+              `INSERT INTO whatsapp_queue (id, user_id, phone, message, status, max_attempts) 
+               VALUES (?, ?, ?, ?, 'pending', 3)`,
+              [queueId, charge.user_id, fullPhone, formattedMessage]
+            );
 
-              let activeEvoUrl = evolutionUrl;
-              let response;
-              
-              try {
-                const instanceToken = await getInstanceToken(activeEvoUrl, evolutionToken, 'cobroo-session') || evolutionToken;
-                response = await fetch(`${activeEvoUrl}/message/sendText/cobroo-session`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': instanceToken
-                  },
-                  body: JSON.stringify({
-                    number: fullPhone,
-                    text: formattedMessage,
-                    delay: 1200
-                  })
-                });
-              } catch (fetchErr) {
-                // Self-healing: retry on port 80 if 8080 failed due to firewall/outbound block
-                if (activeEvoUrl.includes(':8080')) {
-                  activeEvoUrl = activeEvoUrl.replace(':8080', '');
-                  console.log(`[SELF-HEALING CRON]: Connection failed on port 8080. Retrying send on port 80: ${activeEvoUrl}`);
-                  
-                  const retryInstanceToken = await getInstanceToken(activeEvoUrl, evolutionToken, 'cobroo-session') || evolutionToken;
-                  response = await fetch(`${activeEvoUrl}/message/sendText/cobroo-session`, {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                      'apikey': retryInstanceToken
-                    },
-                    body: JSON.stringify({
-                      number: fullPhone,
-                      text: formattedMessage,
-                      delay: 1200
-                    })
-                  });
-                } else {
-                  throw fetchErr;
-                }
-              }
-              
-              if (response && response.ok) {
-                whatsappSent = true;
-                totalWhatsappSent++;
-              } else {
-                console.error(`[CRON ERROR] Evolution API respondeu com erro ao enviar para ${charge.client_phone}`);
-              }
-            } catch (e) {
-              console.error('[CRON ERROR] Erro na requisição do WhatsApp:', e.message);
-            }
-          } else {
-            // Logger de simulação caso não tenha credenciais reais da VPS instalada
-            console.log(`[SIMULAÇÃO WHATSAPP] Enviando para ${charge.client_phone}: ${formattedMessage}`);
+            console.log(`[QUEUE] Mensagem de WhatsApp para ${fullPhone} enfileirada com sucesso (ID: ${queueId}).`);
             whatsappSent = true;
             totalWhatsappSent++;
+          } catch (e) {
+            console.error('[QUEUE ERROR] Falha ao enfileirar mensagem de WhatsApp:', e.message);
           }
         }
 

@@ -471,10 +471,93 @@ div.desktop-only, section.desktop-only {
   .no-scrollbar-mobile::-webkit-scrollbar {
     display: none !important;
   }
-  /* Force text breaks on extreme viewports */
-  span, p, h1, h2, h3, h4, h5, h6, div {
-    overflow-wrap: break-word !important;
-    word-wrap: break-word !important;
+    /* Force text breaks on extreme viewports */
+    span, p, h1, h2, h3, h4, h5, h6, div {
+      overflow-wrap: break-word !important;
+      word-wrap: break-word !important;
+    }
   }
+
+/* ========================================================
+   PREMIUM SMOOTH TRANSITIONS & MICRO-ANIMATIONS (Frente 18)
+   ======================================================== */
+@keyframes tab-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.tab-content-active {
+  animation: tab-fade-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+/* Efeito sutil de foco e transição nas abas */
+.tab-button-active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #10b981;
+  border-radius: 4px;
+  animation: tab-bar-grow 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tab-bar-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* ========================================================
+   LIGHT/DARK DYNAMIC THEMING (Obsidian vs Esmeralda Clean)
+   ======================================================== */
+:root {
+  /* Default Theme (Obsidian Dark) custom properties */
+  --bg-base: #070913;
+  --bg-surface: #0C0E1A;
+  --bg-surface-hover: rgba(255, 255, 255, 0.04);
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-color: rgba(255, 255, 255, 0.06);
+  --shadow-theme: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+:root.light-theme {
+  /* Light Theme (Esmeralda Clean) custom properties */
+  --bg-base: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --shadow-theme: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+}
+
+/* Theme utility classes */
+.bg-base-theme { background-color: var(--bg-base) !important; }
+.bg-surface-theme { background-color: var(--bg-surface) !important; }
+.text-primary-theme { color: var(--text-primary) !important; }
+.text-secondary-theme { color: var(--text-secondary) !important; }
+.text-muted-theme { color: var(--text-muted) !important; }
+.border-theme { border-color: var(--border-color) !important; }
+.shadow-theme-premium { box-shadow: var(--shadow-theme) !important; }
+
+/* Custom light transitions for premium experience */
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+aside, header, main, .chatbot-drawer-container {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 

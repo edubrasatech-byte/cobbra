@@ -818,8 +818,9 @@ export default function LocacoesPage() {
         ))}
       </div>
 
-      {/* Tab: Contracts & Active Rentals */}
-      {activeTab === 'contracts' && (
+      {/* Tab: Content with Premium transitions (Frente 18) */}
+      <div key={activeTab} className="tab-content-active">
+        {activeTab === 'contracts' && (
         <>
           {/* Grid Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16, marginBottom: 24 }}>
@@ -1393,6 +1394,7 @@ export default function LocacoesPage() {
           <p style={{ fontSize: 12, color: '#64748b', margin: 0, maxWidth: 360, margin: '0 auto', lineHeight: 1.5 }}>Módulo de split e comissão líquida de faturamento para parceiros de carros ativo em breve na próxima fase.</p>
         </div>
       )}
+      </div>
 
       {/* Register New Lease Modal */}
       {showModal && (

@@ -1,5 +1,6 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { query, queryOne, run, generateId } from '@/lib/db';
+import { calcInterest } from '@/lib/finance';
 
 // GET /api/cobrancas - List charges
 export async function GET(request) {
@@ -51,8 +52,14 @@ export async function GET(request) {
 
     const charges = query(sql, params);
 
+    // Mapear cobranças enriquecendo com juros simples calculados no backend (Frente 7)
+    const enrichedCharges = charges.map(c => ({
+      ...c,
+      amount_with_interest: c.amount + calcInterest(c)
+    }));
+
     return Response.json({
-      charges,
+      charges: enrichedCharges,
       pagination: {
         page,
         limit,

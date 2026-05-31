@@ -188,12 +188,14 @@ export default function AdminPage() {
       )}
 
       {/* ── SECTION 1: GLOBAL KPIs ROW ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 28 }}>
         {[
           { icon: '👥', label: 'Usuários Online', value: gs.onlineUsers, sub: 'ativos nos últimos 10 min', color: '#10b981', bg: 'rgba(16,185,129,0.12)', isOnline: true },
           { icon: '💎', label: 'Assinantes Ativos', value: gs.activeUsers, sub: `de ${gs.totalUsers} cadastrados`, color: '#60a5fa', bg: 'rgba(96,165,250,0.12)' },
+          { icon: '📈', label: 'MRR (Recorrência Mensal)', value: fmtCurrency(gs.mrr), sub: 'Receita Mensal Recorrente', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+          { icon: '🔮', label: 'LTV (Lifetime Value)', value: fmtCurrency(gs.ltv), sub: 'Valor vitalício estimado', color: '#a855f7', bg: 'rgba(168,85,247,0.12)' },
+          { icon: '📉', label: 'Churn Rate (SaaS)', value: `${Number(gs.churnRate || 0).toFixed(1)}%`, sub: 'Taxa de cancelamento ativa', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
           { icon: '💰', label: 'Faturamento Geral', value: fmtCurrency(gs.totalRevenue), sub: 'Pix direto acumulado', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
-          { icon: '⚡', label: 'Remessas Enviadas', value: Number((gs.whatsappSent || 0) + (gs.emailSent || 0)).toLocaleString('pt-BR'), sub: `${gs.whatsappSent} Whats · ${gs.emailSent} E-mails`, color: '#a855f7', bg: 'rgba(168,85,247,0.12)' },
         ].map((k, i) => (
           <div key={i} style={{ background: '#0c0e1a', borderRadius: 16, padding: 20, border: '1px solid #1e293b', display: 'flex', flexDirection: 'column', gap: 8, position: 'relative' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

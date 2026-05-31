@@ -2,6 +2,9 @@
 import { useState, useEffect, useId } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Chatbot, { formatMessageText } from '../components/Chatbot';
+import Sidebar from '../components/dashboard/Sidebar';
+import MobileNav from '../components/dashboard/MobileNav';
+import TopBar from '../components/dashboard/TopBar';
 
 const NAV_ITEMS = [
   { href: '/dashboard', icon: '📊', label: 'Visão Geral' },
@@ -160,9 +163,6 @@ export default function DashboardLayout({ children }) {
   }, []);
 
   const horizontalPadding = isDesktop ? '40px' : '24px';
-  const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [showNotifications, setShowNotifications] = useState(false);
 
   // Copilot States
   const [copilotInput, setCopilotInput] = useState('');
@@ -290,7 +290,7 @@ export default function DashboardLayout({ children }) {
         const data = await res.json();
         if (res.ok) {
           setCopilotSuccessMsg('Cobrança lançada com sucesso! 🐍🎉');
-          fetchNotifications();
+          window.dispatchEvent(new Event('refresh-notifications'));
           setCopilotInput('');
           setTimeout(() => {
             setShowCopilotModal(false);
@@ -317,7 +317,7 @@ export default function DashboardLayout({ children }) {
         const data = await res.json();
         if (res.ok) {
           setCopilotSuccessMsg('Faturamento diário configurado com sucesso! 📅🐍');
-          fetchNotifications();
+          window.dispatchEvent(new Event('refresh-notifications'));
           setCopilotInput('');
           setTimeout(() => {
             setShowCopilotModal(false);
@@ -391,7 +391,7 @@ export default function DashboardLayout({ children }) {
     setLoadingCharges(false);
     
     refreshSelectedClientInHeader(clientId);
-    fetchNotifications();
+    window.dispatchEvent(new Event('refresh-notifications'));
   }
 
   async function handleRebateSubmit(e) {
@@ -419,7 +419,7 @@ export default function DashboardLayout({ children }) {
         setLoadingCharges(false);
         refreshSelectedClientInHeader(selectedClient.id);
       }
-      fetchNotifications();
+      window.dispatchEvent(new Event('refresh-notifications'));
     }
   }
 
@@ -454,19 +454,6 @@ export default function DashboardLayout({ children }) {
 
   const fmt = v => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
-  const fetchNotifications = async () => {
-    try {
-      const res = await fetch('/api/notifications');
-      const data = await res.json();
-      if (data.notifications) {
-        setNotifications(data.notifications);
-        setUnreadCount(data.unreadCount);
-      }
-    } catch (e) {
-      console.error('Error fetching notifications:', e);
-    }
-  };
-
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.json()).then(data => {
       if (data.user) {
@@ -481,60 +468,9 @@ export default function DashboardLayout({ children }) {
     }).catch(() => { router.push('/login'); setLoading(false); });
   }, [router, pathname]);
 
-  useEffect(() => {
-    if (user) {
-      fetchNotifications();
-      const interval = setInterval(fetchNotifications, 10000);
-      return () => clearInterval(interval);
-    }
-  }, [user]);
-
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' });
     router.push('/login');
-  }
-
-  async function markAsRead(id) {
-    await fetch('/api/notifications', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id })
-    });
-    fetchNotifications();
-  }
-
-  async function markAllRead() {
-    await fetch('/api/notifications', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ markAllRead: true })
-    });
-    fetchNotifications();
-  }
-
-  async function clearNotifications() {
-    await fetch('/api/notifications', { method: 'DELETE' });
-    fetchNotifications();
-  }
-
-  function formatRelativeTime(dateString) {
-    if (!dateString) return '';
-    try {
-      const normalized = dateString.replace(' ', 'T') + 'Z';
-      const date = new Date(normalized);
-      const now = new Date();
-      const diffMs = now - date;
-      const diffMins = Math.floor(diffMs / 60000);
-      if (diffMins < 1) return 'Agora mesmo';
-      if (diffMins < 60) return `Há ${diffMins} min`;
-      const diffHours = Math.floor(diffMins / 60);
-      if (diffHours < 24) return `Há ${diffHours} h`;
-      const diffDays = Math.floor(diffHours / 24);
-      if (diffDays === 1) return 'Ontem';
-      return `Há ${diffDays} dias`;
-    } catch (e) {
-      return dateString;
-    }
   }
 
   const dynamicNavItems = [...NAV_ITEMS];
@@ -570,349 +506,49 @@ export default function DashboardLayout({ children }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#070913] text-slate-100 font-sans antialiased overflow-x-hidden">
+    <div className="flex min-h-screen bg-base-theme text-primary-theme font-sans antialiased overflow-x-hidden">
       
       {/* 🖥️ Desktop Collapsible Slim Sidebar */}
-      <aside className={`hidden md:flex flex-col h-screen sticky top-0 bg-[#0C0E1A] border-r border-slate-800/40 transition-all duration-300 overflow-hidden flex-shrink-0 z-30 ${sidebarCollapsed ? 'w-20' : 'w-52'}`}>
-        
-        {/* Sidebar Brand Header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800/40">
-          <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-10 h-10 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/10 select-none">
-              <MiniSnake size={24} />
-            </div>
-            {!sidebarCollapsed && (
-              <span className="font-extrabold text-lg bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent tracking-tight">
-                Cobbra<span className="text-[#10B981] text-xs font-bold">.ai</span>
-              </span>
-            )}
-          </div>
-        </div>
+      <Sidebar 
+        user={user}
+        pathname={pathname}
+        sidebarCollapsed={sidebarCollapsed}
+        setSidebarCollapsed={setSidebarCollapsed}
+        handleLogout={handleLogout}
+        NAV_ITEMS={navItems}
+        NAV_ICONS={NAV_ICONS}
+      />
 
-        {/* Navigation Items */}
-        <nav className="flex-1 space-y-1.5 overflow-y-auto" style={{ paddingLeft: '16px', paddingRight: '16px', paddingTop: '24px', paddingBottom: '24px' }}>
-          {navItems.map(item => {
-            const isActive = pathname === item.href;
-            const isRestricted = user?.plan === 'starter' && 
-              (item.href === '/dashboard/cobranca-diaria' || item.href === '/dashboard/relatorios');
-            
-            const displayLabel = isRestricted ? `${item.label} (Pro)` : item.label;
-
-            return (
-              <a 
-                key={item.href} 
-                href={item.href} 
-                className={`flex items-center gap-3 py-3 rounded-xl text-sm transition-all duration-200 group relative ${
-                  isActive 
-                    ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-500/[0.02] text-emerald-400 font-extrabold shadow-sm' 
-                    : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-200'
-                } ${sidebarCollapsed ? 'justify-center' : 'justify-start'} ${isRestricted ? 'opacity-60' : ''}`}
-                style={{ paddingLeft: '16px', paddingRight: '16px' }}
-              >
-                {isActive && <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-[#10B981] rounded-full" />}
-                <span className="flex-shrink-0">
-                  {isRestricted ? (
-                    <svg className="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                    </svg>
-                  ) : (
-                    NAV_ICONS[item.href] ? NAV_ICONS[item.href](isActive ? 'w-4 h-4 text-emerald-400 filter drop-shadow-[0_0_4px_rgba(16,185,129,0.4)]' : 'w-4 h-4 text-slate-400 group-hover:text-slate-200') : null
-                  )}
-                </span>
-                {!sidebarCollapsed && <span className="truncate">{displayLabel}</span>}
-              </a>
-            );
-          })}
-        </nav>
-
-        {/* User profile & logout block */}
-        <div className="p-4 border-t border-slate-800/40 bg-slate-950/20">
-          {!sidebarCollapsed && user && (
-            <div className="bg-slate-900/50 border border-slate-800/30 rounded-2xl p-3 mb-3 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white font-extrabold text-xs shadow-md shadow-emerald-500/10">
-                {user.name?.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase()}
-              </div>
-              <div className="overflow-hidden">
-                <p className="text-[11px] font-bold text-slate-200 truncate leading-none mb-1" title={user.name}>{user.name}</p>
-                <span className="inline-block text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 uppercase tracking-wider scale-90 origin-left">
-                  {user.role === 'admin_senior' ? 'Senior' : user.role}
-                </span>
-              </div>
-            </div>
-          )}
-          <button 
-            onClick={handleLogout} 
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/10 hover:border-rose-500/20 text-rose-400 text-xs font-bold transition-all duration-200 cursor-pointer"
-          >
-            <svg className="w-3.5 h-3.5 text-rose-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-            {!sidebarCollapsed && <span>Sair</span>}
-          </button>
-        </div>
-      </aside>
-
-      {/* 📱 Mobile Drawer Overlay (if hamburger menu is triggered) */}
-      {mobileSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-950/40 backdrop-blur-md z-40 md:hidden"
-          onClick={() => setMobileSidebarOpen(false)}
-        />
-      )}
-
-      {/* 📱 Mobile Side Navigation Drawer (Fallback to side menu) */}
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-[#0C0E1A]/95 backdrop-blur-lg border-r border-slate-800/60 z-50 transform md:hidden transition-transform duration-300 flex flex-col ${
-        mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
-        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800/40">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center flex-shrink-0 shadow shadow-emerald-500/10 select-none">
-              <MiniSnake size={26} />
-            </div>
-            <span className="font-extrabold text-base text-slate-100">Cobbra<span className="text-[#10B981] text-[10px] font-bold">.ai</span></span>
-          </div>
-          <button onClick={() => setMobileSidebarOpen(false)} className="text-slate-400 text-xl font-light">×</button>
-        </div>
-        <nav className="flex-1 space-y-1.5 overflow-y-auto" style={{ paddingLeft: '16px', paddingRight: '16px', paddingTop: '16px', paddingBottom: '16px' }}>
-          {navItems.map(item => {
-            const isActive = pathname === item.href;
-            const isRestricted = user?.plan === 'starter' && 
-              (item.href === '/dashboard/cobranca-diaria' || item.href === '/dashboard/relatorios');
-            const displayLabel = isRestricted ? `${item.label} (Pro)` : item.label;
-
-            return (
-              <a 
-                key={item.href} 
-                href={item.href} 
-                onClick={() => setMobileSidebarOpen(false)}
-                className={`flex items-center gap-3 py-3 rounded-xl text-sm transition-all duration-200 group relative ${
-                  isActive 
-                    ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-500/[0.02] text-emerald-400 font-bold' 
-                    : 'text-slate-400'
-                }`}
-                style={{ paddingLeft: '16px', paddingRight: '16px' }}
-              >
-                {isActive && <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-[#10B981] rounded-full" />}
-                <span className="flex-shrink-0">
-                  {isRestricted ? (
-                    <svg className="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                    </svg>
-                  ) : (
-                    NAV_ICONS[item.href] ? NAV_ICONS[item.href](isActive ? 'w-4 h-4 text-emerald-400' : 'w-4 h-4 text-slate-400') : null
-                  )}
-                </span>
-                <span>{displayLabel}</span>
-              </a>
-            );
-          })}
-        </nav>
-        <div className="p-4 border-t border-slate-800/40 bg-slate-950/20">
-          <button 
-            onClick={handleLogout} 
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-500/10 text-rose-400 text-xs font-bold transition-all cursor-pointer"
-          >
-            <svg className="w-3.5 h-3.5 text-rose-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-            <span>Desconectar</span>
-          </button>
-        </div>
-      </aside>
+      {/* 📱 Mobile Side Navigation Drawer */}
+      <MobileNav 
+        user={user}
+        pathname={pathname}
+        mobileSidebarOpen={mobileSidebarOpen}
+        setMobileSidebarOpen={setMobileSidebarOpen}
+        handleLogout={handleLogout}
+        NAV_ITEMS={navItems}
+        NAV_ICONS={NAV_ICONS}
+      />
 
       {/* 🚀 Main Layout Area */}
       <div className="flex-1 flex flex-col min-w-0 max-w-full overflow-hidden pb-20 md:pb-0">
         
         {/* 🧼 Minimalist Flat Header */}
-        <header 
-          className="h-16 flex items-center justify-between border-b border-slate-800/20 bg-[#0C0E1A]/85 backdrop-blur-md sticky top-0 z-40 px-6 md:px-12"
-          style={{ paddingLeft: horizontalPadding, paddingRight: horizontalPadding }}
-        >
-          
-          {/* Left info / Mobile trigger */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <button
-              onClick={() => setMobileSidebarOpen(true)}
-              className="md:hidden text-slate-300 text-xl p-1.5 bg-slate-800/20 rounded-xl border border-slate-800/40 flex items-center justify-center cursor-pointer active:scale-95 transition-all"
-              aria-label="Abrir menu"
-            >
-              ☰
-            </button>
-            <div className="w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center shadow shadow-emerald-500/10 select-none flex-shrink-0">
-              <MiniSnake size={26} />
-            </div>
-            <h1 className="text-sm md:text-base font-bold text-slate-100 tracking-tight leading-none py-1">{pageTitle}</h1>
-          </div>
-
-          {/* 🔍 Catarina AI Engine: Flat Command Bar Widget */}
-          <div className="hidden md:block flex-1 max-w-xs lg:max-w-md mx-4 relative flex-shrink">
-            <div className="relative group">
-              <input 
-                placeholder="Pergunte à Catarina..." 
-                value={copilotInput}
-                onChange={e => {
-                  setCopilotInput(e.target.value);
-                  setSearchTerm(e.target.value); 
-                }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    handleCopilotSubmit(copilotInput);
-                  }
-                }}
-                className="w-full py-1.5 text-xs bg-slate-900/60 hover:bg-slate-900 border border-slate-800/60 hover:border-emerald-500/40 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 text-slate-200 placeholder-slate-500 rounded-lg transition-all duration-200 outline-none"
-                style={{ paddingLeft: '34px', paddingRight: '56px' }}
-              />
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
-                <svg className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </span>
-              
-              {/* Keyboard badge shortcut */}
-              <span className="hidden md:inline-block absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 bg-slate-950 border border-slate-800/60 text-[9px] font-sans font-semibold text-slate-400 rounded select-none pointer-events-none">
-                Ctrl K
-              </span>
-            </div>
-
-            {/* Quick Search Popover Result (Stripe style) */}
-            {searchResults.length > 0 && (
-              <div className="absolute left-0 right-0 top-11 bg-slate-900 border border-slate-800/80 rounded-xl shadow-2xl overflow-hidden z-50 max-h-60 overflow-y-auto">
-                <div className="px-3 py-1.5 bg-slate-950/40 border-b border-slate-800/40 text-[10px] font-semibold text-slate-500 tracking-wider">CLIENTES ENCONTRADOS</div>
-                {searchResults.map(c => (
-                  <div 
-                    key={c.id}
-                    onClick={() => {
-                      setSelectedClient(c);
-                      setSearchTerm('');
-                      setSearchResults([]);
-                    }}
-                    className="px-4 py-2.5 border-b border-slate-800/30 hover:bg-emerald-500/5 cursor-pointer flex items-center gap-3 transition-colors"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-[10px] font-bold">
-                      {c.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase()}
-                    </div>
-                    <span className="text-xs text-slate-200 font-medium hover:text-white">{c.name}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Right Area - Notifications Bar */}
-          <div className="flex items-center gap-2.5">
-            {/* Mobile AI Command Trigger Icon */}
-            <button 
-              onClick={() => setShowCopilotModal(true)}
-              className="md:hidden w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center cursor-pointer transition-all"
-              title="Catarina AI Copilot"
-              aria-label="Catarina AI Copilot"
-            >
-              <svg className="w-4 h-4 text-slate-400 hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l5.904-.813a2 2 0 001.272-.73L21 14.5a2 2 0 000-2.828l-2.672-2.672a2 2 0 00-2.828 0l-4.956 4.956a2 2 0 00-.73 1.272z" />
-              </svg>
-            </button>
-
-            {/* Catarina AI Chatbot Toggle Button (hidden on obras page to prevent overlapping with obras chat) */}
-            {pathname !== '/dashboard/obras' && (
-              <button 
-                onClick={() => setChatbotOpen(!chatbotOpen)}
-                className={`w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center cursor-pointer transition-all relative ${
-                  chatbotOpen ? 'border-emerald-500/60 ring-1 ring-emerald-500/10' : ''
-                }`}
-                title="Conversar com a Catarina"
-                aria-label="Conversar com a Catarina"
-              >
-                <svg className={`w-5 h-5 transition-colors ${chatbotOpen ? 'text-[#10B981]' : 'text-slate-400 hover:text-emerald-400'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M3 11a9 9 0 0 1 18 0" />
-                  <rect x="2" y="11" width="3" height="5" rx="1.5" fill="currentColor" />
-                  <rect x="19" y="11" width="3" height="5" rx="1.5" fill="currentColor" />
-                  <path d="M12 5c-3.866 0-7 2.686-7 6 0 1.942 1.077 3.655 2.766 4.708l-.766 2.292 2.766-.922A7.848 7.848 0 0 0 12 17c3.866 0 7-2.686 7-6s-3.134-6-7-6z" />
-                  <path d="M19 16c0 1-1 2-2 2h-2" />
-                  <circle cx="10" cy="11" r="1.5" fill="currentColor" />
-                  <circle cx="14" cy="11" r="1.5" fill="currentColor" />
-                </svg>
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-slate-950 animate-pulse" />
-              </button>
-            )}
- 
-            <div className="relative">
-              <button 
-                onClick={() => setShowNotifications(!showNotifications)}
-                className={`w-9 h-9 rounded-full bg-slate-900 border border-slate-800/60 hover:border-slate-700 flex items-center justify-center cursor-pointer transition-all relative ${
-                  showNotifications ? 'border-emerald-500/60 ring-1 ring-emerald-500/10' : ''
-                }`}
-              >
-                <svg className={`w-4 h-4 transition-colors ${showNotifications ? 'text-[#10B981]' : 'text-slate-400 hover:text-emerald-400'}`} fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"></path>
-                </svg>
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center animate-pulse">{unreadCount}</span>
-                )}
-              </button>
-
-              {/* Stripe-style Notification Center */}
-              {showNotifications && (
-                <div className="fixed md:absolute right-4 md:right-0 top-16 md:top-12 w-[calc(100vw-32px)] md:w-96 bg-[#0C0E1A] border border-slate-800/80 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[450px]">
-                  
-                  {/* Header info */}
-                  <div className="bg-slate-950/40 border-b border-slate-800/40 flex justify-between items-center" style={{ paddingLeft: '20px', paddingRight: '20px', paddingTop: '14px', paddingBottom: '14px' }}>
-                    <span className="font-bold text-xs text-slate-200">Notificações</span>
-                    <div className="flex gap-3">
-                      {unreadCount > 0 && (
-                        <button onClick={markAllRead} className="text-[10px] font-bold text-emerald-400 hover:text-emerald-300">Ler todas</button>
-                      )}
-                      {notifications.length > 0 && (
-                        <button onClick={clearNotifications} className="text-[10px] text-slate-500 hover:text-rose-400">Limpar tudo</button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Notification list */}
-                  <div className="overflow-y-auto divide-y divide-slate-800/40 flex-1 max-h-[350px]">
-                    {notifications.length === 0 ? (
-                      <div className="p-8 text-center text-slate-500 text-xs">
-                        <span className="text-2xl block mb-2">🐍</span>
-                        Tudo limpo por aqui!
-                      </div>
-                    ) : (
-                      notifications.map(notif => {
-                        let emoji = '🔔';
-                        if (notif.type === 'success' || notif.type === 'payment') emoji = '💰';
-                        else if (notif.type === 'warning') emoji = '⚠️';
-                        else if (notif.type === 'reminder') emoji = '💬';
-
-                        return (
-                          <div 
-                            key={notif.id}
-                            onClick={() => notif.read === 0 && markAsRead(notif.id)}
-                            className={`flex gap-3 text-left transition-colors cursor-pointer ${
-                              notif.read === 0 ? 'bg-emerald-500/[0.02] hover:bg-emerald-500/[0.05]' : 'hover:bg-slate-900/40'
-                            }`}
-                            style={{ paddingLeft: '20px', paddingRight: '20px', paddingTop: '16px', paddingBottom: '16px' }}
-                          >
-                            <span className="text-base mt-0.5">{emoji}</span>
-                            <div className="flex-1">
-                              <p className={`text-xs leading-normal ${notif.read === 0 ? 'font-bold text-slate-100' : 'text-slate-300'}`}>{notif.title}</p>
-                              {notif.message && <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">{notif.message}</p>}
-                              <span className="text-[9px] text-slate-600 block mt-2">{formatRelativeTime(notif.created_at)}</span>
-                            </div>
-                            {notif.read === 0 && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 self-center" />}
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
+        <TopBar 
+          pageTitle={pageTitle}
+          setMobileSidebarOpen={setMobileSidebarOpen}
+          chatbotOpen={chatbotOpen}
+          setChatbotOpen={setChatbotOpen}
+          user={user}
+          horizontalPadding={horizontalPadding}
+          copilotInput={copilotInput}
+          setCopilotInput={setCopilotInput}
+          handleCopilotSubmit={handleCopilotSubmit}
+          searchResults={searchResults}
+          setSearchResults={setSearchResults}
+          setSelectedClient={setSelectedClient}
+          setShowCopilotModal={setShowCopilotModal}
+        />
 
         {/* 📋 Main Scrollable Content Area */}
         <main 

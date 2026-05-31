@@ -1,5 +1,5 @@
 import { getUserFromRequest, isAdminSenior } from '@/lib/auth';
-import { query, queryOne, run, generateId } from '@/lib/db';
+import { query, queryOne, run, transaction, generateId } from '@/lib/db';
 
 // GET /api/admin/users - Advanced administrative SaaS dashboard stats & user list
 export async function GET(request) {
@@ -221,3 +221,64 @@ export async function PUT(request) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }
+
+// DELETE /api/admin/users - Administrative action to delete one or more users
+export async function DELETE(request) {
+  try {
+    const adminUser = getUserFromRequest(request);
+    if (!adminUser || !isAdminSenior(adminUser)) {
+      return Response.json({ error: 'Acesso negado. Apenas admin sênior.' }, { status: 403 });
+    }
+
+    const body = await request.json().catch(() => ({}));
+    const { userId, userIds } = body;
+
+    // Resolve which user IDs to delete
+    let idsToDelete = [];
+    if (userId) {
+      idsToDelete.push(userId);
+    } else if (userIds && Array.isArray(userIds)) {
+      idsToDelete = userIds;
+    }
+
+    if (idsToDelete.length === 0) {
+      return Response.json({ error: 'Nenhum ID de usuário fornecido.' }, { status: 400 });
+    }
+
+    // Prevenção de auto-exclusão
+    if (idsToDelete.includes(adminUser.id)) {
+      return Response.json({ error: 'Você não pode excluir sua própria conta de administrador ativa!' }, { status: 400 });
+    }
+
+    let deletedCount = 0;
+
+    // Execute deletion within a transaction
+    transaction(() => {
+      for (const id of idsToDelete) {
+        // Verify user exists
+        const userExists = queryOne("SELECT id, name FROM users WHERE id = ?", [id]);
+        if (!userExists) continue;
+
+        // Perform hard-delete
+        // SQLite will cascade delete references automatically because of ON DELETE CASCADE!
+        run("DELETE FROM users WHERE id = ?", [id]);
+        deletedCount++;
+
+        // Audit trace in system
+        const actionDetails = `Exclusão da conta de ${userExists.name} (ID: ${id}) efetuada pelo admin ${adminUser.name}.`;
+        run(
+          "INSERT INTO activity_log (id, user_id, action, entity_type, entity_id, details) VALUES (?, ?, 'admin_delete_user', 'user', ?, ?)",
+          [generateId(), adminUser.id, id, actionDetails]
+        );
+      }
+    });
+
+    return Response.json({ 
+      success: true, 
+      message: `${deletedCount} usuário(s) excluído(s) com sucesso! Operação cascade SQLite concluída.` 
+    });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+}
+
