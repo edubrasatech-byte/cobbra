@@ -14,8 +14,9 @@ export async function GET(request) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = (page - 1) * limit;
 
-    let sql = 'SELECT * FROM clients WHERE user_id = ?';
-    let countSql = 'SELECT COUNT(*) as total FROM clients WHERE user_id = ?';
+    // Excluir clientes soft-deleted (LGPD — Frente 4)
+    let sql = 'SELECT * FROM clients WHERE user_id = ? AND deleted_at IS NULL';
+    let countSql = 'SELECT COUNT(*) as total FROM clients WHERE user_id = ? AND deleted_at IS NULL';
     const params = [user.id];
     const countParams = [user.id];
 

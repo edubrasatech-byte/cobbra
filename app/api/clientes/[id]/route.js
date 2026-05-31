@@ -1,5 +1,5 @@
 import { getUserFromRequest } from '@/lib/auth';
-import { queryOne, run, query } from '@/lib/db';
+import { queryOne, run, query, generateId } from '@/lib/db';
 
 // GET /api/clientes/[id]
 export async function GET(request, { params }) {
@@ -8,7 +8,8 @@ export async function GET(request, { params }) {
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
     const { id } = await params;
-    const client = queryOne('SELECT * FROM clients WHERE id = ? AND user_id = ?', [id, user.id]);
+    // Excluir clientes soft-deleted (LGPD)
+    const client = queryOne('SELECT * FROM clients WHERE id = ? AND user_id = ? AND deleted_at IS NULL', [id, user.id]);
     if (!client) return Response.json({ error: 'Cliente não encontrado' }, { status: 404 });
 
     // Get charge history
@@ -30,8 +31,11 @@ export async function PUT(request, { params }) {
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
     const { id } = await params;
-    const existing = queryOne('SELECT * FROM clients WHERE id = ? AND user_id = ?', [id, user.id]);
+    const existing = queryOne('SELECT * FROM clients WHERE id = ? AND user_id = ? AND deleted_at IS NULL', [id, user.id]);
     if (!existing) return Response.json({ error: 'Cliente não encontrado' }, { status: 404 });
+
+    // Snapshot dos dados anteriores para auditoria (Frente 15)
+    const previousData = JSON.stringify(existing);
 
     const { name, email, phone, document, category, tags, notes, health_score, company_name, birthday, address } = await request.json();
 
@@ -47,23 +51,51 @@ export async function PUT(request, { params }) {
     );
 
     const updated = queryOne('SELECT * FROM clients WHERE id = ?', [id]);
+
+    // Registrar log de auditoria cadastral (Frente 15)
+    run(
+      `INSERT INTO cadastral_audit_log (id, user_id, entity_type, entity_id, action, previous_data, new_data)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [generateId(), user.id, 'client', id, 'update', previousData, JSON.stringify(updated)]
+    );
+
     return Response.json({ client: updated });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }
 
-// DELETE /api/clientes/[id]
+// DELETE /api/clientes/[id] — Soft-delete com anonimização LGPD (Frente 4)
 export async function DELETE(request, { params }) {
   try {
     const user = getUserFromRequest(request);
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
     const { id } = await params;
-    const existing = queryOne('SELECT * FROM clients WHERE id = ? AND user_id = ?', [id, user.id]);
+    const existing = queryOne('SELECT * FROM clients WHERE id = ? AND user_id = ? AND deleted_at IS NULL', [id, user.id]);
     if (!existing) return Response.json({ error: 'Cliente não encontrado' }, { status: 404 });
 
-    run('DELETE FROM clients WHERE id = ? AND user_id = ?', [id, user.id]);
+    // Soft-delete: marca deleted_at e anonimiza dados sensíveis conforme LGPD
+    // Mantém 'name' para relatórios históricos de cobrança
+    run(
+      `UPDATE clients SET
+        deleted_at = datetime('now'),
+        cnh_number = NULL,
+        document = '[ANONIMIZADO-LGPD]',
+        phone = '[REMOVIDO]',
+        email = '[REMOVIDO]',
+        updated_at = datetime('now')
+      WHERE id = ? AND user_id = ?`,
+      [id, user.id]
+    );
+
+    // Registrar exclusão no log de auditoria cadastral (Frente 15)
+    run(
+      `INSERT INTO cadastral_audit_log (id, user_id, entity_type, entity_id, action, previous_data, new_data)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [generateId(), user.id, 'client', id, 'soft_delete', JSON.stringify(existing), null]
+    );
+
     return Response.json({ success: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
