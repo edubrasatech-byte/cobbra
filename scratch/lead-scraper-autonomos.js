@@ -230,7 +230,7 @@ Não adicione comentários, introduções ou blocos markdown. Retorne APENAS o J
         'Authorization': `Bearer ${groqApiKey}`
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'llama-3.1-8b-instant',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Analise as publicações e extraia os leads qualificados do nicho "${targetNiche}" em "${targetCity}":\n\n${rawText}` }
