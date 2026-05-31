@@ -5,6 +5,6 @@ export default {
   out: './database/migrations',
   dialect: 'sqlite',
   dbCredentials: {
-    url: './database/cobroo.db',
+    url: './database/cobbra.db',
   }
 } satisfies Config;
