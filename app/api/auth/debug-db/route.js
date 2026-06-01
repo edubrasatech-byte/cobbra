@@ -29,7 +29,7 @@ export async function GET() {
       leadsCount = 'error: ' + e.message;
     }
 
-    const dumpPath = path.join(process.cwd(), 'lib', 'leads_dump.json');
+    const dumpPath = path.join(process.cwd(), 'public', 'leads_dump.json');
 
     return Response.json({
       success: true,
