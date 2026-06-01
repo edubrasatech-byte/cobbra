@@ -1,5 +1,5 @@
 import { run, query, queryOne, transaction, generateId } from '@/lib/db';
-import { getEvolutionConfig, sendWhatsAppMessage } from '@/lib/evolution';
+import { getEvolutionConfig, sendWhatsAppMessage, getInstanceToken } from '@/lib/evolution';
 
 // Helper to sanitize phone numbers to E.164 Brazilian standard
 function formatPhone(rawPhone) {
@@ -250,10 +250,15 @@ export async function GET(request) {
       });
     }
 
-    const outreachInstance = process.env.EVOLUTION_OUTREACH_INSTANCE || 'cobbra-outreach';
+    const instanceRow = queryOne(
+      "SELECT value FROM settings WHERE user_id = ? AND key = 'outreach_whatsapp_instance'",
+      [adminId]
+    );
+    const outreachInstance = instanceRow ? instanceRow.value : (process.env.EVOLUTION_OUTREACH_INSTANCE || 'cobbra-outreach');
     
     // Resolve instance-specific token dynamically
-    const instanceToken = await getEvolutionConfig().globalToken; // fallback to global token for dispatch
+    const globalToken = config.globalToken;
+    const instanceToken = await getInstanceToken(config.baseUrl, globalToken, outreachInstance) || globalToken;
 
     const dispatchResult = await sendWhatsAppMessage({
       baseUrl: config.baseUrl,
