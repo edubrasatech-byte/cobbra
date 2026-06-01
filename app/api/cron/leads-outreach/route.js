@@ -57,9 +57,22 @@ export async function GET(request) {
     }
 
     // 2. Fetch one pending prospect from queue
-    let prospect = queryOne(
-      "SELECT * FROM leads_prospects WHERE status IN ('pending', 'ready_to_send') LIMIT 1"
-    );
+    let prospect;
+    if (testPhone) {
+      const cleanTest = formatPhone(testPhone);
+      if (cleanTest) {
+        prospect = queryOne(
+          "SELECT * FROM leads_prospects WHERE phone = ? AND status IN ('pending', 'ready_to_send') LIMIT 1",
+          [cleanTest]
+        );
+      }
+    }
+
+    if (!prospect) {
+      prospect = queryOne(
+        "SELECT * FROM leads_prospects WHERE status IN ('pending', 'ready_to_send') LIMIT 1"
+      );
+    }
 
     // 3. Queue Hydration: If no pending prospects exist, pull next search target and scrape fresh leads!
     if (!prospect) {
