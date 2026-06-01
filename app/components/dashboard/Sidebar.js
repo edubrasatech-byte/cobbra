@@ -39,7 +39,7 @@ export default function Sidebar({ user, pathname, sidebarCollapsed, setSidebarCo
           </div>
           {!sidebarCollapsed && (
             <span className="font-extrabold text-lg bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent tracking-tight">
-              Cobbra<span className="text-[#10B981] text-xs font-bold">.com.br</span>
+              Cobbra<span className="text-[#10B981] text-xs font-bold">.ai</span>
             </span>
           )}
         </div>
