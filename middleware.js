@@ -95,7 +95,7 @@ export function middleware(request) {
     }
   }
 
-  const isPublicApi = pathname === '/api/ai/chat';
+  const isPublicApi = pathname === '/api/ai/chat' || pathname.startsWith('/api/cron/');
 
   if (isPublicRoute || isApiAuth || isStaticFile || isPublicApi) {
     return NextResponse.next();
