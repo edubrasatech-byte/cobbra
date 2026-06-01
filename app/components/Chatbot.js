@@ -23,6 +23,49 @@ export default function Chatbot({ isOpen, onClose }) {
   const [feedbacks, setFeedbacks] = useState({}); // { [msgIndex]: 'up' | 'down' }
   const [user, setUser] = useState(null);
   const [isCopilotEnabled, setIsCopilotEnabled] = useState(false);
+  const [proactiveMessage, setProactiveMessage] = useState(null);
+  const [hasShownProactive, setHasShownProactive] = useState(false);
+
+  // Catarina IA - Convite Proativo & Scroll Listeners (Frente 2)
+  useEffect(() => {
+    if (isCurrentlyOpen || hasShownProactive) return;
+
+    // 1. Mostrar após 10 segundos de inatividade inicial
+    const initialTimer = setTimeout(() => {
+      if (!isCurrentlyOpen && !hasShownProactive) {
+        setProactiveMessage("Olá! Sou a Catarina IA. 🐍 Que tal ver como automatizar suas cobranças no Pix sem pagar taxas? Fale comigo!");
+        setHasShownProactive(true);
+      }
+    }, 10000);
+
+    // 2. Scroll Listener para detecção de seções na Landing Page
+    const handleScroll = () => {
+      if (isCurrentlyOpen) return;
+      
+      const scrollPos = window.scrollY;
+      
+      // Detecção de seções baseado na rolagem (estimativas de offset)
+      if (scrollPos > 600 && scrollPos < 1200) {
+        setProactiveMessage("Gerencia aluguel de carros? Posso te ajudar a controlar vistorias, multas e alertas de CNH de forma simples! 🚗🐍");
+        setHasShownProactive(true);
+      } else if (scrollPos >= 1200 && scrollPos < 1800) {
+        setProactiveMessage("Evite atrasos de clientes em etapas de obra. Criamos contratos de prestação de serviços por IA! 🏗️🐍");
+        setHasShownProactive(true);
+      } else if (scrollPos >= 1800 && scrollPos < 2400) {
+        setProactiveMessage("Controla parcelas com juros diários? A Catarina calcula a multa automaticamente no Pix Copia e Cola! 💸🐍");
+        setHasShownProactive(true);
+      } else if (scrollPos >= 2400) {
+        setProactiveMessage("Chega de cobrar mensalidades de alunos de forma constrangedora. Ative Pix recorrente com carinho! 🏋️🐍");
+        setHasShownProactive(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      clearTimeout(initialTimer);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isCurrentlyOpen, hasShownProactive]);
 
   const [messages, setMessages] = useState([
     {
@@ -319,53 +362,127 @@ export default function Chatbot({ isOpen, onClose }) {
       
       {/* Floating Mascot Launcher Button (Only shown in uncontrolled/landing page mode when closed) */}
       {isOpen === undefined && !isCurrentlyOpen && (
-        <button
-          onClick={() => setInternalOpen(true)}
-          aria-label="Abrir suporte Catarina AI"
-          className="chatbot-launcher-button"
-          style={{
-            width: 60,
-            height: 60,
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #0c0e1a 0%, #10b981 100%)',
-            border: '2px solid rgba(16, 185, 129, 0.4)',
-            boxShadow: '0 8px 30px rgba(16, 185, 129, 0.4), 0 0 15px rgba(16, 185, 129, 0.2)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer'
-          }}
-        >
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
-              <g transform="translate(1.5, 1.5)">
-                <path d="M8 30 C4 28, 3 22, 8 18 C13 14, 20 13, 25 17 C30 21, 33 18, 33 13 C33 9, 29 7, 26 9" stroke="url(#launcherSnakeGrad)" strokeWidth="4.5" strokeLinecap="round" fill="none" />
-                <circle cx="24" cy="8" r="5" fill="url(#launcherSnakeGrad)" />
-                <circle cx="23" cy="7" r="1.2" fill="white" />
-                <circle cx="26" cy="7" r="1.2" fill="white" />
-                <circle cx="23.2" cy="7.3" r="0.7" fill="#070913" />
-                <circle cx="26.2" cy="7.3" r="0.7" fill="#070913" />
-              </g>
-              <defs>
-                <linearGradient id="launcherSnakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#10b981" />
-                  <stop offset="100%" stopColor="#34d399" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <span style={{
-              position: 'absolute',
-              top: -2,
-              right: -2,
-              width: 10,
-              height: 10,
+        <div className="chatbot-launcher-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 12 }}>
+          {/* Proactive Speech Bubble */}
+          {proactiveMessage && (
+            <div 
+              onClick={() => {
+                setInternalOpen(true);
+                setProactiveMessage(null);
+              }}
+              style={{
+                background: '#0c0e1a',
+                border: '1px solid rgba(16, 185, 129, 0.4)',
+                borderRadius: 16,
+                padding: '12px 16px',
+                width: 260,
+                boxShadow: '0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(16,185,129,0.1)',
+                color: '#ffffff',
+                fontSize: 12,
+                lineHeight: 1.5,
+                cursor: 'pointer',
+                position: 'relative',
+                animation: 'chat-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both',
+                marginBottom: 4,
+                textAlign: 'left'
+              }}
+            >
+              {/* Close proactive bubble button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setProactiveMessage(null);
+                }}
+                style={{
+                  position: 'absolute',
+                  top: 6,
+                  right: 8,
+                  background: 'none',
+                  border: 'none',
+                  color: '#64748b',
+                  fontSize: 10,
+                  cursor: 'pointer',
+                  padding: 2
+                }}
+              >
+                ✕
+              </button>
+              {proactiveMessage}
+              {/* Triangle pointer */}
+              <div style={{
+                position: 'absolute',
+                bottom: -6,
+                right: 24,
+                width: 10,
+                height: 10,
+                background: '#0c0e1a',
+                borderRight: '1px solid rgba(16, 185, 129, 0.4)',
+                borderBottom: '1px solid rgba(16, 185, 129, 0.4)',
+                transform: 'rotate(45deg)'
+              }} />
+            </div>
+          )}
+
+          <button
+            onClick={() => {
+              setInternalOpen(true);
+              setProactiveMessage(null);
+            }}
+            aria-label="Abrir suporte Catarina AI"
+            style={{
+              width: 60,
+              height: 60,
               borderRadius: '50%',
-              background: '#10b981',
-              border: '2px solid #0c0e1a',
-              boxShadow: '0 0 4px #10b981'
-            }} />
-          </div>
-        </button>
+              background: 'linear-gradient(135deg, #0c0e1a 0%, #10b981 100%)',
+              border: '2px solid rgba(16, 185, 129, 0.4)',
+              boxShadow: '0 8px 30px rgba(16, 185, 129, 0.4), 0 0 15px rgba(16, 185, 129, 0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              animation: 'chat-float 3s ease-in-out infinite'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'scale(1.1) translateY(-3px)';
+              e.currentTarget.style.boxShadow = '0 12px 35px rgba(16, 185, 129, 0.6), 0 0 25px rgba(16, 185, 129, 0.4)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'none';
+              e.currentTarget.style.boxShadow = '0 8px 30px rgba(16, 185, 129, 0.4), 0 0 15px rgba(16, 185, 129, 0.2)';
+            }}
+          >
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
+                <g transform="translate(1.5, 1.5)">
+                  <path d="M8 30 C4 28, 3 22, 8 18 C13 14, 20 13, 25 17 C30 21, 33 18, 33 13 C33 9, 29 7, 26 9" stroke="url(#launcherSnakeGrad)" strokeWidth="4.5" strokeLinecap="round" fill="none" />
+                  <circle cx="24" cy="8" r="5" fill="url(#launcherSnakeGrad)" />
+                  <circle cx="23" cy="7" r="1.2" fill="white" />
+                  <circle cx="26" cy="7" r="1.2" fill="white" />
+                  <circle cx="23.2" cy="7.3" r="0.7" fill="#070913" />
+                  <circle cx="26.2" cy="7.3" r="0.7" fill="#070913" />
+                </g>
+                <defs>
+                  <linearGradient id="launcherSnakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="100%" stopColor="#34d399" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <span style={{
+                position: 'absolute',
+                top: -2,
+                right: -2,
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                background: '#10b981',
+                border: '2px solid #0c0e1a',
+                boxShadow: '0 0 4px #10b981'
+              }} />
+            </div>
+          </button>
+        </div>
       )}
 
       {/* CSS Animations & Micro-interactions */}
@@ -415,22 +532,15 @@ export default function Chatbot({ isOpen, onClose }) {
           background: rgba(255,255,255,0.2);
         }
 
-        .chatbot-launcher-button {
+        .chatbot-launcher-wrapper {
           position: fixed !important;
           bottom: 24px !important;
           right: 24px !important;
           z-index: 9999 !important;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-          animation: chat-float 3s ease-in-out infinite !important;
-        }
-        
-        .chatbot-launcher-button:hover {
-          transform: scale(1.1) translateY(-3px) !important;
-          box-shadow: 0 12px 35px rgba(16, 185, 129, 0.6), 0 0 25px rgba(16, 185, 129, 0.4) !important;
         }
 
         @media (max-width: 640px) {
-          .chatbot-launcher-button {
+          .chatbot-launcher-wrapper {
             bottom: 24px !important;
             right: 16px !important;
           }
