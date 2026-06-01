@@ -9,6 +9,25 @@ export default function LembretesPage() {
   const [msg, setMsg] = useState('');
   const [isMobile, setIsMobile] = useState(false);
 
+  const handleShare = async (reminder) => {
+    try {
+      await navigator.clipboard.writeText(reminder.message);
+      setMsg('Mensagem copiada! 📋');
+      setTimeout(() => setMsg(''), 3000);
+    } catch (e) {}
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Cobbra Lembrete 🐍',
+          text: reminder.message
+        });
+      } catch (err) {
+        console.log('Cancelado ou falhou', err);
+      }
+    }
+  };
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 640);
     handleResize();
@@ -85,20 +104,51 @@ export default function LembretesPage() {
           {reminders.map(r => {
             const st = statusConfig[r.status] || statusConfig.sent;
             return (
-              <div key={r.id} style={{ display: 'flex', gap: 16, padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'flex-start' }}>
+              <div key={r.id} style={{ display: 'flex', gap: 16, padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'flex-start', flexWrap: 'wrap' }}>
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: r.channel === 'whatsapp' ? 'rgba(37,211,102,0.15)' : 'rgba(59,130,246,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
                   {r.channel === 'whatsapp' ? '📱' : '✉️'}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 14, fontWeight: 600, color: '#e2e8f0' }}>{r.client_name}</span>
                     <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: `${st.c}20`, color: st.c, fontWeight: 600 }}>{st.l}</span>
                     <span style={{ fontSize: 11, color: '#64748b', padding: '2px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.03)' }}>{r.channel === 'whatsapp' ? 'WhatsApp' : 'E-mail'}</span>
                   </div>
                   <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{r.message}</p>
-                  <div style={{ display: 'flex', gap: 12, marginTop: 6, fontSize: 11, color: '#64748b' }}>
-                    <span>Enviado: {r.sent_at ? new Date(r.sent_at).toLocaleString('pt-BR') : '-'}</span>
-                    {r.charge_amount && <span>Valor: R$ {Number(r.charge_amount).toFixed(2)}</span>}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginTop: 8, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: 12, fontSize: 11, color: '#64748b' }}>
+                      <span>Enviado: {r.sent_at ? new Date(r.sent_at).toLocaleString('pt-BR') : '-'}</span>
+                      {r.charge_amount && <span>Valor: R$ {Number(r.charge_amount).toFixed(2)}</span>}
+                    </div>
+                    
+                    <button
+                      onClick={() => handleShare(r)}
+                      style={{
+                        background: 'rgba(16, 185, 129, 0.08)',
+                        border: '1px solid rgba(16, 185, 129, 0.25)',
+                        color: '#10b981',
+                        borderRadius: 8,
+                        padding: '6px 12px',
+                        fontSize: 10.5,
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        transition: 'all 0.2s',
+                        fontFamily: 'Inter'
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = 'rgba(16, 185, 129, 0.15)';
+                        e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = 'rgba(16, 185, 129, 0.08)';
+                        e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.25)';
+                      }}
+                    >
+                      <span>📱</span> Compartilhar
+                    </button>
                   </div>
                 </div>
               </div>
