@@ -21,6 +21,15 @@ export async function GET() {
     }
 
     const users = query('SELECT id, name, email, role, plan, SUBSTR(password_hash, 1, 12) as hash_prefix FROM users');
+    
+    let leadsCount = 0;
+    try {
+      leadsCount = query("SELECT COUNT(*) as count FROM leads_prospects")[0].count;
+    } catch (e) {
+      leadsCount = 'error: ' + e.message;
+    }
+
+    const dumpPath = path.join(process.cwd(), 'database', 'leads_dump.json');
 
     return Response.json({
       success: true,
@@ -29,6 +38,8 @@ export async function GET() {
       activeDatabasePath: activePath,
       cobbraExists: fs.existsSync(DB_PATH),
       cobrooExists: fs.existsSync(OLD_DB_PATH),
+      leadsDumpExists: fs.existsSync(dumpPath),
+      leadsCount,
       users
     });
   } catch (error) {
