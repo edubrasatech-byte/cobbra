@@ -1,10 +1,12 @@
 import { run, query, queryOne, transaction, generateId } from '@/lib/db';
 import { getEvolutionConfig, sendWhatsAppMessage, getInstanceToken } from '@/lib/evolution';
 
-// Helper to sanitize phone numbers to E.164 Brazilian standard
+// Helper to sanitize phone numbers to E.164 Brazilian standard (supports split on multiple numbers)
 function formatPhone(rawPhone) {
   if (!rawPhone) return null;
-  let clean = rawPhone.replace(/\D/g, '');
+  // If it contains slashes, spaces, commas, etc., extract the first part
+  const firstPart = String(rawPhone).split(/[\/\s,;-]+/)[0];
+  let clean = firstPart.replace(/\D/g, '');
   if (clean.startsWith('0')) {
     clean = clean.substring(1);
   }
@@ -264,7 +266,7 @@ export async function GET(request) {
       baseUrl: config.baseUrl,
       token: instanceToken,
       instanceName: outreachInstance,
-      phone: phone,
+      phone: formatPhone(phone) || phone,
       text: personalizedText,
       delay: 3500 // Anti-ban composure simulated delay
     });
