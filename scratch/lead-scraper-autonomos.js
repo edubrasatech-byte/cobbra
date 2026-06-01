@@ -56,11 +56,9 @@ const groqApiKey = process.env.GROQ_API_KEY || envGroqKey;
 
 let db;
 try {
-  const DB_PATH = path.join(process.cwd(), 'database', 'cobbra.db');
-  if (fs.existsSync(DB_PATH)) {
-    db = new Database(DB_PATH);
-    console.log(`🗄️ Conectado com sucesso ao SQLite em: ${DB_PATH}`);
-  }
+  const { getDb } = require('./lib/db');
+  db = getDb();
+  console.log(`🗄️ Conectado com sucesso à base de dados ativa resolvido por lib/db.js`);
 } catch(e) {
   console.log("⚠️ Executando em modo isolado de banco de dados:", e.message);
 }
