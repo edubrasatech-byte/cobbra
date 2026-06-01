@@ -75,13 +75,8 @@ async function sendWhatsAppMessage({ baseUrl, token, instanceName, phone, text }
       },
       body: JSON.stringify({
         number: phone,
-        options: {
-          delay: 1200,
-          presence: "composing"
-        },
-        textMessage: {
-          text: text
-        }
+        text: text,
+        delay: 1200
       })
     });
     if (!res.ok) {
