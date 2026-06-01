@@ -1,8 +1,19 @@
 import { registerUser, generateToken } from '@/lib/auth';
 import { sendEmail } from '@/lib/mailer';
+import { checkRateLimit, getClientIp } from '@/lib/local-rate-limit';
 
 export async function POST(request) {
   try {
+    // Check local in-memory rate limiting (Frente 4/Security)
+    const ip = getClientIp(request);
+    const { allowed, remaining, resetTime } = checkRateLimit(ip, 3, 60000); // 3 register attempts per minute
+    if (!allowed) {
+      return Response.json(
+        { error: 'Muitas tentativas de cadastro de um mesmo dispositivo. Tente novamente mais tarde.' }, 
+        { status: 429, headers: { 'Retry-After': Math.ceil((resetTime - Date.now()) / 1000).toString() } }
+      );
+    }
+
     const { name, email, password, phone, plan } = await request.json();
 
     if (!name || !email || !password) {
@@ -71,7 +82,7 @@ export async function POST(request) {
       </ul>
       
       <div class="button-container">
-        <a href="https://cobbra.ai/login" class="button" target="_blank">Acessar Meu Painel Cobbra</a>
+        <a href="https://cobbra.com.br/login" class="button" target="_blank">Acessar Meu Painel Cobbra</a>
       </div>
       
       <p style="font-size: 13.5px; color: #64748b; margin-top: 24px;">

@@ -8,11 +8,9 @@ export async function GET(request) {
     const authHeader = request.headers.get('authorization');
     const expectedSecret = process.env.CRON_SECRET || 'cobbra-cron-security-token-2026';
 
-    if (process.env.NODE_ENV === 'production') {
-      const isAuthorized = (secret === expectedSecret) || (authHeader === `Bearer ${expectedSecret}`);
-      if (!isAuthorized) {
-        return Response.json({ error: 'Não autorizado' }, { status: 401 });
-      }
+    const isAuthorized = (secret === expectedSecret) || (authHeader === `Bearer ${expectedSecret}`);
+    if (!isAuthorized) {
+      return Response.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
     // 1. Buscar mensagens prontas para envio

@@ -9,7 +9,7 @@ export async function GET(request) {
   const token = searchParams.get('token');
   const cronSecret = process.env.CRON_SECRET || 'cobbra-cron-key-135';
 
-  if (token && token !== cronSecret) {
+  if (!token || token !== cronSecret) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
