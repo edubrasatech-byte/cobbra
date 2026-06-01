@@ -42,7 +42,7 @@ export async function GET(request) {
 
     // 2. Fetch one pending prospect from queue
     let prospect = queryOne(
-      "SELECT * FROM leads_prospects WHERE status = 'pending' LIMIT 1"
+      "SELECT * FROM leads_prospects WHERE status IN ('pending', 'ready_to_send') LIMIT 1"
     );
 
     // 3. Queue Hydration: If no pending prospects exist, pull next search target and scrape fresh leads!
@@ -163,7 +163,7 @@ export async function GET(request) {
 
       // Grab next prospect after loading queue
       prospect = queryOne(
-        "SELECT * FROM leads_prospects WHERE status = 'pending' LIMIT 1"
+        "SELECT * FROM leads_prospects WHERE status IN ('pending', 'ready_to_send') LIMIT 1"
       );
 
       if (!prospect) {
