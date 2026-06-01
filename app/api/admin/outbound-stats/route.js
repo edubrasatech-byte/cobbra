@@ -10,7 +10,7 @@ export async function GET(request) {
     }
 
     // Apenas administradores têm acesso a métricas de prospecção
-    if (currentUser.role !== 'admin' && currentUser.role !== 'senior') {
+    if (currentUser.role !== 'admin' && currentUser.role !== 'senior' && currentUser.role !== 'admin_senior') {
       return Response.json({ error: 'Acesso negado. Apenas administradores.' }, { status: 403 });
     }
 
@@ -119,7 +119,7 @@ export async function POST(request) {
       return Response.json({ error: 'Não autenticado' }, { status: 401 });
     }
 
-    if (currentUser.role !== 'admin' && currentUser.role !== 'senior') {
+    if (currentUser.role !== 'admin' && currentUser.role !== 'senior' && currentUser.role !== 'admin_senior') {
       return Response.json({ error: 'Acesso negado. Apenas administradores.' }, { status: 403 });
     }
 
