@@ -142,10 +142,10 @@ ${randClose}`;
 
 Encontrei seu contato prestando serviços na área de reformas e construção civil em ${lead.location}. 
 
-Sabemos que um dos maiores problemas na empreitada é o cliente atrasar os pagamentos combinados por etapa da obra, prejudicando a compra de materiais e o pagamento da sua equipe.
+Sabemos que um dos maiores problemas na empreitada é a dor de cabeça para fechar o serviço de forma profissional e a insegurança de atrasos por etapa da obra, prejudicando a compra de materiais e pagamento da equipe.
 
-O Cobbra.ai ajuda você a organizar seus contratos de forma profissional:
-• Geração automática de contratos de prestação de serviços por IA.
+O Cobbra.ai ajuda você a organizar seus orçamentos e contratos de forma profissional:
+• Geração automática de orçamentos profissionais e contratos de prestação de serviços por IA.
 • Cobranças automáticas integradas por medição de progresso da obra ou etapas concluídas.
 • Notificação amigável via WhatsApp com Pix Copia e Cola enviado direto pro cliente.
 • Segurança jurídica: controle total do seu caixa e dos recebíveis.
