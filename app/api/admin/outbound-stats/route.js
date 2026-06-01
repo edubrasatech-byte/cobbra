@@ -1,6 +1,8 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { query, queryOne, run } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/admin/outbound-stats — Métricas em tempo real e listagem de leads da fila
 export async function GET(request) {
   try {

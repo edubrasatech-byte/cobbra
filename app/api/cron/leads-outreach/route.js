@@ -1,6 +1,8 @@
 import { run, query, queryOne, transaction, generateId } from '@/lib/db';
 import { getEvolutionConfig, sendWhatsAppMessage, getInstanceToken } from '@/lib/evolution';
 
+export const dynamic = 'force-dynamic';
+
 // Helper to sanitize phone numbers to E.164 Brazilian standard (supports split on multiple numbers)
 function formatPhone(rawPhone) {
   if (!rawPhone) return null;
