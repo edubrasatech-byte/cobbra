@@ -242,12 +242,9 @@ export async function GET(request) {
       return Response.json({ error: 'Mensagem gerada pelo Groq está em branco.' }, { status: 500 });
     }
 
-    // 4.5 Check if Outreach WhatsApp is connected in settings
-    const adminUserRow = queryOne("SELECT id FROM users WHERE role = 'admin_senior' LIMIT 1");
-    const adminId = adminUserRow ? adminUserRow.id : 'admin-senior-001';
+    // 4.5 Check if Outreach WhatsApp is connected in settings globally
     const statusRow = queryOne(
-      "SELECT value FROM settings WHERE user_id = ? AND key = 'outreach_whatsapp_status'",
-      [adminId]
+      "SELECT value FROM settings WHERE key = 'outreach_whatsapp_status' ORDER BY id DESC LIMIT 1"
     );
     const outreachStatus = statusRow ? statusRow.value : 'disconnected';
 
@@ -282,8 +279,7 @@ export async function GET(request) {
     }
 
     const instanceRow = queryOne(
-      "SELECT value FROM settings WHERE user_id = ? AND key = 'outreach_whatsapp_instance'",
-      [adminId]
+      "SELECT value FROM settings WHERE key = 'outreach_whatsapp_instance' ORDER BY id DESC LIMIT 1"
     );
     const outreachInstance = instanceRow ? instanceRow.value : (process.env.EVOLUTION_OUTREACH_INSTANCE || 'cobbra-outreach');
     
