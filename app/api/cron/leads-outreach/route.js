@@ -34,6 +34,20 @@ export async function GET(request) {
       return Response.json({ error: 'Acesso negado. Token de cron inválido.' }, { status: 401 });
     }
 
+    const testPhone = searchParams.get('test_phone');
+    if (testPhone) {
+      const cleanTestPhone = formatPhone(testPhone);
+      if (cleanTestPhone) {
+        run("DELETE FROM leads_prospects WHERE phone = ?", [cleanTestPhone]);
+        run(
+          `INSERT INTO leads_prospects (
+            id, name, phone, niche, city, offer_details, facebook_url, status, created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, 'ready_to_send', datetime('now'), datetime('now'))`,
+          [generateId(), 'Marcio Teste', cleanTestPhone, 'locação de veículos', 'Florianópolis', 'Tenho carros para alugar com ótimas condições de faturamento.', 'http://facebook.com/test-post']
+        );
+      }
+    }
+
     const groqApiKey = process.env.GROQ_API_KEY;
     const fallbackSerpKey = '5afc5fd737156c56803c5b8c29f0bc492cf57e77cb26c008adc55e1feddd58a4';
     const serpApiKey = process.env.SERPAPI_API_KEY || fallbackSerpKey;
