@@ -51,13 +51,13 @@ export async function POST(request) {
     const user = getUserFromRequest(request);
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
-    const { name, email, phone, document, category, tags, notes, company_name, birthday, address } = await request.json();
+    const { name, email, phone, document, category, tags, notes, company_name, birthday, address, cnh_number, cnh_category, cnh_expires_at, security_background_status } = await request.json();
     if (!name) return Response.json({ error: 'Nome é obrigatório' }, { status: 400 });
 
     const id = generateId();
     run(
-      `INSERT INTO clients (id, user_id, name, email, phone, document, category, tags, notes, company_name, birthday, address)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO clients (id, user_id, name, email, phone, document, category, tags, notes, company_name, birthday, address, cnh_number, cnh_category, cnh_expires_at, security_background_status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         user.id,
@@ -70,7 +70,11 @@ export async function POST(request) {
         notes || null,
         company_name || null,
         birthday || null,
-        address || null
+        address || null,
+        cnh_number || null,
+        cnh_category || null,
+        cnh_expires_at || null,
+        security_background_status || 'pending'
       ]
     );
 

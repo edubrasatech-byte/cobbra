@@ -37,7 +37,7 @@ export async function PUT(request, { params }) {
     // Snapshot dos dados anteriores para auditoria (Frente 15)
     const previousData = JSON.stringify(existing);
 
-    const { name, email, phone, document, category, tags, notes, health_score, company_name, birthday, address } = await request.json();
+    const { name, email, phone, document, category, tags, notes, health_score, company_name, birthday, address, cnh_number, cnh_category, cnh_expires_at, security_background_status } = await request.json();
 
     run(
       `UPDATE clients SET 
@@ -45,9 +45,11 @@ export async function PUT(request, { params }) {
         document = COALESCE(?, document), category = COALESCE(?, category), tags = COALESCE(?, tags),
         notes = COALESCE(?, notes), health_score = COALESCE(?, health_score),
         company_name = COALESCE(?, company_name), birthday = COALESCE(?, birthday), address = COALESCE(?, address),
+        cnh_number = COALESCE(?, cnh_number), cnh_category = COALESCE(?, cnh_category),
+        cnh_expires_at = COALESCE(?, cnh_expires_at), security_background_status = COALESCE(?, security_background_status),
         updated_at = datetime('now')
       WHERE id = ? AND user_id = ?`,
-      [name, email, phone, document, category, tags, notes, health_score, company_name, birthday, address, id, user.id]
+      [name, email, phone, document, category, tags, notes, health_score, company_name, birthday, address, cnh_number, cnh_category, cnh_expires_at, security_background_status, id, user.id]
     );
 
     const updated = queryOne('SELECT * FROM clients WHERE id = ?', [id]);

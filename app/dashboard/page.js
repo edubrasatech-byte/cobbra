@@ -195,6 +195,7 @@ export default function DashboardHome() {
   const [selectedBarIndex, setSelectedBarIndex] = useState(null);
   const [insights, setInsights] = useState([]);
   const [insightsLoading, setInsightsLoading] = useState(false);
+  const [showQuickCreate, setShowQuickCreate] = useState(false);
 
   function loadStats() {
     setLoading(true);
@@ -653,6 +654,50 @@ export default function DashboardHome() {
           </div>
         )}
       </div>
+
+      {/* Floating Action Button (Item 3) */}
+      <div className="fixed bottom-20 right-6 md:bottom-8 md:right-8 z-50">
+        <button
+          onClick={() => setShowQuickCreate(true)}
+          className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white flex items-center justify-center shadow-xl shadow-emerald-500/20 active:scale-95 transition-all select-none cursor-pointer border border-emerald-400/30 group"
+          title="Ações Rápidas"
+        >
+          <span className="text-2xl font-extrabold group-hover:rotate-90 transition-transform duration-300">+</span>
+        </button>
+      </div>
+
+      {/* Quick Create Modal (Item 3) */}
+      {showQuickCreate && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4" onClick={() => setShowQuickCreate(false)}>
+          <div className="bg-[#0C0E1A] border border-slate-800/80 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
+            <div className="px-6 py-4 border-b border-slate-900/60 flex justify-between items-center">
+              <h3 className="text-sm font-bold text-slate-200">🐍 Ações Rápidas Cobbra</h3>
+              <button onClick={() => setShowQuickCreate(false)} className="text-slate-500 hover:text-slate-300 text-sm">✕</button>
+            </div>
+            <div className="p-6 grid grid-cols-2 gap-4">
+              {[
+                { title: 'Cobrança', desc: 'Gerar Pix/Fatura', icon: '💰', href: '/dashboard/cobrancas?action=new' },
+                { title: 'Locação', desc: 'Novo Contrato', icon: '🚗', href: '/dashboard/locacoes?action=new' },
+                { title: 'Veículo', desc: 'Cadastrar Frota', icon: '🔑', href: '/dashboard/veiculos?action=new' },
+                { title: 'Cliente', desc: 'Adicionar CRM', icon: '👥', href: '/dashboard/clientes?action=new' },
+                { title: 'Manutenção', desc: 'Lançar OS', icon: '🛠️', href: '/dashboard/manutencoes?action=new' },
+                { title: 'Multa', desc: 'Lançar Infração', icon: '🧾', href: '/dashboard/locacoes?tab=fines&action=new' }
+              ].map(opt => (
+                <a
+                  key={opt.title}
+                  href={opt.href}
+                  onClick={() => setShowQuickCreate(false)}
+                  className="p-4 bg-slate-950/50 hover:bg-emerald-500/5 border border-slate-900 hover:border-emerald-500/20 rounded-xl flex flex-col gap-1 transition-all group"
+                >
+                  <span className="text-2xl mb-1 group-hover:scale-110 transition-transform origin-left">{opt.icon}</span>
+                  <span className="text-xs font-bold text-slate-200">{opt.title}</span>
+                  <span className="text-[10px] text-slate-500">{opt.desc}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

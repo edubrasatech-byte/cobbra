@@ -35,6 +35,19 @@ export default function CobrancasPage() {
   // Bottom drawer state for mobile interactive cards
   const [activeDrawerCharge, setActiveDrawerCharge] = useState(null);
 
+  // Inline Client Creation Modal state
+  const [showInlineClientModal, setShowInlineClientModal] = useState(false);
+  const [inlineClientForm, setInlineClientForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    document: '',
+    category: 'Locatário',
+    company_name: '',
+    address: '',
+    notes: ''
+  });
+
   const triggerToast = (text, type = 'success') => {
     setMsg(text);
     setMsgType(type);
@@ -175,6 +188,43 @@ export default function CobrancasPage() {
   };
 
 
+
+  async function createClientInline(e) {
+    e.preventDefault();
+    if (!inlineClientForm.name) {
+      alert('Nome é obrigatório.');
+      return;
+    }
+    try {
+      const res = await fetch('/api/clientes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(inlineClientForm)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        const newClient = data.client;
+        setClients(prev => [newClient, ...prev]);
+        setForm(prev => ({ ...prev, client_id: newClient.id }));
+        setShowInlineClientModal(false);
+        setInlineClientForm({
+          name: '',
+          email: '',
+          phone: '',
+          document: '',
+          category: 'Locatário',
+          company_name: '',
+          address: '',
+          notes: ''
+        });
+        triggerToast('Cliente cadastrado e selecionado! 👥', 'success');
+      } else {
+        alert(data.error || 'Erro ao cadastrar cliente.');
+      }
+    } catch (err) {
+      alert('Erro de conexão ao cadastrar cliente.');
+    }
+  }
 
   async function createCharge(e) {
     e.preventDefault();
@@ -887,7 +937,16 @@ export default function CobrancasPage() {
               
               {/* Client Selection */}
               <div>
-                <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Cliente *</label>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider">Cliente *</label>
+                  <button 
+                    type="button" 
+                    onClick={() => setShowInlineClientModal(true)} 
+                    className="text-[11px] text-emerald-400 hover:text-emerald-300 font-bold transition-all"
+                  >
+                    + Novo Cliente
+                  </button>
+                </div>
                 <select 
                   value={form.client_id} 
                   onChange={e => setForm({ ...form, client_id: e.target.value })} 
@@ -1044,6 +1103,106 @@ export default function CobrancasPage() {
                 </button>
               </div>
 
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 👥 Inline Client Registration Modal */}
+      {showInlineClientModal && (
+        <div 
+          className="fixed inset-0 bg-slate-950/95 z-[60] flex items-center justify-center p-4"
+          onClick={() => setShowInlineClientModal(false)}
+        >
+          <div 
+            onClick={e => e.stopPropagation()} 
+            className="bg-[#0C0E1A] rounded-2xl p-6 w-full max-w-md border border-slate-800/60 shadow-2xl max-h-[90vh] overflow-y-auto"
+            style={{ padding: '24px' }}
+          >
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-base font-bold text-slate-100">Novo Cliente</h3>
+              <button 
+                type="button"
+                onClick={() => setShowInlineClientModal(false)} 
+                className="text-slate-400 hover:text-slate-200 text-lg"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <form onSubmit={createClientInline} className="space-y-4">
+              <div>
+                <label className="block text-xs text-slate-400 font-semibold mb-1.5">Nome *</label>
+                <input 
+                  type="text" 
+                  value={inlineClientForm.name} 
+                  onChange={e => setInlineClientForm({ ...inlineClientForm, name: e.target.value })} 
+                  placeholder="Nome completo"
+                  className="w-full py-2.5 px-3 text-sm bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 transition-colors"
+                  required 
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-slate-400 font-semibold mb-1.5">E-mail</label>
+                <input 
+                  type="email" 
+                  value={inlineClientForm.email} 
+                  onChange={e => setInlineClientForm({ ...inlineClientForm, email: e.target.value })} 
+                  placeholder="email@exemplo.com"
+                  className="w-full py-2.5 px-3 text-sm bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 transition-colors"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-slate-400 font-semibold mb-1.5">Telefone</label>
+                  <input 
+                    type="tel" 
+                    value={inlineClientForm.phone} 
+                    onChange={e => setInlineClientForm({ ...inlineClientForm, phone: e.target.value })} 
+                    placeholder="(11) 99999-9999"
+                    className="w-full py-2.5 px-3 text-sm bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-slate-400 font-semibold mb-1.5">CPF / CNPJ</label>
+                  <input 
+                    type="text" 
+                    value={inlineClientForm.document} 
+                    onChange={e => setInlineClientForm({ ...inlineClientForm, document: e.target.value })} 
+                    placeholder="Ex: 123.456.789-00"
+                    className="w-full py-2.5 px-3 text-sm bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs text-slate-400 font-semibold mb-1.5">Categoria</label>
+                <input 
+                  type="text" 
+                  value={inlineClientForm.category} 
+                  onChange={e => setInlineClientForm({ ...inlineClientForm, category: e.target.value })} 
+                  placeholder="Ex: Locatário, Aluno"
+                  className="w-full py-2.5 px-3 text-sm bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 transition-colors"
+                />
+              </div>
+
+              <div className="flex gap-3 justify-end pt-2">
+                <button 
+                  type="button" 
+                  onClick={() => setShowInlineClientModal(false)} 
+                  className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold hover:bg-slate-800 hover:text-slate-200"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-4 py-2 rounded-lg bg-[#10B981] hover:bg-emerald-600 text-white text-xs font-bold transition-colors"
+                >
+                  Cadastrar e Selecionar
+                </button>
+              </div>
             </form>
           </div>
         </div>

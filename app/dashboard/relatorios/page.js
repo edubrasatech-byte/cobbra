@@ -98,6 +98,8 @@ function AreaChart({ data, onSelectPoint, selectedIndex }) {
 export default function RelatoriosPage() {
   const [activeTab, setActiveTab] = useState('revenue');
   const [period, setPeriod] = useState('30');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [data, setData] = useState(null);
   const [selectedBarIndex, setSelectedBarIndex] = useState(null);
   const [user, setUser] = useState(null);
@@ -110,9 +112,38 @@ export default function RelatoriosPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const setMonthPreset = (monthOffset) => {
+    const now = new Date();
+    const targetMonth = new Date(now.getFullYear(), now.getMonth() - monthOffset, 1);
+    const start = new Date(targetMonth.getFullYear(), targetMonth.getMonth(), 1);
+    const end = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0);
+    
+    // Format to YYYY-MM-DD local timezone safely
+    const formatDate = (d) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    
+    setStartDate(formatDate(start));
+    setEndDate(formatDate(end));
+    setPeriod(''); // Clear preset
+  };
+
   const loadData = () => {
     setData(null);
-    fetch(`/api/relatorios?type=${activeTab}&period=${period}`)
+    let url = `/api/relatorios?type=${activeTab}`;
+    if (startDate) {
+      url += `&start_date=${startDate}`;
+    }
+    if (endDate) {
+      url += `&end_date=${endDate}`;
+    }
+    if (!startDate && !endDate && period) {
+      url += `&period=${period}`;
+    }
+    fetch(url)
       .then(r => r.json()).then(setData).catch(() => setData(null));
   };
 
@@ -125,7 +156,7 @@ export default function RelatoriosPage() {
   useEffect(() => {
     loadData();
     setSelectedBarIndex(null);
-  }, [activeTab, period]);
+  }, [activeTab, period, startDate, endDate]);
 
   const fmt = v => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
   const selectedBar = selectedBarIndex !== null && data?.daily ? data.daily[selectedBarIndex] : null;
@@ -169,6 +200,7 @@ export default function RelatoriosPage() {
     { key: 'revenue', label: '💰 Receita', desc: 'Análise de receita por período' },
     { key: 'inadimplencia', label: '⚠️ Inadimplência', desc: 'Acompanhe inadimplência por cliente' },
     { key: 'clients', label: '👥 Clientes', desc: 'Rankings de clientes' },
+    { key: 'vehicles', label: '🚗 Veículos', desc: 'Desempenho da frota' },
     { key: 'reminders', label: '🔔 Lembretes', desc: 'Efetividade dos lembretes' },
   ];
 
@@ -181,8 +213,45 @@ export default function RelatoriosPage() {
 
   return (
     <div className="pb-24">
+      {/* Printable CSS style rules */}
+      <style>{`
+        @media print {
+          aside, nav, header, footer, button, select, input, .no-print, [class*="Sidebar"], [class*="MobileNav"], [class*="TopBar"] {
+            display: none !important;
+          }
+          body, html, main, .pb-24 {
+            background: #ffffff !important;
+            color: #000000 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+          .bg-\\[\\#0C0E1A\\], [style*="background"] {
+            background: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #cbd5e1 !important;
+            box-shadow: none !important;
+          }
+          h2, h3, h4, p, span, th, td {
+            color: #000000 !important;
+          }
+          table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+          }
+          th {
+            border-bottom: 2px solid #475569 !important;
+          }
+          td, tr {
+            border-bottom: 1px solid #e2e8f0 !important;
+          }
+          svg {
+            filter: brightness(0.2) contrast(1.5) !important;
+          }
+        }
+      `}</style>
+
       {/* Tabs and Reload */}
-      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-6 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-6 gap-4 no-print">
         <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-none whitespace-nowrap">
           {tabs.map(t => (
             <button key={t.key} onClick={() => setActiveTab(t.key)} style={{
@@ -193,35 +262,157 @@ export default function RelatoriosPage() {
             }}>{t.label}</button>
           ))}
         </div>
-        <button 
-          onClick={loadData}
-          style={{
-            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: 8, padding: '8px 14px', color: '#cbd5e1', cursor: 'pointer',
-            fontFamily: 'Inter', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6,
-            transition: 'all 0.2s'
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(5,150,105,0.1)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
-          </svg>
-          Recarregar
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => window.print()}
+            style={{
+              background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)',
+              borderRadius: 8, padding: '8px 14px', color: '#10b981', cursor: 'pointer',
+              fontFamily: 'Inter', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6,
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(16,185,129,0.2)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(16,185,129,0.1)'}
+          >
+            <span>🖨️</span> Exportar PDF
+          </button>
+          <button 
+            onClick={loadData}
+            style={{
+              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 8, padding: '8px 14px', color: '#cbd5e1', cursor: 'pointer',
+              fontFamily: 'Inter', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6,
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(5,150,105,0.1)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+            </svg>
+            Recarregar
+          </button>
+        </div>
+      </div>
+
+      {/* Date Filter & Presets Panel (Frente 20) */}
+      <div className="no-print bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-4 mb-6 flex flex-col gap-4">
+        {/* Row 1: Presets */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginRight: 4 }}>Períodos:</span>
+          {['7', '30', '90', '365'].map(p => (
+            <button 
+              key={p} 
+              onClick={() => {
+                setPeriod(p);
+                setStartDate('');
+                setEndDate('');
+              }} 
+              style={{
+                padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter', fontSize: 12, fontWeight: 600,
+                background: period === p && !startDate ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.04)',
+                color: period === p && !startDate ? '#10b981' : '#94a3b8',
+                border: period === p && !startDate ? '1px solid rgba(16,185,129,0.3)' : '1px solid transparent',
+                transition: 'all 0.2s'
+              }}
+            >
+              {p === '7' ? '7 dias' : p === '30' ? '30 dias' : p === '90' ? '3 meses' : '1 ano'}
+            </button>
+          ))}
+          
+          <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.08)', margin: '0 4px' }} />
+
+          <button 
+            onClick={() => setMonthPreset(0)} 
+            style={{
+              padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter', fontSize: 12, fontWeight: 600,
+              background: 'rgba(255,255,255,0.04)', color: '#94a3b8', transition: 'all 0.2s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = '#10b981'}
+            onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+          >
+            Este Mês
+          </button>
+          <button 
+            onClick={() => setMonthPreset(1)} 
+            style={{
+              padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter', fontSize: 12, fontWeight: 600,
+              background: 'rgba(255,255,255,0.04)', color: '#94a3b8', transition: 'all 0.2s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = '#10b981'}
+            onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+          >
+            Mês Passado
+          </button>
+          <button 
+            onClick={() => setMonthPreset(2)} 
+            style={{
+              padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter', fontSize: 12, fontWeight: 600,
+              background: 'rgba(255,255,255,0.04)', color: '#94a3b8', transition: 'all 0.2s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = '#10b981'}
+            onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+          >
+            2 Meses Atrás
+          </button>
+        </div>
+
+        {/* Row 2: Custom Date Inputs */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="flex-1 flex gap-2 items-center">
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', fontSize: 10, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Data Inicial</label>
+              <input 
+                type="date"
+                value={startDate}
+                onChange={e => {
+                  setStartDate(e.target.value);
+                  setPeriod('');
+                }}
+                style={{
+                  width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'rgba(0,0,0,0.2)', color: '#fff', fontSize: 12.5, outline: 'none'
+                }}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', fontSize: 10, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Data Final</label>
+              <input 
+                type="date"
+                value={endDate}
+                onChange={e => {
+                  setEndDate(e.target.value);
+                  setPeriod('');
+                }}
+                style={{
+                  width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'rgba(0,0,0,0.2)', color: '#fff', fontSize: 12.5, outline: 'none'
+                }}
+              />
+            </div>
+          </div>
+          {(startDate || endDate) && (
+            <button 
+              onClick={() => {
+                setStartDate('');
+                setEndDate('');
+                setPeriod('30');
+              }}
+              style={{
+                alignSelf: 'flex-end', padding: '8px 16px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', border: 'none',
+                color: '#f87171', fontSize: 12, fontWeight: 700, cursor: 'pointer'
+              }}
+            >
+              Limpar Filtros
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Revenue */}
       {activeTab === 'revenue' && data && (
         <div style={{ marginTop: '16px' }}>
-          <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
-            {['7', '30', '90', '365'].map(p => (
-              <button key={p} onClick={() => setPeriod(p)} style={{
-                padding: '6px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter',
-                background: period === p ? '#059669' : 'rgba(255,255,255,0.05)', color: period === p ? '#fff' : '#94a3b8', fontSize: 13
-              }}>{p === '7' ? '7 dias' : p === '30' ? '30 dias' : p === '90' ? '3 meses' : '1 ano'}</button>
-            ))}
-          </div>
+          {/* Note: Period picker removed here as it is now global above */}
           <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: isMobile ? '16px' : '24px', marginBottom: 20 }}>
             <div className="flex justify-between items-center mb-6">
               <div>
@@ -350,6 +541,108 @@ export default function RelatoriosPage() {
                 <span style={{ color: '#fca5a5', fontWeight: 700, shrink: 0 }} className="shrink-0">{fmt(c.total_overdue)}</span>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Vehicles */}
+      {activeTab === 'vehicles' && data && (
+        <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Company General Card */}
+          {data.company && (
+            <div style={{ ...cardS, background: 'linear-gradient(135deg, #0f172a 0%, #020617 100%)', border: '1px solid rgba(16,185,129,0.15)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <h4 style={{ margin: 0, fontSize: 12, fontWeight: 800, color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.5px' }}>🏢 Desempenho Geral Corporativo</h4>
+                <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>Sem veículo vinculado</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16 }}>
+                <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 12, padding: '12px 16px', border: '1px solid rgba(255,255,255,0.04)' }}>
+                  <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>RECEITA GERAL</span>
+                  <p style={{ margin: '2px 0 0 0', fontSize: 18, fontWeight: 900, color: '#fff' }}>{fmt(data.company.income)}</p>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 12, padding: '12px 16px', border: '1px solid rgba(255,255,255,0.04)' }}>
+                  <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>DESPESAS GERAIS</span>
+                  <p style={{ margin: '2px 0 0 0', fontSize: 18, fontWeight: 900, color: '#f87171' }}>-{fmt(data.company.expense)}</p>
+                </div>
+                <div style={{ background: 'rgba(16,185,129,0.04)', borderRadius: 12, padding: '12px 16px', border: '1px solid rgba(16,185,129,0.1)' }}>
+                  <span style={{ fontSize: 10, color: '#10b981', fontWeight: 600 }}>LUCRO GERAL</span>
+                  <p style={{ margin: '2px 0 0 0', fontSize: 18, fontWeight: 900, color: data.company.profit >= 0 ? '#10b981' : '#f87171' }}>{fmt(data.company.profit)}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Vehicles List */}
+          <div style={cardS}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 800, color: '#ffffff', margin: 0 }}>Desempenho Financeiro da Frota</h3>
+              <span style={{ fontSize: 12, color: '#64748b' }}>{data.vehicles?.length || 0} veículos apurados</span>
+            </div>
+            
+            {(!data.vehicles || data.vehicles.length === 0) ? (
+              <div style={{ padding: '40px 0', textAlign: 'center', color: '#64748b', fontStyle: 'italic', fontSize: 13 }}>
+                Nenhum veículo registrado na frota com movimentações no período.
+              </div>
+            ) : isMobile ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {data.vehicles.map((v, i) => (
+                  <div key={v.id || i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <h4 style={{ margin: 0, fontSize: 13.5, fontWeight: 800, color: '#fff' }}>{v.model}</h4>
+                        <p style={{ margin: '2px 0 0 0', fontSize: 11, color: '#64748b' }}>Placa: <strong>{v.plate}</strong> • Cor: {v.color || 'N/A'}</p>
+                      </div>
+                      <span style={{ fontSize: 10.5, padding: '3px 8px', borderRadius: 20, fontWeight: 700, color: '#10b981', background: 'rgba(16,185,129,0.08)' }}>
+                        Margem {v.margin}%
+                      </span>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '8px 0', fontSize: 11.5 }}>
+                      <div>
+                        <span style={{ color: '#64748b', fontSize: 9.5 }}>RECEITA (LOCAÇÃO)</span>
+                        <p style={{ margin: '2px 0 0 0', fontWeight: 700, color: '#cbd5e1' }}>{fmt(v.income)}</p>
+                      </div>
+                      <div>
+                        <span style={{ color: '#64748b', fontSize: 9.5 }}>DESPESAS (MANUTENÇÃO)</span>
+                        <p style={{ margin: '2px 0 0 0', fontWeight: 700, color: '#f87171' }}>-{fmt(v.expense)}</p>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ color: '#64748b', fontSize: 10 }}>RENDIMENTO LÍQUIDO</span>
+                      <span style={{ fontWeight: 800, color: v.profit >= 0 ? '#10b981' : '#f87171', fontSize: 13 }}>{fmt(v.profit)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 600, fontSize: 13 }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', color: '#64748b', fontWeight: 700 }}>
+                      <th style={{ padding: '10px 8px' }}>Veículo</th>
+                      <th style={{ padding: '10px 8px' }}>Placa</th>
+                      <th style={{ padding: '10px 8px' }}>Cor</th>
+                      <th style={{ padding: '10px 8px' }}>Receita Locação</th>
+                      <th style={{ padding: '10px 8px' }}>Despesa Oficina</th>
+                      <th style={{ padding: '10px 8px' }}>Saldo Líquido</th>
+                      <th style={{ padding: '10px 8px', textAlign: 'right' }}>Margem</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.vehicles.map((v, i) => (
+                      <tr key={v.id || i} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                        <td style={{ padding: '14px 8px', fontWeight: 700, color: '#fff' }}>{v.model}</td>
+                        <td style={{ padding: '14px 8px', color: '#cbd5e1' }}>{v.plate}</td>
+                        <td style={{ padding: '14px 8px', color: '#64748b' }}>{v.color || '-'}</td>
+                        <td style={{ padding: '14px 8px', color: '#34d399', fontWeight: 600 }}>{fmt(v.income)}</td>
+                        <td style={{ padding: '14px 8px', color: '#f87171' }}>-{fmt(v.expense)}</td>
+                        <td style={{ padding: '14px 8px', fontWeight: 800, color: v.profit >= 0 ? '#10b981' : '#f87171' }}>{fmt(v.profit)}</td>
+                        <td style={{ padding: '14px 8px', textAlign: 'right', color: '#38bdf8', fontWeight: 700 }}>{v.margin}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}

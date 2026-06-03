@@ -119,6 +119,17 @@ const NAV_ICONS = {
     <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
+  ),
+  '/dashboard/veiculos': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="10" rx="2" />
+      <path d="M12 2v9M8 5h8" />
+    </svg>
+  ),
+  '/dashboard/manutencoes': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+    </svg>
   )
 };
 
@@ -477,6 +488,8 @@ export default function DashboardLayout({ children }) {
   
   if (user?.business_niche === 'locacao_veiculos') {
     dynamicNavItems.splice(3, 0, { href: '/dashboard/locacoes', icon: '🚗', label: 'Locações' });
+    dynamicNavItems.splice(4, 0, { href: '/dashboard/veiculos', icon: '🔑', label: 'Veículos' });
+    dynamicNavItems.splice(5, 0, { href: '/dashboard/manutencoes', icon: '🛠️', label: 'Manutenções' });
   } else if (user?.business_niche === 'emprestimo') {
     dynamicNavItems.splice(3, 0, { href: '/dashboard/emprestimos', icon: '💸', label: 'Empréstimos' });
   } else if (user?.business_niche === 'construcao_civil') {

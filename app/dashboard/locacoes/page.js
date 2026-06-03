@@ -37,7 +37,7 @@ export default function LocacoesPage() {
   });
 
   // === VEHICLE RENTAL PREMIUM MODULE STATES ===
-  const [activeTab, setActiveTab] = useState('contracts'); // 'contracts' | 'fleet' | 'fines' | 'escrow' | 'split'
+  const [activeTab, setActiveTab] = useState('contracts'); // 'contracts' | 'fines' | 'escrow' | 'split'
   const [vehicles, setVehicles] = useState([]);
   const [vehiclesLoading, setVehiclesLoading] = useState(true);
   const [showVehicleModal, setShowVehicleModal] = useState(false);
@@ -56,6 +56,40 @@ export default function LocacoesPage() {
   const [fineWaText, setFineWaText] = useState('');
   const [fineMatchedClientPhone, setFineMatchedClientPhone] = useState('');
 
+  // === ESCROW & PAYOUTS STATES ===
+  const [escrows, setEscrows] = useState([]);
+  const [escrowsLoading, setEscrowsLoading] = useState(true);
+  const [showEscrowModal, setShowEscrowModal] = useState(false);
+  const [escrowForm, setEscrowForm] = useState({ contract_id: '', amount: '', type: 'deposit', notes: '' });
+
+  const [payouts, setPayouts] = useState([]);
+  const [payoutsLoading, setPayoutsLoading] = useState(true);
+
+  const fetchEscrows = async () => {
+    setEscrowsLoading(true);
+    try {
+      const res = await fetch('/api/locacoes/escrow');
+      const data = await res.json();
+      if (data.escrows) setEscrows(data.escrows);
+    } catch (e) {}
+    setEscrowsLoading(false);
+  };
+
+  const fetchPayouts = async () => {
+    setPayoutsLoading(true);
+    try {
+      const res = await fetch('/api/locacoes/investors');
+      const data = await res.json();
+      if (data.payouts) setPayouts(data.payouts);
+    } catch (e) {}
+    setPayoutsLoading(false);
+  };
+
+  useEffect(() => {
+    if (activeTab === 'escrow') fetchEscrows();
+    if (activeTab === 'split') fetchPayouts();
+  }, [activeTab]);
+
   const fetchFines = async () => {
     setFinesLoading(true);
     try {
@@ -66,6 +100,49 @@ export default function LocacoesPage() {
       console.error(e);
     } finally {
       setFinesLoading(false);
+    }
+  };
+
+  const handleEscrowTransaction = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/locacoes/escrow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(escrowForm)
+      });
+      if (res.ok) {
+        showNotification('💸 Movimentação de caução registrada!');
+        setShowEscrowModal(false);
+        setEscrowForm({ contract_id: '', amount: '', type: 'deposit', notes: '' });
+        fetchEscrows();
+        fetchLocacoes();
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Erro ao registrar movimentação.');
+      }
+    } catch (err) {
+      alert('Erro de conexão.');
+    }
+  };
+
+  const handleConfirmPayout = async (vehicleId, amount, investorName) => {
+    if (!confirm(`Confirmar repasse de R$ ${Number(amount).toFixed(2)} para o investidor ${investorName}?`)) return;
+    try {
+      const res = await fetch('/api/locacoes/investors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vehicle_id: vehicleId, amount, investor_name: investorName })
+      });
+      if (res.ok) {
+        showNotification('💰 Repasse de comissão registrado com sucesso!');
+        fetchPayouts();
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Erro ao registrar repasse.');
+      }
+    } catch (err) {
+      alert('Erro de conexão.');
     }
   };
 
@@ -789,7 +866,6 @@ export default function LocacoesPage() {
       <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 24, gap: 16, overflowX: 'auto', paddingBottom: 6 }} className="scrollbar-none">
         {[
           { id: 'contracts', label: '📊 Ativos & Contratos' },
-          { id: 'fleet', label: '🚗 Sua Frota' },
           { id: 'fines', label: '🧾 Multas & Infrações' },
           { id: 'escrow', label: '💸 Caução & Custódias' },
           { id: 'split', label: '📈 Repasses' }
@@ -1119,11 +1195,9 @@ export default function LocacoesPage() {
                                 cursor: 'pointer'
                               }}
                             >
-                              💸 Restituir
+                              💸 Caução
                             </button>
                           )}
-
-
                         </div>
                       </td>
                     </tr>
@@ -1136,155 +1210,6 @@ export default function LocacoesPage() {
       </div>
         </>
       )}
-
-      {/* Tab: Sua Frota (Fleet Control) */}
-      {activeTab === 'fleet' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Frota de Veículos Cadastrada
-            </span>
-            <button 
-              onClick={() => setShowVehicleModal(true)}
-              style={{ ...btnPrimary, padding: '10px 16px', borderRadius: 10, fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}
-            >
-              <span>🚗</span> Cadastrar Carro
-            </button>
-          </div>
-
-          {vehiclesLoading ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 0' }}>
-              <div style={{ width: 32, height: 32, border: '4px solid rgba(16,185,129,0.2)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 12 }}></div>
-              <p style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>Buscando frota de veículos...</p>
-            </div>
-          ) : vehicles.length === 0 ? (
-            <div style={{ background: '#0C0E1A', border: '1px dashed rgba(255,255,255,0.06)', borderRadius: 20, padding: 40, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontSize: 36, marginBottom: 12 }}>🚗</span>
-              <h4 style={{ margin: '0 0 4px 0', color: '#fff', fontSize: 15, fontWeight: 800 }}>Nenhum veículo cadastrado na frota</h4>
-              <p style={{ fontSize: 12, color: '#64748b', margin: 0, maxWidth: 360, lineHeight: 1.5 }}>Adicione os carros de sua propriedade ou de investidores parceiros para iniciar o controle físico, KM e seguros.</p>
-              <button 
-                onClick={() => setShowVehicleModal(true)}
-                style={{ ...btnPrimary, padding: '10px 16px', borderRadius: 8, marginTop: 16 }}
-              >
-                Cadastrar Primeiro Veículo
-              </button>
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16 }}>
-              {vehicles.map(v => {
-                const limitKm = (v.last_oil_change_km || 0) + (v.oil_change_interval_km || 10000);
-                const isOilNear = (v.current_km >= limitKm - 1000);
-                const isOverdue = (v.current_km >= limitKm);
-
-                return (
-                  <div key={v.id} style={{ ...cardStyle, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div>
-                        <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#fff' }}>🚗 {v.model}</h4>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#10b981', background: 'rgba(16,185,129,0.08)', padding: '2px 6px', borderRadius: 6, display: 'inline-block', marginTop: 4 }}>
-                          {v.plate}
-                        </span>
-                      </div>
-                      <span style={{ 
-                        fontSize: 10, padding: '4px 8px', borderRadius: 20, fontWeight: 700,
-                        color: v.status === 'rented' ? '#3b82f6' : v.status === 'maintenance' ? '#f59e0b' : v.status === 'damaged' ? '#ef4444' : '#10b981',
-                        background: v.status === 'rented' ? 'rgba(59,130,246,0.08)' : v.status === 'maintenance' ? 'rgba(245,158,11,0.08)' : v.status === 'damaged' ? 'rgba(239,68,68,0.08)' : 'rgba(16,185,129,0.08)'
-                      }}>
-                        {v.status === 'rented' ? 'Alugado' : v.status === 'maintenance' ? 'Oficina' : v.status === 'damaged' ? 'Batido' : 'Disponível'}
-                      </span>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11.5, color: '#cbd5e1', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10 }}>
-                      <p style={{ margin: 0 }}><strong>KM Atual:</strong> {v.current_km?.toLocaleString('pt-BR')} KM</p>
-                      <p style={{ margin: 0 }}><strong>Cor/Ano:</strong> {v.color} • {v.year || 'N/D'}</p>
-                      {v.investor_name && <p style={{ margin: 0, color: '#38bdf8' }}><strong>Investidor:</strong> {v.investor_name} ({v.investor_split_rate}%)</p>}
-                    </div>
-
-                    {/* Oil Change Progress Bar */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 4 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 600 }}>
-                        <span style={{ color: isOverdue ? '#ef4444' : isOilNear ? '#f59e0b' : '#64748b' }}>
-                          {isOverdue ? '🚨 Óleo Vencido!' : isOilNear ? '⚠️ Troca de Óleo Próxima' : '🔧 Troca de Óleo'}
-                        </span>
-                        <span style={{ color: '#cbd5e1' }}>{v.current_km} / {limitKm} KM</span>
-                      </div>
-                      <div style={{ width: '100%', height: 6, background: 'rgba(255,255,255,0.04)', borderRadius: 3, overflow: 'hidden' }}>
-                        <div style={{ 
-                          height: '100%', 
-                          width: `${Math.min(100, Math.max(5, ((v.current_km - v.last_oil_change_km) / v.oil_change_interval_km) * 100))}%`,
-                          background: isOverdue ? '#ef4444' : isOilNear ? '#f59e0b' : '#10b981',
-                          borderRadius: 3
-                        }} />
-                      </div>
-                    </div>
-
-                    {/* Insurance Policy */}
-                    {v.insurance_policy && (
-                      <div style={{ fontSize: 10.5, color: '#64748b', background: 'rgba(255,255,255,0.01)', padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.02)' }}>
-                        🔒 Seguro: {v.insurance_policy}<br />
-                        📅 Vence: {v.insurance_expires_at ? new Date(v.insurance_expires_at).toLocaleDateString('pt-BR') : 'N/D'}
-                      </div>
-                    )}
-
-                    {/* Actions */}
-                    <div style={{ display: 'flex', gap: 6, borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10, marginTop: 'auto', flexWrap: 'wrap' }}>
-                      <button 
-                        onClick={() => handleOpenVehicleProfile(v)}
-                        style={{ ...btnPrimary, flex: '1 1 100%', padding: '8px 0', fontSize: 11, borderRadius: 8, background: 'rgba(16,185,129,0.12)', color: '#34d399', border: '1px solid rgba(16,185,129,0.2)', marginBottom: 4 }}
-                      >
-                        🔍 Ver Histórico & Documentos
-                      </button>
-                      {v.status === 'available' && (
-                        <button 
-                          onClick={() => handleUpdateVehicleStatus(v.id, 'maintenance')}
-                          style={{ ...btnGhost, flex: 1, padding: '6px 0', fontSize: 11, borderRadius: 8 }}
-                        >
-                          🔧 Enviar p/ Oficina
-                        </button>
-                      )}
-                      {v.status === 'maintenance' && (
-                        <button 
-                          onClick={() => handleUpdateVehicleStatus(v.id, 'available')}
-                          style={{ ...btnPrimary, flex: 1, padding: '6px 0', fontSize: 11, borderRadius: 8 }}
-                        >
-                          ✅ Disponibilizar
-                        </button>
-                      )}
-                      <button 
-                        onClick={async () => {
-                          const newKm = prompt('Atualizar KM do veículo:', v.current_km);
-                          if (newKm && !isNaN(parseInt(newKm))) {
-                            const res = await fetch('/api/locacoes/vehicles', {
-                              method: 'PUT',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ id: v.id, current_km: parseInt(newKm) })
-                            });
-                            if (res.ok) {
-                              showNotification('KM atualizado!');
-                              fetchVehicles();
-                            }
-                          }
-                        }}
-                        style={{ ...btnGhost, flex: 1, padding: '6px 0', fontSize: 11, borderRadius: 8 }}
-                      >
-                        📈 Ajustar KM
-                      </button>
-                      <button 
-                        onClick={() => handleDeleteVehicle(v.id)}
-                        style={{ ...btnGhost, padding: '6px 10px', borderRadius: 8, fontSize: 11, color: '#f87171' }}
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tab: Multas & Infrações (Catarina Fine Finder) */}
       {activeTab === 'fines' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1380,18 +1305,236 @@ export default function LocacoesPage() {
           )}
         </div>
       )}
+      {/* Tab: Caução & Custódias (Contas de Segurança) */}
       {activeTab === 'escrow' && (
-        <div style={cardStyle} className="text-center">
-          <span style={{ fontSize: 32 }}>💸</span>
-          <h4 style={{ margin: '12px 0 4px 0', color: '#fff', fontSize: 15, fontWeight: 800 }}>Custódia de Caução & Extratos</h4>
-          <p style={{ fontSize: 12, color: '#64748b', margin: 0, maxWidth: 360, margin: '0 auto', lineHeight: 1.5 }}>Módulo de controle de depósitos em custódia e amortização de parcelas ativo em breve na próxima fase.</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Contas de Caução em Custódia
+            </span>
+            <button 
+              onClick={() => {
+                setEscrowForm({ contract_id: '', amount: '', type: 'deposit', notes: '' });
+                setShowEscrowModal(true);
+              }}
+              style={{ ...btnPrimary, padding: '10px 16px', borderRadius: 10, fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}
+            >
+              <span>💸</span> Lançar Movimentação
+            </button>
+          </div>
+
+          {escrowsLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 0' }}>
+              <div style={{ width: 32, height: 32, border: '4px solid rgba(16,185,129,0.2)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 12 }}></div>
+              <p style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>Buscando saldos de caução...</p>
+            </div>
+          ) : escrows.length === 0 ? (
+            <div style={{ background: '#0C0E1A', border: '1px dashed rgba(255,255,255,0.06)', borderRadius: 20, padding: 40, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: 36, marginBottom: 12 }}>💸</span>
+              <h4 style={{ margin: '0 0 4px 0', color: '#fff', fontSize: 15, fontWeight: 800 }}>Nenhum depósito de caução registrado</h4>
+              <p style={{ fontSize: 12, color: '#64748b', margin: 0, maxWidth: 360, lineHeight: 1.5 }}>A caução é amortizada e retida automaticamente de acordo com as locações configuradas.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16 }}>
+              {escrows.map(e => {
+                const pct = Math.min(100, Math.max(0, (e.balance_paid / e.total_target_amount) * 100));
+                return (
+                  <div key={e.id} style={{ ...cardStyle, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#fff' }}>👥 {e.client_name}</h4>
+                        <p style={{ margin: '4px 0 0 0', fontSize: 11, color: '#64748b' }}>🚗 {e.vehicle_model} • {e.vehicle_plate}</p>
+                      </div>
+                      <span style={{ 
+                        fontSize: 10, padding: '3px 8px', borderRadius: 20, fontWeight: 700,
+                        color: e.status === 'fully_paid' ? '#10b981' : e.status === 'refunded' ? '#94a3b8' : '#f59e0b',
+                        background: e.status === 'fully_paid' ? 'rgba(16,185,129,0.08)' : e.status === 'refunded' ? 'rgba(255,255,255,0.04)' : 'rgba(245,158,11,0.08)'
+                      }}>
+                        {e.status === 'fully_paid' ? 'Quitado' : e.status === 'refunded' ? 'Restituído' : 'Em Amortização'}
+                      </span>
+                    </div>
+
+                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11.5, color: '#cbd5e1' }}>
+                        <span>Acumulado:</span>
+                        <span style={{ fontWeight: 700 }}>R$ {Number(e.balance_paid).toFixed(2)} / R$ {Number(e.total_target_amount).toFixed(2)}</span>
+                      </div>
+                      <div style={{ width: '100%', height: 6, background: 'rgba(255,255,255,0.04)', borderRadius: 3, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${pct}%`, background: '#10b981', borderRadius: 3 }} />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 6, borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10, marginTop: 'auto' }}>
+                      <button 
+                        onClick={() => {
+                          setEscrowForm({ contract_id: e.contract_id, amount: '', type: 'withdraw', notes: 'Abatimento por Avaria' });
+                          setShowEscrowModal(true);
+                        }}
+                        style={{ ...btnGhost, flex: 1, padding: '8px 0', fontSize: 10.5, borderRadius: 8, color: '#f87171', borderColor: 'rgba(248,113,113,0.15)', cursor: 'pointer' }}
+                      >
+                        🛠️ Descontar Avaria
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setEscrowForm({ contract_id: e.contract_id, amount: e.balance_paid, type: 'refund', notes: 'Restituição de Caução' });
+                          setShowEscrowModal(true);
+                        }}
+                        style={{ ...btnGhost, flex: 1, padding: '8px 0', fontSize: 10.5, borderRadius: 8, color: '#38bdf8', borderColor: 'rgba(56,189,248,0.15)', cursor: 'pointer' }}
+                      >
+                        💸 Devolver Caução
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
+
+      {/* Tab: Repasses para Investidores (Split Control) */}
       {activeTab === 'split' && (
-        <div style={cardStyle} className="text-center">
-          <span style={{ fontSize: 32 }}>📈</span>
-          <h4 style={{ margin: '12px 0 4px 0', color: '#fff', fontSize: 15, fontWeight: 800 }}>Repasse para Investidores</h4>
-          <p style={{ fontSize: 12, color: '#64748b', margin: 0, maxWidth: 360, margin: '0 auto', lineHeight: 1.5 }}>Módulo de split e comissão líquida de faturamento para parceiros de carros ativo em breve na próxima fase.</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Repasse de Comissão e Splits de Faturamento
+          </span>
+
+          {payoutsLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 0' }}>
+              <div style={{ width: 32, height: 32, border: '4px solid rgba(16,185,129,0.2)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 12 }}></div>
+              <p style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>Calculando repasses de parceiros...</p>
+            </div>
+          ) : payouts.length === 0 ? (
+            <div style={{ background: '#0C0E1A', border: '1px dashed rgba(255,255,255,0.06)', borderRadius: 20, padding: 40, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifycontent: 'center' }}>
+              <span style={{ fontSize: 36, marginBottom: 12 }}>📈</span>
+              <h4 style={{ margin: '0 0 4px 0', color: '#fff', fontSize: 15, fontWeight: 800 }}>Nenhum veículo de investidor ativo</h4>
+              <p style={{ fontSize: 12, color: '#64748b', margin: 0, maxWidth: 360, lineHeight: 1.5 }}>Insira o nome do investidor no cadastro do carro para habilitar o cálculo automático de divisão de faturamento.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16 }}>
+              {payouts.map(p => (
+                <div key={p.vehicle_id} style={{ ...cardStyle, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ display: 'flex', justifycontent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#fff' }}>📈 Investidor: {p.investor_name}</h4>
+                      <p style={{ margin: '4px 0 0 0', fontSize: 11, color: '#64748b' }}>🚗 {p.model} • {p.plate}</p>
+                    </div>
+                    <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 20, fontWeight: 700, color: '#38bdf8', background: 'rgba(56,189,248,0.08)' }}>
+                      Split {p.investor_split_rate}%
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12, color: '#cbd5e1', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span className="text-slate-400">Receita Bruta:</span>
+                      <span className="font-bold text-slate-200">R$ {p.gross_revenue?.toFixed(2)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span className="text-slate-400">Despesas Oficina:</span>
+                      <span className="font-bold text-rose-400">-{p.maintenance_cost?.toFixed(2)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span className="text-slate-400">Comissão Admin ({100 - p.investor_split_rate}%):</span>
+                      <span className="font-bold text-slate-200">R$ {p.admin_commission?.toFixed(2)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 8, color: '#34d399', fontWeight: 800 }}>
+                      <span>Líquido Repassar:</span>
+                      <span>R$ {p.net_repasse?.toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  {p.last_payout_at && (
+                    <p style={{ margin: 0, fontSize: 9.5, color: '#64748b' }}>
+                      Último repasse: {new Date(p.last_payout_at).toLocaleDateString('pt-BR')}
+                    </p>
+                  )}
+
+                  {p.net_repasse > 0 && (
+                    <button 
+                      onClick={() => handleConfirmPayout(p.vehicle_id, p.net_repasse, p.investor_name)}
+                      style={{ ...btnPrimary, padding: '8px 0', fontSize: 11, borderRadius: 8, marginTop: 10 }}
+                    >
+                      💵 Confirmar Repasse
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Escrow Transaction Modal */}
+      {showEscrowModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(12, 14, 26, 0.96)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <div style={{ width: '100%', maxWidth: 440, background: '#0C0E1A', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 24, padding: 24 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 900, color: '#fff', margin: 0 }}>💸 Movimentação de Caução</h3>
+              <button onClick={() => setShowEscrowModal(false)} style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 18, cursor: 'pointer' }}>✕</button>
+            </div>
+            <form onSubmit={handleEscrowTransaction} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 10, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: 6 }}>Contrato de Locação</label>
+                <select
+                  required
+                  value={escrowForm.contract_id}
+                  onChange={e => setEscrowForm(prev => ({ ...prev, contract_id: e.target.value }))}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 10, background: '#070913', border: '1px solid rgba(255,255,255,0.08)', color: '#fff', fontSize: 13 }}
+                >
+                  <option value="">Selecione o motorista...</option>
+                  {escrows.map(e => (
+                    <option key={e.id} value={e.contract_id}>{e.client_name} - {e.vehicle_plate}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 10, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: 6 }}>Valor da Movimentação</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    placeholder="0.00"
+                    value={escrowForm.amount}
+                    onChange={e => setEscrowForm(prev => ({ ...prev, amount: e.target.value }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: 10, background: '#070913', border: '1px solid rgba(255,255,255,0.08)', color: '#fff', fontSize: 13 }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 10, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: 6 }}>Tipo</label>
+                  <select
+                    value={escrowForm.type}
+                    onChange={e => setEscrowForm(prev => ({ ...prev, type: e.target.value }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: 10, background: '#070913', border: '1px solid rgba(255,255,255,0.08)', color: '#fff', fontSize: 13 }}
+                  >
+                    <option value="deposit">Aporte (Depósito)</option>
+                    <option value="withdraw">Abatimento (Dano/Multa)</option>
+                    <option value="refund">Restituição (Devolver)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 10, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: 6 }}>Descrição / Justificativa</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ex: Aporte semanal de caução"
+                  value={escrowForm.notes}
+                  onChange={e => setEscrowForm(prev => ({ ...prev, notes: e.target.value }))}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 10, background: '#070913', border: '1px solid rgba(255,255,255,0.08)', color: '#fff', fontSize: 13 }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                style={{ ...btnPrimary, padding: '12px 0', fontSize: 13, borderRadius: 12, marginTop: 10 }}
+              >
+                Registrar Movimentação
+              </button>
+            </form>
+          </div>
         </div>
       )}
       </div>

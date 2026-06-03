@@ -11,7 +11,8 @@ export async function GET(request) {
       SELECT f.*, v.model, v.plate, cl.name as client_name, cl.phone as client_phone, c.id as charge_id
       FROM traffic_fines f
       JOIN vehicles v ON f.vehicle_id = v.id
-      LEFT JOIN clients cl ON f.contract_id = cl.id
+      LEFT JOIN contracts_rentals cr ON f.contract_id = cr.id
+      LEFT JOIN clients cl ON cr.client_id = cl.id
       LEFT JOIN charges c ON c.client_id = cl.id AND c.description LIKE '%' || v.plate || '%' AND c.description LIKE '%Multa%'
       WHERE v.user_id = ?
       ORDER BY f.infraction_date DESC
