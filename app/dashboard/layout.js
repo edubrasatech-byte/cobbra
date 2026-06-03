@@ -8,6 +8,7 @@ import TopBar from '../components/dashboard/TopBar';
 
 const NAV_ITEMS = [
   { href: '/dashboard', icon: '📊', label: 'Visão Geral' },
+  { href: '/dashboard/carteira', icon: '💳', label: 'Cobbra Pay' },
   { href: '/dashboard/cobrancas', icon: '💰', label: 'Cobranças' },
   { href: '/dashboard/cobranca-diaria', icon: '📅', label: 'Recorrentes' },
   { href: '/dashboard/calendario', icon: '🗓️', label: 'Calendário' },
@@ -22,6 +23,13 @@ const LEADS_ITEM = { href: '/dashboard/leads', icon: '🔍', label: 'Prospecçã
 const ADMIN_ITEM = { href: '/dashboard/admin', icon: '🛡️', label: 'Admin' };
 
 const NAV_ICONS = {
+  '/dashboard/carteira': (colorClass) => (
+    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <line x1="2" y1="10" x2="22" y2="10" />
+      <rect x="6" y="14" width="3" height="1" />
+    </svg>
+  ),
   '/dashboard/leads': (colorClass) => (
     <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="11" cy="11" r="8" />

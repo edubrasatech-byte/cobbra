@@ -40,25 +40,36 @@ export async function POST(request) {
 
       const paidAmount = payment.value || existing.amount;
       const paidAt = payment.confirmedDate ? new Date(payment.confirmedDate).toISOString() : new Date().toISOString();
+      const billingType = payment.billingType || '';
+
+      // Calculate net amount for wallet: absorb Pix/Boleto, pass card fees to client
+      let netAmount = paidAmount;
+      let feeDetail = '';
+      if (billingType === 'CREDIT_CARD' || billingType === 'DEBIT_CARD') {
+        netAmount = Math.max(0, paidAmount * (1 - 0.0299) - 0.40);
+        netAmount = Math.round(netAmount * 100) / 100;
+        feeDetail = ' (Taxa de Cartão de 2,99% + R$ 0,40 deduzida)';
+      }
 
       // Transação no SQLite para atualizar o status da cobrança, saldo do cliente e logar transação
       run('UPDATE charges SET status = "paid", paid_at = ?, paid_amount = ?, updated_at = datetime("now") WHERE id = ?', 
         [paidAt, paidAmount, chargeId]);
 
-      // Atualizar estatísticas do cliente
-      run('UPDATE clients SET total_paid = total_paid + ?, total_overdue = MAX(0, total_overdue - ?), last_payment_at = datetime("now"), updated_at = datetime("now") WHERE id = ?', 
-        [paidAmount, existing.amount, existing.client_id]);
+      // Atualizar estatísticas do cliente e o saldo da carteira (wallet_balance)
+      run('UPDATE clients SET wallet_balance = wallet_balance + ?, total_paid = total_paid + ?, total_overdue = MAX(0, total_overdue - ?), last_payment_at = datetime("now"), updated_at = datetime("now") WHERE id = ?', 
+        [netAmount, paidAmount, existing.amount, existing.client_id]);
 
-      // Registrar transação no livro financeiro
-      run('INSERT INTO transactions (id, user_id, charge_id, client_id, amount, type, payment_method, reference, notes) VALUES (?, ?, ?, ?, ?, "income", "pix", ?, ?)',
+      // Registrar transação no livro financeiro (com o valor líquido creditado na carteira)
+      run('INSERT INTO transactions (id, user_id, charge_id, client_id, amount, type, payment_method, reference, notes) VALUES (?, ?, ?, ?, ?, "income", ?, ?, ?)',
         [
           generateId(),
           existing.user_id,
           chargeId,
           existing.client_id,
-          paidAmount,
+          netAmount,
+          billingType.toLowerCase() || 'pix',
           payment.id || 'ASAAS-WH',
-          `Liquidação Asaas do Pix/Boleto: ${existing.description || ''}`
+          `Liquidação Cobbra Pay: ${existing.description || ''}${feeDetail}`
         ]);
 
       // Registrar atividade do usuário
