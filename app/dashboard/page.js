@@ -195,7 +195,16 @@ export default function DashboardHome() {
   const [selectedBarIndex, setSelectedBarIndex] = useState(null);
   const [insights, setInsights] = useState([]);
   const [insightsLoading, setInsightsLoading] = useState(false);
-  const [showQuickCreate, setShowQuickCreate] = useState(false);
+  const [showFabDropdown, setShowFabDropdown] = useState(false);
+  const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const [vehicles, setVehicles] = useState([]);
+  const [txForm, setTxForm] = useState({
+    amount: '',
+    type: 'income',
+    notes: '',
+    vehicle_id: '',
+    payment_method: 'pix'
+  });
 
   function loadStats() {
     setLoading(true);
@@ -246,7 +255,61 @@ export default function DashboardHome() {
   useEffect(() => {
     loadStats();
     loadInsights();
+    fetch('/api/locacoes/vehicles')
+      .then(r => r.json())
+      .then(data => {
+        if (data.vehicles) setVehicles(data.vehicles);
+      })
+      .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (showFabDropdown && !e.target.closest('#fab-container')) {
+        setShowFabDropdown(false);
+      }
+    };
+    document.addEventListener('click', handleOutsideClick);
+    return () => document.removeEventListener('click', handleOutsideClick);
+  }, [showFabDropdown]);
+
+  const handleTransactionSubmit = async (e) => {
+    e.preventDefault();
+    if (!txForm.amount || !txForm.notes) {
+      alert('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+    try {
+      const res = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: parseFloat(txForm.amount),
+          type: txForm.type,
+          notes: txForm.notes,
+          vehicle_id: txForm.vehicle_id || null,
+          payment_method: txForm.payment_method
+        })
+      });
+      if (res.ok) {
+        setShowTransactionModal(false);
+        setTxForm({
+          amount: '',
+          type: 'income',
+          notes: '',
+          vehicle_id: '',
+          payment_method: 'pix'
+        });
+        loadStats();
+        alert('Transação manual registrada com sucesso! 💸');
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Erro ao registrar transação.');
+      }
+    } catch (err) {
+      alert('Erro de conexão ao salvar transação.');
+    }
+  };
 
   if (loading || !stats) return (
     <div className="flex flex-col items-center justify-center h-96">
@@ -655,46 +718,223 @@ export default function DashboardHome() {
         )}
       </div>
 
-      {/* Floating Action Button (Item 3) */}
-      <div className="fixed bottom-20 right-6 md:bottom-8 md:right-8 z-50">
+      {/* Floating Action Button Container (Speed Dial / Dropdown) */}
+      <div id="fab-container" className="fixed bottom-20 right-6 md:bottom-8 md:right-8 z-50 flex flex-col items-end">
+        {/* Dropdown Menu */}
+        <div 
+          className={`absolute bottom-16 right-0 mb-2 w-56 bg-[#0c0e1a]/95 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-2xl p-3 flex flex-col gap-1 transition-all duration-200 origin-bottom-right transform ${
+            showFabDropdown 
+              ? 'scale-100 opacity-100 pointer-events-auto' 
+              : 'scale-95 opacity-0 pointer-events-none'
+          }`}
+        >
+          <div className="px-3 py-1.5 border-b border-slate-900/60 mb-1">
+            <p className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Ações Rápidas</p>
+          </div>
+          
+          <a
+            href="/dashboard/cobrancas?action=new"
+            className="w-full text-left px-3 py-2 hover:bg-slate-900 rounded-xl flex items-center gap-2.5 transition-colors group"
+          >
+            <span className="text-sm">💰</span>
+            <div>
+              <p className="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">Nova Cobrança</p>
+              <p className="text-[9px] text-slate-500">Gerar Pix/Fatura</p>
+            </div>
+          </a>
+
+          <a
+            href="/dashboard/locacoes?action=new"
+            className="w-full text-left px-3 py-2 hover:bg-slate-900 rounded-xl flex items-center gap-2.5 transition-colors group"
+          >
+            <span className="text-sm">🚗</span>
+            <div>
+              <p className="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">Novo Contrato</p>
+              <p className="text-[9px] text-slate-500">Locação de veículo</p>
+            </div>
+          </a>
+
+          <a
+            href="/dashboard/veiculos?action=new"
+            className="w-full text-left px-3 py-2 hover:bg-slate-900 rounded-xl flex items-center gap-2.5 transition-colors group"
+          >
+            <span className="text-sm">🔑</span>
+            <div>
+              <p className="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">Cadastrar Veículo</p>
+              <p className="text-[9px] text-slate-500">Adicionar à frota</p>
+            </div>
+          </a>
+
+          <a
+            href="/dashboard/clientes?action=new"
+            className="w-full text-left px-3 py-2 hover:bg-slate-900 rounded-xl flex items-center gap-2.5 transition-colors group"
+          >
+            <span className="text-sm">👥</span>
+            <div>
+              <p className="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">Novo Cliente</p>
+              <p className="text-[9px] text-slate-500">Registrar no CRM</p>
+            </div>
+          </a>
+
+          <a
+            href="/dashboard/manutencoes?action=new"
+            className="w-full text-left px-3 py-2 hover:bg-slate-900 rounded-xl flex items-center gap-2.5 transition-colors group"
+          >
+            <span className="text-sm">🛠️</span>
+            <div>
+              <p className="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">Lançar Manutenção</p>
+              <p className="text-[9px] text-slate-500">Ordem de Serviço (OS)</p>
+            </div>
+          </a>
+
+          <a
+            href="/dashboard/locacoes?tab=fines&action=new"
+            className="w-full text-left px-3 py-2 hover:bg-slate-900 rounded-xl flex items-center gap-2.5 transition-colors group"
+          >
+            <span className="text-sm">🧾</span>
+            <div>
+              <p className="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">Lançar Multa</p>
+              <p className="text-[9px] text-slate-500">Multa de trânsito</p>
+            </div>
+          </a>
+
+          <button
+            onClick={() => {
+              setShowFabDropdown(false);
+              setShowTransactionModal(true);
+            }}
+            className="w-full text-left px-3 py-2 hover:bg-slate-900 rounded-xl flex items-center gap-2.5 transition-colors group cursor-pointer"
+          >
+            <span className="text-sm">💸</span>
+            <div>
+              <p className="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">Transação Manual</p>
+              <p className="text-[9px] text-slate-500">Receita/Despesa avulsa</p>
+            </div>
+          </button>
+        </div>
+
+        {/* Trigger Button */}
         <button
-          onClick={() => setShowQuickCreate(true)}
+          onClick={() => setShowFabDropdown(!showFabDropdown)}
           className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white flex items-center justify-center shadow-xl shadow-emerald-500/20 active:scale-95 transition-all select-none cursor-pointer border border-emerald-400/30 group"
           title="Ações Rápidas"
         >
-          <span className="text-2xl font-extrabold group-hover:rotate-90 transition-transform duration-300">+</span>
+          <span className={`text-2xl font-extrabold transition-transform duration-300 ${
+            showFabDropdown ? 'rotate-[135deg]' : ''
+          }`}>+</span>
         </button>
       </div>
 
-      {/* Quick Create Modal (Item 3) */}
-      {showQuickCreate && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4" onClick={() => setShowQuickCreate(false)}>
-          <div className="bg-[#0C0E1A] border border-slate-800/80 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
+      {/* 💸 Transaction Modal (Item 11) */}
+      {showTransactionModal && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-[60] flex items-center justify-center p-4 overflow-y-auto" onClick={() => setShowTransactionModal(false)}>
+          <div className="bg-[#0C0E1A] border border-slate-800/80 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl relative my-8" onClick={e => e.stopPropagation()}>
             <div className="px-6 py-4 border-b border-slate-900/60 flex justify-between items-center">
-              <h3 className="text-sm font-bold text-slate-200">🐍 Ações Rápidas Cobbra</h3>
-              <button onClick={() => setShowQuickCreate(false)} className="text-slate-500 hover:text-slate-300 text-sm">✕</button>
+              <h3 className="text-sm font-bold text-slate-200">💸 Lançamento Financeiro Manual</h3>
+              <button onClick={() => setShowTransactionModal(false)} className="text-slate-500 hover:text-slate-300 text-sm">✕</button>
             </div>
-            <div className="p-6 grid grid-cols-2 gap-4">
-              {[
-                { title: 'Cobrança', desc: 'Gerar Pix/Fatura', icon: '💰', href: '/dashboard/cobrancas?action=new' },
-                { title: 'Locação', desc: 'Novo Contrato', icon: '🚗', href: '/dashboard/locacoes?action=new' },
-                { title: 'Veículo', desc: 'Cadastrar Frota', icon: '🔑', href: '/dashboard/veiculos?action=new' },
-                { title: 'Cliente', desc: 'Adicionar CRM', icon: '👥', href: '/dashboard/clientes?action=new' },
-                { title: 'Manutenção', desc: 'Lançar OS', icon: '🛠️', href: '/dashboard/manutencoes?action=new' },
-                { title: 'Multa', desc: 'Lançar Infração', icon: '🧾', href: '/dashboard/locacoes?tab=fines&action=new' }
-              ].map(opt => (
-                <a
-                  key={opt.title}
-                  href={opt.href}
-                  onClick={() => setShowQuickCreate(false)}
-                  className="p-4 bg-slate-950/50 hover:bg-emerald-500/5 border border-slate-900 hover:border-emerald-500/20 rounded-xl flex flex-col gap-1 transition-all group"
+            <form onSubmit={handleTransactionSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1.5">Tipo de Lançamento</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setTxForm(prev => ({ ...prev, type: 'income' }))}
+                    className={`py-2 rounded-xl text-xs font-bold transition-all border ${
+                      txForm.type === 'income'
+                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 shadow-sm shadow-emerald-500/10'
+                        : 'bg-transparent text-slate-400 border-slate-800/60 hover:border-slate-800'
+                    }`}
+                  >
+                    📈 Receita (Entrada)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTxForm(prev => ({ ...prev, type: 'expense' }))}
+                    className={`py-2 rounded-xl text-xs font-bold transition-all border ${
+                      txForm.type === 'expense'
+                        ? 'bg-rose-500/10 text-rose-400 border-rose-500/30 shadow-sm shadow-rose-500/10'
+                        : 'bg-transparent text-slate-400 border-slate-800/60 hover:border-slate-800'
+                    }`}
+                  >
+                    📉 Despesa (Saída)
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1.5">Destinação</label>
+                <select
+                  value={txForm.vehicle_id}
+                  onChange={e => setTxForm(prev => ({ ...prev, vehicle_id: e.target.value }))}
+                  className="w-full bg-[#070913] border border-slate-800/60 focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none transition-colors"
                 >
-                  <span className="text-2xl mb-1 group-hover:scale-110 transition-transform origin-left">{opt.icon}</span>
-                  <span className="text-xs font-bold text-slate-200">{opt.title}</span>
-                  <span className="text-[10px] text-slate-500">{opt.desc}</span>
-                </a>
-              ))}
-            </div>
+                  <option value="">🏢 Empresa (Geral / Caixa Corporativo)</option>
+                  <optgroup label="Frota de Veículos">
+                    {vehicles.map(v => (
+                      <option key={v.id} value={v.id}>🚗 {v.model} - {v.plate}</option>
+                    ))}
+                  </optgroup>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1.5">Valor (R$)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    placeholder="0.00"
+                    value={txForm.amount}
+                    onChange={e => setTxForm(prev => ({ ...prev, amount: e.target.value }))}
+                    className="w-full bg-[#070913] border border-slate-800/60 focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1.5">Forma de Pagamento</label>
+                  <select
+                    value={txForm.payment_method}
+                    onChange={e => setTxForm(prev => ({ ...prev, payment_method: e.target.value }))}
+                    className="w-full bg-[#070913] border border-slate-800/60 focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none transition-colors"
+                  >
+                    <option value="pix">Pix</option>
+                    <option value="boleto">Boleto</option>
+                    <option value="credit_card">Cartão de Crédito</option>
+                    <option value="cash">Dinheiro</option>
+                    <option value="bank_transfer">Transferência Bancária</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1.5">Descrição / Justificativa</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ex: Abastecimento de combustível, Recebimento de franquia..."
+                  value={txForm.notes}
+                  onChange={e => setTxForm(prev => ({ ...prev, notes: e.target.value }))}
+                  className="w-full bg-[#070913] border border-slate-800/60 focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none transition-colors"
+                />
+              </div>
+
+              <div className="flex gap-3 justify-end pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowTransactionModal(false)}
+                  className="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700/60 text-slate-200 hover:text-white text-xs font-bold transition-all"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-extrabold text-xs shadow-md shadow-emerald-500/10 transition-all cursor-pointer"
+                >
+                  Lançar Transação
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

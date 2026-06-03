@@ -904,13 +904,13 @@ export default function CobrancasPage() {
                     setShowRebateModal(false);
                     setRebateCharge(null);
                   }} 
-                  className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold hover:bg-slate-800 hover:text-slate-200"
+                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700/60 text-slate-200 hover:text-white text-xs font-bold transition-all"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
-                  className="px-4 py-2 rounded-lg bg-[#10B981] hover:bg-emerald-600 text-white text-xs font-bold transition-colors"
+                  className="px-4 py-2 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-extrabold text-xs shadow-md shadow-emerald-500/10 transition-all cursor-pointer"
                 >
                   Confirmar
                 </button>
@@ -1192,13 +1192,13 @@ export default function CobrancasPage() {
                 <button 
                   type="button" 
                   onClick={() => setShowInlineClientModal(false)} 
-                  className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold hover:bg-slate-800 hover:text-slate-200"
+                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700/60 text-slate-200 hover:text-white text-xs font-bold transition-all"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
-                  className="px-4 py-2 rounded-lg bg-[#10B981] hover:bg-emerald-600 text-white text-xs font-bold transition-colors"
+                  className="px-4 py-2 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-extrabold text-xs shadow-md shadow-emerald-500/10 transition-all cursor-pointer"
                 >
                   Cadastrar e Selecionar
                 </button>

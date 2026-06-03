@@ -252,14 +252,14 @@ function MaintenanceContent() {
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => handleEditClick(m)}
-                          className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white cursor-pointer"
+                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700/60 text-slate-200 hover:text-white cursor-pointer transition-colors"
                           title="Editar"
                         >
                           ✏️
                         </button>
                         <button
                           onClick={() => handleDelete(m.id)}
-                          className="p-1.5 rounded-lg bg-rose-500/5 border border-rose-500/10 text-rose-400 hover:bg-rose-500/10 cursor-pointer"
+                          className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 hover:border-rose-500/30 text-rose-400 cursor-pointer transition-colors"
                           title="Excluir"
                         >
                           🗑️

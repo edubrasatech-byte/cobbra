@@ -120,21 +120,28 @@ export async function POST(request) {
       }
     }
 
-    // Generate Pix code if the subscriber has a configured key
-    const pixCode = user.pix_key ? generateStaticPix({
-      key: user.pix_key,
-      amount: updatedAmount,
-      name: user.business_name || user.name
-    }) : '';
+    // Generate Pix code or use Asaas Pix copy-paste if available
+    let pixCode = charge.pix_copy_paste || '';
+    if (!pixCode && user.pix_key) {
+      pixCode = generateStaticPix({
+        key: user.pix_key,
+        amount: updatedAmount,
+        name: user.business_name || user.name
+      });
+    }
 
     // Format WhatsApp message with Pix and updated debt summary if applicable
     let finalMessage = message;
+    if (charge.payment_link) {
+      finalMessage += `\n\n🔗 *Link de Pagamento (Fatura):* ${charge.payment_link}`;
+    }
+
     if (pixCode) {
       finalMessage += `\n\n💵 *Resumo do Pagamento:* \n`;
       if (delayDays > 0 && interestApplied > 0) {
         finalMessage += `• Valor original: R$ ${charge.amount.toFixed(2).replace('.', ',')}\n`;
         finalMessage += `• Juros por atraso (${delayDays} dias): R$ ${interestApplied.toFixed(2).replace('.', ',')}\n`;
-        finalMessage += `• *Valor Total Atualizado:* R$ ${updatedAmount.toFixed(2).replace('.', ',')}\n\n`;
+        finalMessage += `• *Valor Total:* R$ ${updatedAmount.toFixed(2).replace('.', ',')}\n\n`;
       } else {
         finalMessage += `• *Valor Total:* R$ ${updatedAmount.toFixed(2).replace('.', ',')}\n\n`;
       }

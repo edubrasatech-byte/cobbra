@@ -165,12 +165,38 @@ CLÁUSULA 6 - DA DEVOLUÇÃO E CLÁUSULA PENAL
     }
 
     const id = generateId();
-    run(
-      `INSERT INTO charges (id, user_id, client_id, amount, description, due_date, recurrence, reminder_channel, payment_method, daily_interest_rate, vehicle_info, loan_info, contract_text, deposit_amount)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [id, user.id, client_id, amount, description || '', due_date, recurrence || 'once', finalReminderChannel, payment_method || 'pix', daily_interest_rate || 0, vehicle_info || null, loan_info || null, finalContractText, parseFloat(deposit_amount || 0)]
-    );
+    
+    let asaasCustomerId = client.asaas_customer_id || null;
+    let asaasPaymentLink = null;
+    let asaasPixCopyPaste = null;
+    let asaasId = null;
 
+    if (process.env.ASAAS_API_KEY) {
+      try {
+        const { createAsaasCustomer, createAsaasPayment } = require('@/lib/asaas');
+        asaasCustomerId = await createAsaasCustomer(user, client);
+        if (asaasCustomerId) {
+          run('UPDATE clients SET asaas_customer_id = ? WHERE id = ?', [asaasCustomerId, client.id]);
+          
+          const chargeObj = { id, amount, due_date, description, payment_method };
+          const asaasResult = await createAsaasPayment(user, chargeObj, asaasCustomerId);
+          if (asaasResult && !asaasResult.fallback) {
+            asaasId = asaasResult.asaasId;
+            asaasPaymentLink = asaasResult.paymentLink || asaasResult.invoiceUrl;
+            asaasPixCopyPaste = asaasResult.pixCopyPaste;
+            console.log(`✅ Cobrança ${id} integrada com Asaas com sucesso (ID: ${asaasId})`);
+          }
+        }
+      } catch (err) {
+        console.error('❌ Falha ao integrar com Asaas, executando fallback local:', err);
+      }
+    }
+
+    run(
+      `INSERT INTO charges (id, user_id, client_id, amount, description, due_date, recurrence, reminder_channel, payment_method, daily_interest_rate, vehicle_info, loan_info, contract_text, deposit_amount, asaas_id, payment_link, pix_copy_paste)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, user.id, client_id, amount, description || '', due_date, recurrence || 'once', finalReminderChannel, payment_method || 'pix', daily_interest_rate || 0, vehicle_info || null, loan_info || null, finalContractText, parseFloat(deposit_amount || 0), asaasId, asaasPaymentLink, asaasPixCopyPaste]
+    );
 
     // Update client total_charged
     run("UPDATE clients SET total_charged = total_charged + ?, updated_at = datetime('now') WHERE id = ?", [amount, client_id]);

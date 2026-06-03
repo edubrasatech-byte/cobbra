@@ -28,7 +28,7 @@ export async function POST(request) {
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
     const body = await request.json();
-    const { model, plate, color, year, renavam, chassis, current_km, investor_name, investor_split_rate, oil_change_interval_km, insurance_policy, insurance_expires_at } = body;
+    const { model, plate, color, year, renavam, chassis, current_km, investor_name, investor_split_rate, oil_change_interval_km, insurance_policy, insurance_expires_at, ipva_status, licensing_status, licensing_expiration } = body;
 
     if (!model || !plate || !color) {
       return Response.json({ error: 'Modelo, Placa e Cor são obrigatórios.' }, { status: 400 });
@@ -45,15 +45,16 @@ export async function POST(request) {
       INSERT INTO vehicles (
         id, user_id, model, plate, color, year, renavam, chassis, current_km, 
         investor_name, investor_split_rate, oil_change_interval_km, last_oil_change_km, 
-        insurance_policy, insurance_expires_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        insurance_policy, insurance_expires_at, ipva_status, licensing_status, licensing_expiration
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       id, user.id, model.trim(), plate.toUpperCase().trim(), color.trim(), 
       parseInt(year) || null, renavam ? renavam.trim() : null, chassis ? chassis.trim() : null, 
       parseInt(current_km) || 0, investor_name ? investor_name.trim() : null, 
       investor_split_rate ? parseFloat(investor_split_rate) : null, 
       parseInt(oil_change_interval_km) || 10000, parseInt(current_km) || 0,
-      insurance_policy ? insurance_policy.trim() : null, insurance_expires_at || null
+      insurance_policy ? insurance_policy.trim() : null, insurance_expires_at || null,
+      ipva_status || 'PAGO', licensing_status || 'EM DIA', licensing_expiration || null
     ]);
 
     return Response.json({ success: true, id });
@@ -68,7 +69,7 @@ export async function PUT(request) {
     if (!user) return Response.json({ error: 'Não autorizado' }, { status: 401 });
 
     const body = await request.json();
-    const { id, status, current_km, last_oil_change_km, oil_change_interval_km, insurance_policy, insurance_expires_at, model, color, year, renavam, chassis, investor_name, investor_split_rate } = body;
+    const { id, status, current_km, last_oil_change_km, oil_change_interval_km, insurance_policy, insurance_expires_at, model, color, year, renavam, chassis, investor_name, investor_split_rate, ipva_status, licensing_status, licensing_expiration } = body;
 
     if (!id) return Response.json({ error: 'ID do veículo é obrigatório.' }, { status: 400 });
 
@@ -114,6 +115,15 @@ export async function PUT(request) {
     }
     if (investor_split_rate !== undefined) {
       run("UPDATE vehicles SET investor_split_rate = ?, updated_at = datetime('now') WHERE id = ?", [investor_split_rate, id]);
+    }
+    if (ipva_status !== undefined) {
+      run("UPDATE vehicles SET ipva_status = ?, updated_at = datetime('now') WHERE id = ?", [ipva_status, id]);
+    }
+    if (licensing_status !== undefined) {
+      run("UPDATE vehicles SET licensing_status = ?, updated_at = datetime('now') WHERE id = ?", [licensing_status, id]);
+    }
+    if (licensing_expiration !== undefined) {
+      run("UPDATE vehicles SET licensing_expiration = ?, updated_at = datetime('now') WHERE id = ?", [licensing_expiration, id]);
     }
 
     return Response.json({ success: true });

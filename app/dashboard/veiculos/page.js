@@ -21,13 +21,15 @@ function VehiclesContent() {
   const [form, setForm] = useState({
     model: '', plate: '', color: '', year: '', renavam: '', chassis: '',
     current_km: '', oil_change_interval_km: '10000', insurance_policy: '',
-    insurance_expires_at: '', investor_name: '', investor_split_rate: ''
+    insurance_expires_at: '', investor_name: '', investor_split_rate: '',
+    ipva_status: 'PAGO', licensing_status: 'EM DIA', licensing_expiration: ''
   });
 
   const [editForm, setEditForm] = useState({
     id: '', model: '', color: '', year: '', renavam: '', chassis: '',
     current_km: '', oil_change_interval_km: '10000', insurance_policy: '',
-    insurance_expires_at: '', investor_name: '', investor_split_rate: '', status: ''
+    insurance_expires_at: '', investor_name: '', investor_split_rate: '', status: '',
+    ipva_status: 'PAGO', licensing_status: 'EM DIA', licensing_expiration: ''
   });
 
   useEffect(() => {
@@ -73,7 +75,10 @@ function VehiclesContent() {
           color: data.vehicle.color,
           year: data.vehicle.year,
           chassis: data.vehicle.chassis,
-          renavam: data.vehicle.renavam
+          renavam: data.vehicle.renavam,
+          ipva_status: data.vehicle.ipva_status,
+          licensing_status: data.vehicle.licensing_status,
+          licensing_expiration: data.vehicle.licensing_expiration
         }));
         showNotification('🚗 Placa consultada com sucesso! Dados preenchidos.');
       } else {
@@ -106,7 +111,8 @@ function VehiclesContent() {
         setForm({
           model: '', plate: '', color: '', year: '', renavam: '', chassis: '',
           current_km: '', oil_change_interval_km: '10000', insurance_policy: '',
-          insurance_expires_at: '', investor_name: '', investor_split_rate: ''
+          insurance_expires_at: '', investor_name: '', investor_split_rate: '',
+          ipva_status: 'PAGO', licensing_status: 'EM DIA', licensing_expiration: ''
         });
         fetchVehicles();
         // Remove query param
@@ -134,7 +140,10 @@ function VehiclesContent() {
       insurance_expires_at: v.insurance_expires_at || '',
       investor_name: v.investor_name || '',
       investor_split_rate: v.investor_split_rate || '',
-      status: v.status || 'available'
+      status: v.status || 'available',
+      ipva_status: v.ipva_status || 'PAGO',
+      licensing_status: v.licensing_status || 'EM DIA',
+      licensing_expiration: v.licensing_expiration || ''
     });
     setShowEditModal(true);
   };
@@ -302,6 +311,32 @@ function VehiclesContent() {
                         <span className="text-emerald-400 font-bold">{v.investor_name} ({v.investor_split_rate || 80}%)</span>
                       </div>
                     )}
+                    <div className="flex justify-between border-t border-slate-900/60 pt-2">
+                      <span>Status IPVA:</span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                        v.ipva_status?.includes('PAGO') 
+                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                          : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                      }`}>{v.ipva_status || 'PAGO'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Licenciamento:</span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                        v.licensing_status === 'EM DIA' 
+                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                          : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                      }`}>{v.licensing_status || 'EM DIA'}</span>
+                    </div>
+                    {v.licensing_expiration && (
+                      <div className="flex justify-between">
+                        <span>Vencimento Lic.:</span>
+                        <span className="text-slate-300 font-mono font-bold">
+                          {v.licensing_expiration.includes('-') 
+                            ? v.licensing_expiration.split('-').reverse().join('/') 
+                            : v.licensing_expiration}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Oil change warning bar */}
@@ -326,13 +361,13 @@ function VehiclesContent() {
                 <div className="flex gap-2 border-t border-slate-900 pt-4 mt-auto">
                   <button
                     onClick={() => handleEditClick(v)}
-                    className="flex-1 py-2 rounded-xl bg-slate-900 hover:bg-slate-800/80 border border-slate-800/60 text-slate-200 text-xs font-bold transition-all cursor-pointer text-center"
+                    className="flex-1 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700/60 text-slate-200 hover:text-white text-xs font-bold transition-all cursor-pointer text-center"
                   >
                     ✏️ Editar
                   </button>
                   <button
                     onClick={() => handleDelete(v.id)}
-                    className="py-2 px-3 rounded-xl bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/10 hover:border-rose-500/20 text-rose-400 text-xs font-bold transition-all cursor-pointer text-center"
+                    className="py-2 px-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 hover:border-rose-500/30 text-rose-400 text-xs font-bold transition-all cursor-pointer text-center"
                     title="Excluir Veículo"
                   >
                     🗑️
@@ -370,7 +405,7 @@ function VehiclesContent() {
                     type="button"
                     onClick={handlePlateLookup}
                     disabled={plateLoading}
-                    className="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-emerald-400 font-bold text-xs hover:bg-slate-800 cursor-pointer disabled:opacity-50"
+                    className="px-4 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-[#10B981] border border-emerald-500/30 hover:border-emerald-500/50 font-bold text-xs cursor-pointer disabled:opacity-50 transition-all select-none"
                   >
                     {plateLoading ? 'Consultando...' : '🔍 Puxar Placa'}
                   </button>
@@ -497,6 +532,41 @@ function VehiclesContent() {
                     placeholder="Default: 80%"
                     value={form.investor_split_rate}
                     onChange={e => setForm(prev => ({ ...prev, investor_split_rate: e.target.value }))}
+                    className="w-full bg-[#070913] border border-slate-800/60 focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 border-t border-slate-900 pt-4">
+                <div>
+                  <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1.5">Status IPVA</label>
+                  <select
+                    value={form.ipva_status}
+                    onChange={e => setForm(prev => ({ ...prev, ipva_status: e.target.value }))}
+                    className="w-full bg-[#070913] border border-slate-800/60 focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none transition-colors"
+                  >
+                    <option value="PAGO">Pago</option>
+                    <option value="PENDENTE">Pendente</option>
+                    <option value="PENDENTE (R$ 842,50)">Pendente (R$ 842,50)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1.5">Status Licenciamento</label>
+                  <select
+                    value={form.licensing_status}
+                    onChange={e => setForm(prev => ({ ...prev, licensing_status: e.target.value }))}
+                    className="w-full bg-[#070913] border border-slate-800/60 focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none transition-colors"
+                  >
+                    <option value="EM DIA">Em Dia</option>
+                    <option value="VENCIDO">Vencido</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1.5">Vencimento Licenciamento</label>
+                  <input
+                    type="date"
+                    value={form.licensing_expiration}
+                    onChange={e => setForm(prev => ({ ...prev, licensing_expiration: e.target.value }))}
                     className="w-full bg-[#070913] border border-slate-800/60 focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none transition-colors"
                   />
                 </div>
@@ -649,6 +719,41 @@ function VehiclesContent() {
                     type="number"
                     value={editForm.investor_split_rate}
                     onChange={e => setEditForm(prev => ({ ...prev, investor_split_rate: e.target.value }))}
+                    className="w-full bg-[#070913] border border-slate-800/60 focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 border-t border-slate-900 pt-4">
+                <div>
+                  <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1.5">Status IPVA</label>
+                  <select
+                    value={editForm.ipva_status}
+                    onChange={e => setEditForm(prev => ({ ...prev, ipva_status: e.target.value }))}
+                    className="w-full bg-[#070913] border border-slate-800/60 focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none transition-colors"
+                  >
+                    <option value="PAGO">Pago</option>
+                    <option value="PENDENTE">Pendente</option>
+                    <option value="PENDENTE (R$ 842,50)">Pendente (R$ 842,50)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1.5">Status Licenciamento</label>
+                  <select
+                    value={editForm.licensing_status}
+                    onChange={e => setEditForm(prev => ({ ...prev, licensing_status: e.target.value }))}
+                    className="w-full bg-[#070913] border border-slate-800/60 focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none transition-colors"
+                  >
+                    <option value="EM DIA">Em Dia</option>
+                    <option value="VENCIDO">Vencido</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1.5">Vencimento Licenciamento</label>
+                  <input
+                    type="date"
+                    value={editForm.licensing_expiration}
+                    onChange={e => setEditForm(prev => ({ ...prev, licensing_expiration: e.target.value }))}
                     className="w-full bg-[#070913] border border-slate-800/60 focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none transition-colors"
                   />
                 </div>
