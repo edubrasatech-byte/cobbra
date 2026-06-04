@@ -181,8 +181,12 @@ export default function TopBar({
                 }}
                 className="px-4 py-2.5 border-b border-theme hover:bg-emerald-500/5 cursor-pointer flex items-center gap-3 transition-colors"
               >
-                <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-[10px] font-bold">
-                  {c.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase()}
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold overflow-hidden bg-emerald-500/10 text-emerald-400">
+                  {c.avatar_url ? (
+                    <img src={c.avatar_url} alt={c.name} className="w-full h-full object-cover" />
+                  ) : (
+                    c.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase()
+                  )}
                 </div>
                 <span className="text-xs text-primary-theme font-medium hover:text-white">{c.name}</span>
               </div>
@@ -289,13 +293,13 @@ export default function TopBar({
                     let typeIcon = <svg className="w-4 h-4 text-secondary-theme" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>;
                     let typeColor = 'text-secondary-theme';
                     if (notif.type === 'payment') { 
-                      typeIcon = <svg className="w-4 h-4 text-emerald-450" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>; 
+                      typeIcon = <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>; 
                       typeColor = 'text-emerald-400'; 
                     } else if (notif.type === 'warning') { 
                       typeIcon = <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>; 
                       typeColor = 'text-amber-400'; 
                     } else if (notif.type === 'success') { 
-                      typeIcon = <svg className="w-4 h-4 text-emerald-450" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>; 
+                      typeIcon = <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>; 
                       typeColor = 'text-emerald-400'; 
                     }
 

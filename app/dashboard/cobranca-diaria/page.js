@@ -245,8 +245,8 @@ export default function CobrancaDiariaPage() {
     padding: '10px 14px', 
     borderRadius: 12, 
     border: '1px solid var(--border-color)', 
-    background: '#020617', 
-    color: '#f8fafc', 
+    background: 'var(--bg-input)', 
+    color: 'var(--text-primary)', 
     fontSize: 13, 
     outline: 'none', 
     fontFamily: 'Inter,sans-serif',
@@ -372,7 +372,7 @@ export default function CobrancaDiariaPage() {
               Recarregar
             </button>
           </div>
-          <button onClick={handleNewBillClick} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: 'var(--text-primary)', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter', whiteSpace: 'nowrap' }} className="w-full md:w-auto text-center">+ Ativar Cobrança Diária</button>
+          <button onClick={handleNewBillClick} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#070913', fontWeight: 'bold', border: 'none', fontFamily: 'Inter', cursor: 'pointer', whiteSpace: 'nowrap' }} className="w-full md:w-auto text-center">+ Ativar Cobrança Diária</button>
         </div>
 
         {/* Cards list */}
@@ -629,7 +629,7 @@ export default function CobrancaDiariaPage() {
 
                 <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 24 }}>
                   <button type="button" onClick={() => setShowModal(false)} style={{ padding: '12px 24px', borderRadius: 10, background: 'var(--bg-input)', color: 'var(--text-secondary)', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'Inter', cursor: 'pointer' }}>Cancelar</button>
-                  <button type="submit" style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: 'var(--text-primary)', fontWeight: 700, border: 'none', fontFamily: 'Inter', cursor: 'pointer' }}>
+                  <button type="submit" style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#070913', fontWeight: 700, border: 'none', fontFamily: 'Inter', cursor: 'pointer' }}>
                     {editingBill ? 'Salvar Alterações' : 'Configurar Contrato'}
                   </button>
                 </div>
@@ -689,7 +689,7 @@ export default function CobrancaDiariaPage() {
                   <button type="button" onClick={() => setShowPaymentModal(false)} style={{ padding: '10px 20px', borderRadius: 8, background: 'var(--bg-input)', color: 'var(--text-secondary)', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'Inter', cursor: 'pointer' }}>
                     Cancelar
                   </button>
-                  <button type="submit" style={{ padding: '10px 20px', borderRadius: 8, background: 'linear-gradient(135deg,#059669,#0d9488)', color: 'var(--text-primary)', fontWeight: 700, border: 'none', fontFamily: 'Inter', cursor: 'pointer' }}>
+                  <button type="submit" style={{ padding: '10px 20px', borderRadius: 8, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#070913', fontWeight: 700, border: 'none', fontFamily: 'Inter', cursor: 'pointer' }}>
                     Confirmar Recebimento
                   </button>
                 </div>

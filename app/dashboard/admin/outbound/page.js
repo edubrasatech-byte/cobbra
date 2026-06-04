@@ -80,7 +80,7 @@ export default function OutboundAdminPage() {
   if (loading && !data) {
     return (
       <div className="flex flex-col items-center justify-center h-96">
-        <div className="w-8 h-8 border-4 border-[#10B981]/20 border-t-[#10B981] rounded-full animate-spin mb-4"></div>
+        <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-4"></div>
         <p className="text-slate-400 text-xs font-semibold tracking-wider">Carregando fila outbound...</p>
       </div>
     );
@@ -106,7 +106,7 @@ export default function OutboundAdminPage() {
         <button 
           onClick={fetchStats}
           disabled={loading}
-          className="p-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-[#10B981]/30 text-slate-300 hover:text-[#10B981] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-sm shadow-black/10 disabled:opacity-50"
+          className="p-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-emerald-500/30 text-slate-300 hover:text-emerald-400 flex items-center justify-center transition-all duration-200 cursor-pointer shadow-sm shadow-black/10 disabled:opacity-50"
         >
           🔄 Atualizar Painel
         </button>
@@ -138,7 +138,7 @@ export default function OutboundAdminPage() {
           <button
             onClick={() => executeAction('RECALIBRATE')}
             disabled={actionLoading || loading}
-            className="px-4 py-2 bg-slate-900 border border-slate-800 hover:border-[#10B981]/30 text-xs font-bold text-[#10B981] rounded-xl cursor-pointer disabled:opacity-50 transition-all"
+            className="px-4 py-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/30 text-xs font-bold text-emerald-400 rounded-xl cursor-pointer disabled:opacity-50 transition-all"
             title="Aplica domínio cobbra.com.br, remove 'régua' e injeta a precificação R$ 49,90"
           >
             🪄 Calibrar Abordagens
@@ -177,7 +177,7 @@ export default function OutboundAdminPage() {
         <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-5">
           <div className="flex justify-between items-start mb-3">
             <span className="text-lg">⏳</span>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/15">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               Prontos na Fila
             </span>
           </div>
@@ -250,7 +250,7 @@ export default function OutboundAdminPage() {
                   </span>
                 </div>
                 <div className="text-right">
-                  <span className="text-sm font-extrabold text-[#10B981] block">{c.total}</span>
+                  <span className="text-sm font-extrabold text-emerald-400 block">{c.total}</span>
                   <span className="text-[9px] text-slate-500">Qualificados</span>
                 </div>
               </div>
@@ -275,13 +275,13 @@ export default function OutboundAdminPage() {
               placeholder="Buscar por nome, telefone..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="bg-slate-950 border border-slate-900 rounded-lg px-3 py-1.5 text-xs text-slate-100 outline-none focus:border-[#10B981]/40 w-full md:w-48"
+              className="bg-slate-950 border border-slate-900 rounded-lg px-3 py-1.5 text-xs text-slate-100 outline-none focus:border-emerald-500/40 w-full md:w-48"
             />
             
             <select
               value={statusFilter}
               onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
-              className="bg-slate-950 border border-slate-900 rounded-lg px-2 py-1.5 text-xs text-slate-300 outline-none cursor-pointer focus:border-[#10B981]/40"
+              className="bg-slate-950 border border-slate-900 rounded-lg px-2 py-1.5 text-xs text-slate-300 outline-none cursor-pointer focus:border-emerald-500/40"
             >
               <option value="">Todos Status</option>
               <option value="ready_to_send">Fila Pronta (ready)</option>
@@ -292,7 +292,7 @@ export default function OutboundAdminPage() {
             <select
               value={nicheFilter}
               onChange={e => { setNicheFilter(e.target.value); setPage(1); }}
-              className="bg-slate-950 border border-slate-900 rounded-lg px-2 py-1.5 text-xs text-slate-300 outline-none cursor-pointer focus:border-[#10B981]/40"
+              className="bg-slate-950 border border-slate-900 rounded-lg px-2 py-1.5 text-xs text-slate-300 outline-none cursor-pointer focus:border-emerald-500/40"
             >
               <option value="">Todos Nichos</option>
               <option value="aluguel de carro para uber">Locador Uber</option>
@@ -305,7 +305,7 @@ export default function OutboundAdminPage() {
               <option value="estudio de pilates">Pilates</option>
             </select>
 
-            <button type="submit" className="bg-[#10B981] hover:bg-[#059669] text-[#070913] text-xs font-bold rounded-lg px-3 py-1.5 transition-colors cursor-pointer w-full md:w-auto">
+            <button type="submit" className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded-lg px-3 py-1.5 transition-colors cursor-pointer w-full md:w-auto">
               🔍 Filtrar
             </button>
           </form>

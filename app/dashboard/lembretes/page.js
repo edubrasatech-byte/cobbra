@@ -90,7 +90,7 @@ export default function LembretesPage() {
 
   return (
     <div>
-      {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
+      {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: 'var(--text-primary)', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
 
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none whitespace-nowrap mb-6" style={{ marginBottom: '24px' }}>
         <button onClick={() => setActiveTab('history')} style={{ padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'Inter', background: activeTab === 'history' ? 'linear-gradient(135deg,#059669,#0d9488)' : 'rgba(255,255,255,0.05)', color: activeTab === 'history' ? '#fff' : '#94a3b8', fontSize: 14, fontWeight: 600 }} className="shrink-0">📋 Histórico</button>
@@ -100,7 +100,7 @@ export default function LembretesPage() {
 
       {activeTab === 'history' && (
         <div style={{ ...cardS, marginTop: '16px' }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 20 }}>Lembretes enviados</h3>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 20 }}>Lembretes enviados</h3>
           {reminders.map(r => {
             const st = statusConfig[r.status] || statusConfig.sent;
             return (
@@ -190,13 +190,13 @@ export default function LembretesPage() {
           {/* Template Editor */}
           <div style={cardS}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', margin: 0 }}>⚙️ Editor de Lembrete Diário</h3>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>⚙️ Editor de Lembrete Diário</h3>
               <button 
                 onClick={() => {
                   if (isEditingDaily) handleSaveDailyTemplate();
                   else setIsEditingDaily(true);
                 }} 
-                style={{ padding: '8px 16px', borderRadius: 8, background: 'linear-gradient(135deg,#059669,#0d9488)', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter' }}
+                style={{ padding: '8px 16px', borderRadius: 8, background: 'linear-gradient(135deg,#059669,#0d9488)', border: 'none', color: 'var(--text-primary)', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter' }}
               >
                 {isEditingDaily ? '💾 Salvar Template' : '✏️ Editar'}
               </button>

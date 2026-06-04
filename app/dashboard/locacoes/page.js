@@ -757,7 +757,7 @@ export default function LocacoesPage() {
       
       {/* Toast Alert */}
       {msg && (
-        <div className="fixed top-20 right-8 bg-emerald-500 text-white px-6 py-3 rounded-xl text-xs md:text-sm font-bold z-[1001] shadow-lg shadow-emerald-500/25 animate-fadeInUp">
+        <div className="fixed top-20 right-8 bg-emerald-500 text-primary-theme px-6 py-3 rounded-xl text-xs md:text-sm font-bold z-[1001] shadow-lg shadow-emerald-500/25 animate-fadeInUp">
           {msg}
         </div>
       )}
@@ -765,7 +765,7 @@ export default function LocacoesPage() {
       {/* Header Panel */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h2 className="text-xl md:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+          <h2 className="text-xl md:text-2xl font-black text-primary-theme tracking-tight flex items-center gap-2">
             <svg className="w-5 h-5 text-emerald-400 inline" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg> Painel de Locações e Frotas
           </h2>
           <p className="text-xs md:text-sm text-secondary-theme mt-1">Gerencie carros alugados, gere contratos jurídicos e notifique diárias via WhatsApp.</p>
@@ -839,19 +839,19 @@ export default function LocacoesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <div className="card-premium border-l-4 border-l-emerald-500 p-4">
               <span className="text-[10px] uppercase tracking-wider text-secondary-theme font-semibold">Veículos em Uso</span>
-              <h3 className="text-xl md:text-2xl font-black text-white mt-1">{activeCount}</h3>
+              <h3 className="text-xl md:text-2xl font-black text-primary-theme mt-1">{activeCount}</h3>
             </div>
             <div className="card-premium border-l-4 border-l-rose-500 p-4">
               <span className="text-[10px] uppercase tracking-wider text-secondary-theme font-semibold">Bloqueios / Atrasados</span>
-              <h3 className="text-xl md:text-2xl font-black text-white mt-1">{overdueCount}</h3>
+              <h3 className="text-xl md:text-2xl font-black text-primary-theme mt-1">{overdueCount}</h3>
             </div>
             <div className="card-premium border-l-4 border-l-blue-500 p-4">
               <span className="text-[10px] uppercase tracking-wider text-secondary-theme font-semibold">Contratos Finalizados</span>
-              <h3 className="text-xl md:text-2xl font-black text-white mt-1">{paidCount}</h3>
+              <h3 className="text-xl md:text-2xl font-black text-primary-theme mt-1">{paidCount}</h3>
             </div>
           </div>
         
-          <h3 className="text-sm font-extrabold text-white mb-4">Controle de Frota Sincronizado</h3>
+          <h3 className="text-sm font-extrabold text-primary-theme mb-4">Controle de Frota Sincronizado</h3>
         
         {/* Mobile View: Cards (Visible only on mobile/tablet) */}
         <div className="block sm:hidden space-y-4">
@@ -1055,7 +1055,7 @@ export default function LocacoesPage() {
           ) : fines.length === 0 ? (
             <div className="card-premium border-dashed p-8 text-center flex flex-col items-center justify-center">
               <svg className="w-8 h-8 text-muted-theme mb-3" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-              <h4 className="text-sm font-extrabold text-white mb-1">Nenhuma multa registrada</h4>
+              <h4 className="text-sm font-extrabold text-primary-theme mb-1">Nenhuma multa registrada</h4>
               <p className="text-xs text-secondary-theme max-w-sm leading-relaxed">Lançando multas na data e hora da infração, a Catarina localiza automaticamente o motorista correspondente de forma transparente.</p>
               <button 
                 onClick={() => setShowFineModal(true)}
@@ -1072,7 +1072,7 @@ export default function LocacoesPage() {
                   <div key={f.id} className="card-premium p-4 flex flex-col gap-3">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="text-xs md:text-sm font-extrabold text-white"><svg className="w-4 h-4 text-amber-500 inline mr-1 animate-pulse" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg> {f.description}</h4>
+                        <h4 className="text-xs md:text-sm font-extrabold text-primary-theme"><svg className="w-4 h-4 text-amber-500 inline mr-1 animate-pulse" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg> {f.description}</h4>
                         <p className="text-[10px] text-primary-theme mt-1"><strong>Carro:</strong> {f.model} • {f.plate}</p>
                       </div>
                       <span className="text-[10px] px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 font-bold whitespace-nowrap">
@@ -1155,7 +1155,7 @@ export default function LocacoesPage() {
           ) : escrows.length === 0 ? (
             <div className="card-premium border-dashed p-8 text-center flex flex-col items-center justify-center">
               <svg className="w-8 h-8 text-muted-theme mb-3" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
-              <h4 className="text-sm font-extrabold text-white mb-1">Nenhum depósito de caução registrado</h4>
+              <h4 className="text-sm font-extrabold text-primary-theme mb-1">Nenhum depósito de caução registrado</h4>
               <p className="text-xs text-secondary-theme max-w-sm leading-relaxed">A caução é amortizada e retida automaticamente de acordo com as locações configuradas.</p>
             </div>
           ) : (
@@ -1166,7 +1166,7 @@ export default function LocacoesPage() {
                   <div key={e.id} className="card-premium p-4 flex flex-col gap-3">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="text-xs md:text-sm font-extrabold text-white"><svg className="w-4 h-4 text-secondary-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg> {e.client_name}</h4>
+                        <h4 className="text-xs md:text-sm font-extrabold text-primary-theme"><svg className="w-4 h-4 text-secondary-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg> {e.client_name}</h4>
                         <p className="text-[10px] text-secondary-theme mt-1"><svg className="w-3.5 h-3.5 text-secondary-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg> {e.vehicle_model} • {e.vehicle_plate}</p>
                       </div>
                       <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-bold ${
@@ -1229,7 +1229,7 @@ export default function LocacoesPage() {
           ) : payouts.length === 0 ? (
             <div className="card-premium border-dashed p-8 text-center flex flex-col items-center justify-center">
               <svg className="w-8 h-8 text-muted-theme mb-3" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.281m5.94 2.28l-2.28 5.941" /></svg>
-              <h4 className="text-sm font-extrabold text-white mb-1">Nenhum veículo de investidor ativo</h4>
+              <h4 className="text-sm font-extrabold text-primary-theme mb-1">Nenhum veículo de investidor ativo</h4>
               <p className="text-xs text-secondary-theme max-w-sm leading-relaxed">Insira o nome do investidor no cadastro do carro para habilitar o cálculo automático de divisão de faturamento.</p>
             </div>
           ) : (
@@ -1238,7 +1238,7 @@ export default function LocacoesPage() {
                 <div key={p.vehicle_id} className="card-premium p-4 flex flex-col gap-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h4 className="text-xs md:text-sm font-extrabold text-white"><svg className="w-4 h-4 text-emerald-400 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.281m5.94 2.28l-2.28 5.941" /></svg> Investidor: {p.investor_name}</h4>
+                      <h4 className="text-xs md:text-sm font-extrabold text-primary-theme"><svg className="w-4 h-4 text-emerald-400 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.281m5.94 2.28l-2.28 5.941" /></svg> Investidor: {p.investor_name}</h4>
                       <p className="text-[10px] text-secondary-theme mt-1"><svg className="w-3.5 h-3.5 text-secondary-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg> {p.model} • {p.plate}</p>
                     </div>
                     <span className="text-[10px] px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 font-bold whitespace-nowrap">
@@ -1291,7 +1291,7 @@ export default function LocacoesPage() {
         <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm backdrop-blur-sm z-[1000] flex justify-center items-center p-4 overflow-y-auto">
           <div className="w-full max-w-md bg-modal-theme border border-theme rounded-3xl p-6 shadow-2xl animate-scaleIn flex flex-col gap-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-extrabold text-white"><svg className="w-4 h-4 text-emerald-400 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg> Movimentação de Caução</h3>
+              <h3 className="text-sm font-extrabold text-primary-theme"><svg className="w-4 h-4 text-emerald-400 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg> Movimentação de Caução</h3>
               <button onClick={() => setShowEscrowModal(false)} className="text-muted-theme hover:text-primary-theme text-lg cursor-pointer">✕</button>
             </div>
             <form onSubmit={handleEscrowTransaction} className="flex flex-col gap-4">
@@ -1366,7 +1366,7 @@ export default function LocacoesPage() {
         <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm backdrop-blur-sm z-[1000] flex justify-center items-center p-4 overflow-y-auto">
           <div className="w-full max-w-lg bg-modal-theme border border-theme rounded-3xl p-6 shadow-2xl animate-scaleIn flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
-              <h3 className="text-base md:text-lg font-black text-white flex items-center gap-2"><svg className="w-5 h-5 text-emerald-400 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg> Configurar Nova Locação de Frota</h3>
+              <h3 className="text-base md:text-lg font-black text-primary-theme flex items-center gap-2"><svg className="w-5 h-5 text-emerald-400 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg> Configurar Nova Locação de Frota</h3>
               <button 
                 onClick={() => setShowModal(false)}
                 className="text-muted-theme hover:text-primary-theme text-lg cursor-pointer ml-auto"
@@ -1574,7 +1574,7 @@ export default function LocacoesPage() {
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-                <h3 className="text-sm font-extrabold text-white">
+                <h3 className="text-sm font-extrabold text-primary-theme">
                   Contrato de Locação — {activeContract.client_name}
                 </h3>
               </div>
@@ -1630,7 +1630,7 @@ export default function LocacoesPage() {
         <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm backdrop-blur-sm z-[1000] flex justify-center items-center p-4 overflow-y-auto">
           <div className="w-full max-w-md bg-modal-theme border border-theme rounded-3xl p-6 shadow-2xl animate-scaleIn flex flex-col gap-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+              <h3 className="text-sm font-extrabold text-primary-theme flex items-center gap-2">
                 <svg className="w-4 h-4 text-emerald-400 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg> Conectar Seu WhatsApp
               </h3>
               <button 
@@ -1697,7 +1697,7 @@ export default function LocacoesPage() {
         <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm backdrop-blur-sm z-[1000] flex justify-center items-center p-4 overflow-y-auto">
           <div className="w-full max-w-xl bg-modal-theme border border-theme rounded-3xl p-6 shadow-2xl animate-scaleIn flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm md:text-base font-extrabold text-white flex items-center gap-2">
+              <h3 className="text-sm md:text-base font-extrabold text-primary-theme flex items-center gap-2">
                 <svg className="w-5 h-5 text-emerald-400 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg> Cadastrar Carro na Frota
               </h3>
               <button 
@@ -1882,7 +1882,7 @@ export default function LocacoesPage() {
             <div className="flex justify-between items-center border-b border-theme pb-3">
               <div className="flex items-center gap-2">
                 <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>
-                <h3 className="text-sm md:text-base font-extrabold text-white">
+                <h3 className="text-sm md:text-base font-extrabold text-primary-theme">
                   Perfil do Veículo: {selectedProfileVehicle.model} ({selectedProfileVehicle.plate})
                 </h3>
               </div>
@@ -1985,7 +1985,7 @@ export default function LocacoesPage() {
         <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm backdrop-blur-sm z-[1000] flex justify-center items-center p-4 overflow-y-auto">
           <div className="w-full max-w-md bg-modal-theme border border-theme rounded-3xl p-6 shadow-2xl animate-scaleIn flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+              <h3 className="text-sm font-extrabold text-primary-theme flex items-center gap-2">
                 <svg className="w-5 h-5 text-rose-400 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg> Lançar Nova Multa de Trânsito
               </h3>
               <button 
@@ -2091,7 +2091,7 @@ export default function LocacoesPage() {
         <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm backdrop-blur-sm z-[1000] flex justify-center items-center p-4 overflow-y-auto">
           <div className="w-full max-w-md bg-modal-theme border border-emerald-500/20 rounded-3xl p-6 shadow-2xl animate-scaleIn flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+              <h3 className="text-sm font-extrabold text-primary-theme flex items-center gap-2">
                 <svg className="w-4 h-4 text-emerald-400 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 18l-.153-.055A5.978 5.978 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg> Personalizar Mensagem de WhatsApp
               </h3>
               <button 

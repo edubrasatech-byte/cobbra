@@ -207,14 +207,14 @@ function VehiclesContent() {
       {/* Header section */}
       <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent flex items-center gap-2">
+          <h1 className="text-2xl font-extrabold tracking-tight text-primary-theme flex items-center gap-2">
             <svg className="w-5 h-5 text-emerald-400 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" /></svg> Gestão da Frota
           </h1>
           <p className="text-xs text-muted-theme mt-1">Gerencie os veículos de locação, dados de seguro, manutenção e investidores</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-4 py-2 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-bold text-xs shadow-md shadow-emerald-500/10 active:scale-95 transition-all select-none cursor-pointer"
+          className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md shadow-emerald-500/10 active:scale-95 transition-all select-none cursor-pointer"
         >
           + Adicionar Veículo
         </button>
@@ -573,7 +573,7 @@ function VehiclesContent() {
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-bold text-xs shadow-md shadow-emerald-500/10 cursor-pointer mt-4"
+                className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md shadow-emerald-500/10 cursor-pointer mt-4"
               >
                 Salvar Veículo
               </button>
@@ -760,7 +760,7 @@ function VehiclesContent() {
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-bold text-xs shadow-md shadow-emerald-500/10 cursor-pointer mt-4"
+                className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md shadow-emerald-500/10 cursor-pointer mt-4"
               >
                 Atualizar Veículo
               </button>

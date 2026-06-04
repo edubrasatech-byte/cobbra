@@ -206,6 +206,18 @@ export default function DashboardHome() {
   const [clients, setClients] = useState([]);
   const [timeline, setTimeline] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hideBalance, setHideBalance] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("hide_balance") === "true";
+    setHideBalance(saved);
+  }, []);
+
+  const toggleHideBalance = () => {
+    const newVal = !hideBalance;
+    setHideBalance(newVal);
+    localStorage.setItem("hide_balance", String(newVal));
+  };
   const [selectedBarIndex, setSelectedBarIndex] = useState(null);
   const [insights, setInsights] = useState([]);
   const [insightsLoading, setInsightsLoading] = useState(false);
@@ -536,331 +548,423 @@ export default function DashboardHome() {
         </button>
       </div>
 
-      {/* 💳 Premium Glassmorphic Balance Card */}
-      <div className="relative rounded-3xl p-6 bg-gradient-to-br from-slate-900 via-emerald-950/20 to-slate-950 border border-emerald-500/20 shadow-2xl overflow-hidden flex flex-col justify-between aspect-[1.9/1] md:aspect-[2.5/1]">
-        <div className="absolute top-0 right-0 w-44 h-44 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-teal-500/5 rounded-full blur-2xl pointer-events-none"></div>
+      {/* Main Responsive Grid Wrapper (Desktop: 3 columns; Mobile: 1 stacked column) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         
-        {/* Card Header */}
-        <div className="flex justify-between items-start z-10">
-          <div className="space-y-0.5">
-            <span className="text-[10px] font-black tracking-widest text-muted-theme uppercase">Cobbra Pay</span>
-            <h3 className="text-xs font-bold text-primary-theme uppercase">Conta Geral de Liquidações</h3>
-          </div>
-          <div className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[8px] font-black text-emerald-400 uppercase tracking-wider">
-            Ativa
-          </div>
-        </div>
-
-        {/* Main Balance Display */}
-        <div className="z-10 my-4">
-          <span className="text-[9px] font-bold text-muted-theme uppercase tracking-widest block">Saldo Disponível</span>
-          <h3 className="text-3xl md:text-4xl font-black text-primary-theme mt-0.5 tracking-tight">
-            {fmt(walletBalance)}
-          </h3>
-        </div>
-
-        {/* Card Footer */}
-        <div className="flex justify-between items-end z-10 border-t border-theme pt-3.5">
-          <div>
-            <p className="text-[8px] text-muted-theme font-bold uppercase tracking-wider">Assinante</p>
-            <p className="text-xs font-bold text-primary-theme leading-none truncate max-w-[200px] uppercase mt-0.5">
-              {user?.business_name || user?.name || "Acesso Cobbra"}
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="text-[8px] text-muted-theme font-bold uppercase tracking-wider">Resgates Realizados</p>
-            <p className="text-xs font-bold text-primary-theme mt-0.5">{withdrawalCount} saques</p>
-          </div>
-        </div>
-      </div>
-
-      {/* 🚀 Interactive Quick Actions Buttons Row */}
-      <div className="grid grid-cols-3 gap-3.5">
-        <button
-          onClick={() => {
-            setWithdrawSuccess(false);
-            setWithdrawAmount("");
-            setWithdrawError("");
-            setShowWithdrawModal(true);
-          }}
-          className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/20 active:scale-98 transition-all text-emerald-450 cursor-pointer text-center font-bold"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5L12 14.5L5 7.5" />
-          </svg>
-          <span className="text-[10px] md:text-xs tracking-tight">Sacar Pix (Resgate)</span>
-        </button>
-
-        <button
-          onClick={() => {
-            setDepositSuccess(false);
-            setDepositAmount("");
-            setShowDepositModal(true);
-          }}
-          className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-teal-500/10 hover:bg-teal-500/15 border border-teal-500/20 active:scale-98 transition-all text-teal-400 cursor-pointer text-center font-bold"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          <span className="text-[10px] md:text-xs tracking-tight">Depositar</span>
-        </button>
-
-        <button
-          onClick={() => {
-            setChargeSuccess(false);
-            setChargeAmount("");
-            setSelectedClientId("");
-            setShowChargeModal(true);
-          }}
-          className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-blue-500/10 hover:bg-blue-500/15 border border-blue-500/20 active:scale-98 transition-all text-blue-400 cursor-pointer text-center font-bold"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <span className="text-[10px] md:text-xs tracking-tight">Cobrar Cliente</span>
-        </button>
-      </div>
-
-      {/* 📊 Unified Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard 
-          icon="money" 
-          label="Recebido este mês" 
-          value={fmt(stats.totalReceived)} 
-          subValue="↑ Faturado" 
-          bg="bg-emerald-500/10" 
-          color="text-emerald-450" 
-          subLabel={`Hoje: ${fmt(stats.receivedToday || 0)}`}
-        />
-        <StatCard 
-          icon="time" 
-          label="A Receber Operacional" 
-          value={`${stats.pendingCount + stats.overdueCount} títulos`} 
-          subValue={fmt(stats.pendingTotal + stats.overdueTotal)} 
-          bg="bg-amber-500/10" 
-          color="text-amber-500" 
-          subLabel={`Vencidos: ${stats.overdueCount} | Pendentes: ${stats.pendingCount}`}
-        />
-        <StatCard 
-          icon="chart" 
-          label="Adimplência Geral" 
-          value={`${stats.paymentRate}%`} 
-          subValue="Score Médio" 
-          bg="bg-blue-500/10" 
-          color="text-blue-400" 
-          subLabel={`${stats.totalClients} clientes cadastrados`}
-        />
-      </div>
-
-      {/* 📈 Graphic Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-card-theme rounded-2xl border border-theme p-4 md:p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h3 className="text-xs font-bold text-primary-theme uppercase tracking-wider">Histórico de Receita</h3>
-              <p className="text-[11px] text-muted-theme mt-0.5">Faturamento acumulado nos últimos 14 dias</p>
-            </div>
+        {/* Coluna Principal (col-span-2 no Desktop) */}
+        <div className="lg:col-span-2 flex flex-col gap-6 w-full">
+          
+          {/* 💳 Premium Redesigned Bank Card */}
+          <div className="relative rounded-3xl p-6 bg-gradient-to-br from-[#0c0f1d] via-[#101426] to-[#04060d] border border-emerald-500/20 shadow-2xl overflow-hidden flex flex-col justify-between aspect-[2.1/1] md:aspect-[2.3/1] min-h-[220px]">
+            {/* Glow Effects */}
+            <div className="absolute -top-12 -right-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
             
-            <div className="text-right">
-              {selectedPoint ? (
-                <div>
-                  <p className="text-[10px] text-[#10B981] font-bold uppercase tracking-wider leading-none">
-                    {new Date(selectedPoint.date + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })}
-                  </p>
-                  <p className="text-sm font-extrabold text-primary-theme mt-1 leading-none">{fmt(selectedPoint.total)}</p>
+            {/* Decorative Grid Lines */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:20px_20px] opacity-20 pointer-events-none"></div>
+
+            {/* Card Top: Chip + Contactless + Brand */}
+            <div className="flex justify-between items-start z-10">
+              <div className="flex items-center gap-3">
+                {/* Gold Chip */}
+                <div className="w-10 h-7 rounded-md bg-gradient-to-br from-amber-300 via-amber-500 to-yellow-600 border border-amber-700/20 shadow-md relative overflow-hidden flex-shrink-0">
+                  <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_45%,#78350f_45%,#78350f_55%,transparent_55%)] opacity-35"></div>
+                  <div className="absolute inset-0 bg-[linear-gradient(transparent_45%,#78350f_45%,#78350f_55%,transparent_55%)] opacity-35"></div>
+                  <div className="absolute inset-2 border border-[#78350f]/30 rounded-sm"></div>
+                </div>
+                
+                {/* Contactless Wave */}
+                <svg className="w-4 h-4 text-emerald-400/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M5 8a5 5 0 0 1 0 8" />
+                  <path d="M9 5a9 9 0 0 1 0 14" />
+                  <path d="M13 2a13 13 0 0 1 0 20" />
+                </svg>
+              </div>
+              
+              <div className="text-right">
+                <span className="text-[11px] font-black tracking-widest bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent uppercase">Cobbra Pay</span>
+                <p className="text-[8px] text-muted-theme font-bold uppercase tracking-wider leading-none mt-0.5">Conta Business</p>
+              </div>
+            </div>
+
+            {/* Card Middle: Balance display with Hide/Show eye icon */}
+            <div className="z-10 my-3">
+              <div className="flex items-center gap-2">
+                <span className="text-[9px] font-bold text-muted-theme uppercase tracking-widest">Saldo Disponível</span>
+                <button 
+                  type="button"
+                  onClick={toggleHideBalance}
+                  className="text-muted-theme hover:text-primary-theme transition-colors cursor-pointer focus:outline-none p-0.5"
+                  title={hideBalance ? "Mostrar saldo" : "Ocultar saldo"}
+                >
+                  {hideBalance ? (
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                    </svg>
+                  ) : (
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.43 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              
+              <h3 className="text-3xl md:text-4xl font-black text-primary-theme tracking-tight font-mono mt-0.5 transition-all">
+                {hideBalance ? "••••••" : fmt(walletBalance)}
+              </h3>
+            </div>
+
+            {/* Card Bottom: Member Name & Card Details */}
+            <div className="flex justify-between items-end z-10 border-t border-theme pt-3.5">
+              <div className="min-w-0 pr-3">
+                <p className="text-[8px] text-muted-theme font-bold uppercase tracking-wider">Titular</p>
+                <p className="text-xs font-bold text-primary-theme leading-none uppercase tracking-wide truncate mt-0.5">
+                  {user?.business_name || user?.name || "Cobbra Member"}
+                </p>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <p className="text-[8px] text-muted-theme font-bold uppercase tracking-wider">Resgates</p>
+                <p className="text-xs font-bold text-emerald-400 mt-0.5">{withdrawalCount} Pix</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 🚀 Interactive Quick Actions Buttons Row */}
+          <div className="grid grid-cols-3 gap-3.5">
+            <button
+              onClick={() => {
+                setWithdrawSuccess(false);
+                setWithdrawAmount("");
+                setWithdrawError("");
+                setShowWithdrawModal(true);
+              }}
+              className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/20 active:scale-98 transition-all text-emerald-400 cursor-pointer text-center font-bold"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5L12 14.5L5 7.5" />
+              </svg>
+              <span className="text-[10px] md:text-xs tracking-tight">Sacar Pix</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setDepositSuccess(false);
+                setDepositAmount("");
+                setShowDepositModal(true);
+              }}
+              className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-teal-500/10 hover:bg-teal-500/15 border border-teal-500/20 active:scale-98 transition-all text-teal-400 cursor-pointer text-center font-bold"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span className="text-[10px] md:text-xs tracking-tight">Depositar</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setChargeSuccess(false);
+                setChargeAmount("");
+                setSelectedClientId("");
+                setShowChargeModal(true);
+              }}
+              className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-blue-500/10 hover:bg-blue-500/15 border border-blue-500/20 active:scale-98 transition-all text-blue-400 cursor-pointer text-center font-bold"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span className="text-[10px] md:text-xs tracking-tight">Cobrar</span>
+            </button>
+          </div>
+
+          {/* 📑 Mobile-only Compact Statement (Renders on Mobile ONLY, above metrics) */}
+          <div className="block lg:hidden bg-card-theme border border-theme rounded-2xl p-4 md:p-6 flex flex-col shadow-lg">
+            <div className="flex justify-between items-center pb-3 border-b border-theme mb-4">
+              <div>
+                <h3 className="text-xs font-black text-primary-theme uppercase tracking-wider">Extrato Rápido</h3>
+                <p className="text-[9px] text-muted-theme">Últimas movimentações da conta</p>
+              </div>
+              <a href="/dashboard/extrato" className="text-[10px] text-emerald-400 font-bold hover:underline select-none">
+                Ver completo →
+              </a>
+            </div>
+
+            <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
+              {timeline.length === 0 ? (
+                <div className="py-8 text-center text-slate-500 text-xs italic">
+                  Nenhuma movimentação registrada.
                 </div>
               ) : (
-                <span className="text-[10px] text-muted-theme font-medium bg-surface-theme px-2.5 py-1 rounded border border-theme">
-                  Selecione um ponto
-                </span>
+                timeline.slice(0, 4).map((item, idx) => {
+                  const isCredit = item.type === "credit";
+                  return (
+                    <div 
+                      key={item.id || idx}
+                      className="bg-surface-theme border border-theme rounded-xl p-3 flex items-center justify-between gap-3"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-black ${
+                          isCredit ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
+                        }`}>
+                          {isCredit ? "↓" : "↑"}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-primary-theme truncate">{item.description}</p>
+                          <p className="text-[9px] text-muted-theme mt-0.5">{new Date(item.date).toLocaleDateString("pt-BR")}</p>
+                        </div>
+                      </div>
+                      <span className={`text-xs font-black ${isCredit ? "text-emerald-400" : "text-primary-theme"}`}>
+                        {isCredit ? "+" : "-"} {fmt(item.amount)}
+                      </span>
+                    </div>
+                  );
+                })
               )}
             </div>
           </div>
 
-          {stats.revenueData && stats.revenueData.length > 0 ? (
-            <div className="space-y-4">
-              <AreaChart 
-                data={stats.revenueData} 
-                onSelectPoint={setSelectedBarIndex} 
-                selectedIndex={selectedBarIndex} 
-              />
-              
-              <div className="flex justify-between text-[9px] font-bold text-slate-500 px-2 pt-2 border-t border-theme">
-                <span>{new Date(stats.revenueData[0].date + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
-                <span>{new Date(stats.revenueData[Math.floor(stats.revenueData.length / 2)].date + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
-                <span>{new Date(stats.revenueData[stats.revenueData.length - 1].date + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-40 text-xs text-muted-theme italic">
-              Sem lançamentos registrados no período.
-            </div>
-          )}
-        </div>
-
-        <div className="bg-card-theme rounded-2xl border border-theme p-4 md:p-6">
-          <div className="mb-6">
-            <h3 className="text-xs font-bold text-primary-theme uppercase tracking-wider">Status das Cobranças</h3>
-            <p className="text-[11px] text-muted-theme mt-0.5">Distribuição geral de títulos e quitações</p>
-          </div>
-          
-          {stats.statusDistribution && stats.statusDistribution.length > 0 ? (
-            <DonutChart data={stats.statusDistribution} totalToReceive={totalToReceive} />
-          ) : (
-            <div className="flex items-center justify-center h-40 text-xs text-muted-theme italic">
-              Nenhuma cobrança ativa cadastrada.
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Extrato Extendido & Atividades */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* 📑 timeline Extrato */}
-        <div className="md:col-span-2 bg-card-theme border border-theme rounded-2xl p-4 md:p-6 flex flex-col">
-          <div className="flex justify-between items-center pb-3 border-b border-theme mb-4">
-            <div>
-              <h3 className="text-xs font-black text-primary-theme uppercase tracking-wider">Extrato da Conta</h3>
-              <p className="text-[9px] text-muted-theme">Últimas movimentações integradas ao saldo</p>
-            </div>
+          {/* 📊 Unified Stats Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <StatCard 
+              icon="money" 
+              label="Recebido este mês" 
+              value={fmt(stats.totalReceived)} 
+              subValue="↑ Faturado" 
+              bg="bg-emerald-500/10" 
+              color="text-emerald-400" 
+              subLabel={`Hoje: ${fmt(stats.receivedToday || 0)}`}
+            />
+            <StatCard 
+              icon="time" 
+              label="A Receber Operacional" 
+              value={`${stats.pendingCount + stats.overdueCount} títulos`} 
+              subValue={fmt(stats.pendingTotal + stats.overdueTotal)} 
+              bg="bg-amber-500/10" 
+              color="text-amber-500" 
+              subLabel={`Vencidos: ${stats.overdueCount} | Pendentes: ${stats.pendingCount}`}
+            />
+            <StatCard 
+              icon="chart" 
+              label="Adimplência Geral" 
+              value={`${stats.paymentRate}%`} 
+              subValue="Score Médio" 
+              bg="bg-blue-500/10" 
+              color="text-blue-400" 
+              subLabel={`${stats.totalClients} clientes cadastrados`}
+            />
           </div>
 
-          <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
-            {timeline.length === 0 ? (
-              <div className="py-12 text-center text-slate-600 text-xs">
-                Nenhuma movimentação financeira registrada na conta.
-              </div>
-            ) : (
-              timeline.slice(0, 10).map((item, idx) => {
-                const isCredit = item.type === "credit";
-                return (
-                  <div 
-                    key={item.id || idx}
-                    className="bg-surface-theme border border-theme rounded-xl p-3 flex items-center justify-between gap-3 hover:border-emerald-500/20 transition-all"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-black ${
-                        isCredit ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
-                      }`}>
-                        {isCredit ? "↓" : "↑"}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold text-primary-theme truncate">{item.description}</p>
-                        <p className="text-[9px] text-muted-theme mt-0.5 font-medium">
-                          {new Date(item.date).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
-                          {item.notes ? ` • ${item.notes}` : ""}
-                        </p>
-                      </div>
+          {/* 📈 Graphic Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 bg-card-theme rounded-2xl border border-theme p-4 md:p-6">
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h3 className="text-xs font-bold text-primary-theme uppercase tracking-wider">Histórico de Receita</h3>
+                  <p className="text-[11px] text-muted-theme mt-0.5">Faturamento acumulado nos últimos 14 dias</p>
+                </div>
+                
+                <div className="text-right">
+                  {selectedPoint ? (
+                    <div>
+                      <p className="text-[10px] text-[#10B981] font-bold uppercase tracking-wider leading-none">
+                        {new Date(selectedPoint.date + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })}
+                      </p>
+                      <p className="text-sm font-extrabold text-primary-theme mt-1 leading-none">{fmt(selectedPoint.total)}</p>
                     </div>
-                    
-                    <span className={`text-xs font-black flex-shrink-0 ${isCredit ? "text-emerald-450" : "text-primary-theme"}`}>
-                      {isCredit ? "+" : "-"} {fmt(item.amount)}
+                  ) : (
+                    <span className="text-[10px] text-muted-theme font-medium bg-surface-theme px-2.5 py-1 rounded border border-theme">
+                      Selecione um ponto
                     </span>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* ⚡ Atividade Recente */}
-        <div className="bg-card-theme rounded-2xl border border-theme flex flex-col p-4 md:p-6">
-          <h3 className="text-xs font-bold text-primary-theme uppercase tracking-wider mb-4">Registro Operacional</h3>
-          <div className="space-y-3 flex-1 overflow-y-auto max-h-[300px] pr-1">
-            {(stats.recentActivity || []).slice(0, 5).map((a, i) => (
-              <div 
-                key={i} 
-                className="flex gap-3 border-b border-theme last:border-b-0 hover:bg-card-hover-theme rounded-lg transition-colors duration-150 p-2"
-              >
-                <div className="w-7 h-7 rounded-lg bg-surface-theme border border-theme flex items-center justify-center flex-shrink-0">
-                  {actIcons[a.action] || (
-                    <svg className="w-3.5 h-3.5 text-secondary-theme" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
-                    </svg>
                   )}
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold text-primary-theme truncate leading-snug">{a.details}</p>
-                  <p className="text-[9px] text-muted-theme mt-1 font-semibold flex items-center gap-1">
-                    <span>{relTime(a.created_at)}</span>
-                    <span className="w-1 h-1 rounded-full bg-slate-700"></span>
-                    <span>{new Date(a.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
-                  </p>
+              </div>
+
+              {stats.revenueData && stats.revenueData.length > 0 ? (
+                <div className="space-y-4">
+                  <AreaChart 
+                    data={stats.revenueData} 
+                    onSelectPoint={setSelectedBarIndex} 
+                    selectedIndex={selectedBarIndex} 
+                  />
+                  
+                  <div className="flex justify-between text-[9px] font-bold text-slate-500 px-2 pt-2 border-t border-theme">
+                    <span>{new Date(stats.revenueData[0].date + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
+                    <span>{new Date(stats.revenueData[Math.floor(stats.revenueData.length / 2)].date + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
+                    <span>{new Date(stats.revenueData[stats.revenueData.length - 1].date + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-40 text-xs text-muted-theme italic">
+                  Sem lançamentos registrados no período.
+                </div>
+              )}
+            </div>
+
+            <div className="bg-card-theme rounded-2xl border border-theme p-4 md:p-6">
+              <div className="mb-6">
+                <h3 className="text-xs font-bold text-primary-theme uppercase tracking-wider">Status das Cobranças</h3>
+                <p className="text-[11px] text-muted-theme mt-0.5">Distribuição geral de títulos e quitações</p>
+              </div>
+              
+              {stats.statusDistribution && stats.statusDistribution.length > 0 ? (
+                <DonutChart data={stats.statusDistribution} totalToReceive={totalToReceive} />
+              ) : (
+                <div className="flex items-center justify-center h-40 text-xs text-muted-theme italic">
+                  Nenhuma cobrança ativa cadastrada.
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 🪄 Catarina AI Insights */}
+          <div className="bg-card-theme border border-theme rounded-2xl relative overflow-hidden p-6 shadow-lg">
+            <div className="absolute -right-20 -top-20 w-44 h-44 bg-[#10B981]/5 blur-3xl pointer-events-none"></div>
+            <div className="absolute -left-20 -bottom-20 w-44 h-44 bg-teal-500/5 blur-3xl pointer-events-none"></div>
+
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-theme pb-4 mb-4">
+              <div className="flex items-center gap-3">
+                <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.813-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+                </svg>
+                <div>
+                  <h3 className="text-sm font-bold text-primary-theme flex items-center gap-2">
+                    Catarina AI Insights
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span>
+                  </h3>
+                  <p className="text-[11px] text-muted-theme">Fluxo de inteligência automatizada sobre inadimplência</p>
                 </div>
               </div>
-            ))}
-            {(!stats.recentActivity || stats.recentActivity.length === 0) && (
-              <div className="flex items-center justify-center py-10 text-xs text-muted-theme italic">
-                Nenhum log operacional registrado.
+              <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/15 uppercase tracking-wider">
+                Gemini 2.5 Flash
+              </span>
+            </div>
+
+            {insightsLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="h-24 bg-input-theme rounded-xl border border-theme flex items-center justify-center animate-pulse">
+                    <span className="text-[11px] text-muted-theme font-medium">Analisando cobranças...</span>
+                  </div>
+                ))}
+              </div>
+            ) : insights.length === 0 ? (
+              <p className="text-slate-500 text-xs italic">Registros insuficientes para geração de análises Catarina AI.</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {insights.map((insight, idx) => {
+                  const borderColors = { success: "border-emerald-500/40", warning: "border-rose-500/40", info: "border-blue-500/40" };
+                  const bgColors = { success: "bg-emerald-500/[0.02]", warning: "bg-rose-500/[0.02]", info: "bg-blue-500/[0.02]" };
+                  const textColors = { success: "text-emerald-400", warning: "text-rose-500", info: "text-blue-400" };
+                  const badgeLabels = { success: "Otimização", warning: "Risco", info: "Insight" };
+
+                  return (
+                    <div 
+                      key={idx} 
+                      className={`border ${borderColors[insight.type] || "border-theme"} ${bgColors[insight.type] || "bg-card-theme"} transition-all duration-300 hover:translate-y-[-3px] hover:shadow-xl rounded-2xl p-4`}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="text-xs font-bold text-primary-theme truncate max-w-[70%]">{insight.title}</h4>
+                        <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${bgColors[insight.type]} ${textColors[insight.type]}`}>
+                          {badgeLabels[insight.type] || "Info"}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-secondary-theme leading-relaxed">{insight.text}</p>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
         </div>
-      </div>
 
-      {/* 🪄 Catarina AI Insights Premium Banner */}
-      <div className="bg-card-theme border border-theme rounded-2xl relative overflow-hidden p-6">
-        <div className="absolute -right-20 -top-20 w-44 h-44 bg-[#10B981]/5 blur-3xl pointer-events-none"></div>
-        <div className="absolute -left-20 -bottom-20 w-44 h-44 bg-teal-500/5 blur-3xl pointer-events-none"></div>
+        {/* Coluna Lateral (col-span-1 no Desktop, escondida no Mobile) */}
+        <div className="hidden lg:flex flex-col gap-6 w-full">
+          
+          {/* 📑 Desktop-only Extrato Widget (Acima das estatísticas na lateral) */}
+          <div className="bg-card-theme border border-theme rounded-2xl p-4 md:p-6 flex flex-col shadow-lg">
+            <div className="flex justify-between items-center pb-3 border-b border-theme mb-4">
+              <div>
+                <h3 className="text-xs font-black text-primary-theme uppercase tracking-wider">Extrato Recente</h3>
+                <p className="text-[9px] text-muted-theme">Últimas 8 movimentações integradas</p>
+              </div>
+              <a href="/dashboard/extrato" className="text-[10px] text-emerald-400 font-bold hover:underline select-none">
+                Ver completo →
+              </a>
+            </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-theme pb-4 mb-4">
-          <div className="flex items-center gap-3">
-            <svg className="w-4 h-4 text-emerald-450" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.813-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
-            </svg>
-            <div>
-              <h3 className="text-sm font-bold text-primary-theme flex items-center gap-2">
-                Catarina AI Insights
-                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span>
-              </h3>
-              <p className="text-[11px] text-muted-theme">Fluxo de inteligência automatizada sobre inadimplência</p>
+            <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
+              {timeline.length === 0 ? (
+                <div className="py-12 text-center text-slate-500 text-xs italic">
+                  Nenhuma movimentação registrada na conta.
+                </div>
+              ) : (
+                timeline.slice(0, 8).map((item, idx) => {
+                  const isCredit = item.type === "credit";
+                  return (
+                    <div 
+                      key={item.id || idx}
+                      className="bg-surface-theme border border-theme rounded-xl p-3 flex items-center justify-between gap-3 hover:border-emerald-500/25 transition-all duration-200"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-black ${
+                          isCredit ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
+                        }`}>
+                          {isCredit ? "↓" : "↑"}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-primary-theme truncate">{item.description}</p>
+                          <p className="text-[9px] text-muted-theme mt-0.5 font-medium">
+                            {new Date(item.date).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                          </p>
+                        </div>
+                      </div>
+                      <span className={`text-xs font-black flex-shrink-0 ${isCredit ? "text-emerald-400" : "text-primary-theme"}`}>
+                        {isCredit ? "+" : "-"} {fmt(item.amount)}
+                      </span>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
-          <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/15 uppercase tracking-wider">
-            Gemini 2.5 Flash
-          </span>
-        </div>
 
-        {insightsLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-24 bg-input-theme rounded-xl border border-theme flex items-center justify-center">
-                <span className="text-[11px] text-muted-theme animate-pulse font-medium">Analisando cobranças...</span>
-              </div>
-            ))}
-          </div>
-        ) : insights.length === 0 ? (
-          <p className="text-slate-500 text-xs italic">Registros insuficientes para geração de análises Catarina AI.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {insights.map((insight, idx) => {
-              const borderColors = { success: "border-emerald-500/40", warning: "border-rose-500/40", info: "border-blue-500/40" };
-              const bgColors = { success: "bg-emerald-500/[0.02]", warning: "bg-rose-500/[0.02]", info: "bg-blue-500/[0.02]" };
-              const textColors = { success: "text-emerald-400", warning: "text-rose-550", info: "text-blue-400" };
-              const badgeLabels = { success: "Otimização", warning: "Risco", info: "Insight" };
-
-              return (
+          {/* ⚡ Registro Operacional */}
+          <div className="bg-card-theme rounded-2xl border border-theme flex flex-col p-4 md:p-6 shadow-lg">
+            <h3 className="text-xs font-bold text-primary-theme uppercase tracking-wider mb-4">Registro Operacional</h3>
+            <div className="space-y-3 flex-1 overflow-y-auto max-h-[300px] pr-1">
+              {(stats.recentActivity || []).slice(0, 5).map((a, i) => (
                 <div 
-                  key={idx} 
-                  className={`border ${borderColors[insight.type] || "border-theme"} ${bgColors[insight.type] || "bg-card-theme"} transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg hover:shadow-black/5 rounded-2xl p-6`}
+                  key={i} 
+                  className="flex gap-3 border-b border-theme last:border-b-0 hover:bg-card-hover-theme rounded-lg transition-colors duration-150 p-2"
                 >
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="text-xs font-bold text-primary-theme">{insight.title}</h4>
-                    <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${bgColors[insight.type]} ${textColors[insight.type]}`}>
-                      {badgeLabels[insight.type] || "Info"}
-                    </span>
+                  <div className="w-7 h-7 rounded-lg bg-surface-theme border border-theme flex items-center justify-center flex-shrink-0">
+                    {actIcons[a.action] || (
+                      <svg className="w-3.5 h-3.5 text-secondary-theme" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
+                      </svg>
+                    )}
                   </div>
-                  <p className="text-[11px] text-secondary-theme leading-relaxed">{insight.text}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[11px] font-semibold text-primary-theme truncate leading-snug">{a.details}</p>
+                    <p className="text-[9px] text-muted-theme mt-1 font-semibold flex items-center gap-1">
+                      <span>{relTime(a.created_at)}</span>
+                      <span className="w-1 h-1 rounded-full bg-slate-700"></span>
+                      <span>{new Date(a.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
+                    </p>
+                  </div>
                 </div>
-              );
-            })}
+              ))}
+              {(!stats.recentActivity || stats.recentActivity.length === 0) && (
+                <div className="flex items-center justify-center py-10 text-xs text-muted-theme italic">
+                  Nenhum log operacional registrado.
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        </div>
       </div>
-
-      {/* Floating Action Button Container (Speed Dial) */}
+      
+      {/* Floating Action Button (FAB) Trigger */}
       <div id="fab-container" className="fixed bottom-20 right-6 md:bottom-8 md:right-8 z-50 flex flex-col items-end">
         <div 
           className={`absolute bottom-16 right-0 mb-2 w-56 bg-modal-theme/95 backdrop-blur-xl border border-theme rounded-2xl shadow-2xl p-3 flex flex-col gap-1 transition-all duration-200 origin-bottom-right transform ${
@@ -924,7 +1028,7 @@ export default function DashboardHome() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5L12 14.5L5 7.5" />
             </svg>
             <div>
-              <p className="text-xs font-bold text-primary-theme group-hover:text-amber-500 transition-colors">Sacar Pix (Resgate)</p>
+              <p className="text-xs font-bold text-primary-theme group-hover:text-amber-500 transition-colors">Sacar Pix</p>
               <p className="text-[9px] text-muted-theme">Enviar saldo para banco externo</p>
             </div>
           </button>
@@ -949,10 +1053,10 @@ export default function DashboardHome() {
         {/* Trigger Button */}
         <button
           onClick={() => setShowFabDropdown(!showFabDropdown)}
-          className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-450 hover:to-teal-550 text-white flex items-center justify-center shadow-xl shadow-emerald-500/15 active:scale-95 transition-all select-none cursor-pointer border border-emerald-400/20 group"
+          className="w-14 h-14 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center justify-center shadow-xl shadow-emerald-500/15 active:scale-95 transition-all select-none cursor-pointer border border-emerald-400/20 group font-extrabold"
           title="Ações Rápidas"
         >
-          <span className={`text-2xl font-extrabold transition-transform duration-300 ${
+          <span className={`text-2xl font-extrabold transition-transform duration-350 ${
             showFabDropdown ? "rotate-[135deg]" : ""
           }`}>+</span>
         </button>
@@ -978,7 +1082,7 @@ export default function DashboardHome() {
               <div className="p-3 bg-base-theme border border-theme rounded-xl text-xs space-y-1 text-secondary-theme">
                 <span className="font-extrabold text-[9px] text-muted-theme uppercase tracking-wider block">Regra de Tarifas</span>
                 {withdrawalCount === 0 ? (
-                  <p className="text-emerald-450 font-bold">Este é o seu 1º saque do mês. Tarifa Cobbra é 100% GRÁTIS!</p>
+                  <p className="text-emerald-400 font-bold">Este é o seu 1º saque do mês. Tarifa Cobbra é 100% GRÁTIS!</p>
                 ) : (
                   <p className="text-primary-theme font-semibold">
                     Tarifa por saque: <span className="text-rose-400 font-bold">R$ 3,90</span> (deduzida do valor líquido).
@@ -1301,7 +1405,7 @@ export default function DashboardHome() {
           <div className="bg-modal-theme border border-theme rounded-2xl max-w-md w-full overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
             <div className="px-6 py-4 border-b border-theme flex justify-between items-center">
               <h3 className="text-sm font-bold text-primary-theme flex items-center gap-1.5">
-                <svg className="w-4 h-4 text-emerald-450" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
+                <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
                 Lançamento Financeiro Manual
               </h3>
               <button onClick={() => setShowTransactionModal(false)} className="text-secondary-theme hover:text-primary-theme text-sm">✕</button>

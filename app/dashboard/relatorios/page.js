@@ -575,7 +575,7 @@ export default function RelatoriosPage() {
           {/* Vehicles List */}
           <div style={cardS}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 800, color: '#ffffff', margin: 0 }}>Desempenho Financeiro da Frota</h3>
+              <h3 style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>Desempenho Financeiro da Frota</h3>
               <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{data.vehicles?.length || 0} veículos apurados</span>
             </div>
             

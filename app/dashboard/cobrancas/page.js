@@ -481,9 +481,9 @@ export default function CobrancasPage() {
               setShowWaPairModal(true);
               handleStartWaConnection();
             }}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-[#070913] text-xs font-black hover:from-emerald-400 hover:to-emerald-500 active:scale-98 transition-all shadow-md shadow-emerald-500/20 whitespace-nowrap cursor-pointer"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 text-xs font-black hover:from-emerald-400 hover:to-emerald-500 active:scale-98 transition-all shadow-md shadow-emerald-500/20 whitespace-nowrap cursor-pointer"
           >
-            <svg className="w-3.5 h-3.5 inline mr-1 text-emerald-450" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244m6.522-5.93l-3.29 3.29" /></svg> Conectar WhatsApp Próprio
+            <svg className="w-3.5 h-3.5 inline mr-1 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244m6.522-5.93l-3.29 3.29" /></svg> Conectar WhatsApp Próprio
           </button>
         </div>
       )}
@@ -518,7 +518,7 @@ export default function CobrancasPage() {
           
           <button 
             onClick={() => setShowModal(true)} 
-            className="w-11 h-11 flex-shrink-0 flex flex-col items-center justify-center rounded-xl bg-[#10B981] text-[#070913] border border-theme hover:bg-emerald-400 active:scale-95 transition-all shadow-lg shadow-emerald-500/25 cursor-pointer select-none"
+            className="w-11 h-11 flex-shrink-0 flex flex-col items-center justify-center rounded-xl bg-emerald-500 text-slate-950 border border-theme hover:bg-emerald-400 active:scale-95 transition-all shadow-lg shadow-emerald-500/25 cursor-pointer select-none"
             title="Nova Cobrança"
           >
             <span className="text-[13px] font-black leading-none mb-0.5">+</span>
@@ -546,7 +546,7 @@ export default function CobrancasPage() {
                 onClick={() => setFilter(k)}
                 className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border whitespace-nowrap cursor-pointer ${
                   isSelected
-                    ? 'bg-[#10B981] text-white border-[#10B981]'
+                    ? 'bg-emerald-500 text-slate-950 border-emerald-500'
                     : 'bg-surface-theme text-secondary-theme border-theme hover:text-primary-theme hover:border-theme'
                 }`}
               >
@@ -630,7 +630,7 @@ export default function CobrancasPage() {
                       </span>
                     </td>
                     <td className="px-5 py-4 text-secondary-theme">
-                      {c.reminder_channel === 'both' ? <span className="flex items-center gap-1"><svg className="w-3.5 h-3.5 text-emerald-450 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>${emailIconSvg}</span> : c.reminder_channel === 'whatsapp' ? <svg className="w-3.5 h-3.5 text-emerald-450 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg> : <svg className="w-3.5 h-3.5 text-secondary-theme inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>}
+                      {c.reminder_channel === 'both' ? <span className="flex items-center gap-1"><svg className="w-3.5 h-3.5 text-emerald-400 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>${emailIconSvg}</span> : c.reminder_channel === 'whatsapp' ? <svg className="w-3.5 h-3.5 text-emerald-400 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg> : <svg className="w-3.5 h-3.5 text-secondary-theme inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <div className="flex gap-1.5 justify-end flex-wrap">
@@ -1295,7 +1295,7 @@ export default function CobrancasPage() {
                 <button 
                   type="button" 
                   onClick={handlePrintContract} 
-                  className="px-4 py-2.5 rounded-lg bg-[#10B981] hover:bg-emerald-600 text-[#070913] font-bold text-xs flex items-center gap-1.5 transition-colors shadow-lg shadow-emerald-500/10"
+                  className="px-4 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition-colors shadow-lg shadow-emerald-500/10"
                 >
                   <svg className="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0a2.25 2.25 0 01-2.24 2.24H8.58A2.25 2.25 0 016.34 18m11.318-3.096A19.571 19.571 0 0019.5 12a19.571 19.571 0 00-1.842-2.904M6.34 18a19.507 19.507 0 01-1.84-2.904m0 0A19.56 19.56 0 013 12c0-3.322 1.66-6.257 4.2-8.242M18.75 10.5h.008v.008h-.008V10.5z" /></svg> Imprimir / Salvar PDF
                 </button>

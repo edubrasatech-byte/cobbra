@@ -327,7 +327,7 @@ export default function EmprestimosPage() {
       {/* Header */}
       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 16 : 0, justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', marginBottom: 24 }}>
         <div>
-          <h2 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px' }}>💰 Gestão de Crédito & Empréstimos</h2>
+          <h2 style={{ fontSize: 24, fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>💰 Gestão de Crédito & Empréstimos</h2>
           <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: 2 }}>Controle carteiras alocadas, calcule acúmulo diário de juros e mitigue risco de inadimplência.</p>
         </div>
         
@@ -405,11 +405,11 @@ export default function EmprestimosPage() {
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16, marginBottom: 24 }}>
         <div style={{ ...cardStyle, padding: '12px 16px', borderLeft: '4px solid #3b82f6' }}>
           <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Capital Emprestado</span>
-          <h3 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', margin: '2px 0 0 0' }}>R$ {totalLent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
+          <h3 style={{ fontSize: 24, fontWeight: 900, color: 'var(--text-primary)', margin: '2px 0 0 0' }}>R$ {totalLent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
         </div>
         <div style={{ ...cardStyle, padding: '12px 16px', borderLeft: '4px solid #ef4444' }}>
           <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Inadimplência Riscada</span>
-          <h3 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', margin: '2px 0 0 0' }}>R$ {totalOverdue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
+          <h3 style={{ fontSize: 24, fontWeight: 900, color: 'var(--text-primary)', margin: '2px 0 0 0' }}>R$ {totalOverdue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
         </div>
         <div style={{ ...cardStyle, padding: '12px 16px', borderLeft: '4px solid #10b981' }}>
           <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Juros Diários Acumulados</span>
@@ -419,7 +419,7 @@ export default function EmprestimosPage() {
 
       {/* Credit Portfolio table */}
       <div style={cardStyle}>
-        <h3 style={{ fontSize: 16, fontWeight: 800, color: '#ffffff', marginBottom: 16 }}>Carteira de Mutuários</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 16 }}>Carteira de Mutuários</h3>
         
         {isMobile ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -580,7 +580,7 @@ export default function EmprestimosPage() {
             gap: 16
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontSize: 18, fontWeight: 900, color: '#ffffff' }}>💸 Lançar Crédito / Empréstimo</h3>
+              <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)' }}>💸 Lançar Crédito / Empréstimo</h3>
               <button 
                 onClick={() => setShowModal(false)}
                 style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: 18, cursor: 'pointer' }}
@@ -723,7 +723,7 @@ export default function EmprestimosPage() {
             overflowY: 'auto'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontSize: 17, fontWeight: 900, color: '#ffffff', margin: 0 }}>
+              <h3 style={{ fontSize: 17, fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
                 📱 Conectar Seu WhatsApp
               </h3>
               <button 

@@ -35,7 +35,7 @@ export async function PUT(request) {
     }
 
     const body = await request.json();
-    const { name, business_name, pix_key, pix_key_type, phone, plan, score_limit_good, score_limit_regular } = body;
+    const { name, business_name, pix_key, pix_key_type, phone, plan, score_limit_good, score_limit_regular, avatar_url } = body;
 
     const currentName = name !== undefined ? name : user.name;
     const currentBusinessName = business_name !== undefined ? business_name : user.business_name;
@@ -45,6 +45,7 @@ export async function PUT(request) {
     const currentPlan = plan !== undefined ? plan : user.plan;
     const currentScoreLimitGood = score_limit_good !== undefined ? parseFloat(score_limit_good) : user.score_limit_good;
     const currentScoreLimitRegular = score_limit_regular !== undefined ? parseFloat(score_limit_regular) : user.score_limit_regular;
+    const currentAvatarUrl = avatar_url !== undefined ? avatar_url : user.avatar_url;
 
     if (plan !== undefined && !['starter', 'crescimento', 'cobra_pro', 'trial'].includes(plan)) {
       return Response.json({ error: 'Plano inválido' }, { status: 400 });
@@ -60,6 +61,7 @@ export async function PUT(request) {
         plan = ?, 
         score_limit_good = ?,
         score_limit_regular = ?,
+        avatar_url = ?,
         updated_at = datetime('now') 
        WHERE id = ?`,
       [
@@ -71,12 +73,13 @@ export async function PUT(request) {
         currentPlan,
         currentScoreLimitGood,
         currentScoreLimitRegular,
+        currentAvatarUrl,
         user.id
       ]
     );
 
     const updatedUser = queryOne(
-      `SELECT id, name, email, role, phone, pix_key, pix_key_type, business_name, business_description, plan, plan_expires_at, status, onboarding_completed, score_limit_good, score_limit_regular, created_at 
+      `SELECT id, name, email, role, phone, pix_key, pix_key_type, business_name, business_description, plan, plan_expires_at, status, onboarding_completed, score_limit_good, score_limit_regular, avatar_url, created_at 
        FROM users WHERE id = ?`,
       [user.id]
     );

@@ -59,6 +59,8 @@ export default function ClientesPage() {
   const [selectedClient, setSelectedClient] = useState(null);
   const [clientCharges, setClientCharges] = useState([]);
   const [loadingCharges, setLoadingCharges] = useState(false);
+  const [clientDocs, setClientDocs] = useState([]);
+  const [loadingDocs, setLoadingDocs] = useState(false);
 
   // Partial Payment (Rebate) modal state
   const [abaterCharge, setAbaterCharge] = useState(null);
@@ -75,6 +77,160 @@ export default function ClientesPage() {
       .catch(() => setLoading(false));
   }
 
+  const loadClientDocs = async (clientId) => {
+    setLoadingDocs(true);
+    try {
+      const res = await fetch(`/api/clientes/${clientId}/documents`);
+      const data = await res.json();
+      setClientDocs(data.documents || []);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingDocs(false);
+    }
+  };
+
+  const handlePdfUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.type !== 'application/pdf') {
+      alert('Por favor, selecione apenas arquivos PDF.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Tamanho máximo permitido: 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = reader.result.split(',')[1];
+      try {
+        const res = await fetch(`/api/clientes/${selectedClient.id}/documents`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: file.name.replace('.pdf', ''),
+            file_name: file.name,
+            file_type: file.type,
+            file_size: file.size,
+            file_base64: base64
+          })
+        });
+        if (res.ok) {
+          showToast('PDF anexado com sucesso!');
+          loadClientDocs(selectedClient.id);
+        } else {
+          const err = await res.json();
+          alert(err.error || 'Erro ao fazer upload do PDF.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Erro de conexão ao enviar PDF.');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handlePdfDownload = async (docId, fileName) => {
+    try {
+      const res = await fetch(`/api/clientes/${selectedClient.id}/documents/${docId}`);
+      const data = await res.json();
+      if (data.document && data.document.file_base64) {
+        const base64 = data.document.file_base64;
+        const linkSource = `data:application/pdf;base64,${base64}`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = linkSource;
+        downloadLink.download = fileName;
+        downloadLink.click();
+      } else {
+        alert('Erro ao recuperar o arquivo PDF.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Erro de conexão ao baixar PDF.');
+    }
+  };
+
+  const handlePdfDelete = async (docId) => {
+    if (!confirm('Deseja realmente excluir este documento PDF?')) return;
+    try {
+      const res = await fetch(`/api/clientes/${selectedClient.id}/documents/${docId}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        showToast('PDF removido com sucesso!');
+        loadClientDocs(selectedClient.id);
+      } else {
+        alert('Erro ao excluir documento.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Erro de conexão ao excluir PDF.');
+    }
+  };
+
+  const handleClientAvatarUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor, selecione apenas arquivos de imagem.');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Tamanho máximo da imagem: 2MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = reader.result;
+      try {
+        const res = await fetch(`/api/clientes/${selectedClient.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...selectedClient,
+            avatar_url: base64
+          })
+        });
+        if (res.ok) {
+          showToast('Foto do cliente atualizada!');
+          refreshSelectedClient(selectedClient.id);
+        } else {
+          const err = await res.json();
+          alert(err.error || 'Erro ao atualizar foto.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Erro de conexão ao salvar foto.');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRefundCharge = async (chargeId) => {
+    if (!confirm('Deseja realmente estornar esta cobrança? O valor será deduzido do seu saldo e o status será marcado como reembolsado.')) return;
+    try {
+      const res = await fetch(`/api/cobrancas/${chargeId}/refund`, {
+        method: 'POST'
+      });
+      if (res.ok) {
+        showToast('Cobrança estornada com sucesso!');
+        refreshSelectedClient(selectedClient.id);
+        fetch(`/api/cobrancas?client_id=${selectedClient.id}`)
+          .then(r => r.json())
+          .then(data => setClientCharges(data.charges || []));
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Falha ao estornar cobrança.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Erro de conexão ao realizar estorno.');
+    }
+  };
+
   useEffect(() => {
     loadClients();
     fetch('/api/auth/me')
@@ -85,7 +241,7 @@ export default function ClientesPage() {
 
   useEffect(() => { loadClients(); }, [search, healthFilter]);
 
-  // Load client charges when client is selected
+  // Load client charges and docs when client is selected
   useEffect(() => {
     if (selectedClient) {
       setLoadingCharges(true);
@@ -96,8 +252,10 @@ export default function ClientesPage() {
           setLoadingCharges(false);
         })
         .catch(() => setLoadingCharges(false));
+      loadClientDocs(selectedClient.id);
     } else {
       setClientCharges([]);
+      setClientDocs([]);
     }
   }, [selectedClient]);
 
@@ -215,7 +373,7 @@ export default function ClientesPage() {
     if (c.total_overdue === 0) {
       return { l: 'Excelente', c: 'text-emerald-400', b: 'bg-emerald-500/10', s: 5 };
     } else if (overdueRatio < limitGood) {
-      return { l: 'Bom', c: 'text-emerald-350', b: 'bg-emerald-500/5', s: 4 };
+      return { l: 'Bom', c: 'text-emerald-400', b: 'bg-emerald-500/5', s: 4 };
     } else if (overdueRatio < limitRegular) {
       return { l: 'Regular', c: 'text-amber-500', b: 'bg-amber-500/5', s: 3 };
     } else {
@@ -277,7 +435,7 @@ export default function ClientesPage() {
         
         <button 
           onClick={() => setShowModal(true)} 
-          className="h-10 px-5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-xs hover:from-emerald-500 hover:to-teal-500 cursor-pointer shadow shadow-emerald-500/10 active:scale-98 transition-all flex items-center justify-center gap-1.5"
+          className="h-10 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs cursor-pointer shadow shadow-emerald-500/10 active:scale-98 transition-all flex items-center justify-center gap-1.5"
         >
           <span>+</span> Novo Cliente
         </button>
@@ -387,8 +545,18 @@ export default function ClientesPage() {
 
             {/* Profile Info block */}
             <div className="flex gap-3.5 items-center pb-4 border-b border-theme/40">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-600 to-teal-600 text-white flex items-center justify-center font-black text-sm flex-shrink-0 select-none">
-                {selectedClient.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+              <div className="relative group w-12 h-12 flex-shrink-0 select-none">
+                {selectedClient.avatar_url ? (
+                  <img src={selectedClient.avatar_url} alt={selectedClient.name} className="w-12 h-12 rounded-full object-cover border border-theme" />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-600 to-teal-600 text-white flex items-center justify-center font-black text-sm">
+                    {selectedClient.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+                  </div>
+                )}
+                <label className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-[9px] text-white font-bold">
+                  Alterar
+                  <input type="file" accept="image/*" onChange={handleClientAvatarUpload} className="hidden" />
+                </label>
               </div>
               <div className="min-w-0 w-full text-left">
                 <h3 className="text-base font-black text-primary-theme leading-tight truncate">{selectedClient.name}</h3>
@@ -470,7 +638,7 @@ export default function ClientesPage() {
                             </span>
                           </div>
 
-                          {c.status !== 'paid' && c.status !== 'cancelled' && (
+                          {c.status !== 'paid' && c.status !== 'cancelled' ? (
                             <div className="flex gap-1.5">
                               <button 
                                 onClick={() => setAbaterCharge(c)}
@@ -485,6 +653,13 @@ export default function ClientesPage() {
                                 Receber
                               </button>
                             </div>
+                          ) : c.status === 'paid' && (
+                            <button 
+                              onClick={() => handleRefundCharge(c.id)}
+                              className="px-2.5 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500 hover:text-white text-rose-400 font-extrabold text-[10px] transition-all cursor-pointer"
+                            >
+                              Estornar
+                            </button>
                           )}
                         </div>
                       </div>
@@ -501,6 +676,55 @@ export default function ClientesPage() {
                 {selectedClient.notes}
               </div>
             )}
+
+            {/* PDF Documents and Archive Panel */}
+            <div className="p-4 bg-card-theme rounded-2xl border border-theme space-y-3 text-left">
+              <div className="flex justify-between items-center pb-2 border-b border-theme/40">
+                <h4 className="text-xs font-black text-primary-theme uppercase tracking-wider flex items-center gap-1.5">
+                  📁 Documentos e Arquivo PDF
+                </h4>
+                <label className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/25 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 font-bold text-[10px] cursor-pointer transition-all">
+                  + Anexar PDF
+                  <input type="file" accept="application/pdf" onChange={handlePdfUpload} className="hidden" />
+                </label>
+              </div>
+
+              {loadingDocs ? (
+                <p className="text-[11px] text-muted-theme text-center py-2">Carregando documentos...</p>
+              ) : clientDocs.length === 0 ? (
+                <p className="text-[11px] text-muted-theme text-center py-2">Nenhum documento anexado ao perfil.</p>
+              ) : (
+                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                  {clientDocs.map(doc => (
+                    <div key={doc.id} className="p-2 rounded-xl bg-input-theme border border-theme/60 flex items-center justify-between gap-3 text-[11px]">
+                      <div className="min-w-0 flex items-center gap-2">
+                        <svg className="w-4 h-4 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                        <div className="min-w-0">
+                          <p className="font-bold text-primary-theme truncate" title={doc.file_name}>{doc.name}</p>
+                          <p className="text-[9px] text-muted-theme">{(doc.file_size / 1024).toFixed(1)} KB • {new Date(doc.created_at).toLocaleDateString('pt-BR')}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-1.5 flex-shrink-0">
+                        <button 
+                          onClick={() => handlePdfDownload(doc.id, doc.file_name)}
+                          className="p-1 text-emerald-400 hover:text-emerald-300 font-bold transition-all text-[10px]"
+                          title="Baixar PDF"
+                        >
+                          Baixar
+                        </button>
+                        <button 
+                          onClick={() => handlePdfDelete(doc.id)}
+                          className="p-1 text-rose-400 hover:text-rose-300 font-bold transition-all text-[10px]"
+                          title="Excluir PDF"
+                        >
+                          Excluir
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Delete button option */}
             <div className="flex justify-between items-center pt-3 border-t border-theme/40">

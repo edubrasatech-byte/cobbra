@@ -336,7 +336,7 @@ CONDIÇÕES: ${notes}
 
       <div style={{ marginBottom: isMobile ? 16 : 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px', margin: 0 }}>🏗️ Obras e Orçamentos</h2>
+          <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.5px', margin: 0 }}>🏗️ Obras e Orçamentos</h2>
           {!isMobile && (
             <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: 2, marginBottom: 0 }}>Gere propostas comerciais, diários de obra e contratos inteligentes com o Catarina Copilot.</p>
           )}

@@ -92,17 +92,19 @@ a {
   text-decoration: none;
 }
 
-button {
-  font-family: var(--font-sans);
-  cursor: pointer;
-  border: none;
-  background: none;
-}
+@layer base {
+  button {
+    font-family: var(--font-sans);
+    cursor: pointer;
+    border-style: none;
+    background-color: transparent;
+  }
 
-input, textarea, select {
-  font-family: var(--font-sans);
-  border: none;
-  outline: none;
+  input, textarea, select {
+    font-family: var(--font-sans);
+    border-style: none;
+    outline: none;
+  }
 }
 
 img {
@@ -533,6 +535,27 @@ div.desktop-only, section.desktop-only {
   --bg-modal: #0C0E1A;
   --bg-modal-overlay: rgba(2, 6, 23, 0.85);
   --border-subtle: rgba(255, 255, 255, 0.04);
+
+  /* Solid Button Backgrounds */
+  --bg-btn-secondary: #131627;
+  --bg-btn-secondary-hover: #1e293b;
+
+  /* Adaptive Status Colors (Dark mode defaults) */
+  --status-pending-text: #f59e0b;
+  --status-pending-bg: rgba(245, 158, 11, 0.1);
+  --status-pending-border: rgba(245, 158, 11, 0.2);
+
+  --status-sent-text: #60a5fa;
+  --status-sent-bg: rgba(59, 130, 246, 0.1);
+  --status-sent-border: rgba(59, 130, 246, 0.2);
+
+  --status-paid-text: #10b981;
+  --status-paid-bg: rgba(16, 185, 129, 0.1);
+  --status-paid-border: rgba(16, 185, 129, 0.2);
+
+  --status-overdue-text: #f87171;
+  --status-overdue-bg: rgba(239, 68, 68, 0.1);
+  --status-overdue-border: rgba(239, 68, 68, 0.2);
 }
 
 :root.light-theme {
@@ -551,6 +574,27 @@ div.desktop-only, section.desktop-only {
   --bg-modal: #ffffff;
   --bg-modal-overlay: rgba(0, 0, 0, 0.4);
   --border-subtle: rgba(0, 0, 0, 0.06);
+
+  /* Solid Button Backgrounds */
+  --bg-btn-secondary: #f1f5f9;
+  --bg-btn-secondary-hover: #e2e8f0;
+
+  /* Adaptive Status Colors (Light mode overrides) */
+  --status-pending-text: #b45309;
+  --status-pending-bg: rgba(217, 119, 6, 0.08);
+  --status-pending-border: rgba(217, 119, 6, 0.15);
+
+  --status-sent-text: #1d4ed8;
+  --status-sent-bg: rgba(29, 78, 216, 0.06);
+  --status-sent-border: rgba(29, 78, 216, 0.12);
+
+  --status-paid-text: #047857;
+  --status-paid-bg: rgba(4, 120, 87, 0.06);
+  --status-paid-border: rgba(4, 120, 87, 0.12);
+
+  --status-overdue-text: #b91c1c;
+  --status-overdue-bg: rgba(185, 28, 28, 0.06);
+  --status-overdue-border: rgba(185, 28, 28, 0.12);
 }
 
 /* Theme utility classes */
@@ -649,13 +693,35 @@ aside, header, main, .chatbot-drawer-container {
 }
 
 .btn-premium-secondary {
-  background-color: var(--bg-surface-hover);
+  background-color: var(--bg-btn-secondary);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
 }
 .btn-premium-secondary:hover {
-  background-color: var(--bg-card-hover);
+  background-color: var(--bg-btn-secondary-hover);
   border-color: rgba(16, 185, 129, 0.2);
+}
+
+/* Adaptive Status Classes */
+.status-pending {
+  color: var(--status-pending-text) !important;
+  background-color: var(--status-pending-bg) !important;
+  border: 1px solid var(--status-pending-border) !important;
+}
+.status-sent {
+  color: var(--status-sent-text) !important;
+  background-color: var(--status-sent-bg) !important;
+  border: 1px solid var(--status-sent-border) !important;
+}
+.status-paid {
+  color: var(--status-paid-text) !important;
+  background-color: var(--status-paid-bg) !important;
+  border: 1px solid var(--status-paid-border) !important;
+}
+.status-overdue {
+  color: var(--status-overdue-text) !important;
+  background-color: var(--status-overdue-bg) !important;
+  border: 1px solid var(--status-overdue-border) !important;
 }
 
 

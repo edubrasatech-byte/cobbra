@@ -540,8 +540,62 @@ export default function ConfiguracoesPage() {
               <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24 }}>Dados administrativos de exibição da sua conta.</p>
               
               <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28, background: 'var(--bg-surface-hover)', border: '1px solid var(--border-color)', padding: 18, borderRadius: 16 }}>
-                <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)', fontWeight: 900, fontSize: 20 }}>
-                  {user?.name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+                <div style={{ position: 'relative', width: 58, height: 58, flexShrink: 0 }}>
+                  {user?.avatar_url ? (
+                    <img 
+                      src={user.avatar_url} 
+                      alt={user.name} 
+                      style={{ width: 58, height: 58, borderRadius: '50%', objectFit: 'cover', border: '2.5px solid var(--border-color)' }} 
+                    />
+                  ) : (
+                    <div style={{ width: 58, height: 58, borderRadius: '50%', background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)', fontWeight: 900, fontSize: 20 }}>
+                      {user?.name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+                    </div>
+                  )}
+                  <label htmlFor="user-avatar-upload" style={{ position: 'absolute', bottom: -2, right: -2, background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '50%', width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 10, boxShadow: '0 2px 5px rgba(0,0,0,0.3)' }} title="Alterar foto">
+                    📷
+                  </label>
+                  <input 
+                    id="user-avatar-upload" 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (file.size > 1500000) {
+                        alert('A foto deve ter no máximo 1.5 MB.');
+                        return;
+                      }
+                      const reader = new FileReader();
+                      reader.onload = async () => {
+                        const base64 = reader.result;
+                        setMsg('Enviando foto de perfil...');
+                        try {
+                          const res = await fetch('/api/auth/me', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ avatar_url: base64 })
+                          });
+                          if (res.ok) {
+                            const data = await res.json();
+                            if (data.user) {
+                              setUser(data.user);
+                              showMsg('Foto de perfil atualizada com sucesso! 👤');
+                              
+                              // Trigger a custom event to notify other components (e.g. Sidebar)
+                              window.dispatchEvent(new Event('userAvatarUpdated'));
+                            }
+                          } else {
+                            alert('Erro ao carregar a imagem.');
+                          }
+                        } catch (err) {
+                          alert('Erro ao salvar foto de perfil.');
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }}
+                    style={{ display: 'none' }} 
+                  />
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

@@ -86,8 +86,12 @@ export default function Sidebar({ user, pathname, sidebarCollapsed, setSidebarCo
       <div className="p-4 border-t border-theme bg-base-theme">
         {!sidebarCollapsed && user && (
           <div className="bg-base-theme border border-theme rounded-2xl p-3 mb-3 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white font-extrabold text-xs shadow-md shadow-emerald-500/10">
-              {user.name?.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-extrabold text-xs shadow-md shadow-emerald-500/10 overflow-hidden bg-gradient-to-br from-[#10b981] to-[#059669]">
+              {user.avatar_url ? (
+                <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
+              ) : (
+                user.name?.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()
+              )}
             </div>
             <div className="overflow-hidden">
               <p className="text-[11px] font-bold text-primary-theme truncate leading-none mb-1" title={user.name}>{user.name}</p>
