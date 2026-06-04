@@ -93,7 +93,7 @@ export default function CobrancasPage() {
       setFilter('');
       setSearch('');
     }
-    triggerToast('Tabela de cobranças recarregada! 🔄', 'success');
+    triggerToast('Tabela de cobranças recarregada!', 'success');
     setTimeout(() => {
       setIsReloading(false);
     }, 850);
@@ -141,7 +141,7 @@ export default function CobrancasPage() {
               setWhatsappStatus('connected');
               setWhatsappPhone(data.phone || '');
               clearInterval(interval);
-              triggerToast('WhatsApp conectado com sucesso! 📱', 'success');
+              triggerToast('WhatsApp conectado com sucesso!', 'success');
               setShowWaPairModal(false);
             } else if (data.status === 'scanning') {
               if (data.qrCode) setWhatsappQrCode(data.qrCode);
@@ -175,7 +175,7 @@ export default function CobrancasPage() {
       } else if (data.status === 'connected') {
         setWhatsappStatus('connected');
         setWhatsappPhone(data.phone || '');
-        triggerToast('WhatsApp já está conectado! 📱', 'success');
+        triggerToast('WhatsApp já está conectado!', 'success');
         setShowWaPairModal(false);
       } else {
         setWhatsappStatus('scanning');
@@ -217,7 +217,7 @@ export default function CobrancasPage() {
           address: '',
           notes: ''
         });
-        triggerToast('Cliente cadastrado e selecionado! 👥', 'success');
+        triggerToast('Cliente cadastrado e selecionado!', 'success');
       } else {
         alert(data.error || 'Erro ao cadastrar cliente.');
       }
@@ -251,7 +251,7 @@ export default function CobrancasPage() {
           daily_interest_rate: '0' 
         }); 
         loadCharges(); 
-        triggerToast('Cobrança criada com sucesso! 🐍', 'success'); 
+        triggerToast('Cobrança criada com sucesso!', 'success'); 
       } else {
         const err = await res.json();
         alert(err.error || 'Erro ao criar cobrança.');
@@ -283,7 +283,7 @@ export default function CobrancasPage() {
 
     setCobrancaAiLoading(true);
 
-    const promptText = `Olá Catarina, por favor redija uma mensagem curta e educada de lembrete de cobrança no tom '${cobrancaHumor}' para o cliente '${clientName}' no valor de R$ ${amountVal} com vencimento em ${formattedDate}. Não inclua nenhum cabeçalho, introdução ou bloco de código markdown. Retorne apenas o texto exato da mensagem pronto para ser enviado! 🐍`;
+    const promptText = `Olá Catarina, por favor redija uma mensagem curta e educada de lembrete de cobrança no tom '${cobrancaHumor}' para o cliente '${clientName}' no valor de R$ ${amountVal} com vencimento em ${formattedDate}. Não inclua nenhum cabeçalho, introdução ou bloco de código markdown. Retorne apenas o texto exato da mensagem pronto para ser enviado!`;
 
     try {
       const res = await fetch('/api/ai/chat', {
@@ -295,7 +295,7 @@ export default function CobrancasPage() {
       if (res.ok && data.text) {
         setForm(prev => ({ ...prev, description: data.text.trim() }));
       } else {
-        alert('Catarina está ocupada no momento. Tente novamente! 🐍');
+        alert('Catarina está ocupada no momento. Tente novamente!');
       }
     } catch (e) {
       alert('Erro de conexão ao gerar texto de cobrança.');
@@ -311,14 +311,14 @@ export default function CobrancasPage() {
       body: JSON.stringify({ status }) 
     });
     loadCharges(); 
-    triggerToast('Status de pagamento atualizado! 💰', 'success');
+    triggerToast('Status de pagamento atualizado!', 'success');
   }
 
   async function deleteCharge(id) {
     if (!confirm('Excluir esta cobrança?')) return;
     await fetch(`/api/cobrancas/${id}`, { method: 'DELETE' });
     loadCharges(); 
-    triggerToast('Cobrança excluída com sucesso! 🗑️', 'success');
+    triggerToast('Cobrança excluída com sucesso!', 'success');
   }
 
   async function sendManualReminder(c, channel) {
@@ -338,7 +338,7 @@ export default function CobrancasPage() {
       }
     }
     
-    triggerToast(`Enviando cobrança avulsa via ${channel === 'whatsapp' ? 'WhatsApp' : 'E-mail'}... 🚀`, 'loading');
+    triggerToast(`Enviando cobrança avulsa via ${channel === 'whatsapp' ? 'WhatsApp' : 'E-mail'}...`, 'loading');
     
     const message = c.description || `Olá! Passando para lembrar sobre seu pagamento de R$ ${c.amount.toFixed(2)} com vencimento em ${new Date(c.due_date).toLocaleDateString('pt-BR')}.`;
     
@@ -354,7 +354,7 @@ export default function CobrancasPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        triggerToast(`Sucesso: Cobrança enviada via ${channel === 'whatsapp' ? 'WhatsApp' : 'E-mail'}! 🚀`, 'success');
+        triggerToast(`Sucesso: Cobrança enviada via ${channel === 'whatsapp' ? 'WhatsApp' : 'E-mail'}!`, 'success');
         loadCharges();
       } else {
         triggerToast(`Falha no envio: ${data.error || 'Erro inesperado.'}`, 'error');
@@ -379,7 +379,7 @@ export default function CobrancasPage() {
       setRebateAmount('');
       setRebateCharge(null);
       loadCharges();
-      triggerToast('Abatimento parcial registrado com sucesso! 💸', 'success');
+      triggerToast('Abatimento parcial registrado com sucesso!', 'success');
     }
   }
 
@@ -426,16 +426,28 @@ export default function CobrancasPage() {
       {/* Toast Alert */}
       {msg && (() => {
         let bg = 'bg-emerald-500 shadow-emerald-500/20'; 
-        let icon = '✅';
+        let icon = (
+          <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+        );
         if (msgType === 'error') {
           bg = 'bg-rose-500 shadow-rose-500/20'; 
-          icon = '❌';
+          icon = (
+            <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          );
         } else if (msgType === 'loading') {
           bg = 'bg-blue-500 shadow-blue-500/20'; 
-          icon = '🔄';
+          icon = null;
         } else if (msgType === 'info') {
           bg = 'bg-slate-800 shadow-black/40'; 
-          icon = '💡';
+          icon = (
+            <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" />
+            </svg>
+          );
         }
 
         return (
@@ -452,7 +464,9 @@ export default function CobrancasPage() {
       {whatsappStatus !== 'connected' && (
         <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/25 rounded-2xl p-4 md:p-5 flex flex-row flex-wrap items-center justify-between gap-4 shadow-lg shadow-emerald-500/5 animate-fadeInUp">
           <div className="flex gap-3.5 items-start">
-            <span className="text-3xl filter drop-shadow-[0_0_8px_rgba(16,185,129,0.4)]">📱</span>
+            <span className="text-3xl filter drop-shadow-[0_0_8px_rgba(16,185,129,0.4)]">
+              <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>
+            </span>
             <div>
               <h4 className="m-0 text-sm md:text-base font-extrabold text-emerald-400 tracking-tight">
                 Conecte seu próprio WhatsApp comercial!
@@ -469,13 +483,13 @@ export default function CobrancasPage() {
             }}
             className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-[#070913] text-xs font-black hover:from-emerald-400 hover:to-emerald-500 active:scale-98 transition-all shadow-md shadow-emerald-500/20 whitespace-nowrap cursor-pointer"
           >
-            🔗 Conectar WhatsApp Próprio
+            <svg className="w-3.5 h-3.5 inline mr-1 text-emerald-450" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244m6.522-5.93l-3.29 3.29" /></svg> Conectar WhatsApp Próprio
           </button>
         </div>
       )}
 
       {/* Minimal Header and Filter Panel */}
-      <div className="flex flex-col gap-4 border-b border-slate-900/60 pb-5">
+      <div className="flex flex-col gap-4 border-b border-theme pb-5">
         
         {/* Row 1: Search Input + Reload Button + Add Charge Button (Unified single-row for extreme screen-space efficiency) */}
         <div className="flex items-center gap-2.5 w-full">
@@ -485,24 +499,26 @@ export default function CobrancasPage() {
               placeholder="Buscar cobranças..." 
               value={search} 
               onChange={e => setSearch(e.target.value)} 
-              className="w-full h-11 min-h-[44px] py-2.5 pl-10 text-xs bg-[#0C0E1A] border border-slate-800/60 text-white rounded-xl outline-none focus:border-emerald-500 transition-colors placeholder-slate-500 font-medium"
+              className="w-full h-11 min-h-[44px] py-2.5 pl-10 text-xs bg-card-theme border border-theme text-primary-theme rounded-xl outline-none focus:border-emerald-500 transition-colors placeholder-muted-theme font-medium"
             />
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">🔍</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-theme">
+              <svg className="w-3.5 h-3.5 text-muted-theme" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+            </span>
           </div>
 
           <button 
             onClick={handleReload}
             title="Recarregar dados"
-            className="w-11 h-11 flex-shrink-0 flex items-center justify-center rounded-xl bg-[#0C0E1A] border border-slate-800/60 text-slate-400 hover:bg-slate-900/40 hover:text-slate-200 transition-all cursor-pointer group active:scale-95"
+            className="w-11 h-11 flex-shrink-0 flex items-center justify-center rounded-xl bg-card-theme border border-theme text-secondary-theme hover:bg-surface-theme hover:text-primary-theme transition-all cursor-pointer group active:scale-95"
           >
-            <svg className={`w-4 h-4 text-slate-400 group-hover:text-slate-200 transition-colors ${isReloading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg className={`w-4 h-4 text-secondary-theme group-hover:text-primary-theme transition-colors ${isReloading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
             </svg>
           </button>
           
           <button 
             onClick={() => setShowModal(true)} 
-            className="w-11 h-11 flex-shrink-0 flex flex-col items-center justify-center rounded-xl bg-[#10B981] text-[#070913] border border-emerald-400/30 hover:bg-emerald-400 active:scale-95 transition-all shadow-lg shadow-emerald-500/25 cursor-pointer select-none"
+            className="w-11 h-11 flex-shrink-0 flex flex-col items-center justify-center rounded-xl bg-[#10B981] text-[#070913] border border-theme hover:bg-emerald-400 active:scale-95 transition-all shadow-lg shadow-emerald-500/25 cursor-pointer select-none"
             title="Nova Cobrança"
           >
             <span className="text-[13px] font-black leading-none mb-0.5">+</span>
@@ -516,8 +532,8 @@ export default function CobrancasPage() {
             onClick={() => setFilter('')}
             className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border whitespace-nowrap cursor-pointer ${
               filter === '' 
-                ? 'bg-slate-100 text-slate-900 border-white' 
-                : 'bg-slate-900 text-slate-400 border-slate-800/60 hover:text-slate-200 hover:border-slate-700'
+                ? 'bg-emerald-500 text-white border-emerald-500' 
+                : 'bg-surface-theme text-secondary-theme border-theme hover:text-primary-theme hover:border-theme'
             }`}
           >
             Todos
@@ -531,7 +547,7 @@ export default function CobrancasPage() {
                 className={`px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border whitespace-nowrap cursor-pointer ${
                   isSelected
                     ? 'bg-[#10B981] text-white border-[#10B981]'
-                    : 'bg-slate-900 text-slate-400 border-slate-800/60 hover:text-slate-200 hover:border-slate-700'
+                    : 'bg-surface-theme text-secondary-theme border-theme hover:text-primary-theme hover:border-theme'
                 }`}
               >
                 {v.l}
@@ -549,19 +565,19 @@ export default function CobrancasPage() {
             <div 
               key={c.id} 
               onClick={() => setActiveDrawerCharge(c)}
-              className="bg-[#0C0E1A] hover:bg-slate-900/40 border border-slate-800/40 rounded-2xl flex items-center justify-between cursor-pointer transition-all duration-200 active:scale-[0.98] p-4"
+              className="bg-card-theme hover:bg-card-hover-theme border border-theme rounded-2xl flex items-center justify-between cursor-pointer transition-all duration-200 active:scale-[0.98] p-4"
             >
               <div className="min-w-0 pr-4 flex-1">
-                <p className="font-extrabold text-sm text-slate-100 truncate">{c.client_name || 'Cliente Sem Nome'}</p>
-                <p className="text-[11px] text-slate-400 truncate mt-1">{c.description || 'Cobrança Avulsa'}</p>
-                <p className="text-[10px] text-slate-500 mt-2.5 font-semibold flex items-center gap-1.5">
+                <p className="font-extrabold text-sm text-primary-theme truncate">{c.client_name || 'Cliente Sem Nome'}</p>
+                <p className="text-[11px] text-secondary-theme truncate mt-1">{c.description || 'Cobrança Avulsa'}</p>
+                <p className="text-[10px] text-muted-theme mt-2.5 font-semibold flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
                   Vencimento: {new Date(c.due_date).toLocaleDateString('pt-BR')}
                 </p>
               </div>
               
               <div className="text-right flex-shrink-0 flex flex-col items-end gap-2.5">
-                <p className={`font-black text-sm tracking-tight ${c.status === 'paid' ? 'text-emerald-400' : 'text-slate-100'}`}>
+                <p className={`font-black text-sm tracking-tight ${c.status === 'paid' ? 'text-emerald-400' : 'text-primary-theme'}`}>
                   {fmt(c.amount + interest)}
                 </p>
                 <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border scale-90 origin-right ${STATUS[c.status]?.b} ${STATUS[c.status]?.c}`}>
@@ -573,7 +589,7 @@ export default function CobrancasPage() {
         })}
 
         {charges.length === 0 && (
-          <div className="p-8 text-center text-slate-500 text-xs bg-[#0C0E1A] rounded-2xl border border-slate-800/40">
+          <div className="p-8 text-center text-muted-theme text-xs bg-card-theme rounded-2xl border border-theme">
             {loading ? 'Carregando cobranças...' : 'Nenhuma cobrança encontrada'}
           </div>
         )}
@@ -581,11 +597,11 @@ export default function CobrancasPage() {
 
 
       {/* 🖥️ Desktop UI: Flat Minimalist Stripe-style Table */}
-      <div className="hidden md:block bg-[#0C0E1A] rounded-xl border border-slate-800/40 overflow-hidden shadow-2xl">
+      <div className="hidden md:block bg-card-theme rounded-xl border border-theme overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-xs text-left">
             <thead>
-              <tr className="border-b border-slate-800/60 bg-slate-950/20 text-slate-400 font-bold uppercase tracking-wider">
+              <tr className="border-b border-theme bg-surface-theme text-secondary-theme font-bold uppercase tracking-wider">
                 <th className="px-5 py-3.5">Cliente</th>
                 <th className="px-5 py-3.5">Descrição</th>
                 <th className="px-5 py-3.5">Valor Original</th>
@@ -596,25 +612,25 @@ export default function CobrancasPage() {
                 <th className="px-5 py-3.5 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/40 font-medium">
+            <tbody className="divide-y divide-theme font-medium">
               {charges.map(c => {
                 const interest = calcInterest(c);
                 return (
-                  <tr key={c.id} className="hover:bg-slate-900/20 text-slate-200 transition-colors">
-                    <td className="px-5 py-4 font-bold text-slate-100">{c.client_name || 'N/A'}</td>
-                    <td className="px-5 py-4 text-slate-400 max-w-[180px] truncate">{c.description}</td>
+                  <tr key={c.id} className="hover:bg-card-hover-theme text-primary-theme transition-colors">
+                    <td className="px-5 py-4 font-bold text-primary-theme">{c.client_name || 'N/A'}</td>
+                    <td className="px-5 py-4 text-secondary-theme max-w-[180px] truncate">{c.description}</td>
                     <td className="px-5 py-4 font-extrabold">{fmt(c.amount)}</td>
-                    <td className={`px-5 py-4 ${interest > 0 ? 'text-amber-500' : 'text-slate-500'}`}>
+                    <td className={`px-5 py-4 ${interest > 0 ? 'text-amber-500' : 'text-muted-theme'}`}>
                       {interest > 0 ? `+${fmt(interest)} (${c.daily_interest_rate}%/dia)` : c.daily_interest_rate > 0 ? `0,00 (${c.daily_interest_rate}%/dia)` : '-'}
                     </td>
-                    <td className="px-5 py-4 text-slate-400">{new Date(c.due_date).toLocaleDateString('pt-BR')}</td>
+                    <td className="px-5 py-4 text-secondary-theme">{new Date(c.due_date).toLocaleDateString('pt-BR')}</td>
                     <td className="px-5 py-4">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${STATUS[c.status]?.b} ${STATUS[c.status]?.c}`}>
                         {STATUS[c.status]?.l || c.status}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-slate-400">
-                      {c.reminder_channel === 'both' ? '📱+✉️' : c.reminder_channel === 'whatsapp' ? '📱' : '✉️'}
+                    <td className="px-5 py-4 text-secondary-theme">
+                      {c.reminder_channel === 'both' ? <span className="flex items-center gap-1"><svg className="w-3.5 h-3.5 text-emerald-450 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>${emailIconSvg}</span> : c.reminder_channel === 'whatsapp' ? <svg className="w-3.5 h-3.5 text-emerald-450 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg> : <svg className="w-3.5 h-3.5 text-secondary-theme inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <div className="flex gap-1.5 justify-end flex-wrap">
@@ -624,7 +640,7 @@ export default function CobrancasPage() {
                               onClick={() => updateStatus(c.id, 'paid')} 
                               className="px-2 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold transition-all"
                             >
-                              ✓ Pago
+                              <svg className="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg> Pago
                             </button>
                             
                             <button 
@@ -634,21 +650,21 @@ export default function CobrancasPage() {
                               }} 
                               className="px-2 py-1 rounded bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 font-bold transition-all"
                             >
-                              Abater
+                              <svg className="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg> Abater
                             </button>
                             
                             <button 
                               onClick={() => sendManualReminder(c, 'whatsapp')} 
                               className="px-2 py-1 rounded bg-green-500/10 hover:bg-green-500/20 text-green-400 font-bold transition-all"
                             >
-                              📱 Whats
+                              <svg className="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg> Whats
                             </button>
                             
                             <button 
                               onClick={() => sendManualReminder(c, 'email')} 
                               className="px-2 py-1 rounded bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 font-bold transition-all"
                             >
-                              ✉️ Email
+                              <svg className="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg> Email
                             </button>
                           </>
                         )}
@@ -661,16 +677,16 @@ export default function CobrancasPage() {
                             }
                             setSelectedChargeForContract(c);
                           }} 
-                          className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all border border-slate-700/60"
+                          className="px-2 py-1 rounded bg-surface-theme hover:bg-card-hover-theme text-primary-theme transition-all border border-theme"
                         >
-                          📄 Contrato
+                          <svg className="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg> Contrato
                         </button>
                         
                         <button 
                           onClick={() => deleteCharge(c.id)} 
                           className="px-2 py-1 rounded bg-rose-500/15 hover:bg-rose-500/35 text-rose-400 font-bold transition-all"
                         >
-                          🗑️
+                          <svg className="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                         </button>
                       </div>
                     </td>
@@ -680,11 +696,11 @@ export default function CobrancasPage() {
               
               {charges.length === 0 && (
                 <tr>
-                  <td colSpan="8" className="px-5 py-12 text-center text-slate-500 text-xs flex-shrink-0">
+                  <td colSpan="8" className="px-5 py-12 text-center text-muted-theme text-xs flex-shrink-0">
                     {loading ? (
                       <div className="flex flex-col items-center justify-center gap-3 py-6">
                         <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin flex-shrink-0 mx-auto"></div>
-                        <p className="text-slate-500 text-xs font-semibold">Carregando cobranças...</p>
+                        <p className="text-muted-theme text-xs font-semibold">Carregando cobranças...</p>
                       </div>
                     ) : 'Nenhuma cobrança encontrada'}
                   </td>
@@ -717,25 +733,25 @@ export default function CobrancasPage() {
 
           {/* Drawer Backdrop Overlay */}
           <div 
-            className="fixed inset-0 bg-slate-950 z-[45] md:hidden animate-fade-in"
+            className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[45] md:hidden animate-fade-in"
             onClick={() => setActiveDrawerCharge(null)}
           />
           
-          <div className="fixed inset-x-0 bottom-0 bg-[#0C0E1A] border-t border-slate-800/80 rounded-t-3xl z-[46] md:hidden space-y-5 shadow-2xl animate-slide-up p-6">
+          <div className="fixed inset-x-0 bottom-0 bg-modal-theme border-t border-theme rounded-t-3xl z-[46] md:hidden space-y-5 shadow-2xl animate-slide-up p-6">
             
             {/* Grabber Handle */}
-            <div className="w-12 h-1 bg-slate-800 rounded-full mx-auto" onClick={() => setActiveDrawerCharge(null)} />
+            <div className="w-12 h-1 bg-surface-theme rounded-full mx-auto" onClick={() => setActiveDrawerCharge(null)} />
             
             {/* Header info */}
             <div className="text-center">
-              <h4 className="font-extrabold text-slate-100 text-base">{activeDrawerCharge.client_name}</h4>
-              <p className="text-[11px] text-slate-400 truncate max-w-[260px] mx-auto mt-1">{activeDrawerCharge.description || 'Cobrança Avulsa'}</p>
+              <h4 className="font-extrabold text-primary-theme text-base">{activeDrawerCharge.client_name}</h4>
+              <p className="text-[11px] text-secondary-theme truncate max-w-[260px] mx-auto mt-1">{activeDrawerCharge.description || 'Cobrança Avulsa'}</p>
               
               <div className="flex items-center justify-center gap-2.5 mt-3">
-                <span className="text-lg font-black text-slate-200">
+                <span className="text-lg font-black text-primary-theme">
                   {fmt(activeDrawerCharge.amount + calcInterest(activeDrawerCharge))}
                 </span>
-                <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${STATUS[activeDrawerCharge.status]?.b} ${STATUS[activeDrawerCharge.status]?.c}`}>
+                <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border scale-90 origin-right ${STATUS[activeDrawerCharge.status]?.b} ${STATUS[activeDrawerCharge.status]?.c}`}>
                   {STATUS[activeDrawerCharge.status]?.l}
                 </span>
               </div>
@@ -752,7 +768,7 @@ export default function CobrancasPage() {
                     }}
                     className="flex flex-col items-center justify-center p-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 transition-all active:scale-95"
                   >
-                    <span className="text-lg mb-1">✓</span>
+                    <span className="text-lg mb-1"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg></span>
                     <span className="text-[9px] font-bold uppercase tracking-wide">Pago</span>
                   </button>
                   
@@ -764,7 +780,7 @@ export default function CobrancasPage() {
                     }}
                     className="flex flex-col items-center justify-center p-3 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 transition-all active:scale-95"
                   >
-                    <span className="text-lg mb-1">💸</span>
+                    <span className="text-lg mb-1"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg></span>
                     <span className="text-[9px] font-bold uppercase tracking-wide">Abater</span>
                   </button>
                   
@@ -775,7 +791,7 @@ export default function CobrancasPage() {
                     }}
                     className="flex flex-col items-center justify-center p-3 rounded-xl bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20 transition-all active:scale-95"
                   >
-                    <span className="text-lg mb-1">📱</span>
+                    <span className="text-lg mb-1"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg></span>
                     <span className="text-[9px] font-bold uppercase tracking-wide">Whats</span>
                   </button>
                   
@@ -786,7 +802,7 @@ export default function CobrancasPage() {
                     }}
                     className="flex flex-col items-center justify-center p-3 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/20 transition-all active:scale-95"
                   >
-                    <span className="text-lg mb-1">✉️</span>
+                    <span className="text-lg mb-1"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg></span>
                     <span className="text-[9px] font-bold uppercase tracking-wide">Email</span>
                   </button>
                 </>
@@ -801,9 +817,9 @@ export default function CobrancasPage() {
                   setSelectedChargeForContract(activeDrawerCharge);
                   setActiveDrawerCharge(null);
                 }}
-                className="flex flex-col items-center justify-center p-3 rounded-xl bg-slate-800/40 hover:bg-slate-800 text-slate-300 border border-slate-800/60 transition-all active:scale-95"
+                className="flex flex-col items-center justify-center p-3 rounded-xl bg-surface-theme hover:bg-card-hover-theme text-primary-theme border border-theme transition-all active:scale-95"
               >
-                <span className="text-lg mb-1">📄</span>
+                <span className="text-lg mb-1"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg></span>
                 <span className="text-[9px] font-bold uppercase tracking-wide">Contrato</span>
               </button>
               
@@ -814,14 +830,14 @@ export default function CobrancasPage() {
                 }}
                 className="flex flex-col items-center justify-center p-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all active:scale-95"
               >
-                <span className="text-lg mb-1">🗑️</span>
+                <span className="text-lg mb-1"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg></span>
                 <span className="text-[9px] font-bold uppercase tracking-wide">Excluir</span>
               </button>
             </div>
 
             <button 
               onClick={() => setActiveDrawerCharge(null)}
-              className="w-full py-3 bg-slate-900 border border-slate-800/60 text-slate-400 rounded-xl text-xs font-bold transition-all"
+              className="w-full py-3 bg-surface-theme border border-theme text-secondary-theme hover:bg-card-hover-theme hover:text-primary-theme rounded-xl text-xs font-bold transition-all"
             >
               Cancelar
             </button>
@@ -829,23 +845,23 @@ export default function CobrancasPage() {
         </>
       )}
 
-      {/* 💸 Minimalist Rebate Modal Form */}
+      {/* Minimalist Rebate Modal Form */}
       {showRebateModal && rebateCharge && (
         <div 
-          className="fixed inset-0 bg-slate-950/95 z-[60] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4"
           onClick={() => {
             setShowRebateModal(false);
             setRebateCharge(null);
           }}
         >
-          <div onClick={e => e.stopPropagation()} className="bg-[#0C0E1A] rounded-2xl p-6 w-full max-w-sm border border-slate-800/60 shadow-2xl" style={{ padding: '24px' }}>
-            <h3 className="text-base font-bold text-slate-100 mb-1">Abatimento de Fatura</h3>
-            <p className="text-xs text-slate-500 mb-4 leading-relaxed">
-              Deduza uma quantia paga avulso da cobrança <strong className="text-slate-300">{rebateCharge.description}</strong>.
+          <div onClick={e => e.stopPropagation()} className="bg-modal-theme rounded-2xl p-6 w-full max-w-sm border border-theme shadow-2xl" style={{ padding: '24px' }}>
+            <h3 className="text-base font-bold text-primary-theme mb-1">Abatimento de Fatura</h3>
+            <p className="text-xs text-muted-theme mb-4 leading-relaxed">
+              Deduza uma quantia paga avulso da cobrança <strong className="text-primary-theme">{rebateCharge.description}</strong>.
             </p>
             <form onSubmit={handleRebateSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs text-slate-400 font-semibold mb-1.5">Valor do Abatimento (R$) *</label>
+                <label className="block text-xs text-secondary-theme font-semibold mb-1.5">Valor do Abatimento (R$) *</label>
                 <input 
                   type="number" 
                   step="0.01" 
@@ -854,10 +870,10 @@ export default function CobrancasPage() {
                   value={rebateAmount}
                   onChange={e => setRebateAmount(e.target.value)}
                   placeholder="Ex: 50.00"
-                  className="w-full py-2 px-3 text-sm bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full py-2 px-3 text-sm bg-input-theme border border-theme text-primary-theme rounded-lg outline-none focus:border-emerald-500 transition-colors"
                   required
                 />
-                <span className="block text-[10px] text-slate-500 mt-1">
+                <span className="block text-[10px] text-muted-theme mt-1">
                   Saldo pendente na fatura: {fmt(rebateCharge.amount)}
                 </span>
               </div>
@@ -868,7 +884,7 @@ export default function CobrancasPage() {
                     setShowRebateModal(false);
                     setRebateCharge(null);
                   }} 
-                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700/60 text-slate-200 hover:text-white text-xs font-bold transition-all"
+                  className="px-4 py-2 rounded-lg bg-surface-theme hover:bg-card-hover-theme border border-theme text-primary-theme text-xs font-bold transition-all"
                 >
                   Cancelar
                 </button>
@@ -887,22 +903,22 @@ export default function CobrancasPage() {
       {/* 🏗️ Create Modal (New Charge) */}
       {showModal && (
         <div 
-          className="fixed inset-0 bg-slate-950/95 z-[50] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[50] flex items-center justify-center p-4"
           onClick={() => setShowModal(false)}
         >
           <div 
             onClick={e => e.stopPropagation()} 
-            className="bg-[#0C0E1A] rounded-2xl p-6 w-full max-w-lg border border-slate-800/60 shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="bg-modal-theme rounded-2xl p-6 w-full max-w-lg border border-theme shadow-2xl max-h-[90vh] overflow-y-auto"
             style={{ padding: '24px' }}
           >
-            <h3 className="text-base font-bold text-slate-100 mb-5">Nova Cobrança</h3>
+            <h3 className="text-base font-bold text-primary-theme mb-5">Nova Cobrança</h3>
             
             <form onSubmit={createCharge} className="space-y-5">
               
               {/* Client Selection */}
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider">Cliente *</label>
+                  <label className="block text-[11px] text-secondary-theme font-bold uppercase tracking-wider">Cliente *</label>
                   <button 
                     type="button" 
                     onClick={() => setShowInlineClientModal(true)} 
@@ -914,7 +930,7 @@ export default function CobrancasPage() {
                 <select 
                   value={form.client_id} 
                   onChange={e => setForm({ ...form, client_id: e.target.value })} 
-                  className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
+                  className="w-full py-3 px-4 text-sm bg-input-theme border border-theme text-primary-theme rounded-xl outline-none focus:border-emerald-500 transition-all focus:ring-1 focus:ring-emerald-500/20"
                   required
                 >
                   <option value="">Selecione o cliente...</option>
@@ -925,43 +941,43 @@ export default function CobrancasPage() {
               {/* Amount & Due Date Grid */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Valor (R$) *</label>
+                  <label className="block text-[11px] text-secondary-theme font-bold uppercase tracking-wider mb-2">Valor (R$) *</label>
                   <input 
                     type="number" 
                     step="0.01" 
                     min="0.01" 
                     value={form.amount} 
                     onChange={e => setForm({ ...form, amount: e.target.value })} 
-                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all focus:ring-1 focus:ring-emerald-500/20" 
+                    className="w-full py-3 px-4 text-sm bg-input-theme border border-theme text-primary-theme rounded-xl outline-none focus:border-emerald-500 transition-all focus:ring-1 focus:ring-emerald-500/20" 
                     placeholder="0,00"
                     required 
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Vencimento *</label>
+                  <label className="block text-[11px] text-secondary-theme font-bold uppercase tracking-wider mb-2">Vencimento *</label>
                   <input 
                     type="date" 
                     value={form.due_date} 
                     onChange={e => setForm({ ...form, due_date: e.target.value })} 
-                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20" 
+                    className="w-full py-3 px-4 text-sm bg-input-theme border border-theme text-primary-theme rounded-xl outline-none focus:border-emerald-500 transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20" 
                     required 
                   />
                 </div>
               </div>
               
               {/* AI Writer Helper Option */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end bg-slate-900/30 p-4 rounded-xl border border-slate-800/40" style={{ marginTop: '24px' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end bg-surface-theme p-4 rounded-xl border border-theme" style={{ marginTop: '24px' }}>
                 <div className="sm:col-span-2">
-                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Tom da Cobrança (AI Writer)</label>
+                  <label className="block text-[11px] text-secondary-theme font-bold uppercase tracking-wider mb-2">Tom da Cobrança (AI Writer)</label>
                   <select 
                     value={cobrancaHumor} 
                     onChange={e => setCobrancaHumor(e.target.value)} 
-                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-slate-300 rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
+                    className="w-full py-3 px-4 text-sm bg-input-theme border border-theme text-primary-theme rounded-xl outline-none focus:border-emerald-500 transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
                   >
-                    <option value="gentil">😇 Gentil (Amigável)</option>
-                    <option value="firme">👔 Firme (Profissional)</option>
-                    <option value="urgente">🚨 Urgente (Importante)</option>
-                    <option value="divertido">🐍 Divertido (Trocadilhos)</option>
+                    <option value="gentil">Gentil (Amigável)</option>
+                    <option value="firme">Firme (Profissional)</option>
+                    <option value="urgente">Urgente (Importante)</option>
+                    <option value="divertido">Divertido (Trocadilhos)</option>
                   </select>
                 </div>
                 
@@ -977,24 +993,24 @@ export default function CobrancasPage() {
 
               {/* Description textarea */}
               <div style={{ marginTop: '24px' }}>
-                <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Descrição / Mensagem de Cobrança</label>
+                <label className="block text-[11px] text-secondary-theme font-bold uppercase tracking-wider mb-2">Descrição / Mensagem de Cobrança</label>
                 <textarea 
                   rows="3"
                   value={form.description} 
                   onChange={e => setForm({ ...form, description: e.target.value })} 
                   placeholder="Ex: Lembrete da parcela mensal. Clique no botão de IA acima para redigir um texto incrível!" 
-                  className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all resize-y focus:ring-1 focus:ring-emerald-500/20" 
+                  className="w-full py-3 px-4 text-sm bg-input-theme border border-theme text-primary-theme rounded-xl outline-none focus:border-emerald-500 transition-all resize-y focus:ring-1 focus:ring-emerald-500/20" 
                 />
               </div>
               
               {/* Recurrence & Late fee Interest */}
               <div className="grid grid-cols-2 gap-4" style={{ marginTop: '24px' }}>
                 <div>
-                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Recorrência</label>
+                  <label className="block text-[11px] text-secondary-theme font-bold uppercase tracking-wider mb-2">Recorrência</label>
                   <select 
                     value={form.recurrence} 
                     onChange={e => setForm({ ...form, recurrence: e.target.value })} 
-                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
+                    className="w-full py-3 px-4 text-sm bg-input-theme border border-theme text-primary-theme rounded-xl outline-none focus:border-emerald-500 transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
                   >
                     <option value="once">Única</option>
                     <option value="monthly">Mensal</option>
@@ -1004,7 +1020,7 @@ export default function CobrancasPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Juros Diários Pós-Vencimento (%)</label>
+                  <label className="block text-[11px] text-secondary-theme font-bold uppercase tracking-wider mb-2">Juros Diários Pós-Vencimento (%)</label>
                   <input 
                     type="number" 
                     step="0.01" 
@@ -1012,7 +1028,7 @@ export default function CobrancasPage() {
                     value={form.daily_interest_rate} 
                     onChange={e => setForm({ ...form, daily_interest_rate: e.target.value })} 
                     placeholder="Ex: 0.1" 
-                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all focus:ring-1 focus:ring-emerald-500/20" 
+                    className="w-full py-3 px-4 text-sm bg-input-theme border border-theme text-primary-theme rounded-xl outline-none focus:border-emerald-500 transition-all focus:ring-1 focus:ring-emerald-500/20" 
                   />
                 </div>
               </div>
@@ -1020,11 +1036,11 @@ export default function CobrancasPage() {
               {/* Channels & Payment Method Grid */}
               <div className="grid grid-cols-2 gap-4" style={{ marginTop: '24px' }}>
                 <div>
-                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Canal de Lembrete</label>
+                  <label className="block text-[11px] text-secondary-theme font-bold uppercase tracking-wider mb-2">Canal de Lembrete</label>
                   <select 
                     value={form.reminder_channel} 
                     onChange={e => setForm({ ...form, reminder_channel: e.target.value })} 
-                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
+                    className="w-full py-3 px-4 text-sm bg-input-theme border border-theme text-primary-theme rounded-xl outline-none focus:border-emerald-500 transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
                   >
                     {user?.plan !== 'starter' && <option value="both">WhatsApp + Email</option>}
                     {user?.plan !== 'starter' && <option value="whatsapp">WhatsApp</option>}
@@ -1032,16 +1048,16 @@ export default function CobrancasPage() {
                   </select>
                   {user?.plan === 'starter' && (
                     <span className="block text-[10px] text-amber-500 mt-1.5">
-                      ⚠️ WhatsApp requer plano superior.
+                      <svg className="w-3.5 h-3.5 text-amber-500 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg> WhatsApp requer plano superior.
                     </span>
                   )}
                 </div>
                 <div>
-                  <label className="block text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-2">Método de Liquidação</label>
+                  <label className="block text-[11px] text-secondary-theme font-bold uppercase tracking-wider mb-2">Método de Liquidação</label>
                   <select 
                     value={form.payment_method} 
                     onChange={e => setForm({ ...form, payment_method: e.target.value })} 
-                    className="w-full py-3.5 px-4 text-sm bg-[#090b14] border border-slate-800/80 text-white rounded-xl outline-none focus:border-emerald-500 focus:bg-[#06070c] transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
+                    className="w-full py-3 px-4 text-sm bg-input-theme border border-theme text-primary-theme rounded-xl outline-none focus:border-emerald-500 transition-all cursor-pointer focus:ring-1 focus:ring-emerald-500/20"
                   >
                     <option value="pix">Pix</option>
                     <option value="boleto">Boleto</option>
@@ -1055,7 +1071,7 @@ export default function CobrancasPage() {
                 <button 
                   type="button" 
                   onClick={() => setShowModal(false)} 
-                  className="px-5 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-xs font-bold hover:bg-slate-800 hover:text-slate-200 transition-all cursor-pointer"
+                  className="px-5 py-3 rounded-xl bg-surface-theme border border-theme text-secondary-theme text-xs font-bold hover:bg-card-hover-theme hover:text-primary-theme transition-all cursor-pointer"
                 >
                   Cancelar
                 </button>
@@ -1075,20 +1091,20 @@ export default function CobrancasPage() {
       {/* 👥 Inline Client Registration Modal */}
       {showInlineClientModal && (
         <div 
-          className="fixed inset-0 bg-slate-950/95 z-[60] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4"
           onClick={() => setShowInlineClientModal(false)}
         >
           <div 
             onClick={e => e.stopPropagation()} 
-            className="bg-[#0C0E1A] rounded-2xl p-6 w-full max-w-md border border-slate-800/60 shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="bg-modal-theme rounded-2xl p-6 w-full max-w-md border border-theme shadow-2xl max-h-[90vh] overflow-y-auto"
             style={{ padding: '24px' }}
           >
             <div className="flex justify-between items-center mb-5">
-              <h3 className="text-base font-bold text-slate-100">Novo Cliente</h3>
+              <h3 className="text-base font-bold text-primary-theme">Novo Cliente</h3>
               <button 
                 type="button"
                 onClick={() => setShowInlineClientModal(false)} 
-                className="text-slate-400 hover:text-slate-200 text-lg"
+                className="text-secondary-theme hover:text-primary-theme text-lg"
               >
                 ✕
               </button>
@@ -1096,59 +1112,59 @@ export default function CobrancasPage() {
             
             <form onSubmit={createClientInline} className="space-y-4">
               <div>
-                <label className="block text-xs text-slate-400 font-semibold mb-1.5">Nome *</label>
+                <label className="block text-xs text-secondary-theme font-semibold mb-1.5">Nome *</label>
                 <input 
                   type="text" 
                   value={inlineClientForm.name} 
                   onChange={e => setInlineClientForm({ ...inlineClientForm, name: e.target.value })} 
                   placeholder="Nome completo"
-                  className="w-full py-2.5 px-3 text-sm bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full py-2.5 px-3 text-sm bg-input-theme border border-theme text-primary-theme rounded-lg outline-none focus:border-emerald-500 transition-colors"
                   required 
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 font-semibold mb-1.5">E-mail</label>
+                <label className="block text-xs text-secondary-theme font-semibold mb-1.5">E-mail</label>
                 <input 
                   type="email" 
                   value={inlineClientForm.email} 
                   onChange={e => setInlineClientForm({ ...inlineClientForm, email: e.target.value })} 
                   placeholder="email@exemplo.com"
-                  className="w-full py-2.5 px-3 text-sm bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full py-2.5 px-3 text-sm bg-input-theme border border-theme text-primary-theme rounded-lg outline-none focus:border-emerald-500 transition-colors"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-slate-400 font-semibold mb-1.5">Telefone</label>
+                  <label className="block text-xs text-secondary-theme font-semibold mb-1.5">Telefone</label>
                   <input 
                     type="tel" 
                     value={inlineClientForm.phone} 
                     onChange={e => setInlineClientForm({ ...inlineClientForm, phone: e.target.value })} 
                     placeholder="(11) 99999-9999"
-                    className="w-full py-2.5 px-3 text-sm bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full py-2.5 px-3 text-sm bg-input-theme border border-theme text-primary-theme rounded-lg outline-none focus:border-emerald-500 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 font-semibold mb-1.5">CPF / CNPJ</label>
+                  <label className="block text-xs text-secondary-theme font-semibold mb-1.5">CPF / CNPJ</label>
                   <input 
                     type="text" 
                     value={inlineClientForm.document} 
                     onChange={e => setInlineClientForm({ ...inlineClientForm, document: e.target.value })} 
                     placeholder="Ex: 123.456.789-00"
-                    className="w-full py-2.5 px-3 text-sm bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full py-2.5 px-3 text-sm bg-input-theme border border-theme text-primary-theme rounded-lg outline-none focus:border-emerald-500 transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 font-semibold mb-1.5">Categoria</label>
+                <label className="block text-xs text-secondary-theme font-semibold mb-1.5">Categoria</label>
                 <input 
                   type="text" 
                   value={inlineClientForm.category} 
                   onChange={e => setInlineClientForm({ ...inlineClientForm, category: e.target.value })} 
                   placeholder="Ex: Locatário, Aluno"
-                  className="w-full py-2.5 px-3 text-sm bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full py-2.5 px-3 text-sm bg-input-theme border border-theme text-primary-theme rounded-lg outline-none focus:border-emerald-500 transition-colors"
                 />
               </div>
 
@@ -1156,7 +1172,7 @@ export default function CobrancasPage() {
                 <button 
                   type="button" 
                   onClick={() => setShowInlineClientModal(false)} 
-                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700/60 text-slate-200 hover:text-white text-xs font-bold transition-all"
+                  className="px-4 py-2 rounded-lg bg-surface-theme hover:bg-card-hover-theme border border-theme text-primary-theme text-xs font-bold transition-all"
                 >
                   Cancelar
                 </button>
@@ -1181,18 +1197,18 @@ export default function CobrancasPage() {
         
         return (
           <div 
-            className="fixed inset-0 bg-slate-950/95 z-[50] flex items-center justify-center p-4"
+            className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[50] flex items-center justify-center p-4"
             onClick={() => setSelectedChargeForContract(null)}
           >
             <div 
               onClick={e => e.stopPropagation()} 
-              className="bg-[#0C0E1A] rounded-2xl p-6 w-full max-w-2xl border border-slate-800/60 shadow-2xl max-h-[90vh] overflow-y-auto"
+              className="bg-modal-theme rounded-2xl p-6 w-full max-w-2xl border border-theme shadow-2xl max-h-[90vh] overflow-y-auto"
               style={{ padding: '24px' }}
             >
               
-              <div className="flex justify-between items-center border-b border-slate-800/40 pb-4 mb-4">
-                <h3 className="text-sm font-bold text-slate-100">📄 Instrumento de Contrato</h3>
-                <button onClick={() => setSelectedChargeForContract(null)} className="w-8 h-8 rounded-full bg-slate-800/40 hover:bg-slate-800 text-slate-400 flex items-center justify-center transition-colors">×</button>
+              <div className="flex justify-between items-center border-b border-theme pb-4 mb-4">
+                <h3 className="text-sm font-bold text-primary-theme"><svg className="w-4 h-4 inline mr-1 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg> Instrumento de Contrato</h3>
+                <button onClick={() => setSelectedChargeForContract(null)} className="w-8 h-8 rounded-full bg-surface-theme hover:bg-card-hover-theme text-secondary-theme flex items-center justify-center transition-colors">×</button>
               </div>
 
               {/* Printable sheet container */}
@@ -1222,39 +1238,39 @@ export default function CobrancasPage() {
                     <strong>CONTRATANTE:</strong> <strong>{c.client_name || 'N/A'}</strong>, {client.document ? `inscrito(a) no CPF/CNPJ sob o nº ${client.document},` : ''} {client.address ? `residente e domiciliado(a) em ${client.address},` : ''} doravante denominado simplesmente CONTRATANTE.
                   </p>
                   <p className="text-justify mb-4">Têm, entre si, justo e contratado o seguinte:</p>
-
+ 
                   <h3 className="text-xs font-bold mt-4 mb-2 uppercase border-b border-slate-300 pb-1">
                     CLÁUSULA PRIMEIRA – DO OBJETO
                   </h3>
                   <p className="text-justify mb-4">
                     O objeto del presente contrato consiste na realização dos seguintes serviços / fornecimento de produtos pela CONTRATADA: <strong>{c.description || 'Prestação de serviços diversos conforme combinado'}</strong>.
                   </p>
-
+ 
                   <h3 className="text-xs font-bold mt-4 mb-2 uppercase border-b border-slate-300 pb-1">
                     CLÁUSULA SEGUNDA – DO VALOR E DO VENCIMENTO
                   </h3>
                   <p className="text-justify mb-4">
                     Pela prestação dos serviços referidos na cláusula anterior, a CONTRATANTE pagará à CONTRATADA o valor bruto de <strong>{fmt(c.amount)}</strong>, com vencimento impreterivelmente em <strong>{dueDateFormatted}</strong>, através de <strong>{c.payment_method?.toUpperCase()}</strong>.
                   </p>
-
+ 
                   <h3 className="text-xs font-bold mt-4 mb-2 uppercase border-b border-slate-300 pb-1">
                     CLÁUSULA TERCEIRA – DOS ENCARGOS POR ATRASO
                   </h3>
                   <p className="text-justify mb-4">
                     Em caso de inadimplemento da parcela referida na cláusula segunda até a data estabelecida, serão aplicados juros diários moratórios de <strong>{c.daily_interest_rate || 0}% ao dia</strong> pro rata die, a contar do primeiro dia subsequente ao vencimento até o dia de seu integral pagamento.
                   </p>
-
+ 
                   <h3 className="text-xs font-bold mt-4 mb-2 uppercase border-b border-slate-300 pb-1">
                     CLÁUSULA QUARTA – DO FORO
                   </h3>
                   <p className="text-justify mb-4">
                     Fica eleito o foro da comarca da CONTRATADA para dirimir quaisquer controvérsias que possam originar-se deste contrato, com exclusão de qualquer outro por mais privilegiado que seja.
                   </p>
-
+ 
                   <p className="text-justify mt-6 mb-12">
                     E, por estarem assim justas e acordadas, as partes firmam o presente instrumento na data de <strong>{formattedDate}</strong>.
                   </p>
-
+ 
                   <div className="grid grid-cols-2 gap-8 mt-12">
                     <div className="border-t border-slate-800 text-center pt-2 font-bold text-[10px]">
                       CONTRATANTE<br />{c.client_name}
@@ -1263,16 +1279,16 @@ export default function CobrancasPage() {
                       CONTRATADA<br />{user?.business_name || user?.name || 'PRESTADOR DE SERVIÇOS'}
                     </div>
                   </div>
-
+ 
                 </div>
               )}
-
+ 
               {/* Actions */}
               <div className="flex gap-3 justify-end pt-1">
                 <button 
                   type="button" 
                   onClick={() => setSelectedChargeForContract(null)} 
-                  className="px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold hover:bg-slate-800"
+                  className="px-4 py-2.5 rounded-lg bg-surface-theme border border-theme text-secondary-theme hover:bg-card-hover-theme hover:text-primary-theme text-xs font-semibold"
                 >
                   Fechar
                 </button>
@@ -1281,10 +1297,10 @@ export default function CobrancasPage() {
                   onClick={handlePrintContract} 
                   className="px-4 py-2.5 rounded-lg bg-[#10B981] hover:bg-emerald-600 text-[#070913] font-bold text-xs flex items-center gap-1.5 transition-colors shadow-lg shadow-emerald-500/10"
                 >
-                  🖨️ Imprimir / Salvar PDF
+                  <svg className="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0a2.25 2.25 0 01-2.24 2.24H8.58A2.25 2.25 0 016.34 18m11.318-3.096A19.571 19.571 0 0019.5 12a19.571 19.571 0 00-1.842-2.904M6.34 18a19.507 19.507 0 01-1.84-2.904m0 0A19.56 19.56 0 013 12c0-3.322 1.66-6.257 4.2-8.242M18.75 10.5h.008v.008h-.008V10.5z" /></svg> Imprimir / Salvar PDF
                 </button>
               </div>
-
+ 
             </div>
           </div>
         );
@@ -1292,34 +1308,34 @@ export default function CobrancasPage() {
       
       {/* WhatsApp Pairing Modal */}
       {showWaPairModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[1010] flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-[#0C0E1A] border border-emerald-500/20 rounded-3xl p-6 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto relative animate-scaleIn">
+        <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[1010] flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-modal-theme border border-theme rounded-3xl p-6 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto relative animate-scaleIn">
             <button 
               onClick={() => setShowWaPairModal(false)}
-              className="absolute top-4 right-4 text-slate-500 hover:text-slate-350 text-xl font-light cursor-pointer"
+              className="absolute top-4 right-4 text-secondary-theme hover:text-primary-theme text-xl font-light cursor-pointer"
             >
               ✕
             </button>
             
-            <div className="flex items-center gap-2 border-b border-slate-900 pb-3">
-              <h3 className="text-base font-black text-slate-200">
-                📱 Conectar Seu WhatsApp
+            <div className="flex items-center gap-2 border-b border-theme pb-3">
+              <h3 className="text-base font-black text-primary-theme">
+                <svg className="w-3.5 h-3.5 inline mr-1 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg> Conectar Seu WhatsApp
               </h3>
             </div>
-
+ 
             {whatsappStatus === 'connecting' && (
               <div className="py-8 text-center flex flex-col items-center justify-center">
                 <div className="w-10 h-10 border-4 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin mb-4" />
-                <p className="text-sm font-bold text-slate-200">Gerando Sessão de WhatsApp...</p>
-                <p className="text-xs text-slate-500 mt-1">Conectando com o servidor de mensagens. Aguarde alguns instantes.</p>
+                <p className="text-sm font-bold text-primary-theme">Gerando Sessão de WhatsApp...</p>
+                <p className="text-xs text-muted-theme mt-1">Conectando com o servidor de mensagens. Aguarde alguns instantes.</p>
               </div>
             )}
-
+ 
             {whatsappStatus === 'scanning' && (
               <div className="flex flex-col gap-4">
-                <div className="text-left bg-slate-950/40 rounded-xl p-4 border border-slate-900/60">
+                <div className="text-left bg-card-theme rounded-xl p-4 border border-theme">
                   <h4 className="text-xs font-black text-emerald-400 uppercase tracking-wider mb-3">Como parear:</h4>
-                  <div className="flex flex-col gap-2.5 text-xs text-slate-300">
+                  <div className="flex flex-col gap-2.5 text-xs text-secondary-theme">
                     <div className="flex gap-2.5 items-start">
                       <span className="bg-emerald-500 text-slate-950 w-4.5 h-4.5 rounded-full inline-flex items-center justify-center font-black text-[10px] flex-shrink-0">1</span>
                       <span>Abra o <strong>WhatsApp</strong> no seu celular.</span>
@@ -1334,20 +1350,20 @@ export default function CobrancasPage() {
                     </div>
                   </div>
                 </div>
-
+ 
                 <div className="flex justify-center my-2">
                   <div className="bg-white p-3.5 rounded-2xl border-4 border-emerald-500 inline-block shadow-lg">
                     {whatsappQrCode ? (
                       <img src={whatsappQrCode} alt="WhatsApp QR Code" className="w-48 h-48 block" />
                     ) : waError ? (
                       <div className="w-48 h-48 flex flex-col items-center justify-center bg-rose-50 rounded-xl p-3 text-center">
-                        <span className="text-2xl mb-2">⚠️</span>
+                        <svg className="w-6 h-6 text-amber-500 mb-2" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
                         <span className="text-[10px] font-bold text-rose-800 leading-snug">{waError}</span>
                       </div>
                     ) : (
                       <div className="w-48 h-48 flex flex-col items-center justify-center bg-slate-50 rounded-xl text-center">
                         <div className="w-8 h-8 border-3 border-emerald-500/15 border-t-emerald-500 rounded-full animate-spin mb-3" />
-                        <span className="text-[10px] text-slate-500 font-bold">Obtendo QR Code...</span>
+                        <span className="text-[10px] text-muted-theme font-bold">Obtendo QR Code...</span>
                       </div>
                     )}
                   </div>

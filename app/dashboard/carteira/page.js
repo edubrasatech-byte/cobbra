@@ -133,7 +133,7 @@ export default function CarteiraPage() {
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-slate-400 text-xs font-semibold">Carregando Cobbra Pay...</span>
+          <span className="text-secondary-theme text-xs font-semibold">Carregando Cobbra Pay...</span>
         </div>
       </div>
     );
@@ -153,8 +153,8 @@ export default function CarteiraPage() {
         {/* Card Header */}
         <div className="flex justify-between items-start z-10">
           <div className="space-y-0.5">
-            <span className="text-[10px] font-black tracking-widest text-slate-500 uppercase">Cobbra Pay</span>
-            <h2 className="text-xs font-bold text-slate-200 uppercase">Conta Digital</h2>
+            <span className="text-[10px] font-black tracking-widest text-muted-theme uppercase">Cobbra Pay</span>
+            <h2 className="text-xs font-bold text-primary-theme uppercase">Conta Digital</h2>
           </div>
           <div className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[8px] font-black text-emerald-400 uppercase tracking-wider">
             Ativa
@@ -163,23 +163,23 @@ export default function CarteiraPage() {
 
         {/* Main Balance Display */}
         <div className="z-10 my-2">
-          <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block">Saldo Disponível</span>
-          <h3 className="text-3xl font-black text-slate-100 mt-0.5 tracking-tight">
+          <span className="text-[9px] font-bold text-muted-theme uppercase tracking-widest block">Saldo Disponível</span>
+          <h3 className="text-3xl font-black text-primary-theme mt-0.5 tracking-tight">
             {formatCurrency(walletBalance)}
           </h3>
         </div>
 
         {/* Card Footer */}
-        <div className="flex justify-between items-end z-10 border-t border-slate-900/60 pt-3">
+        <div className="flex justify-between items-end z-10 border-t border-theme pt-3">
           <div>
-            <p className="text-[8px] text-slate-500 font-bold uppercase tracking-wider">Assinante</p>
-            <p className="text-xs font-bold text-slate-200 leading-none truncate max-w-[160px] uppercase mt-0.5">
+            <p className="text-[8px] text-muted-theme font-bold uppercase tracking-wider">Assinante</p>
+            <p className="text-xs font-bold text-primary-theme leading-none truncate max-w-[160px] uppercase mt-0.5">
               {clients[0]?.name ? "Acesso Premium" : "Dashboard"}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[8px] text-slate-500 font-bold uppercase tracking-wider">Resgates Realizados</p>
-            <p className="text-xs font-bold text-slate-300 mt-0.5">{withdrawalCount} saques</p>
+            <p className="text-[8px] text-muted-theme font-bold uppercase tracking-wider">Resgates Realizados</p>
+            <p className="text-xs font-bold text-primary-theme mt-0.5">{withdrawalCount} saques</p>
           </div>
         </div>
       </div>
@@ -218,30 +218,30 @@ export default function CarteiraPage() {
       </div>
 
       {/* Banking Timeline Statement Section */}
-      <div className="bg-slate-950/20 border border-slate-900 rounded-3xl p-4 shadow-xl space-y-4">
-        <div className="flex justify-between items-center pb-2 border-b border-slate-900/60">
+      <div className="bg-card-theme border border-theme rounded-3xl p-4 shadow-xl space-y-4">
+        <div className="flex justify-between items-center pb-2 border-b border-theme">
           <div>
-            <h4 className="text-xs font-extrabold text-slate-200 uppercase tracking-wider">Histórico da Conta</h4>
-            <p className="text-[9px] text-slate-500">Últimas movimentações e repasses</p>
+            <h4 className="text-xs font-extrabold text-primary-theme uppercase tracking-wider">Histórico da Conta</h4>
+            <p className="text-[9px] text-muted-theme">Últimas movimentações e repasses</p>
           </div>
           
           {/* Timeline Filter Toggle */}
-          <div className="flex bg-slate-900/80 p-0.5 rounded-lg border border-slate-800/40 text-[9px] font-bold text-slate-400">
+          <div className="flex bg-surface-theme p-0.5 rounded-lg border border-theme text-[9px] font-bold text-secondary-theme">
             <button 
               onClick={() => setFilterType('all')}
-              className={`px-2 py-1 rounded-md transition-all ${filterType === 'all' ? 'bg-emerald-500 text-slate-950 font-black' : 'hover:text-slate-200'}`}
+              className={`px-2 py-1 rounded-md transition-all ${filterType === 'all' ? 'bg-emerald-500 text-slate-950 font-black' : 'hover:text-primary-theme'}`}
             >
               Tudo
             </button>
             <button 
               onClick={() => setFilterType('credit')}
-              className={`px-2 py-1 rounded-md transition-all ${filterType === 'credit' ? 'bg-emerald-500 text-slate-950 font-black' : 'hover:text-slate-200'}`}
+              className={`px-2 py-1 rounded-md transition-all ${filterType === 'credit' ? 'bg-emerald-500 text-slate-950 font-black' : 'hover:text-primary-theme'}`}
             >
               Entradas
             </button>
             <button 
               onClick={() => setFilterType('debit')}
-              className={`px-2 py-1 rounded-md transition-all ${filterType === 'debit' ? 'bg-emerald-500 text-slate-950 font-black' : 'hover:text-slate-200'}`}
+              className={`px-2 py-1 rounded-md transition-all ${filterType === 'debit' ? 'bg-emerald-500 text-slate-950 font-black' : 'hover:text-primary-theme'}`}
             >
               Saídas
             </button>
@@ -260,7 +260,7 @@ export default function CarteiraPage() {
               return (
                 <div 
                   key={item.id || idx}
-                  className="bg-slate-900/40 border border-slate-900/80 rounded-xl p-3 flex items-center justify-between gap-3 hover:border-slate-800 transition-all"
+                  className="bg-surface-theme border border-theme rounded-xl p-3 flex items-center justify-between gap-3 hover:border-theme transition-all"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-sm ${
@@ -269,15 +269,15 @@ export default function CarteiraPage() {
                       {isCredit ? '↓' : '↑'}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-slate-200 truncate">{item.description}</p>
-                      <p className="text-[9px] text-slate-500 mt-0.5">
+                      <p className="text-xs font-bold text-primary-theme truncate">{item.description}</p>
+                      <p className="text-[9px] text-muted-theme mt-0.5">
                         {new Date(item.date).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                         {item.notes ? ` • ${item.notes}` : ''}
                       </p>
                     </div>
                   </div>
                   
-                  <span className={`text-xs font-black flex-shrink-0 ${isCredit ? 'text-emerald-400' : 'text-slate-300'}`}>
+                  <span className={`text-xs font-black flex-shrink-0 ${isCredit ? 'text-emerald-400' : 'text-primary-theme'}`}>
                     {isCredit ? '+' : '-'} {formatCurrency(item.amount)}
                   </span>
                 </div>
@@ -289,45 +289,45 @@ export default function CarteiraPage() {
 
       {/* ==================== 🟢 WITHDRAWAL MODAL ==================== */}
       {showWithdrawModal && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative">
+        <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-modal-theme border border-theme rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative">
             <button
               onClick={() => setShowWithdrawModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-200 text-xl font-light cursor-pointer"
+              className="absolute top-4 right-4 text-secondary-theme hover:text-primary-theme text-xl font-light cursor-pointer"
             >
               ×
             </button>
 
             <div className="p-5 space-y-4">
               <div>
-                <h3 className="text-base font-bold text-slate-200">Resgate Pix Instantâneo</h3>
-                <p className="text-[11px] text-slate-400 mt-0.5">Retire fundos da sua carteira Cobbra Pay direto para sua conta bancária.</p>
+                <h3 className="text-base font-bold text-primary-theme">Resgate Pix Instantâneo</h3>
+                <p className="text-[11px] text-secondary-theme mt-0.5">Retire fundos da sua carteira Cobbra Pay direto para sua conta bancária.</p>
               </div>
 
               {/* Fee Information Box */}
-              <div className="p-3 bg-slate-950/40 border border-slate-850 rounded-xl text-xs space-y-1">
-                <span className="font-extrabold text-[9px] text-slate-500 uppercase tracking-wider block">Regra de Tarifas</span>
+              <div className="p-3 bg-card-theme border border-theme rounded-xl text-xs space-y-1">
+                <span className="font-extrabold text-[9px] text-muted-theme uppercase tracking-wider block">Regra de Tarifas</span>
                 {withdrawalCount === 0 ? (
-                  <p className="text-emerald-400 font-bold">✨ Este é o seu 1º saque do mês. Tarifa Cobbra é 100% GRÁTIS!</p>
+                  <p className="text-emerald-400 font-bold">Este é o seu 1º saque do mês. Tarifa Cobbra é 100% GRÁTIS!</p>
                 ) : (
-                  <p className="text-slate-300">
+                  <p className="text-primary-theme">
                     Tarifa por saque: <span className="text-rose-400 font-bold">R$ 3,90</span> (deduzida do valor).
                   </p>
                 )}
-                <span className="text-[10px] text-slate-500 block">Saldo disponível para saque: {formatCurrency(walletBalance)}</span>
+                <span className="text-[10px] text-muted-theme block">Saldo disponível para saque: {formatCurrency(walletBalance)}</span>
               </div>
 
               {!withdrawSuccess ? (
                 <form onSubmit={handleProcessWithdraw} className="space-y-4">
                   {withdrawError && (
                     <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-xl font-medium">
-                      ⚠️ {withdrawError}
+                      <svg className="w-3.5 h-3.5 text-rose-500 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg> {withdrawError}
                     </div>
                   )}
 
                   <div className="space-y-3">
                     <div className="space-y-1">
-                      <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Valor do Saque (R$)</label>
+                      <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Valor do Saque (R$)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -335,17 +335,17 @@ export default function CarteiraPage() {
                         required
                         value={withdrawAmount}
                         onChange={(e) => setWithdrawAmount(e.target.value)}
-                        className="w-full bg-slate-950/80 border border-slate-800 focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-slate-200 outline-none text-sm"
+                        className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-primary-theme outline-none text-sm"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Tipo de Chave</label>
+                        <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Tipo de Chave</label>
                         <select
                           value={pixKeyType}
                           onChange={(e) => setPixKeyType(e.target.value)}
-                          className="w-full bg-slate-950/80 border border-slate-800 focus:border-emerald-500/50 rounded-xl px-2 py-2.5 text-slate-200 outline-none text-xs"
+                          className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-2 py-2.5 text-primary-theme outline-none text-xs"
                         >
                           <option value="cpf">CPF</option>
                           <option value="cnpj">CNPJ</option>
@@ -356,14 +356,14 @@ export default function CarteiraPage() {
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Chave Pix</label>
+                        <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Chave Pix</label>
                         <input
                           type="text"
                           placeholder="Insira a chave"
                           required
                           value={pixKey}
                           onChange={(e) => setPixKey(e.target.value)}
-                          className="w-full bg-slate-950/80 border border-slate-800 focus:border-emerald-500/50 rounded-xl px-3 py-2.5 text-slate-200 outline-none text-xs"
+                          className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3 py-2.5 text-primary-theme outline-none text-xs"
                         />
                       </div>
                     </div>
@@ -385,8 +385,8 @@ export default function CarteiraPage() {
                     ✓
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-slate-200">Resgate efetuado!</h4>
-                    <p className="text-[11px] text-slate-400 mt-1">
+                    <h4 className="text-sm font-bold text-primary-theme">Resgate efetuado!</h4>
+                    <p className="text-[11px] text-secondary-theme mt-1">
                       A transferência Pix está sendo enviada da conta Asaas corporativa direto para sua conta de destino.
                     </p>
                   </div>
@@ -395,7 +395,7 @@ export default function CarteiraPage() {
                       setShowWithdrawModal(false);
                       setWithdrawSuccess(false);
                     }}
-                    className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-800 font-bold text-xs transition-all cursor-pointer"
+                    className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-primary-theme border border-theme font-bold text-xs transition-all cursor-pointer"
                   >
                     Fechar
                   </button>
@@ -408,31 +408,31 @@ export default function CarteiraPage() {
 
       {/* ==================== 🔵 CHARGE CLIENT MODAL ==================== */}
       {showChargeModal && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative">
+        <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-modal-theme border border-theme rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative">
             <button
               onClick={() => setShowChargeModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-200 text-xl font-light cursor-pointer"
+              className="absolute top-4 right-4 text-secondary-theme hover:text-primary-theme text-xl font-light cursor-pointer"
             >
               ×
             </button>
 
             <div className="p-5 space-y-4">
               <div>
-                <h3 className="text-base font-bold text-slate-200">Emitir Cobrança Pix para Motorista</h3>
-                <p className="text-[11px] text-slate-400 mt-0.5">Gere um código de pagamento instantâneo. Assim que o motorista pagar, o saldo cai direto aqui.</p>
+                <h3 className="text-base font-bold text-primary-theme">Emitir Cobrança Pix para Motorista</h3>
+                <p className="text-[11px] text-secondary-theme mt-0.5">Gere um código de pagamento instantâneo. Assim que o motorista pagar, o saldo cai direto aqui.</p>
               </div>
 
               {!chargeSuccess ? (
                 <form onSubmit={handleCreateCharge} className="space-y-4">
                   <div className="space-y-3">
                     <div className="space-y-1">
-                      <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Selecione o Motorista</label>
+                      <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Selecione o Motorista</label>
                       <select
                         required
                         value={selectedClientId}
                         onChange={(e) => setSelectedClientId(e.target.value)}
-                        className="w-full bg-slate-950/80 border border-slate-800 focus:border-emerald-500/50 rounded-xl px-3 py-2.5 text-slate-200 outline-none text-xs"
+                        className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3 py-2.5 text-primary-theme outline-none text-xs"
                       >
                         <option value="">Selecione um motorista...</option>
                         {clients.map(c => (
@@ -442,7 +442,7 @@ export default function CarteiraPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Valor da Cobrança (R$)</label>
+                      <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Valor da Cobrança (R$)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -450,7 +450,7 @@ export default function CarteiraPage() {
                         required
                         value={chargeAmount}
                         onChange={(e) => setChargeAmount(e.target.value)}
-                        className="w-full bg-slate-950/80 border border-slate-800 focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-slate-200 outline-none text-sm"
+                        className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-primary-theme outline-none text-sm"
                       />
                     </div>
                   </div>
@@ -471,18 +471,18 @@ export default function CarteiraPage() {
                     ✓
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-slate-200">Código Pix Gerado!</h4>
-                    <p className="text-[11px] text-slate-400 mt-1">Copie o código Pix Copia e Cola abaixo e envie para o motorista realizar o pagamento.</p>
+                    <h4 className="text-sm font-bold text-primary-theme">Código Pix Gerado!</h4>
+                    <p className="text-[11px] text-secondary-theme mt-1">Copie o código Pix Copia e Cola abaixo e envie para o motorista realizar o pagamento.</p>
                   </div>
 
                   <div className="space-y-2 text-left">
-                    <label className="text-[8px] font-extrabold text-slate-500 uppercase tracking-wider">Pix Copia e Cola</label>
+                    <label className="text-[8px] font-extrabold text-muted-theme uppercase tracking-wider">Pix Copia e Cola</label>
                     <textarea
                       readOnly
                       rows="3"
                       value={pixCopyPaste}
                       onClick={(e) => e.target.select()}
-                      className="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-2.5 text-[9px] text-slate-300 font-mono outline-none resize-none"
+                      className="w-full bg-input-theme border border-theme rounded-xl p-2.5 text-[9px] text-primary-theme font-mono outline-none resize-none"
                     />
                   </div>
 
@@ -501,7 +501,7 @@ export default function CarteiraPage() {
                         setShowChargeModal(false);
                         setChargeSuccess(false);
                       }}
-                      className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all cursor-pointer"
+                      className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-primary-theme font-bold text-xs transition-all cursor-pointer"
                     >
                       Concluído
                     </button>
@@ -512,7 +512,7 @@ export default function CarteiraPage() {
                       href={paymentLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block text-[10px] text-slate-500 hover:text-emerald-400 underline transition-colors"
+                      className="block text-[10px] text-muted-theme hover:text-emerald-400 underline transition-colors"
                     >
                       Visualizar link completo de fatura
                     </a>

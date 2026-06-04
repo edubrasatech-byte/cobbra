@@ -527,6 +527,12 @@ div.desktop-only, section.desktop-only {
   --text-muted: #64748b;
   --border-color: rgba(255, 255, 255, 0.06);
   --shadow-theme: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --bg-card: #0C0E1A;
+  --bg-card-hover: #0F111E;
+  --bg-input: rgba(9, 11, 20, 0.6);
+  --bg-modal: #0C0E1A;
+  --bg-modal-overlay: rgba(2, 6, 23, 0.85);
+  --border-subtle: rgba(255, 255, 255, 0.04);
 }
 
 :root.light-theme {
@@ -539,6 +545,12 @@ div.desktop-only, section.desktop-only {
   --text-muted: #64748b;
   --border-color: rgba(0, 0, 0, 0.08);
   --shadow-theme: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --bg-input: #ffffff;
+  --bg-modal: #ffffff;
+  --bg-modal-overlay: rgba(0, 0, 0, 0.4);
+  --border-subtle: rgba(0, 0, 0, 0.06);
 }
 
 /* Theme utility classes */
@@ -549,6 +561,12 @@ div.desktop-only, section.desktop-only {
 .text-muted-theme { color: var(--text-muted) !important; }
 .border-theme { border-color: var(--border-color) !important; }
 .shadow-theme-premium { box-shadow: var(--shadow-theme) !important; }
+.bg-card-theme { background-color: var(--bg-card) !important; }
+.bg-card-hover-theme:hover { background-color: var(--bg-card-hover) !important; }
+.bg-input-theme { background-color: var(--bg-input) !important; }
+.bg-modal-theme { background-color: var(--bg-modal) !important; }
+.bg-modal-overlay-theme { background-color: var(--bg-modal-overlay) !important; }
+.border-subtle-theme { border-color: var(--border-subtle) !important; }
 
 /* Custom light transitions for premium experience */
 body {
@@ -590,7 +608,7 @@ aside, header, main, .chatbot-drawer-container {
 }
 
 .input-premium {
-  background-color: rgba(2, 6, 23, 0.4);
+  background-color: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 8px 12px;
@@ -599,9 +617,11 @@ aside, header, main, .chatbot-drawer-container {
   outline: none;
   transition: all 150ms ease;
 }
-
 .input-premium:focus {
   border-color: #10b981;
+}
+.input-premium::placeholder {
+  color: var(--text-muted);
 }
 
 .btn-premium {
@@ -629,13 +649,13 @@ aside, header, main, .chatbot-drawer-container {
 }
 
 .btn-premium-secondary {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: var(--bg-surface-hover);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
 }
-
 .btn-premium-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: var(--bg-card-hover);
+  border-color: rgba(16, 185, 129, 0.2);
 }
 
 

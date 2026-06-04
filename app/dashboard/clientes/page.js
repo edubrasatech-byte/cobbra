@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 
 const HEALTH = { 
-  good: { l: 'Bom pagador', c: 'text-emerald-400', b: 'bg-emerald-500/10 border-emerald-500/20', i: '😊' }, 
-  warning: { l: 'Atenção', c: 'text-amber-500', b: 'bg-amber-500/10 border-amber-500/20', i: '⚠️' }, 
-  critical: { l: 'Inadimplente', c: 'text-rose-500', b: 'bg-rose-500/10 border-rose-500/20', i: '🚨' } 
+  good: { l: 'Bom pagador', c: 'text-emerald-400', b: 'bg-emerald-500/10 border-emerald-500/20', i: <svg className="w-3 h-3 text-emerald-400 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" /></svg> }, 
+  warning: { l: 'Atenção', c: 'text-amber-500', b: 'bg-amber-500/10 border-amber-500/20', i: <svg className="w-3 h-3 text-amber-500 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg> }, 
+  critical: { l: 'Inadimplente', c: 'text-rose-500', b: 'bg-rose-500/10 border-rose-500/20', i: <svg className="w-3 h-3 text-rose-500 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg> } 
 };
 
 const STATUS = { 
@@ -13,7 +13,7 @@ const STATUS = {
   reminder_sent: { l: 'Lembrete Enviado', c: 'text-blue-400', b: 'bg-blue-500/15' }, 
   paid: { l: 'Pago', c: 'text-emerald-400', b: 'bg-emerald-500/15' }, 
   overdue: { l: 'Vencido', c: 'text-rose-500', b: 'bg-rose-500/15' }, 
-  cancelled: { l: 'Cancelado', c: 'text-slate-500', b: 'bg-slate-800/60' } 
+  cancelled: { l: 'Cancelado', c: 'text-muted-theme', b: 'bg-surface-theme/60' } 
 };
 
 // SVG Star helper
@@ -138,7 +138,7 @@ export default function ClientesPage() {
         notes: '' 
       }); 
       loadClients(); 
-      showToast('Cliente cadastrado com sucesso! 🐍'); 
+      showToast('Cliente cadastrado com sucesso!'); 
     } else {
       const err = await res.json();
       alert(err.error || 'Erro ao cadastrar cliente.');
@@ -167,7 +167,7 @@ export default function ClientesPage() {
     setLoadingCharges(false);
     
     refreshSelectedClient(clientId);
-    showToast('Pagamento confirmado com sucesso! 💰');
+    showToast('Pagamento confirmado com sucesso!');
   }
 
   async function abaterChargeAction() {
@@ -192,7 +192,7 @@ export default function ClientesPage() {
       setLoadingCharges(false);
       
       refreshSelectedClient(clientId);
-      showToast('Abatimento registrado com sucesso! 💸');
+      showToast('Abatimento registrado com sucesso!');
     } else {
       const err = await res.json();
       alert(err.error || 'Erro ao registrar abatimento.');
@@ -250,22 +250,22 @@ export default function ClientesPage() {
             placeholder="Buscar clientes..." 
             value={search} 
             onChange={e => setSearch(e.target.value)} 
-            className="bg-slate-900 border border-slate-800/80 rounded-xl px-3.5 py-2 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-emerald-500/40 h-10 min-h-[40px] transition-all"
+            className="bg-surface-theme border border-theme rounded-xl px-3.5 py-2 text-xs text-primary-theme placeholder-slate-500 outline-none focus:border-emerald-500/40 h-10 min-h-[40px] transition-all"
           />
           <div className="flex gap-2">
             <select 
               value={healthFilter} 
               onChange={e => setHealthFilter(e.target.value)} 
-              className="bg-slate-900 border border-slate-800/80 rounded-xl px-3 py-2 text-xs text-slate-350 outline-none focus:border-emerald-500/40 h-10 min-h-[40px] transition-all flex-1 min-w-[140px]"
+              className="bg-surface-theme border border-theme rounded-xl px-3 py-2 text-xs text-secondary-theme outline-none focus:border-emerald-500/40 h-10 min-h-[40px] transition-all flex-1 min-w-[140px]"
             >
               <option value="">Status geral (Todos)</option>
               {Object.entries(HEALTH).map(([k, v]) => (
-                <option key={k} value={k}>{v.i} {v.l}</option>
+                <option key={k} value={k}>{v.l}</option>
               ))}
             </select>
             <button 
               onClick={loadClients} 
-              className="h-10 min-h-[40px] w-10 bg-slate-900 border border-slate-850 hover:bg-slate-800 text-slate-400 hover:text-emerald-400 flex items-center justify-center rounded-xl transition-all cursor-pointer"
+              className="h-10 min-h-[40px] w-10 bg-surface-theme border border-theme hover:bg-surface-theme text-secondary-theme hover:text-emerald-400 flex items-center justify-center rounded-xl transition-all cursor-pointer"
               title="Recarregar"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -292,7 +292,7 @@ export default function ClientesPage() {
             <div 
               key={c.id} 
               onClick={() => setSelectedClient(c)}
-              className="bg-[#0C0E1A] hover:bg-[#0C0E1A]/80 border border-slate-900 hover:border-emerald-500/20 rounded-2xl p-4 cursor-pointer shadow-md transition-all flex flex-col justify-between group min-h-[190px]"
+              className="bg-card-theme hover:bg-card-hover-theme border border-theme hover:border-emerald-500/20 rounded-2xl p-4 cursor-pointer shadow-md transition-all flex flex-col justify-between group min-h-[150px]"
             >
               <div className="space-y-3">
                 {/* Header card info */}
@@ -302,8 +302,8 @@ export default function ClientesPage() {
                       {c.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition-colors truncate">{c.name}</p>
-                      <p className="text-[10px] text-slate-500 font-semibold truncate leading-none mt-0.5">{c.category || 'Motorista'}</p>
+                      <p className="text-xs font-bold text-primary-theme group-hover:text-emerald-400 transition-colors truncate">{c.name}</p>
+                      <p className="text-[10px] text-muted-theme font-semibold truncate leading-none mt-0.5">{c.category || 'Motorista'}</p>
                     </div>
                   </div>
                   <span className={`text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border flex-shrink-0 ${h.b} ${h.c}`}>
@@ -312,8 +312,8 @@ export default function ClientesPage() {
                 </div>
 
                 {/* Score rating summary */}
-                <div className="bg-slate-900/40 rounded-xl p-2 border border-slate-900 flex justify-between items-center text-[10px]">
-                  <span className="text-slate-500 font-bold">Pontualidade:</span>
+                <div className="bg-surface-theme rounded-xl p-2 border border-theme flex justify-between items-center text-[10px]">
+                  <span className="text-muted-theme font-bold">Pontualidade:</span>
                   <div className="flex items-center gap-1.5">
                     <span className={`font-black uppercase tracking-wider ${score.c}`}>{score.l}</span>
                     <StarRating rating={score.s} />
@@ -322,12 +322,12 @@ export default function ClientesPage() {
 
                 {/* Billing statistics summary */}
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-slate-950/20 rounded-lg p-2 border border-slate-950/30 text-left">
-                    <span className="text-[9px] text-slate-500 font-bold block">Cobrado</span>
-                    <span className="text-[11px] font-bold text-slate-350">{fmt(c.total_charged)}</span>
+                  <div className="bg-card-theme rounded-lg p-2 border border-theme text-left">
+                    <span className="text-[9px] text-muted-theme font-bold block">Cobrado</span>
+                    <span className="text-[11px] font-bold text-secondary-theme">{fmt(c.total_charged)}</span>
                   </div>
-                  <div className="bg-slate-950/20 rounded-lg p-2 border border-slate-950/30 text-left">
-                    <span className="text-[9px] text-slate-500 font-bold block">Pago</span>
+                  <div className="bg-card-theme rounded-lg p-2 border border-theme text-left">
+                    <span className="text-[9px] text-muted-theme font-bold block">Pago</span>
                     <span className="text-[11px] font-bold text-emerald-400">{fmt(c.total_paid)}</span>
                   </div>
                 </div>
@@ -342,9 +342,9 @@ export default function ClientesPage() {
               </div>
 
               {/* Card Footer contacts */}
-              <div className="border-t border-slate-900/50 pt-2.5 mt-3 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-[9px] text-slate-500 truncate max-w-[70%]">
-                  {c.phone && <span className="truncate">📱 {c.phone}</span>}
+              <div className="border-t border-theme pt-2.5 mt-3 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[9px] text-muted-theme truncate max-w-[70%]">
+                  {c.phone && <span className="truncate"><svg className="w-3 h-3 text-muted-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg> {c.phone}</span>}
                 </div>
                 
                 <div className="flex gap-2">
@@ -356,7 +356,7 @@ export default function ClientesPage() {
         })}
 
         {clients.length === 0 && (
-          <div className="col-span-full py-16 bg-slate-950/20 border border-slate-900/60 rounded-3xl text-center text-xs text-slate-500">
+          <div className="col-span-full py-16 bg-card-theme border border-theme rounded-3xl text-center text-xs text-muted-theme">
             {loading ? (
               <div className="flex flex-col items-center gap-3">
                 <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
@@ -370,38 +370,38 @@ export default function ClientesPage() {
       {/* ==================== 👤 DETAILED CLIENT DRAWER MODAL ==================== */}
       {selectedClient && (
         <div 
-          className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedClient(null)}
         >
           <div 
             onClick={e => e.stopPropagation()} 
-            className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-xl max-h-[85vh] overflow-y-auto shadow-2xl relative p-5 space-y-5"
+            className="bg-surface-theme border border-theme rounded-3xl w-full max-w-xl max-h-[85vh] overflow-y-auto shadow-2xl relative p-5 space-y-5"
           >
             {/* Top Close button */}
             <button 
               onClick={() => setSelectedClient(null)} 
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-200 text-lg cursor-pointer"
+              className="absolute top-4 right-4 text-secondary-theme hover:text-primary-theme text-lg cursor-pointer"
             >
               ×
             </button>
 
             {/* Profile Info block */}
-            <div className="flex gap-3.5 items-center pb-4 border-b border-slate-800/40">
+            <div className="flex gap-3.5 items-center pb-4 border-b border-theme/40">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-600 to-teal-600 text-white flex items-center justify-center font-black text-sm flex-shrink-0 select-none">
                 {selectedClient.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
               </div>
               <div className="min-w-0 w-full text-left">
-                <h3 className="text-base font-black text-slate-100 leading-tight truncate">{selectedClient.name}</h3>
-                <p className="text-[11px] text-slate-400 mt-1 truncate">
+                <h3 className="text-base font-black text-primary-theme leading-tight truncate">{selectedClient.name}</h3>
+                <p className="text-[11px] text-secondary-theme mt-1 truncate">
                   {selectedClient.category || 'Motorista'} • {selectedClient.phone || 'Sem contato'} • {selectedClient.email || 'Sem e-mail'}
                 </p>
                 
                 {/* Secondary data wrapper */}
                 {(selectedClient.document || selectedClient.birthday || selectedClient.address) && (
-                  <div className="mt-2.5 p-2 rounded-lg bg-slate-950/40 border border-slate-850/50 text-[10px] text-slate-400 space-y-1">
-                    {selectedClient.document && <p>📄 <strong>Documento:</strong> {selectedClient.document}</p>}
-                    {selectedClient.birthday && <p>🎂 <strong>Nascimento:</strong> {new Date(selectedClient.birthday).toLocaleDateString('pt-BR')}</p>}
-                    {selectedClient.address && <p className="truncate">📍 <strong>Endereço:</strong> {selectedClient.address}</p>}
+                  <div className="mt-2.5 p-2 rounded-lg bg-slate-950/40 border border-theme text-[10px] text-secondary-theme space-y-1">
+                    {selectedClient.document && <p><svg className="w-3 h-3 text-muted-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg> <strong>Documento:</strong> {selectedClient.document}</p>}
+                    {selectedClient.birthday && <p><svg className="w-3 h-3 text-muted-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg> <strong>Nascimento:</strong> {new Date(selectedClient.birthday).toLocaleDateString('pt-BR')}</p>}
+                    {selectedClient.address && <p className="truncate"><svg className="w-3 h-3 text-muted-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25s-7.5-4.108-7.5-11.25a7.5 7.5 0 1115 0z" /></svg> <strong>Endereço:</strong> {selectedClient.address}</p>}
                   </div>
                 )}
               </div>
@@ -409,25 +409,25 @@ export default function ClientesPage() {
 
             {/* Financial Overview quick cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              <div className="bg-slate-950/20 border border-slate-850/40 rounded-xl p-3 flex flex-col justify-between">
-                <span className="text-[9px] text-slate-500 font-bold block uppercase leading-none">Score</span>
+              <div className="bg-card-theme border border-theme rounded-xl p-3 flex flex-col justify-between">
+                <span className="text-[9px] text-muted-theme font-bold block uppercase leading-none">Score</span>
                 <span className={`text-xs font-black mt-1.5 ${getPayerScore(selectedClient).c}`}>
                   {getPayerScore(selectedClient).l}
                 </span>
               </div>
-              <div className="bg-slate-950/20 border border-slate-850/40 rounded-xl p-3 flex flex-col justify-between">
-                <span className="text-[9px] text-slate-500 font-bold block uppercase leading-none">Cobrado</span>
-                <span className="text-xs font-black text-slate-300 mt-1.5">{fmt(selectedClient.total_charged)}</span>
+              <div className="bg-card-theme border border-theme rounded-xl p-3 flex flex-col justify-between">
+                <span className="text-[9px] text-muted-theme font-bold block uppercase leading-none">Cobrado</span>
+                <span className="text-xs font-black text-primary-theme mt-1.5">{fmt(selectedClient.total_charged)}</span>
               </div>
-              <div className="bg-slate-950/20 border border-slate-850/40 rounded-xl p-3 flex flex-col justify-between">
-                <span className="text-[9px] text-slate-500 font-bold block uppercase leading-none">Pago</span>
+              <div className="bg-card-theme border border-theme rounded-xl p-3 flex flex-col justify-between">
+                <span className="text-[9px] text-muted-theme font-bold block uppercase leading-none">Pago</span>
                 <span className="text-xs font-black text-emerald-400 mt-1.5">{fmt(selectedClient.total_paid)}</span>
               </div>
               <div className={`border rounded-xl p-3 flex flex-col justify-between ${
-                selectedClient.total_overdue > 0 ? 'bg-rose-500/5 border-rose-500/10' : 'bg-slate-950/20 border-slate-850/40'
+                selectedClient.total_overdue > 0 ? 'bg-rose-500/5 border-rose-500/10' : 'bg-card-theme border-theme'
               }`}>
-                <span className="text-[9px] text-slate-500 font-bold block uppercase leading-none">Em Aberto</span>
-                <span className={`text-xs font-black mt-1.5 ${selectedClient.total_overdue > 0 ? 'text-rose-400' : 'text-slate-400'}`}>
+                <span className="text-[9px] text-muted-theme font-bold block uppercase leading-none">Em Aberto</span>
+                <span className={`text-xs font-black mt-1.5 ${selectedClient.total_overdue > 0 ? 'text-rose-400' : 'text-secondary-theme'}`}>
                   {fmt(selectedClient.total_overdue)}
                 </span>
               </div>
@@ -435,10 +435,10 @@ export default function ClientesPage() {
 
             {/* Invoices list statement */}
             <div className="space-y-3">
-              <h4 className="text-xs font-black text-slate-200 uppercase tracking-wider">Histórico de Cobranças</h4>
+              <h4 className="text-xs font-black text-primary-theme uppercase tracking-wider">Histórico de Cobranças</h4>
               
               {loadingCharges ? (
-                <p className="text-slate-500 text-xs text-center py-6">Carregando faturas...</p>
+                <p className="text-muted-theme text-xs text-center py-6">Carregando faturas...</p>
               ) : clientCharges.length === 0 ? (
                 <p className="text-slate-600 text-xs text-center py-6">Nenhuma cobrança ativa registrada.</p>
               ) : (
@@ -448,23 +448,23 @@ export default function ClientesPage() {
                     return (
                       <div 
                         key={c.id} 
-                        className="bg-slate-950/20 border border-slate-850/50 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left hover:border-slate-800 transition-colors"
+                        className="bg-card-theme border border-theme rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left hover:border-theme transition-colors"
                       >
                         <div className="space-y-1 min-w-0">
-                          <p className="text-xs font-bold text-slate-200 truncate">{c.description || 'Cobrança Sem Descrição'}</p>
-                          <p className="text-[9px] text-slate-500 font-semibold leading-none">
+                          <p className="text-xs font-bold text-primary-theme truncate">{c.description || 'Cobrança Sem Descrição'}</p>
+                          <p className="text-[9px] text-muted-theme font-semibold leading-none">
                             Vencimento: {new Date(c.due_date + 'T12:00:00').toLocaleDateString('pt-BR')} • {c.payment_method?.toUpperCase()}
                           </p>
                           {interest > 0 && (
                             <span className="text-[9px] text-amber-500 font-bold block mt-1">
-                              ⚠️ Juros de mora: +{fmt(interest)}
+                              <svg className="w-3 h-3 text-amber-500 inline mr-1 animate-pulse" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg> Juros de mora: +{fmt(interest)}
                             </span>
                           )}
                         </div>
 
-                        <div className="flex items-center gap-3 flex-shrink-0 justify-between sm:justify-end border-t sm:border-t-0 border-slate-850/30 pt-2 sm:pt-0">
+                        <div className="flex items-center gap-3 flex-shrink-0 justify-between sm:justify-end border-t sm:border-t-0 border-theme/30 pt-2 sm:pt-0">
                           <div className="text-left sm:text-right">
-                            <p className="text-xs font-black text-slate-200">{fmt(c.amount + interest)}</p>
+                            <p className="text-xs font-black text-primary-theme">{fmt(c.amount + interest)}</p>
                             <span className={`text-[8px] font-black px-1.5 py-0.5 rounded uppercase mt-1 inline-block ${STATUS[c.status]?.b} ${STATUS[c.status]?.c}`}>
                               {STATUS[c.status]?.l}
                             </span>
@@ -474,7 +474,7 @@ export default function ClientesPage() {
                             <div className="flex gap-1.5">
                               <button 
                                 onClick={() => setAbaterCharge(c)}
-                                className="px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700/60 hover:bg-slate-700 hover:text-white text-slate-300 font-extrabold text-[10px] transition-colors cursor-pointer"
+                                className="px-2.5 py-1.5 rounded-lg bg-surface-theme border border-theme hover:bg-slate-700 hover:text-white text-primary-theme font-extrabold text-[10px] transition-colors cursor-pointer"
                               >
                                 Abater
                               </button>
@@ -496,14 +496,14 @@ export default function ClientesPage() {
 
             {/* Custom Notes area */}
             {selectedClient.notes && (
-              <div className="p-3 bg-slate-950/40 rounded-xl border border-slate-850/50 text-[10px] text-slate-500 leading-normal text-left">
-                <strong className="text-slate-400 font-bold block mb-1">Observações do Cliente:</strong>
+              <div className="p-3 bg-slate-950/40 rounded-xl border border-theme text-[10px] text-muted-theme leading-normal text-left">
+                <strong className="text-secondary-theme font-bold block mb-1">Observações do Cliente:</strong>
                 {selectedClient.notes}
               </div>
             )}
 
             {/* Delete button option */}
-            <div className="flex justify-between items-center pt-3 border-t border-slate-800/40">
+            <div className="flex justify-between items-center pt-3 border-t border-theme/40">
               <button 
                 onClick={(e) => deleteClient(selectedClient.id, e)}
                 className="px-3.5 py-2 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-400 hover:bg-rose-500 hover:text-white font-extrabold text-xs transition-all cursor-pointer"
@@ -512,7 +512,7 @@ export default function ClientesPage() {
               </button>
               <button 
                 onClick={() => setSelectedClient(null)}
-                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 font-bold text-xs transition-all cursor-pointer"
+                className="px-3.5 py-2 rounded-xl bg-surface-theme hover:bg-slate-750 text-primary-theme font-bold text-xs transition-all cursor-pointer"
               >
                 Voltar
               </button>
@@ -524,21 +524,21 @@ export default function ClientesPage() {
       {/* ==================== 💸 ABATEMENT MODAL ==================== */}
       {abaterCharge && (
         <div 
-          className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4"
           onClick={() => setAbaterCharge(null)}
         >
           <div 
             onClick={e => e.stopPropagation()} 
-            className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative"
+            className="bg-surface-theme border border-theme rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative"
           >
-            <h3 className="text-base font-bold text-slate-200">Abatimento Parcial</h3>
-            <p className="text-xs text-slate-400 leading-relaxed text-left">
-              Registrar abatimento na cobrança: <strong className="text-slate-200">{abaterCharge.description || 'Aluguel/Cobrança'}</strong><br />
-              Valor total original: <strong className="text-slate-200">{fmt(abaterCharge.amount)}</strong>
+            <h3 className="text-base font-bold text-primary-theme">Abatimento Parcial</h3>
+            <p className="text-xs text-secondary-theme leading-relaxed text-left">
+              Registrar abatimento na cobrança: <strong className="text-primary-theme">{abaterCharge.description || 'Aluguel/Cobrança'}</strong><br />
+              Valor total original: <strong className="text-primary-theme">{fmt(abaterCharge.amount)}</strong>
             </p>
 
             <div className="space-y-1 text-left">
-              <label className="text-[9px] font-extrabold text-slate-500 uppercase tracking-wider block">Valor de Abatimento (R$)</label>
+              <label className="text-[9px] font-extrabold text-muted-theme uppercase tracking-wider block">Valor de Abatimento (R$)</label>
               <input 
                 type="number" 
                 step="0.01"
@@ -547,7 +547,7 @@ export default function ClientesPage() {
                 placeholder="0,00" 
                 value={rebateVal} 
                 onChange={e => setRebateVal(e.target.value)} 
-                className="w-full bg-slate-950/80 border border-slate-800 focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-slate-200 outline-none text-sm"
+                className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-primary-theme outline-none text-sm"
                 autoFocus
               />
             </div>
@@ -556,7 +556,7 @@ export default function ClientesPage() {
               <button 
                 type="button" 
                 onClick={() => setAbaterCharge(null)} 
-                className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold text-xs transition-all cursor-pointer"
+                className="flex-1 py-2.5 rounded-xl bg-surface-theme hover:bg-slate-700 text-secondary-theme font-bold text-xs transition-all cursor-pointer"
               >
                 Cancelar
               </button>
@@ -575,14 +575,14 @@ export default function ClientesPage() {
       {/* ==================== ➕ CREATE CLIENT MODAL ==================== */}
       {showModal && (
         <div 
-          className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => setShowModal(false)}
         >
           <div 
             onClick={e => e.stopPropagation()} 
-            className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl p-5 space-y-4"
+            className="bg-surface-theme border border-theme rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl p-5 space-y-4"
           >
-            <h3 className="text-base font-bold text-slate-200 text-left">Novo Cliente / Motorista</h3>
+            <h3 className="text-base font-bold text-primary-theme text-left">Novo Cliente / Motorista</h3>
             
             <form onSubmit={createClient} className="space-y-3.5">
               <div className="max-h-[50vh] overflow-y-auto pr-1 space-y-3">
@@ -598,24 +598,24 @@ export default function ClientesPage() {
                   { label: 'Observações', key: 'notes', type: 'text', ph: 'Notas internas adicionais' },
                 ].map(f => (
                   <div key={f.key} className="space-y-1 text-left">
-                    <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">{f.label}</label>
+                    <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">{f.label}</label>
                     <input 
                       type={f.type} 
                       value={form[f.key]} 
                       onChange={e => setForm({ ...form, [f.key]: e.target.value })} 
                       placeholder={f.ph} 
                       required={f.required}
-                      className="w-full bg-slate-950/80 border border-slate-800 focus:border-emerald-500/50 rounded-xl px-3 py-2 text-slate-200 outline-none text-xs"
+                      className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3 py-2 text-primary-theme outline-none text-xs"
                     />
                   </div>
                 ))}
               </div>
               
-              <div className="flex gap-2 pt-2 border-t border-slate-850">
+              <div className="flex gap-2 pt-2 border-t border-theme">
                 <button 
                   type="button" 
                   onClick={() => setShowModal(false)} 
-                  className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold text-xs transition-all cursor-pointer"
+                  className="flex-1 py-2.5 rounded-xl bg-surface-theme hover:bg-slate-700 text-secondary-theme font-bold text-xs transition-all cursor-pointer"
                 >
                   Cancelar
                 </button>
