@@ -14,9 +14,9 @@ const PROMPT_SUGGESTIONS = [
 
 const stepStyle = {
   outer: { display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 680 },
-  label: { fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 6 },
-  input: { width: '100%', padding: '12px 14px', background: '#0f172a', border: '1px solid #1e293b', borderRadius: 10, color: '#f1f5f9', fontSize: 14, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 0.2s' },
-  textarea: { width: '100%', padding: '12px 14px', background: '#0f172a', border: '1px solid #1e293b', borderRadius: 10, color: '#f1f5f9', fontSize: 14, outline: 'none', fontFamily: 'inherit', resize: 'none', boxSizing: 'border-box', minHeight: 100 },
+  label: { fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 6 },
+  input: { width: '100%', padding: '12px 14px', background: '#0f172a', border: '1px solid var(--border-color)', borderRadius: 10, color: 'var(--text-primary)', fontSize: 14, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', transition: 'border-color 0.2s' },
+  textarea: { width: '100%', padding: '12px 14px', background: '#0f172a', border: '1px solid var(--border-color)', borderRadius: 10, color: 'var(--text-primary)', fontSize: 14, outline: 'none', fontFamily: 'inherit', resize: 'none', boxSizing: 'border-box', minHeight: 100 },
   row: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 },
 };
 
@@ -36,7 +36,7 @@ function ProgressBar({ current, total }) {
           {idx < total - 1 && <div style={{ width: 32, height: 2, background: current > n ? '#10b981' : '#1e293b', borderRadius: 1 }} />}
         </div>
       ))}
-      <span style={{ marginLeft: 8, fontSize: 12, color: '#64748b' }}>Passo {current} de {total}</span>
+      <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--text-muted)' }}>Passo {current} de {total}</span>
     </div>
   );
 }
@@ -327,18 +327,18 @@ CONDIÇÕES: ${notes}
   };
 
   const btnPrimary = { background: '#10b981', color: '#070913', border: 'none', fontWeight: 700, borderRadius: 12, cursor: 'pointer', fontSize: 14, transition: 'opacity 0.2s' };
-  const btnGhost = { background: '#1e293b', color: '#cbd5e1', border: '1px solid #334155', fontWeight: 700, borderRadius: 12, cursor: 'pointer', fontSize: 14 };
-  const btnDisabled = { background: '#1e293b', color: '#475569', border: '1px solid #334155', fontWeight: 700, borderRadius: 12, cursor: 'not-allowed', fontSize: 14, opacity: 0.6 };
+  const btnGhost = { background: 'var(--bg-surface)', color: 'var(--text-secondary)', border: '1px solid #334155', fontWeight: 700, borderRadius: 12, cursor: 'pointer', fontSize: 14 };
+  const btnDisabled = { background: 'var(--bg-surface)', color: '#475569', border: '1px solid #334155', fontWeight: 700, borderRadius: 12, cursor: 'not-allowed', fontSize: 14, opacity: 0.6 };
 
   // ────────────────────────── RENDER ──────────────────────────
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif", color: '#f1f5f9' }}>
+    <div style={{ fontFamily: "'Inter', sans-serif", color: 'var(--text-primary)' }}>
 
       <div style={{ marginBottom: isMobile ? 16 : 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h2 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px', margin: 0 }}>🏗️ Obras e Orçamentos</h2>
           {!isMobile && (
-            <p style={{ fontSize: 14, color: '#64748b', marginTop: 2, marginBottom: 0 }}>Gere propostas comerciais, diários de obra e contratos inteligentes com o Catarina Copilot.</p>
+            <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: 2, marginBottom: 0 }}>Gere propostas comerciais, diários de obra e contratos inteligentes com o Catarina Copilot.</p>
           )}
         </div>
         {step > 0 && (
@@ -356,7 +356,7 @@ CONDIÇÕES: ${notes}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {/* Header Action Row */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Seus Contratos e Orçamentos Salvos
             </span>
             <button 
@@ -370,13 +370,13 @@ CONDIÇÕES: ${notes}
           {projectsLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justify: 'center', padding: '60px 0' }}>
               <div style={{ width: 32, height: 32, border: '4px solid rgba(16,185,129,0.2)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 12 }}></div>
-              <p style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>Buscando seus contratos salvos...</p>
+              <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>Buscando seus contratos salvos...</p>
             </div>
           ) : projects.length === 0 ? (
-            <div style={{ background: '#0c0e1a', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 20, padding: '60px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ background: 'var(--bg-surface)', border: '1px dashed var(--border-color)', borderRadius: 20, padding: '60px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ fontSize: 40, marginBottom: 16 }}>📝</span>
-              <h3 style={{ fontSize: 16, fontWeight: 800, color: '#fff', margin: 0 }}>Nenhum contrato gerado ainda</h3>
-              <p style={{ fontSize: 13, color: '#64748b', marginTop: 6, maxWidth: 360, lineHeight: 1.5 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>Nenhum contrato gerado ainda</h3>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 6, maxWidth: 360, lineHeight: 1.5 }}>
                 Crie seu primeiro projeto de engenharia ou reforma com o Catarina Copilot para automatizar seus escopos, termos e medições Pix.
               </p>
               <button 
@@ -390,17 +390,17 @@ CONDIÇÕES: ${notes}
             /* 📱 Mobile First Card List */
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {projects.map(p => (
-                <div key={p.id} style={{ background: '#0c0e1a', border: '1px solid #1e293b', borderRadius: 16, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div key={p.id} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 16, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                      <h4 style={{ fontSize: 14, fontWeight: 800, color: '#fff', margin: 0 }}>
+                      <h4 style={{ fontSize: 14, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
                         🏗️ {p.name}
                       </h4>
-                      <p style={{ fontSize: 12, color: '#94a3b8', margin: '4px 0 0 0' }}>
+                      <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
                         Cliente: {p.client_name === 'Cliente Avulso' ? 'Avulso' : p.client_name}
                       </p>
                     </div>
-                    <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, background: '#1e293b', padding: '2px 6px', borderRadius: 6 }}>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 700, background: 'var(--bg-surface)', padding: '2px 6px', borderRadius: 6 }}>
                       v{p.version || 1}
                     </span>
                   </div>
@@ -434,26 +434,26 @@ CONDIÇÕES: ${notes}
             </div>
           ) : (
             /* 🖥️ Desktop Table view */
-            <div style={{ background: '#0c0e1a', border: '1px solid #1e293b', borderRadius: 16, overflow: 'hidden' }}>
+            <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 16, overflow: 'hidden' }}>
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid #1e293b', background: '#0f172a' }}>
-                      <th style={{ padding: '14px 18px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', fontSize: 10 }}>Nome do Projeto</th>
-                      <th style={{ padding: '14px 18px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', fontSize: 10 }}>Cliente</th>
-                      <th style={{ padding: '14px 18px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', fontSize: 10 }}>Status</th>
-                      <th style={{ padding: '14px 18px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', fontSize: 10 }}>Versão</th>
-                      <th style={{ padding: '14px 18px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', fontSize: 10, textAlign: 'right' }}>Ações</th>
+                      <th style={{ padding: '14px 18px', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: 10 }}>Nome do Projeto</th>
+                      <th style={{ padding: '14px 18px', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: 10 }}>Cliente</th>
+                      <th style={{ padding: '14px 18px', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: 10 }}>Status</th>
+                      <th style={{ padding: '14px 18px', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: 10 }}>Versão</th>
+                      <th style={{ padding: '14px 18px', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', fontSize: 10, textAlign: 'right' }}>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     {projects.map(p => (
                       <tr key={p.id} style={{ borderBottom: '1px solid rgba(30,41,59,0.5)', transition: 'background 0.15s' }}>
-                        <td style={{ padding: '16px 18px', fontWeight: 700, color: '#fff' }}>
+                        <td style={{ padding: '16px 18px', fontWeight: 700, color: 'var(--text-primary)' }}>
                           <span style={{ marginRight: 6 }}>🏗️</span> {p.name}
                         </td>
-                        <td style={{ padding: '16px 18px', color: '#cbd5e1' }}>
-                          {p.client_name === 'Cliente Avulso' ? <span style={{ color: '#64748b', fontStyle: 'italic' }}>Avulso</span> : p.client_name}
+                        <td style={{ padding: '16px 18px', color: 'var(--text-secondary)' }}>
+                          {p.client_name === 'Cliente Avulso' ? <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Avulso</span> : p.client_name}
                         </td>
                         <td style={{ padding: '16px 18px' }}>
                           <span style={{ 
@@ -464,7 +464,7 @@ CONDIÇÕES: ${notes}
                             {p.status === 'budgeting' ? 'Orçamento' : p.status === 'in_progress' ? 'Em Andamento' : 'Concluído'}
                           </span>
                         </td>
-                        <td style={{ padding: '16px 18px', color: '#64748b', fontWeight: 600 }}>
+                        <td style={{ padding: '16px 18px', color: 'var(--text-muted)', fontWeight: 600 }}>
                           v{p.version || 1}
                         </td>
                         <td style={{ padding: '16px 18px', textAlign: 'right' }}>
@@ -498,8 +498,8 @@ CONDIÇÕES: ${notes}
         <div style={stepStyle.outer}>
           <ProgressBar current={1} total={3} />
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#fff', margin: 0 }}>O que vamos construir ou reformar?</h2>
-            <p style={{ color: '#64748b', fontSize: 13, marginTop: 4 }}>Descreva o projeto. Quanto mais detalhe, mais preciso o contrato.</p>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>O que vamos construir ou reformar?</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 4 }}>Descreva o projeto. Quanto mais detalhe, mais preciso o contrato.</p>
           </div>
 
           <div>
@@ -544,12 +544,12 @@ CONDIÇÕES: ${notes}
         <div style={stepStyle.outer}>
           <ProgressBar current={2} total={3} />
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#fff', margin: 0 }}>Quem assina o contrato?</h2>
-            <p style={{ color: '#64748b', fontSize: 13, marginTop: 4 }}>Essas informações serão inseridas diretamente nas cláusulas do contrato.</p>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>Quem assina o contrato?</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 4 }}>Essas informações serão inseridas diretamente nas cláusulas do contrato.</p>
           </div>
 
           {/* CONTRATADA */}
-          <div style={{ background: '#0b1220', border: '1px solid #1e293b', borderRadius: 12, padding: 16 }}>
+          <div style={{ background: '#0b1220', border: '1px solid var(--border-color)', borderRadius: 12, padding: 16 }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>🏢 Sua Empresa (Contratada / Prestador de Serviço)</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div>
@@ -573,7 +573,7 @@ CONDIÇÕES: ${notes}
           </div>
 
           {/* CONTRATANTE */}
-          <div style={{ background: '#0b1220', border: '1px solid #1e293b', borderRadius: 12, padding: 16 }}>
+          <div style={{ background: '#0b1220', border: '1px solid var(--border-color)', borderRadius: 12, padding: 16 }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>👤 Cliente (Contratante / Tomador do Serviço)</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div>
@@ -597,9 +597,9 @@ CONDIÇÕES: ${notes}
           </div>
 
           {/* Step 3 condições inline */}
-          <div style={{ background: '#0b1220', border: '1px solid #1e293b', borderRadius: 12, padding: 16 }}>
+          <div style={{ background: '#0b1220', border: '1px solid var(--border-color)', borderRadius: 12, padding: 16 }}>
             <p style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>💰 Condições Financeiras</p>
-            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 10, fontWeight: 500 }}>
+            <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 10, fontWeight: 500 }}>
               Explique aqui como e de que forma você vai receber pelo projeto.
             </p>
             <textarea style={stepStyle.textarea}
@@ -643,7 +643,7 @@ CONDIÇÕES: ${notes}
             flexDirection: 'column', 
             borderRadius: 12, 
             overflow: 'hidden', 
-            border: '1px solid #1e293b', 
+            border: '1px solid var(--border-color)', 
             minWidth: 0 
           }}>
             {/* Barra do documento */}
@@ -652,7 +652,7 @@ CONDIÇÕES: ${notes}
                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(239,68,68,0.5)' }} />
                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(234,179,8,0.5)' }} />
                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(16,185,129,0.5)' }} />
-                <span style={{ fontSize: 11, color: '#64748b', marginLeft: 8 }}>Pré-visualização do Contrato</span>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 8 }}>Pré-visualização do Contrato</span>
               </div>
               
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -722,8 +722,8 @@ CONDIÇÕES: ${notes}
             <div style={{ 
               flex: isMobile ? 'none' : 1, 
               height: isMobile ? '450px' : 'auto',
-              background: '#0c0e1a', 
-              border: '1px solid #1e293b', 
+              background: 'var(--bg-surface)', 
+              border: '1px solid var(--border-color)', 
               borderRadius: 12, 
               display: 'flex', 
               flexDirection: 'column', 
@@ -734,7 +734,7 @@ CONDIÇÕES: ${notes}
               {/* Header */}
               <div style={{ padding: '12px 16px', borderBottom: '1px solid #1e293b', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
                 <span style={{ fontWeight: 700, color: '#10b981', fontSize: 13 }}>Catarina Copilot 🪄</span>
-                <span style={{ fontSize: 9, color: '#64748b', background: '#1e293b', padding: '2px 8px', borderRadius: 20, fontWeight: 700, letterSpacing: '0.05em' }}>IA</span>
+                <span style={{ fontSize: 9, color: 'var(--text-muted)', background: 'var(--bg-surface)', padding: '2px 8px', borderRadius: 20, fontWeight: 700, letterSpacing: '0.05em' }}>IA</span>
               </div>
 
               {/* Histórico do chat */}
@@ -753,8 +753,8 @@ CONDIÇÕES: ${notes}
                     userSelect: 'none'
                   }}>
                     <span style={{ fontSize: 32, marginBottom: 8 }}>🐍</span>
-                    <p style={{ fontSize: 13, fontWeight: 700, margin: 0, color: '#fff' }}>Catarina Copilot Ativa</p>
-                    <p style={{ fontSize: 11, marginTop: 4, lineHeight: 1.4, color: '#94a3b8' }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>Catarina Copilot Ativa</p>
+                    <p style={{ fontSize: 11, marginTop: 4, lineHeight: 1.4, color: 'var(--text-secondary)' }}>
                       Escreva abaixo as alterações que deseja fazer no contrato.<br />
                       Ex: "Altere o valor para R$ 90.000" ou "Adicione garantia de 5 anos".
                     </p>
@@ -772,7 +772,7 @@ CONDIÇÕES: ${notes}
                   </div>
                 ))}
                 {loading && (
-                  <div style={{ padding: '8px 12px', background: '#1e293b', borderRadius: 10, fontSize: 11, color: '#64748b', display: 'flex', alignItems: 'center', gap: 6, alignSelf: 'flex-start' }}>
+                  <div style={{ padding: '8px 12px', background: 'var(--bg-surface)', borderRadius: 10, fontSize: 11, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6, alignSelf: 'flex-start' }}>
                     <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>🐍</span>
                     Catarina está pensando...
                   </div>
@@ -787,7 +787,7 @@ CONDIÇÕES: ${notes}
                     <div key={idx} style={{ position: 'relative', width: 36, height: 36, borderRadius: 6, overflow: 'hidden', border: '1px solid #334155', flexShrink: 0 }}>
                       <img src={img.preview} alt="foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       <button onClick={() => setImages(p => p.filter((_, i) => i !== idx))}
-                        style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: 10, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', color: 'var(--text-primary)', fontSize: 10, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         ✕
                       </button>
                     </div>
@@ -803,7 +803,7 @@ CONDIÇÕES: ${notes}
                   📷
                 </button>
                 <input
-                  style={{ flex: 1, minWidth: 0, padding: '8px 12px', background: '#0f172a', border: '1px solid #1e293b', borderRadius: 8, fontSize: 12, color: '#f1f5f9', outline: 'none', fontFamily: 'inherit' }}
+                  style={{ flex: 1, minWidth: 0, padding: '8px 12px', background: '#0f172a', border: '1px solid var(--border-color)', borderRadius: 8, fontSize: 12, color: 'var(--text-primary)', outline: 'none', fontFamily: 'inherit' }}
                   placeholder="Ex: Adicione garantia de 5 anos..."
                   value={chatInput}
                   onChange={e => setChatInput(e.target.value)}

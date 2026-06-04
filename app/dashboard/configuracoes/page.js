@@ -420,8 +420,8 @@ export default function ConfiguracoesPage() {
     width: '100%', 
     padding: '11px 14px', 
     borderRadius: 10, 
-    border: '1px solid rgba(255,255,255,0.06)', 
-    background: '#04060d', 
+    border: '1px solid var(--border-color)', 
+    background: 'var(--bg-input)', 
     color: '#f8fafc', 
     fontSize: 13, 
     outline: 'none', 
@@ -431,10 +431,10 @@ export default function ConfiguracoesPage() {
   };
 
   const cardS = { 
-    background: '#0C0E1A', 
+    background: 'var(--bg-surface)', 
     borderRadius: 24, 
     padding: isMobile ? '18px' : '28px', 
-    border: '1px solid rgba(255,255,255,0.04)', 
+    border: '1px solid var(--border-color)', 
     boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
     transition: 'all 0.3s'
   };
@@ -459,7 +459,7 @@ export default function ConfiguracoesPage() {
           top: 80, 
           right: 32, 
           background: '#10b981', 
-          color: '#fff', 
+          color: 'var(--text-primary)', 
           padding: '12px 24px', 
           borderRadius: 12, 
           fontSize: 13.5, 
@@ -522,7 +522,7 @@ export default function ConfiguracoesPage() {
               className={`whitespace-nowrap px-4 py-3 rounded-xl text-[12.5px] font-bold transition-all duration-200 cursor-pointer text-center lg:text-left shrink-0 ${
                 activeTab === t.key
                   ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-lg shadow-emerald-500/5'
-                  : 'bg-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/20 border border-transparent'
+                  : 'bg-transparent text-secondary-theme hover:text-primary-theme hover:bg-card-hover-theme border border-transparent'
               }`}
             >
               {t.label}
@@ -536,21 +536,21 @@ export default function ConfiguracoesPage() {
           {/* TAB 1: Minha Conta & Negócio */}
           {activeTab === 'profile' && (
             <div style={cardS}>
-              <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', marginBottom: 20, letterSpacing: '-0.3px' }}>👤 Perfil do Negócio</h3>
-              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 24 }}>Dados administrativos de exibição da sua conta.</p>
+              <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 20, letterSpacing: '-0.3px' }}>👤 Perfil do Negócio</h3>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24 }}>Dados administrativos de exibição da sua conta.</p>
               
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28, background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)', padding: 18, borderRadius: 16 }}>
-                <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28, background: 'var(--bg-surface-hover)', border: '1px solid var(--border-color)', padding: 18, borderRadius: 16 }}>
+                <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, #059669 0%, #0d9488 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)', fontWeight: 900, fontSize: 20 }}>
                   {user?.name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <p style={{ fontSize: 16, fontWeight: 800, color: '#e2e8f0', margin: 0 }}>{user?.name}</p>
+                    <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>{user?.name}</p>
                     <span style={{ fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 4, background: 'rgba(16,185,129,0.1)', color: '#10b981', textTransform: 'uppercase' }}>
                       {user?.plan || 'starter'}
                     </span>
                   </div>
-                  <p style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>{user?.email}</p>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>{user?.email}</p>
                 </div>
               </div>
 
@@ -559,7 +559,7 @@ export default function ConfiguracoesPage() {
                 { label: 'WhatsApp de Atendimento Comercial', key: 'phone', ph: '(11) 99999-9999' },
               ].map(f => (
                 <div key={f.key} style={{ marginBottom: 18 }}>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>{f.label}</label>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>{f.label}</label>
                   <input value={form[f.key]} onChange={e => setForm({ ...form, [f.key]: e.target.value })} placeholder={f.ph} style={inputS} />
                 </div>
               ))}
@@ -570,7 +570,7 @@ export default function ConfiguracoesPage() {
                   padding: '12px 24px', 
                   borderRadius: 10, 
                   background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
-                  color: '#fff', 
+                  color: 'var(--text-primary)', 
                   fontSize: 13, 
                   fontWeight: 700, 
                   cursor: 'pointer', 
@@ -587,12 +587,12 @@ export default function ConfiguracoesPage() {
           {/* TAB 2: Chave Pix & Recebimentos */}
           {activeTab === 'pix' && (
             <div style={cardS}>
-              <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', marginBottom: 20, letterSpacing: '-0.3px' }}>🏦 Recebimentos Pix</h3>
-              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 24 }}>Configure a chave Pix da sua conta bancária pessoal ou corporativa. Todos os pagamentos liquidados pelos clientes irão 100% direto para esta chave, sem taxas retidas pelo sistema.</p>
+              <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 20, letterSpacing: '-0.3px' }}>🏦 Recebimentos Pix</h3>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24 }}>Configure a chave Pix da sua conta bancária pessoal ou corporativa. Todos os pagamentos liquidados pelos clientes irão 100% direto para esta chave, sem taxas retidas pelo sistema.</p>
               
               <div style={{ marginBottom: 18 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>Tipo de chave</label>
-                <select value={form.pix_key_type} onChange={e => setForm({ ...form, pix_key_type: e.target.value })} style={{ ...inputS, appearance: 'auto', color: '#e2e8f0' }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>Tipo de chave</label>
+                <select value={form.pix_key_type} onChange={e => setForm({ ...form, pix_key_type: e.target.value })} style={{ ...inputS, appearance: 'auto', color: 'var(--text-primary)' }}>
                   <option style={{ color: '#0f172a' }} value="email">E-mail</option>
                   <option style={{ color: '#0f172a' }} value="phone">Telefone</option>
                   <option style={{ color: '#0f172a' }} value="cpf">CPF</option>
@@ -602,7 +602,7 @@ export default function ConfiguracoesPage() {
               </div>
               
               <div style={{ marginBottom: 24 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>Chave Pix</label>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>Chave Pix</label>
                 <input value={form.pix_key} onChange={e => setForm({ ...form, pix_key: e.target.value })} placeholder="Sua chave Pix" style={inputS} />
               </div>
               
@@ -612,7 +612,7 @@ export default function ConfiguracoesPage() {
                   padding: '12px 24px', 
                   borderRadius: 10, 
                   background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
-                  color: '#fff', 
+                  color: 'var(--text-primary)', 
                   fontSize: 13, 
                   fontWeight: 700, 
                   cursor: 'pointer', 
@@ -636,8 +636,8 @@ export default function ConfiguracoesPage() {
                   <div style={cardS}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 14, marginBottom: 20 }}>
                       <div>
-                        <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', margin: 0, letterSpacing: '-0.3px' }}>🔌 Integração de Mensagens (WhatsApp)</h3>
-                        <p style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>Conecte seu próprio número comercial para evitar disparos genéricos.</p>
+                        <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>🔌 Integração de Mensagens (WhatsApp)</h3>
+                        <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 4 }}>Conecte seu próprio número comercial para evitar disparos genéricos.</p>
                       </div>
                       
                       {whatsappStatus === 'connected' ? (
@@ -653,13 +653,13 @@ export default function ConfiguracoesPage() {
 
                     {whatsappStatus === 'connected' ? (
                       /* Connected Device Mockup Dashboard */
-                      <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 20, padding: 20, display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: 20, justifyContent: 'space-between', marginBottom: 20 }}>
+                      <div style={{ background: 'var(--bg-surface-hover)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 20, padding: 20, display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: 20, justifyContent: 'space-between', marginBottom: 20 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                           <div className="glowing-radar" style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(16,185,129,0.1)', border: '2.5px solid #10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
                             📱
                           </div>
                           <div>
-                            <h4 style={{ margin: 0, fontSize: 14.5, fontWeight: 800, color: '#f1f5f9' }}>Celular Pareado: {whatsappPhone}</h4>
+                            <h4 style={{ margin: 0, fontSize: 14.5, fontWeight: 800, color: 'var(--text-primary)' }}>Celular Pareado: {whatsappPhone}</h4>
                             <p style={{ margin: '3px 0 0 0', fontSize: 12, color: '#a7f3d0' }}>Sincronização Ativa • ⚡ Servidor OK (45ms)</p>
                           </div>
                         </div>
@@ -681,10 +681,10 @@ export default function ConfiguracoesPage() {
                         </button>
                       </div>
                     ) : (
-                      <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)', borderRadius: 20, padding: 20, display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+                      <div style={{ background: 'var(--bg-surface-hover)', border: '1px solid var(--border-color)', borderRadius: 20, padding: 20, display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: 'center', gap: 16, marginBottom: 20 }}>
                         <div>
-                          <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#f1f5f9' }}>Vantagens de Conectar seu Número:</h4>
-                          <p style={{ margin: '4px 0 0 0', fontSize: 12.5, color: '#64748b', lineHeight: 1.45 }}>Evite que seus clientes recebam cobranças de um número mestre compartilhado da plataforma. Conectando seu celular, os lembretes saem com sua foto e nome comercial e as respostas vão direto para você.</p>
+                          <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: 'var(--text-primary)' }}>Vantagens de Conectar seu Número:</h4>
+                          <p style={{ margin: '4px 0 0 0', fontSize: 12.5, color: 'var(--text-muted)', lineHeight: 1.45 }}>Evite que seus clientes recebam cobranças de um número mestre compartilhado da plataforma. Conectando seu celular, os lembretes saem com sua foto e nome comercial e as respostas vão direto para você.</p>
                         </div>
                         <button
                           onClick={() => setSelectedInt('whatsapp')}
@@ -710,8 +710,8 @@ export default function ConfiguracoesPage() {
                   <div style={cardS}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 14, marginBottom: 20 }}>
                       <div>
-                        <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', margin: 0, letterSpacing: '-0.3px' }}>✉️ Servidor SMTP / E-mail Próprio</h3>
-                        <p style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>Configure seu servidor de e-mail SMTP para que os envios usem seu próprio domínio profissional.</p>
+                        <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.3px' }}>✉️ Servidor SMTP / E-mail Próprio</h3>
+                        <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 4 }}>Configure seu servidor de e-mail SMTP para que os envios usem seu próprio domínio profissional.</p>
                       </div>
                       <button
                         onClick={() => setSelectedInt('smtp')}
@@ -737,11 +737,11 @@ export default function ConfiguracoesPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}>
                     <button 
                       onClick={() => setSelectedInt(null)} 
-                      style={{ padding: '6px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.05)', color: '#cbd5e1', border: '1px solid rgba(255,255,255,0.08)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                      style={{ padding: '6px 12px', borderRadius: 8, background: 'var(--bg-input)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                     >
                       ← Voltar
                     </button>
-                    <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', margin: 0 }}>
+                    <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
                       {selectedInt === 'whatsapp' ? '📱 Configurar Aparelho WhatsApp' : '✉️ Configurar Servidor SMTP'}
                     </h3>
                   </div>
@@ -752,14 +752,14 @@ export default function ConfiguracoesPage() {
                       {user?.plan !== 'cobra_pro' && user?.plan !== 'crescimento' && user?.plan !== 'trial' ? (
                         <div style={{ textAlign: 'center', padding: '30px 0' }}>
                           <span style={{ fontSize: 44 }}>🔒</span>
-                          <h4 style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginTop: 14, marginBottom: 6 }}>Integração Exclusiva</h4>
-                          <p style={{ fontSize: 12.5, color: '#64748b', maxWidth: 380, margin: '0 auto 20px', lineHeight: 1.6 }}>A conexão com seu próprio número do WhatsApp está disponível a partir do plano <strong>Crescimento</strong>.</p>
+                          <h4 style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', marginTop: 14, marginBottom: 6 }}>Integração Exclusiva</h4>
+                          <p style={{ fontSize: 12.5, color: 'var(--text-muted)', maxWidth: 380, margin: '0 auto 20px', lineHeight: 1.6 }}>A conexão com seu próprio número do WhatsApp está disponível a partir do plano <strong>Crescimento</strong>.</p>
                           <button onClick={() => { setSelectedInt(null); setActiveTab('plan'); }} style={{ padding: '10px 20px', borderRadius: 10, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', color: '#070913', fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>Realizar Upgrade de Plano</button>
                         </div>
                       ) : (
                         <div>
                           {/* Method selection */}
-                          <div style={{ display: 'flex', gap: 8, background: 'rgba(255,255,255,0.02)', padding: 4, borderRadius: 10, marginBottom: 20, maxWidth: 360 }}>
+                          <div style={{ display: 'flex', gap: 8, background: 'var(--bg-input)', padding: 4, borderRadius: 10, marginBottom: 20, maxWidth: 360 }}>
                             <button onClick={() => setWaMethod('simplified')} style={{ flex: 1, padding: 8, border: 'none', borderRadius: 8, background: waMethod === 'simplified' ? '#10b981' : 'transparent', color: waMethod === 'simplified' ? '#070913' : '#64748b', fontWeight: 800, fontSize: 11.5, cursor: 'pointer', transition: 'all 0.2s' }}>⚡ Simplificado (Cobbra API)</button>
                             <button onClick={() => setWaMethod('advanced')} style={{ flex: 1, padding: 8, border: 'none', borderRadius: 8, background: waMethod === 'advanced' ? '#10b981' : 'transparent', color: waMethod === 'advanced' ? '#070913' : '#64748b', fontWeight: 800, fontSize: 11.5, cursor: 'pointer', transition: 'all 0.2s' }}>⚙️ Avançado (Z-API)</button>
                           </div>
@@ -768,7 +768,7 @@ export default function ConfiguracoesPage() {
                             <div>
                               {whatsappStatus === 'disconnected' && (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                                  <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.5 }}>
+                                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                                     Utilize o assistente simplificado para parear o seu celular em segundos gerando uma conexão direta com nossa API Evolution.
                                   </p>
                                   <button onClick={handleStartWaConnection} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', color: '#070913', fontSize: 13, fontWeight: 800, cursor: 'pointer', alignSelf: 'flex-start' }}>
@@ -780,14 +780,14 @@ export default function ConfiguracoesPage() {
                               {whatsappStatus === 'connecting' && (
                                 <div style={{ padding: '30px 0', textAlign: 'center' }}>
                                   <div style={{ border: '3.5px solid rgba(16,185,129,0.1)', borderTop: '3.5px solid #10b981', borderRadius: '50%', width: 40, height: 40, margin: '0 auto 20px', animation: 'spin 1s linear infinite' }} />
-                                  <p style={{ fontSize: 13.5, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Gerando Instância...</p>
-                                  <p style={{ fontSize: 12, color: '#64748b' }}>Conectando com o servidor de pareamento. Aguarde.</p>
+                                  <p style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Gerando Instância...</p>
+                                  <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Conectando com o servidor de pareamento. Aguarde.</p>
                                 </div>
                               )}
 
                               {whatsappStatus === 'scanning' && (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                                  <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', padding: 16, borderRadius: 14, fontSize: 12, color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                  <div style={{ background: 'var(--bg-input)', border: '1px solid var(--border-color)', padding: 16, borderRadius: 14, fontSize: 12, color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 8 }}>
                                     <div>1. Abra o **WhatsApp** no seu aparelho celular.</div>
                                     <div>2. Acesse **Aparelhos Conectados** e clique em **Conectar um Aparelho**.</div>
                                     <div>3. Aponte a câmera para o QR Code abaixo:</div>
@@ -819,11 +819,11 @@ export default function ConfiguracoesPage() {
                             /* Advanced Z-API form settings */
                             <form onSubmit={handleSaveIntegration} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                               <div>
-                                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>Instância API (URL Z-API) *</label>
+                                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>Instância API (URL Z-API) *</label>
                                 <input type="url" value={intForm.whatsappUrl} onChange={e => setIntForm({ ...intForm, whatsappUrl: e.target.value })} placeholder="https://api.z-api.io/instances/..." style={inputS} required />
                               </div>
                               <div>
-                                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>Token de Conectividade (Z-API Client Token) *</label>
+                                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>Token de Conectividade (Z-API Client Token) *</label>
                                 <input type="password" value={intForm.whatsappToken} onChange={e => setIntForm({ ...intForm, whatsappToken: e.target.value })} placeholder="Token" style={inputS} required />
                               </div>
                               <button type="submit" style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', color: '#070913', fontSize: 13, fontWeight: 800, cursor: 'pointer', marginTop: 10, alignSelf: 'flex-end' }}>Salvar Configurações</button>
@@ -837,26 +837,26 @@ export default function ConfiguracoesPage() {
                     <form onSubmit={handleSaveIntegration} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2.5fr 1fr', gap: 12 }}>
                         <div>
-                          <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>Servidor Host SMTP *</label>
+                          <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>Servidor Host SMTP *</label>
                           <input type="text" value={intForm.smtpHost} onChange={e => setIntForm({ ...intForm, smtpHost: e.target.value })} placeholder="smtp.exemplo.com" style={inputS} required />
                         </div>
                         <div>
-                          <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>Porta SMTP *</label>
+                          <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>Porta SMTP *</label>
                           <input type="text" value={intForm.smtpPort} onChange={e => setIntForm({ ...intForm, smtpPort: e.target.value })} placeholder="587" style={inputS} required />
                         </div>
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
                         <div>
-                          <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>Usuário SMTP *</label>
+                          <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>Usuário SMTP *</label>
                           <input type="email" value={intForm.smtpUser} onChange={e => setIntForm({ ...intForm, smtpUser: e.target.value })} placeholder="usuario@dominio.com" style={inputS} required />
                         </div>
                         <div>
-                          <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>Senha SMTP *</label>
+                          <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>Senha SMTP *</label>
                           <input type="password" value={intForm.smtpPass} onChange={e => setIntForm({ ...intForm, smtpPass: e.target.value })} style={inputS} required />
                         </div>
                       </div>
                       <div>
-                        <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>Nome do Remetente de E-mail</label>
+                        <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>Nome do Remetente de E-mail</label>
                         <input type="text" value={intForm.smtpSender} onChange={e => setIntForm({ ...intForm, smtpSender: e.target.value })} placeholder="Ex: Cobrança da Minha Frota" style={inputS} />
                       </div>
                       <button type="submit" style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', color: '#070913', fontSize: 13, fontWeight: 800, cursor: 'pointer', marginTop: 10, alignSelf: 'flex-end' }}>Salvar e Testar SMTP</button>
@@ -873,8 +873,8 @@ export default function ConfiguracoesPage() {
               
               {/* Catarina IA Configuration Card */}
               <div style={cardS}>
-                <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', marginBottom: 8, letterSpacing: '-0.3px' }}>🤖 Personalidade da Catarina IA</h3>
-                <p style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Escolha o humor padrão que a Catarina IA adotará ao redigir as mensagens automáticas de cobrança.</p>
+                <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.3px' }}>🤖 Personalidade da Catarina IA</h3>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 20 }}>Escolha o humor padrão que a Catarina IA adotará ao redigir as mensagens automáticas de cobrança.</p>
                 
                 {/* Visual Cards of Humor */}
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 20 }}>
@@ -900,7 +900,7 @@ export default function ConfiguracoesPage() {
                         }}
                       >
                         <h4 style={{ margin: 0, fontSize: 13.5, fontWeight: 800, color: isSelected ? item.c : '#f1f5f9' }}>{item.title}</h4>
-                        <p style={{ margin: '6px 0 0 0', fontSize: 11.5, color: '#94a3b8', lineHeight: 1.4 }}>{item.desc}</p>
+                        <p style={{ margin: '6px 0 0 0', fontSize: 11.5, color: 'var(--text-secondary)', lineHeight: 1.4 }}>{item.desc}</p>
                       </div>
                     );
                   })}
@@ -908,7 +908,7 @@ export default function ConfiguracoesPage() {
 
                 {/* Custom Prompt Guidelines */}
                 <div style={{ marginBottom: 20 }}>
-                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>Diretrizes Customizadas de Escrita (Instruções Extras)</label>
+                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>Diretrizes Customizadas de Escrita (Instruções Extras)</label>
                   <textarea 
                     rows="3"
                     value={catarinaGuidelines}
@@ -921,8 +921,8 @@ export default function ConfiguracoesPage() {
 
               {/* Juros e Scores Configuration Card */}
               <div style={cardS}>
-                <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', marginBottom: 8, letterSpacing: '-0.3px' }}>📈 Juros Moratórios por Faixa de Score</h3>
-                <p style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Configure a taxa de juros diários pós-vencimento com base na pontualidade geral de faturamento do cliente.</p>
+                <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.3px' }}>📈 Juros Moratórios por Faixa de Score</h3>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 20 }}>Configure a taxa de juros diários pós-vencimento com base na pontualidade geral de faturamento do cliente.</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                   <div style={{ backgroundColor: 'rgba(16, 185, 129, 0.05)', borderColor: 'rgba(16, 185, 129, 0.15)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '16px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -939,8 +939,8 @@ export default function ConfiguracoesPage() {
                   </div>
                 </div>
 
-                <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', marginBottom: 8, letterSpacing: '-0.3px' }}>Limites de Faixa de Score</h3>
-                <p style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Configure os limites de taxa de inadimplência (proporção de dívidas atrasadas sobre o total pago) para a classificação de score.</p>
+                <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.3px' }}>Limites de Faixa de Score</h3>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 20 }}>Configure os limites de taxa de inadimplência (proporção de dívidas atrasadas sobre o total pago) para a classificação de score.</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div style={{ backgroundColor: 'rgba(16, 185, 129, 0.04)', borderColor: 'rgba(16, 185, 129, 0.12)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '16px', padding: '18px', display: 'flex', flexDirection: 'column', justifyBetween: 'space-between', gap: '10px' }}>
@@ -948,14 +948,14 @@ export default function ConfiguracoesPage() {
                       <label className="block text-xs font-bold text-[#6ee7b7] mb-2">😊 Limite Máximo Score Bom (%)</label>
                       <input type="number" min="1" max="99" value={scoreThresholds.good} onChange={e => setScoreThresholds({ ...scoreThresholds, good: parseInt(e.target.value) || 0 })} style={inputS} />
                     </div>
-                    <span style={{ display: 'block', fontSize: 11, color: '#64748b', lineHeight: '1.4', marginTop: '6px' }}>Clientes com taxas de atraso menores que este limite são considerados **Bons Pagadores** (Score Excelente).</span>
+                    <span style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', lineHeight: '1.4', marginTop: '6px' }}>Clientes com taxas de atraso menores que este limite são considerados **Bons Pagadores** (Score Excelente).</span>
                   </div>
                   <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.04)', borderColor: 'rgba(245, 158, 11, 0.12)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '16px', padding: '18px', display: 'flex', flexDirection: 'column', justifyBetween: 'space-between', gap: '10px' }}>
                     <div>
                       <label className="block text-xs font-bold text-[#f59e0b] mb-2">⚠️ Limite Máximo Score Regular (%)</label>
                       <input type="number" min="2" max="100" value={scoreThresholds.regular} onChange={e => setScoreThresholds({ ...scoreThresholds, regular: parseInt(e.target.value) || 0 })} style={inputS} />
                     </div>
-                    <span style={{ display: 'block', fontSize: 11, color: '#64748b', lineHeight: '1.4', marginTop: '6px' }}>Clientes entre o limite Bom e este são classificados como **Regulares**. Acima serão categorizados como **Alto Risco**.</span>
+                    <span style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', lineHeight: '1.4', marginTop: '6px' }}>Clientes entre o limite Bom e este são classificados como **Regulares**. Acima serão categorizados como **Alto Risco**.</span>
                   </div>
                 </div>
 
@@ -965,7 +965,7 @@ export default function ConfiguracoesPage() {
                     padding: '12px 24px', 
                     borderRadius: 10, 
                     background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
-                    color: '#fff', 
+                    color: 'var(--text-primary)', 
                     fontSize: 13, 
                     fontWeight: 700, 
                     cursor: 'pointer', 
@@ -984,8 +984,8 @@ export default function ConfiguracoesPage() {
           {/* TAB 5: Matriz de Disparo (Automated Reminder Timeline) */}
           {activeTab === 'timeline' && (
             <div style={cardS}>
-              <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', marginBottom: 8, letterSpacing: '-0.3px' }}>📅 Matriz de Disparo Automático</h3>
-              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 24 }}>Escolha em quais estágios do fluxo financeiro a Catarina IA deve notificar o devedor via WhatsApp ou E-mail.</p>
+              <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.3px' }}>📅 Matriz de Disparo Automático</h3>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24 }}>Escolha em quais estágios do fluxo financeiro a Catarina IA deve notificar o devedor via WhatsApp ou E-mail.</p>
               
               {/* Timeline Container */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, borderLeft: '3px solid rgba(16, 185, 129, 0.25)', paddingLeft: 20, marginLeft: 10, marginBottom: 28 }}>
@@ -996,7 +996,7 @@ export default function ConfiguracoesPage() {
                   { key: 'late2d', t: '⚠️ Cobrança Atrasada (2 dias após)', desc: 'WhatsApp focado no atraso e aviso dos encargos diários de juros.', c: '#f59e0b' },
                   { key: 'late5d', t: '🚨 Alerta Crítico (5 dias após)', desc: 'Envio firme alertando restrições operacionais e chamada urgente.', c: '#ef4444' },
                 ].map(item => (
-                  <div key={item.key} style={{ position: 'relative', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)', padding: 16, borderRadius: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
+                  <div key={item.key} style={{ position: 'relative', background: 'var(--bg-surface-hover)', border: '1px solid var(--border-color)', padding: 16, borderRadius: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
                     
                     {/* Glowing Bullet Circle indicator on vertical line */}
                     <div style={{
@@ -1013,8 +1013,8 @@ export default function ConfiguracoesPage() {
                     }} />
 
                     <div>
-                      <h4 style={{ margin: 0, fontSize: 13.5, fontWeight: 800, color: '#f1f5f9' }}>{item.t}</h4>
-                      <p style={{ margin: '4px 0 0 0', fontSize: 11.5, color: '#64748b', lineHeight: 1.4 }}>{item.desc}</p>
+                      <h4 style={{ margin: 0, fontSize: 13.5, fontWeight: 800, color: 'var(--text-primary)' }}>{item.t}</h4>
+                      <p style={{ margin: '4px 0 0 0', fontSize: 11.5, color: 'var(--text-muted)', lineHeight: 1.4 }}>{item.desc}</p>
                     </div>
 
                     <div 
@@ -1037,7 +1037,7 @@ export default function ConfiguracoesPage() {
                   padding: '12px 24px', 
                   borderRadius: 10, 
                   background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
-                  color: '#fff', 
+                  color: 'var(--text-primary)', 
                   fontSize: 13, 
                   fontWeight: 700, 
                   cursor: 'pointer', 
@@ -1057,8 +1057,8 @@ export default function ConfiguracoesPage() {
               
               {/* Plan metrics and Quotas gauge */}
               <div style={cardS}>
-                <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', marginBottom: 8, letterSpacing: '-0.3px' }}>📊 Quotas de Consumo Mensal</h3>
-                <p style={{ fontSize: 13, color: '#64748b', marginBottom: 24 }}>Veja o volume de recursos do Cobbra consumidos até o momento.</p>
+                <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.3px' }}>📊 Quotas de Consumo Mensal</h3>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24 }}>Veja o volume de recursos do Cobbra consumidos até o momento.</p>
 
                 {/* Progress metrics bars grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16, marginBottom: 10 }}>
@@ -1069,13 +1069,13 @@ export default function ConfiguracoesPage() {
                   ].map((gauge, i) => {
                     const percent = Math.min(100, Math.round((gauge.val / gauge.max) * 100));
                     return (
-                      <div key={i} style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)', padding: 18, borderRadius: 16 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: 8 }}>
+                      <div key={i} style={{ background: 'var(--bg-surface-hover)', border: '1px solid var(--border-color)', padding: 18, borderRadius: 16 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 8 }}>
                           <span>{gauge.label}</span>
                           <span>{percent}%</span>
                         </div>
-                        <div style={{ fontSize: 18, fontWeight: 900, color: '#fff', marginBottom: 12 }}>
-                          {gauge.val} <span style={{ fontSize: 13, color: '#64748b', fontWeight: 500 }}>/ {gauge.max}</span>
+                        <div style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 12 }}>
+                          {gauge.val} <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 500 }}>/ {gauge.max}</span>
                         </div>
                         {/* Neon visual progress line */}
                         <div style={{ width: '100%', height: 6, background: 'rgba(255,255,255,0.04)', borderRadius: 99, overflow: 'hidden' }}>
@@ -1089,39 +1089,39 @@ export default function ConfiguracoesPage() {
 
               {/* Plan Box */}
               <div style={cardS}>
-                <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', marginBottom: 8, letterSpacing: '-0.3px' }}>💎 Upgrade de Assinatura</h3>
-                <p style={{ fontSize: 13, color: '#64748b', marginBottom: 24 }}>Sua assinatura única garante acesso ilimitado a todas as ferramentas e recursos da plataforma.</p>
+                <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 8, letterSpacing: '-0.3px' }}>💎 Upgrade de Assinatura</h3>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24 }}>Sua assinatura única garante acesso ilimitado a todas as ferramentas e recursos da plataforma.</p>
                 
                 {/* Active Plan Header */}
                 <div style={{ background: 'rgba(16,185,129,0.06)', borderRadius: 16, padding: 20, border: '1px solid rgba(16,185,129,0.18)', marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
                   <div>
-                    <span style={{ fontSize: 9.5, fontWeight: 800, padding: '3px 10px', borderRadius: 6, background: '#059669', color: '#fff', textTransform: 'uppercase' }}>
+                    <span style={{ fontSize: 9.5, fontWeight: 800, padding: '3px 10px', borderRadius: 6, background: '#059669', color: 'var(--text-primary)', textTransform: 'uppercase' }}>
                       {user?.plan === 'cobra_pro' ? 'Assinatura Ativa' : 'Período de Teste'}
                     </span>
-                    <h4 style={{ fontSize: 16, fontWeight: 900, color: '#fff', marginTop: 8 }}>
+                    <h4 style={{ fontSize: 16, fontWeight: 900, color: 'var(--text-primary)', marginTop: 8 }}>
                       Plano Completo Ilimitado
                     </h4>
                   </div>
                   <p style={{ fontSize: 24, fontWeight: 900, color: '#10b981', margin: 0 }}>
                     R$ 49,90
-                    <span style={{ fontSize: 13, color: '#64748b', fontWeight: 500 }}>/mês</span>
+                    <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 500 }}>/mês</span>
                   </p>
                 </div>
 
                 {/* Single Plan Card */}
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <div style={{ background: 'rgba(255,255,255,0.01)', border: '2.5px solid #059669', borderRadius: 16, padding: 24, display: 'flex', flexDirection: 'column', gap: 20, width: '100%', maxWidth: 440 }}>
+                  <div style={{ background: 'var(--bg-surface-hover)', border: '2.5px solid #059669', borderRadius: 16, padding: 24, display: 'flex', flexDirection: 'column', gap: 20, width: '100%', maxWidth: 440 }}>
                     <div>
-                      <h5 style={{ fontSize: 16, fontWeight: 800, color: '#fff', margin: 0 }}>Plano Completo Ilimitado</h5>
-                      <p style={{ fontSize: 24, fontWeight: 900, color: '#e2e8f0', margin: '8px 0' }}>R$ 49,90<span style={{ fontSize: 12, color: '#64748b', fontWeight: 500 }}>/mês</span></p>
-                      <p style={{ fontSize: 12.5, color: '#64748b', margin: '0 0 16px 0', lineHeight: 1.4 }}>Escala ilimitada de cobranças, mensagens via WhatsApp e e-mail com Pix 100% livre de taxas.</p>
+                      <h5 style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>Plano Completo Ilimitado</h5>
+                      <p style={{ fontSize: 24, fontWeight: 900, color: 'var(--text-primary)', margin: '8px 0' }}>R$ 49,90<span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 500 }}>/mês</span></p>
+                      <p style={{ fontSize: 12.5, color: 'var(--text-muted)', margin: '0 0 16px 0', lineHeight: 1.4 }}>Escala ilimitada de cobranças, mensagens via WhatsApp e e-mail com Pix 100% livre de taxas.</p>
                       
                       <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                        <p style={{ fontSize: 13, color: '#cbd5e1', margin: 0 }}>✓ Cobranças e Tomadores ILIMITADOS</p>
-                        <p style={{ fontSize: 13, color: '#cbd5e1', margin: 0 }}>✓ Envio de Lembretes no WhatsApp & E-mail</p>
-                        <p style={{ fontSize: 13, color: '#cbd5e1', margin: 0 }}>✓ Robô Financeiro Catarina IA Integrado</p>
-                        <p style={{ fontSize: 13, color: '#cbd5e1', margin: 0 }}>✓ Relatórios Avançados e Análise de Risco</p>
-                        <p style={{ fontSize: 13, color: '#cbd5e1', margin: 0 }}>✓ Gestão de Locações e Financiamentos</p>
+                        <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>✓ Cobranças e Tomadores ILIMITADOS</p>
+                        <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>✓ Envio de Lembretes no WhatsApp & E-mail</p>
+                        <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>✓ Robô Financeiro Catarina IA Integrado</p>
+                        <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>✓ Relatórios Avançados e Análise de Risco</p>
+                        <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>✓ Gestão de Locações e Financiamentos</p>
                       </div>
                     </div>
                     
@@ -1148,8 +1148,8 @@ export default function ConfiguracoesPage() {
           {/* TAB 7: Segurança & Acesso */}
           {activeTab === 'security' && (
             <div style={cardS}>
-              <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', marginBottom: 20, letterSpacing: '-0.3px' }}>🔒 Segurança & Acesso</h3>
-              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 24 }}>Atualize a senha de acesso da sua conta para manter seus registros seguros.</p>
+              <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-primary)', marginBottom: 20, letterSpacing: '-0.3px' }}>🔒 Segurança & Acesso</h3>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 24 }}>Atualize a senha de acesso da sua conta para manter seus registros seguros.</p>
               
               {pwError && (
                 <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', color: '#fca5a5', fontSize: 12.5, marginBottom: 18 }}>
@@ -1170,7 +1170,7 @@ export default function ConfiguracoesPage() {
                   { label: 'Confirmar nova senha', key: 'confirm' },
                 ].map(f => (
                   <div key={f.key} style={{ marginBottom: 16 }}>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>{f.label}</label>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>{f.label}</label>
                     <input 
                       type="password" 
                       value={pwForm[f.key]} 
@@ -1186,7 +1186,7 @@ export default function ConfiguracoesPage() {
                   style={{ 
                     padding: '12px 24px', borderRadius: 10, 
                     background: pwLoading ? '#3b4252' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
-                    color: '#fff', fontSize: 13, fontWeight: 700, 
+                    color: 'var(--text-primary)', fontSize: 13, fontWeight: 700, 
                     cursor: pwLoading ? 'not-allowed' : 'pointer', border: 'none', 
                     fontFamily: 'Inter', marginTop: 10,
                     boxShadow: '0 4px 12px rgba(16,185,129,0.2)'

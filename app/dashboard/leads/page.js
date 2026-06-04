@@ -172,7 +172,7 @@ export default function ProspectingPage() {
       <div className="min-h-screen flex items-center justify-center bg-[#070913]">
         <div className="flex flex-col items-center">
           <div className="w-10 h-10 border-4 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin mb-4"></div>
-          <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Validando Autenticação...</p>
+          <p className="text-secondary-theme text-xs font-bold uppercase tracking-widest">Validando Autenticação...</p>
         </div>
       </div>
     );
@@ -181,9 +181,9 @@ export default function ProspectingPage() {
   if (!authorized) return null;
 
   const cardStyle = {
-    background: '#0C0E1A',
+    background: 'var(--bg-surface)',
     borderRadius: '24px',
-    border: '1px solid rgba(255,255,255,0.04)',
+    border: '1px solid var(--border-color)',
     padding: '24px'
   };
 
@@ -191,7 +191,7 @@ export default function ProspectingPage() {
     width: '100%',
     padding: '12px 16px',
     borderRadius: '12px',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--border-color)',
     background: '#020617',
     color: '#f8fafc',
     fontSize: '13.5px',
@@ -209,7 +209,7 @@ export default function ProspectingPage() {
             top: 80, 
             right: 32, 
             background: message.type === 'error' ? '#ef4444' : message.type === 'info' ? '#3b82f6' : '#10b981', 
-            color: '#fff', 
+            color: 'var(--text-primary)', 
             padding: '14px 28px', 
             borderRadius: '12px', 
             fontSize: '14px', 
@@ -230,7 +230,7 @@ export default function ProspectingPage() {
             <h2 className="text-xl md:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
               <span>🔍</span> Radar de Prospecção Ativa (P2P)
             </h2>
-            <p className="text-slate-400 text-xs md:text-sm mt-2 max-w-2xl leading-relaxed">
+            <p className="text-secondary-theme text-xs md:text-sm mt-2 max-w-2xl leading-relaxed">
               Encontre profissionais liberais e prestadores de serviços autônomos de verdade direto das redes sociais, sem bloqueios de CAPTCHA, estruturados e formatados em E.164 pela inteligência artificial da Catarina Groq AI.
             </p>
           </div>
@@ -250,7 +250,7 @@ export default function ProspectingPage() {
           <form onSubmit={handleSearch} className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-semibold text-slate-400 block mb-2">Nicho do Autônomo:</label>
+                <label className="text-xs font-semibold text-secondary-theme block mb-2">Nicho do Autônomo:</label>
                 <input 
                   type="text"
                   placeholder="Ex: personal trainer, diarista, marceneiro"
@@ -266,7 +266,7 @@ export default function ProspectingPage() {
                       key={n}
                       type="button"
                       onClick={() => setNiche(n)}
-                      className="text-[10px] px-2 py-1 bg-slate-800/40 hover:bg-emerald-500/10 border border-slate-700/50 hover:border-emerald-500/30 rounded text-slate-400 hover:text-emerald-400 transition-colors"
+                      className="text-[10px] px-2 py-1 bg-card-theme hover:bg-emerald-500/10 border border-theme hover:border-emerald-500/30 rounded text-secondary-theme hover:text-emerald-400 transition-colors"
                       disabled={loading}
                     >
                       {n}
@@ -276,7 +276,7 @@ export default function ProspectingPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-400 block mb-2">Cidade:</label>
+                <label className="text-xs font-semibold text-secondary-theme block mb-2">Cidade:</label>
                 <input 
                   type="text"
                   placeholder="Ex: Curitiba, São Paulo"
@@ -292,7 +292,7 @@ export default function ProspectingPage() {
                       key={c}
                       type="button"
                       onClick={() => setCity(c)}
-                      className="text-[10px] px-2 py-1 bg-slate-800/40 hover:bg-emerald-500/10 border border-slate-700/50 hover:border-emerald-500/30 rounded text-slate-400 hover:text-emerald-400 transition-colors"
+                      className="text-[10px] px-2 py-1 bg-card-theme hover:bg-emerald-500/10 border border-theme hover:border-emerald-500/30 rounded text-secondary-theme hover:text-emerald-400 transition-colors"
                       disabled={loading}
                     >
                       {c}
@@ -306,7 +306,7 @@ export default function ProspectingPage() {
               <button
                 type="button"
                 onClick={() => setShowConfig(!showConfig)}
-                className="text-xs font-medium text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer"
+                className="text-xs font-medium text-secondary-theme hover:text-primary-theme flex items-center gap-1.5 cursor-pointer"
               >
                 <span>{showConfig ? '⚙️ Ocultar' : '⚙️ Chaves de Contingência'}</span>
               </button>
@@ -336,13 +336,13 @@ export default function ProspectingPage() {
           <h3 className="text-base font-bold text-slate-100 mb-6 flex items-center gap-2">
             <span>🛡️</span> Resiliência de API
           </h3>
-          <p className="text-slate-400 text-xs leading-relaxed mb-4">
+          <p className="text-secondary-theme text-xs leading-relaxed mb-4">
             O site já possui chaves de API configuradas no servidor de produção. Porém, caso queira utilizar limites próprios do SerpAPI ou Groq, preencha-os abaixo.
           </p>
 
           <button
             onClick={() => setShowConfig(!showConfig)}
-            className="w-full py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 font-bold text-xs uppercase tracking-wide hover:bg-slate-800/60 transition-colors"
+            className="w-full py-3 rounded-xl bg-input-theme border border-theme text-secondary-theme font-bold text-xs uppercase tracking-wide hover:bg-card-theme/60 transition-colors"
           >
             {showConfig ? 'Ocultar Configuração' : 'Configurar Chaves Locais'}
           </button>
@@ -355,7 +355,7 @@ export default function ProspectingPage() {
           <h4 className="text-xs uppercase font-extrabold tracking-wider text-emerald-400 mb-4">🔑 Chaves de Contingência (Persistidas no Navegador)</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="text-[11px] font-semibold text-slate-400 block mb-1.5">Groq API Key Customizada:</label>
+              <label className="text-[11px] font-semibold text-secondary-theme block mb-1.5">Groq API Key Customizada:</label>
               <input
                 type="password"
                 placeholder="gsk_..."
@@ -365,7 +365,7 @@ export default function ProspectingPage() {
               />
             </div>
             <div>
-              <label className="text-[11px] font-semibold text-slate-400 block mb-1.5">SerpAPI Key Customizada:</label>
+              <label className="text-[11px] font-semibold text-secondary-theme block mb-1.5">SerpAPI Key Customizada:</label>
               <input
                 type="password"
                 placeholder="Cole sua SerpAPI Key se preferir..."
@@ -402,11 +402,11 @@ export default function ProspectingPage() {
                     ? 'bg-emerald-500 text-white' 
                     : progressStep === item.step 
                       ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500 animate-pulse' 
-                      : 'bg-slate-900 text-slate-600 border border-slate-800'
+                      : 'bg-input-theme text-slate-600 border border-theme'
                 }`}>
                   {progressStep > item.step ? '✓' : item.step}
                 </div>
-                <span className={`text-xs ${progressStep === item.step ? 'text-emerald-400 font-semibold' : progressStep > item.step ? 'text-slate-300' : 'text-slate-500'}`}>
+                <span className={`text-xs ${progressStep === item.step ? 'text-emerald-400 font-semibold' : progressStep > item.step ? 'text-secondary-theme' : 'text-muted-theme'}`}>
                   {item.label}
                 </span>
               </div>
@@ -421,7 +421,7 @@ export default function ProspectingPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
               <h3 className="text-base font-bold text-white">📋 Autônomos Extraídos</h3>
-              <p className="text-slate-400 text-xs mt-1">Marque os autônomos que você deseja importar como novos clientes ativos no Cobbra.</p>
+              <p className="text-secondary-theme text-xs mt-1">Marque os autônomos que você deseja importar como novos clientes ativos no Cobbra.</p>
             </div>
             
             <button
@@ -436,7 +436,7 @@ export default function ProspectingPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-800">
+                <tr className="border-b border-theme">
                   <th className="py-4 px-3 w-10">
                     <input 
                       type="checkbox"
@@ -445,11 +445,11 @@ export default function ProspectingPage() {
                       className="cursor-pointer accent-emerald-500 w-4 h-4"
                     />
                   </th>
-                  <th className="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400">Profissional</th>
-                  <th className="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400">WhatsApp</th>
-                  <th className="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400">Nicho / Cidade</th>
-                  <th className="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400">Oferta & Condições</th>
-                  <th className="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400 text-right">Origem</th>
+                  <th className="py-4 px-4 text-xs font-bold uppercase tracking-wider text-secondary-theme">Profissional</th>
+                  <th className="py-4 px-4 text-xs font-bold uppercase tracking-wider text-secondary-theme">WhatsApp</th>
+                  <th className="py-4 px-4 text-xs font-bold uppercase tracking-wider text-secondary-theme">Nicho / Cidade</th>
+                  <th className="py-4 px-4 text-xs font-bold uppercase tracking-wider text-secondary-theme">Oferta & Condições</th>
+                  <th className="py-4 px-4 text-xs font-bold uppercase tracking-wider text-secondary-theme text-right">Origem</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/40">
@@ -458,7 +458,7 @@ export default function ProspectingPage() {
                   return (
                     <tr 
                       key={idx}
-                      className={`hover:bg-slate-800/10 transition-colors ${isSelected ? 'bg-emerald-500/[0.01]' : ''}`}
+                      className={`hover:bg-card-theme/10 transition-colors ${isSelected ? 'bg-emerald-500/[0.01]' : ''}`}
                     >
                       <td className="py-4 px-3">
                         <input 
@@ -468,14 +468,14 @@ export default function ProspectingPage() {
                           className="cursor-pointer accent-emerald-500 w-4 h-4"
                         />
                       </td>
-                      <td className="py-4 px-4 font-medium text-slate-200">
+                      <td className="py-4 px-4 font-medium text-primary-theme">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center font-bold text-xs">
                             {lead.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
                           </div>
                           <div>
-                            <p className="text-xs font-bold text-slate-200">{lead.name}</p>
-                            {lead.email && <span className="text-[10px] text-slate-500 font-semibold">{lead.email}</span>}
+                            <p className="text-xs font-bold text-primary-theme">{lead.name}</p>
+                            {lead.email && <span className="text-[10px] text-muted-theme font-semibold">{lead.email}</span>}
                           </div>
                         </div>
                       </td>
@@ -496,12 +496,12 @@ export default function ProspectingPage() {
                         </div>
                       </td>
                       <td className="py-4 px-4 text-xs">
-                        <p className="text-slate-300 font-semibold capitalize">{lead.niche}</p>
-                        <p className="text-slate-500 text-[10px] mt-0.5">{lead.location}</p>
+                        <p className="text-secondary-theme font-semibold capitalize">{lead.niche}</p>
+                        <p className="text-muted-theme text-[10px] mt-0.5">{lead.location}</p>
                       </td>
                       <td className="py-4 px-4 text-xs max-w-xs">
-                        <div className="bg-slate-900/60 border border-slate-800/60 rounded-lg p-2.5">
-                          <p className="text-slate-300 leading-relaxed text-[11px]">{lead.offer_details}</p>
+                        <div className="bg-input-theme border border-theme rounded-lg p-2.5">
+                          <p className="text-secondary-theme leading-relaxed text-[11px]">{lead.offer_details}</p>
                         </div>
                       </td>
                       <td className="py-4 px-4 text-xs text-right">

@@ -296,9 +296,9 @@ export default function EmprestimosPage() {
   const totalOverdue = loans.reduce((acc, curr) => acc + (curr.status === 'overdue' ? curr.amount : 0), 0);
 
   const cardStyle = {
-    background: '#0C0E1A',
+    background: 'var(--bg-surface)',
     borderRadius: 20,
-    border: '1px solid rgba(255,255,255,0.04)',
+    border: '1px solid var(--border-color)',
     padding: isMobile ? '14px' : '20px'
   };
 
@@ -312,7 +312,7 @@ export default function EmprestimosPage() {
           top: 80, 
           right: 32, 
           background: '#10b981', 
-          color: '#fff', 
+          color: 'var(--text-primary)', 
           padding: '12px 24px', 
           borderRadius: 12, 
           fontSize: 13.5, 
@@ -328,7 +328,7 @@ export default function EmprestimosPage() {
       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 16 : 0, justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', marginBottom: 24 }}>
         <div>
           <h2 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px' }}>💰 Gestão de Crédito & Empréstimos</h2>
-          <p style={{ fontSize: 14, color: '#64748b', marginTop: 2 }}>Controle carteiras alocadas, calcule acúmulo diário de juros e mitigue risco de inadimplência.</p>
+          <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: 2 }}>Controle carteiras alocadas, calcule acúmulo diário de juros e mitigue risco de inadimplência.</p>
         </div>
         
         <button 
@@ -339,7 +339,7 @@ export default function EmprestimosPage() {
             borderRadius: 10,
             background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
             border: 'none',
-            color: '#fff',
+            color: 'var(--text-primary)',
             fontSize: 13,
             fontWeight: 700,
             cursor: 'pointer',
@@ -404,15 +404,15 @@ export default function EmprestimosPage() {
       {/* Stats Row */}
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16, marginBottom: 24 }}>
         <div style={{ ...cardStyle, padding: '12px 16px', borderLeft: '4px solid #3b82f6' }}>
-          <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Capital Emprestado</span>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Capital Emprestado</span>
           <h3 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', margin: '2px 0 0 0' }}>R$ {totalLent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
         </div>
         <div style={{ ...cardStyle, padding: '12px 16px', borderLeft: '4px solid #ef4444' }}>
-          <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Inadimplência Riscada</span>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Inadimplência Riscada</span>
           <h3 style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', margin: '2px 0 0 0' }}>R$ {totalOverdue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
         </div>
         <div style={{ ...cardStyle, padding: '12px 16px', borderLeft: '4px solid #10b981' }}>
-          <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>Juros Diários Acumulados</span>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Juros Diários Acumulados</span>
           <h3 style={{ fontSize: 24, fontWeight: 900, color: '#10b981', margin: '2px 0 0 0' }}>R$ {totalAccruedInterest.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
         </div>
       </div>
@@ -442,8 +442,8 @@ export default function EmprestimosPage() {
                   {/* Card Header: Loan + Risk */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                      <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: '#f1f5f9' }}>{l.loan_info}</h4>
-                      <p style={{ margin: '2px 0 0 0', fontSize: 11, color: '#64748b' }}>Vencimento: {new Date(l.due_date).toLocaleDateString('pt-BR')}</p>
+                      <h4 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: 'var(--text-primary)' }}>{l.loan_info}</h4>
+                      <p style={{ margin: '2px 0 0 0', fontSize: 11, color: 'var(--text-muted)' }}>Vencimento: {new Date(l.due_date).toLocaleDateString('pt-BR')}</p>
                     </div>
                     <span style={{ fontSize: 10, padding: '4px 8px', borderRadius: 20, color: risk.c, background: risk.bg, fontWeight: 700 }}>
                       {risk.l}
@@ -453,13 +453,13 @@ export default function EmprestimosPage() {
                   {/* Card Details: Borrower, Nominal, Interest */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '10px 0' }}>
                     <div>
-                      <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>MUTUÁRIO</span>
-                      <p style={{ margin: '2px 0 0 0', fontSize: 12.5, fontWeight: 600, color: '#cbd5e1' }}>{l.client_name}</p>
-                      <span style={{ fontSize: 10, color: '#64748b' }}>{l.client_phone}</span>
+                      <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>MUTUÁRIO</span>
+                      <p style={{ margin: '2px 0 0 0', fontSize: 12.5, fontWeight: 600, color: 'var(--text-secondary)' }}>{l.client_name}</p>
+                      <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{l.client_phone}</span>
                     </div>
                     <div>
-                      <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>CRÉDITO</span>
-                      <p style={{ margin: '2px 0 0 0', fontSize: 12.5, fontWeight: 700, color: '#f1f5f9' }}>R$ {Number(l.amount).toFixed(2)}</p>
+                      <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>CRÉDITO</span>
+                      <p style={{ margin: '2px 0 0 0', fontSize: 12.5, fontWeight: 700, color: 'var(--text-primary)' }}>R$ {Number(l.amount).toFixed(2)}</p>
                       <p style={{ margin: '1px 0 0 0', fontSize: 10, color: interest > 0 ? '#ef4444' : '#64748b', fontWeight: 600 }}>
                         Juros: {interest > 0 ? `+R$ ${interest.toFixed(2)}` : 'R$ 0,00'}
                       </p>
@@ -495,13 +495,13 @@ export default function EmprestimosPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 600 }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>📋 Contrato / Detalhes</th>
-                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>👥 Mutuário</th>
-                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>💰 Valor Nominal</th>
-                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>⚡ Juros Diários</th>
-                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>📈 Juros Acumulados</th>
-                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700 }}>🏷️ Nível de Risco</th>
-                  <th style={{ padding: '12px 10px', fontSize: 12, color: '#64748b', fontWeight: 700, textAlign: 'right' }}>Ação</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: 'var(--text-muted)', fontWeight: 700 }}>📋 Contrato / Detalhes</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: 'var(--text-muted)', fontWeight: 700 }}>👥 Mutuário</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: 'var(--text-muted)', fontWeight: 700 }}>💰 Valor Nominal</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: 'var(--text-muted)', fontWeight: 700 }}>⚡ Juros Diários</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: 'var(--text-muted)', fontWeight: 700 }}>📈 Juros Acumulados</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: 'var(--text-muted)', fontWeight: 700 }}>🏷️ Nível de Risco</th>
+                  <th style={{ padding: '12px 10px', fontSize: 12, color: 'var(--text-muted)', fontWeight: 700, textAlign: 'right' }}>Ação</th>
                 </tr>
               </thead>
               <tbody>
@@ -510,15 +510,15 @@ export default function EmprestimosPage() {
                   const risk = getPayerRisk(l);
                   return (
                     <tr key={l.id || idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                      <td style={{ padding: '16px 10px', fontSize: 13.5, fontWeight: 700, color: '#f1f5f9' }}>{l.loan_info}</td>
-                      <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1' }}>
+                      <td style={{ padding: '16px 10px', fontSize: 13.5, fontWeight: 700, color: 'var(--text-primary)' }}>{l.loan_info}</td>
+                      <td style={{ padding: '16px 10px', fontSize: 13.5, color: 'var(--text-secondary)' }}>
                         <p style={{ margin: 0, fontWeight: 600 }}>{l.client_name}</p>
-                        <span style={{ fontSize: 10.5, color: '#64748b' }}>{l.client_phone}</span>
+                        <span style={{ fontSize: 10.5, color: 'var(--text-muted)' }}>{l.client_phone}</span>
                       </td>
-                      <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1', fontWeight: 700 }}>
+                      <td style={{ padding: '16px 10px', fontSize: 13.5, color: 'var(--text-secondary)', fontWeight: 700 }}>
                         R$ {Number(l.amount).toFixed(2)}
                       </td>
-                      <td style={{ padding: '16px 10px', fontSize: 13.5, color: '#cbd5e1' }}>
+                      <td style={{ padding: '16px 10px', fontSize: 13.5, color: 'var(--text-secondary)' }}>
                         {l.daily_interest_rate || 0.1}% / dia
                       </td>
                       <td style={{ padding: '16px 10px', fontSize: 13.5, color: interest > 0 ? '#ef4444' : '#64748b', fontWeight: 700 }}>
@@ -570,8 +570,8 @@ export default function EmprestimosPage() {
           <div style={{
             width: '100%',
             maxWidth: 500,
-            background: '#0C0E1A',
-            border: '1px solid rgba(255,255,255,0.06)',
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-color)',
             borderRadius: 24,
             padding: 24,
             boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
@@ -583,7 +583,7 @@ export default function EmprestimosPage() {
               <h3 style={{ fontSize: 18, fontWeight: 900, color: '#ffffff' }}>💸 Lançar Crédito / Empréstimo</h3>
               <button 
                 onClick={() => setShowModal(false)}
-                style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: 18, cursor: 'pointer' }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: 18, cursor: 'pointer' }}
               >
                 ✕
               </button>
@@ -592,85 +592,85 @@ export default function EmprestimosPage() {
             <form onSubmit={handleRegisterLoan} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               
               <div>
-                <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Nome do Mutuário</label>
+                <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Nome do Mutuário</label>
                 <input 
                   type="text" 
                   value={form.clientName} 
                   onChange={e => setForm({...form, clientName: e.target.value})} 
                   placeholder="Nome completo do cliente" 
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none' }}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'var(--bg-input)', color: 'var(--text-primary)', outline: 'none' }}
                   required 
                 />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 10 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>WhatsApp Mutuário</label>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>WhatsApp Mutuário</label>
                   <input 
                     type="tel" 
                     value={form.clientPhone} 
                     onChange={e => setForm({...form, clientPhone: e.target.value})} 
                     placeholder="(11) 99999-9999" 
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'var(--bg-input)', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>E-mail (opcional)</label>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>E-mail (opcional)</label>
                   <input 
                     type="email" 
                     value={form.clientEmail} 
                     onChange={e => setForm({...form, clientEmail: e.target.value})} 
                     placeholder="email@cliente.com" 
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'var(--bg-input)', color: 'var(--text-primary)', outline: 'none' }}
                   />
                 </div>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Descrição do Contrato / Finalidade</label>
+                <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Descrição do Contrato / Finalidade</label>
                 <input 
                   type="text" 
                   value={form.loan_info} 
                   onChange={e => setForm({...form, loan_info: e.target.value})} 
                   placeholder="Ex: Empréstimo Pessoal - Parcela 1/3" 
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none' }}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'var(--bg-input)', color: 'var(--text-primary)', outline: 'none' }}
                   required 
                 />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 10 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Valor Emprestado (R$)</label>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Valor Emprestado (R$)</label>
                   <input 
                     type="number" 
                     value={form.amount} 
                     onChange={e => setForm({...form, amount: e.target.value})} 
                     placeholder="Ex: 5000.00" 
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'var(--bg-input)', color: 'var(--text-primary)', outline: 'none' }}
                     required 
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Taxa Juros Diários (%)</label>
+                  <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Taxa Juros Diários (%)</label>
                   <input 
                     type="number" 
                     step="0.01"
                     value={form.interestRate} 
                     onChange={e => setForm({...form, interestRate: e.target.value})} 
                     placeholder="Ex: 0.1 (0.1% ao dia)" 
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none' }}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'var(--bg-input)', color: 'var(--text-primary)', outline: 'none' }}
                     required 
                   />
                 </div>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Data Limite de Vencimento</label>
+                <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Data Limite de Vencimento</label>
                 <input 
                   type="date" 
                   value={form.dueDate} 
                   onChange={e => setForm({...form, dueDate: e.target.value})} 
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: '#fff', outline: 'none' }}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'var(--bg-input)', color: 'var(--text-primary)', outline: 'none' }}
                   required 
                 />
               </div>
@@ -679,13 +679,13 @@ export default function EmprestimosPage() {
                 <button 
                   type="button" 
                   onClick={() => setShowModal(false)}
-                  style={{ padding: '10px 20px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: '#cbd5e1', cursor: 'pointer' }}
+                  style={{ padding: '10px 20px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer' }}
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit"
-                  style={{ padding: '10px 20px', borderRadius: 10, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ padding: '10px 20px', borderRadius: 10, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', color: 'var(--text-primary)', fontWeight: 700, cursor: 'pointer' }}
                 >
                   Registrar Empréstimo 💸
                 </button>
@@ -711,7 +711,7 @@ export default function EmprestimosPage() {
           <div style={{
             width: '100%',
             maxWidth: 480,
-            background: '#0C0E1A',
+            background: 'var(--bg-surface)',
             border: '1px solid rgba(16, 185, 129, 0.25)',
             borderRadius: 24,
             padding: 24,
@@ -728,7 +728,7 @@ export default function EmprestimosPage() {
               </h3>
               <button 
                 onClick={() => setShowWaPairModal(false)}
-                style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: 18, cursor: 'pointer', marginLeft: 'auto' }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: 18, cursor: 'pointer', marginLeft: 'auto' }}
               >
                 ✕
               </button>
@@ -738,15 +738,15 @@ export default function EmprestimosPage() {
               <div style={{ padding: '30px 0', textAlign: 'center' }}>
                 <div style={{ border: '3.5px solid rgba(16,185,129,0.1)', borderTop: '3.5px solid #10b981', borderRadius: '50%', width: 44, height: 44, margin: '0 auto 20px', animation: 'spin 1s linear infinite' }} />
                 <p style={{ fontSize: 14, fontWeight: 600, color: '#f8fafc', marginBottom: 6 }}>Gerando Sessão de WhatsApp...</p>
-                <p style={{ fontSize: 12, color: '#64748b' }}>Conectando com o servidor de mensagens. Aguarde alguns instantes.</p>
+                <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Conectando com o servidor de mensagens. Aguarde alguns instantes.</p>
               </div>
             )}
 
             {whatsappStatus === 'scanning' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div style={{ textAlign: 'left', background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: 18, border: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ textAlign: 'left', background: 'var(--bg-input)', borderRadius: 16, padding: 18, border: '1px solid var(--border-color)' }}>
                   <h4 style={{ fontSize: 12, fontWeight: 800, color: '#10b981', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: 0.5 }}>Como parear:</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12, color: '#cbd5e1' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12, color: 'var(--text-secondary)' }}>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                       <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>1</span>
                       <span>Abra o <strong>WhatsApp</strong> no seu celular.</span>

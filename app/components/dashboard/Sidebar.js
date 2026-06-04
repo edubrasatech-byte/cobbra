@@ -26,19 +26,19 @@ function MiniSnake({ size = 40, style = {} }) {
 
 export default function Sidebar({ user, pathname, sidebarCollapsed, setSidebarCollapsed, handleLogout, NAV_ITEMS, NAV_ICONS }) {
   return (
-    <aside className={`hidden md:flex flex-col h-screen sticky top-0 bg-surface-theme border-r border-theme transition-all duration-300 overflow-hidden flex-shrink-0 z-30 ${sidebarCollapsed ? 'w-20' : 'w-52'}`}>
+    <aside className={`hidden md:flex flex-col h-screen sticky top-0 bg-surface-theme border-r border-theme transition-all duration-300 overflow-hidden flex-shrink-0 z-30 ${sidebarCollapsed ? "w-20" : "w-52"}`}>
       
       {/* Sidebar Brand Header */}
       <div className="h-16 flex items-center justify-between px-6 border-b border-theme">
         <div className="flex items-center gap-3 overflow-hidden">
           <div 
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="w-10 h-10 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/10 select-none cursor-pointer active:scale-95 transition-transform"
+            className="w-10 h-10 rounded-xl bg-input-theme border border-theme flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/5 select-none cursor-pointer active:scale-95 transition-transform"
           >
             <MiniSnake size={24} />
           </div>
           {!sidebarCollapsed && (
-            <span className="font-extrabold text-lg bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent tracking-tight">
+            <span className="font-extrabold text-lg text-primary-theme tracking-tight">
               Cobbra<span className="text-[#10B981] text-xs font-bold">.ai</span>
             </span>
           )}
@@ -46,11 +46,11 @@ export default function Sidebar({ user, pathname, sidebarCollapsed, setSidebarCo
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex-1 space-y-1.5 overflow-y-auto" style={{ paddingLeft: '16px', paddingRight: '16px', paddingTop: '24px', paddingBottom: '24px' }}>
+      <nav className="flex-1 space-y-1.5 overflow-y-auto" style={{ paddingLeft: "16px", paddingRight: "16px", paddingTop: "24px", paddingBottom: "24px" }}>
         {NAV_ITEMS.map(item => {
           const isActive = pathname === item.href;
-          const isRestricted = user?.plan === 'starter' && 
-            (item.href === '/dashboard/cobranca-diaria' || item.href === '/dashboard/relatorios');
+          const isRestricted = user?.plan === "starter" && 
+            (item.href === "/dashboard/cobranca-diaria" || item.href === "/dashboard/relatorios");
           
           const displayLabel = isRestricted ? `${item.label} (Pro)` : item.label;
 
@@ -60,20 +60,20 @@ export default function Sidebar({ user, pathname, sidebarCollapsed, setSidebarCo
               href={item.href} 
               className={`flex items-center gap-3 py-3 rounded-xl text-sm transition-all duration-200 group relative ${
                 isActive 
-                  ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-500/[0.02] text-emerald-400 font-extrabold shadow-sm' 
-                  : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-200'
-              } ${sidebarCollapsed ? 'justify-center' : 'justify-start'} ${isRestricted ? 'opacity-60' : ''}`}
-              style={{ paddingLeft: '16px', paddingRight: '16px' }}
+                  ? "bg-gradient-to-r from-emerald-500/10 to-emerald-500/[0.02] text-emerald-400 font-extrabold shadow-sm" 
+                  : "text-secondary-theme hover:bg-card-hover-theme hover:text-primary-theme"
+              } ${sidebarCollapsed ? "justify-center" : "justify-start"} ${isRestricted ? "opacity-60" : ""}`}
+              style={{ paddingLeft: "16px", paddingRight: "16px" }}
             >
               {isActive && <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-[#10B981] rounded-full" />}
               <span className="flex-shrink-0">
                 {isRestricted ? (
-                  <svg className="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className="w-4 h-4 text-muted-theme" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                   </svg>
                 ) : (
-                  NAV_ICONS[item.href] ? NAV_ICONS[item.href](isActive ? 'w-4 h-4 text-emerald-400 filter drop-shadow-[0_0_4px_rgba(16,185,129,0.4)]' : 'w-4 h-4 text-slate-400 group-hover:text-slate-200') : null
+                  NAV_ICONS[item.href] ? NAV_ICONS[item.href](isActive ? "w-4 h-4 text-emerald-400 filter drop-shadow-[0_0_4px_rgba(16,185,129,0.4)]" : "w-4 h-4 text-secondary-theme group-hover:text-primary-theme") : null
                 )}
               </span>
               {!sidebarCollapsed && <span className="truncate">{displayLabel}</span>}
@@ -87,12 +87,12 @@ export default function Sidebar({ user, pathname, sidebarCollapsed, setSidebarCo
         {!sidebarCollapsed && user && (
           <div className="bg-base-theme border border-theme rounded-2xl p-3 mb-3 flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white font-extrabold text-xs shadow-md shadow-emerald-500/10">
-              {user.name?.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase()}
+              {user.name?.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}
             </div>
             <div className="overflow-hidden">
               <p className="text-[11px] font-bold text-primary-theme truncate leading-none mb-1" title={user.name}>{user.name}</p>
               <span className="inline-block text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 uppercase tracking-wider scale-90 origin-left">
-                {user.role === 'admin_senior' ? 'Senior' : user.role}
+                {user.role === "admin_senior" ? "Senior" : user.role}
               </span>
             </div>
           </div>

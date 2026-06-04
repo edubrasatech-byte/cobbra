@@ -244,7 +244,7 @@ export default function CobrancaDiariaPage() {
     width: '100%', 
     padding: '10px 14px', 
     borderRadius: 12, 
-    border: '1px solid rgba(255,255,255,0.08)', 
+    border: '1px solid var(--border-color)', 
     background: '#020617', 
     color: '#f8fafc', 
     fontSize: 13, 
@@ -253,10 +253,10 @@ export default function CobrancaDiariaPage() {
     transition: 'all 0.2s'
   };
   const cardS = { 
-    background: '#0C0E1A', 
+    background: 'var(--bg-surface)', 
     borderRadius: 20, 
     padding: isMobile ? '16px' : '24px', 
-    border: '1px solid rgba(255,255,255,0.04)', 
+    border: '1px solid var(--border-color)', 
     transition: 'all 0.3s'
   };
 
@@ -266,13 +266,13 @@ export default function CobrancaDiariaPage() {
   if (user?.plan === 'starter') {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', minHeight: '60vh', textAlign: 'center', fontFamily: 'Inter, sans-serif' }}>
-        <div style={{ background: '#1e293b', borderRadius: 24, padding: '48px 32px', maxWidth: 540, border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
+        <div style={{ background: 'var(--bg-surface)', borderRadius: 24, padding: '48px 32px', maxWidth: 540, border: '1px solid var(--border-color)', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
           <div style={{ fontSize: 64, marginBottom: 24 }}>📅</div>
-          <h2 style={{ fontSize: 24, fontWeight: 800, color: '#fff', marginBottom: 12 }}>Cobrança e Faturamento Diário</h2>
-          <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.6, marginBottom: 28 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 12 }}>Cobrança e Faturamento Diário</h2>
+          <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 28 }}>
             O faturamento diário é uma ferramenta de alta performance que automatiza juros diários personalizados por Score, permite abatimentos recorrentes e oferece quitação antecipada de contratos.
           </p>
-          <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: 20, textAlign: 'left', border: '1px solid rgba(255,255,255,0.04)', marginBottom: 32 }}>
+          <div style={{ background: 'var(--bg-input)', borderRadius: 16, padding: 20, textAlign: 'left', border: '1px solid var(--border-color)', marginBottom: 32 }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: '#10b981', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>✓ Recursos inclusos a partir do Crescimento:</p>
             {[
               'Automação completa de cobrança diária recorrente',
@@ -280,14 +280,14 @@ export default function CobrancaDiariaPage() {
               'Quitação antecipada e abatimentos inteligentes',
               'Indicadores de Score e saúde do pagador'
             ].map((beneficio, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, fontSize: 13, color: '#cbd5e1' }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
                 <span style={{ color: '#10b981', fontWeight: 'bold' }}>✓</span> {beneficio}
               </div>
             ))}
           </div>
           <a href="/dashboard/configuracoes" style={{
             display: 'inline-block', width: '100%', padding: '14px 28px', borderRadius: 12,
-            background: 'linear-gradient(135deg, #059669, #0d9488)', color: '#fff', fontSize: 15, fontWeight: 700,
+            background: 'linear-gradient(135deg, #059669, #0d9488)', color: 'var(--text-primary)', fontSize: 15, fontWeight: 700,
             textAlign: 'center', cursor: 'pointer', border: 'none', textDecoration: 'none', boxShadow: '0 4px 14px rgba(5,150,105,0.3)',
             transition: 'all 0.2s'
           }}>
@@ -318,25 +318,25 @@ export default function CobrancaDiariaPage() {
       `}</style>
 
       <div className="cd-responsive pb-24">
-        {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
+        {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: 'var(--text-primary)', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
  
         {/* Overview Stats Cards */}
         <div className="stats-grid">
           <div style={cardS}>
-            <p style={{ fontSize: 12, color: '#94a3b8', margin: '0 0 4px 0', fontWeight: 600 }}>Faturamento Diário Ativo</p>
-            <h4 style={{ fontSize: 22, fontWeight: 800, color: '#10b981', margin: 0 }}>{fmt(totalDaily)}<span style={{ fontSize: 11, color: '#64748b', fontWeight: 500 }}>/dia</span></h4>
+            <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '0 0 4px 0', fontWeight: 600 }}>Faturamento Diário Ativo</p>
+            <h4 style={{ fontSize: 22, fontWeight: 800, color: '#10b981', margin: 0 }}>{fmt(totalDaily)}<span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>/dia</span></h4>
           </div>
           <div style={cardS}>
-            <p style={{ fontSize: 12, color: '#94a3b8', margin: '0 0 4px 0', fontWeight: 600 }}>Faturamento Mensal Projetado</p>
-            <h4 style={{ fontSize: 22, fontWeight: 800, color: '#3b82f6', margin: 0 }}>{fmt(projectedMonthly)}<span style={{ fontSize: 11, color: '#64748b', fontWeight: 500 }}>/mês</span></h4>
+            <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '0 0 4px 0', fontWeight: 600 }}>Faturamento Mensal Projetado</p>
+            <h4 style={{ fontSize: 22, fontWeight: 800, color: '#3b82f6', margin: 0 }}>{fmt(projectedMonthly)}<span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>/mês</span></h4>
           </div>
           <div style={cardS}>
-            <p style={{ fontSize: 12, color: '#94a3b8', margin: '0 0 4px 0', fontWeight: 600 }}>Clientes com Faturamento</p>
-            <h4 style={{ fontSize: 22, fontWeight: 800, color: '#fff', margin: 0 }}>{activeCount} <span style={{ fontSize: 11, color: '#64748b', fontWeight: 500 }}>ativos</span></h4>
+            <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '0 0 4px 0', fontWeight: 600 }}>Clientes com Faturamento</p>
+            <h4 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>{activeCount} <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>ativos</span></h4>
           </div>
           <div style={cardS}>
-            <p style={{ fontSize: 12, color: '#94a3b8', margin: '0 0 4px 0', fontWeight: 600 }}>Média de Juros Diários</p>
-            <h4 style={{ fontSize: 22, fontWeight: 800, color: '#f59e0b', margin: 0 }}>{avgInterest.toFixed(2)}%<span style={{ fontSize: 11, color: '#64748b', fontWeight: 500 }}>/dia</span></h4>
+            <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '0 0 4px 0', fontWeight: 600 }}>Média de Juros Diários</p>
+            <h4 style={{ fontSize: 22, fontWeight: 800, color: '#f59e0b', margin: 0 }}>{avgInterest.toFixed(2)}%<span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>/dia</span></h4>
           </div>
         </div>
  
@@ -349,9 +349,9 @@ export default function CobrancaDiariaPage() {
               style={{ 
                 padding: '12px 16px', 
                 borderRadius: 10, 
-                background: 'rgba(255,255,255,0.05)', 
+                background: 'var(--bg-input)', 
                 border: '1px solid rgba(255,255,255,0.1)', 
-                color: '#e2e8f0', 
+                color: 'var(--text-primary)', 
                 fontSize: 14, 
                 fontWeight: 600, 
                 cursor: 'pointer', 
@@ -366,13 +366,13 @@ export default function CobrancaDiariaPage() {
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
               className="group"
             >
-              <svg className="w-3.5 h-3.5 text-slate-300 group-hover:text-white transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-3.5 h-3.5 text-secondary-theme group-hover:text-primary-theme transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
               </svg>
               Recarregar
             </button>
           </div>
-          <button onClick={handleNewBillClick} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter', whiteSpace: 'nowrap' }} className="w-full md:w-auto text-center">+ Ativar Cobrança Diária</button>
+          <button onClick={handleNewBillClick} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: 'var(--text-primary)', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter', whiteSpace: 'nowrap' }} className="w-full md:w-auto text-center">+ Ativar Cobrança Diária</button>
         </div>
 
         {/* Cards list */}
@@ -393,11 +393,11 @@ export default function CobrancaDiariaPage() {
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: isActive ? 'linear-gradient(135deg,#059669,#0d9488)' : isPaidEarly ? '#3b82f6' : '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 13 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: isActive ? 'linear-gradient(135deg,#059669,#0d9488)' : isPaidEarly ? '#3b82f6' : '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)', fontWeight: 700, fontSize: 13 }}>
                         {b.client_name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
                       </div>
                       <div>
-                        <p style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0', margin: 0 }}>{b.client_name}</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{b.client_name}</p>
                         <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 4, background: h.b, color: h.c, fontWeight: 600, display: 'inline-block', marginTop: 4 }}>{h.i} {h.l}</span>
                       </div>
                     </div>
@@ -411,13 +411,13 @@ export default function CobrancaDiariaPage() {
                     </span>
                   </div>
 
-                  <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 10, padding: 14, marginBottom: 14 }}>
+                  <div style={{ background: 'var(--bg-input)', borderRadius: 10, padding: 14, marginBottom: 14 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                      <span style={{ fontSize: 12, color: '#64748b' }}>Valor Diário:</span>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#e2e8f0' }}>{fmt(b.amount)}/dia</span>
+                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Valor Diário:</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{fmt(b.amount)}/dia</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                      <span style={{ fontSize: 12, color: '#64748b' }}>Juros Pós-Vencimento:</span>
+                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Juros Pós-Vencimento:</span>
                       <span style={{ fontSize: 13, fontWeight: 700, color: '#f59e0b' }}>{b.interest_rate}%/dia</span>
                     </div>
                     {b.end_date && (
@@ -427,7 +427,7 @@ export default function CobrancaDiariaPage() {
                       </div>
                     )}
                     <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: 8 }}>
-                      <span style={{ fontSize: 12, color: '#64748b' }}>Projeção Mensal:</span>
+                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Projeção Mensal:</span>
                       <span style={{ fontSize: 13, fontWeight: 700, color: '#3b82f6' }}>{fmt(b.amount * 30)}/mês</span>
                     </div>
                   </div>
@@ -449,7 +449,7 @@ export default function CobrancaDiariaPage() {
                   )}
 
                   {b.description && (
-                    <p style={{ fontSize: 12, color: '#94a3b8', margin: '0 0 16px 0', fontStyle: 'italic', background: 'rgba(255,255,255,0.01)', padding: 10, borderRadius: 8, border: '1px dashed rgba(255,255,255,0.06)' }}>
+                    <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '0 0 16px 0', fontStyle: 'italic', background: 'var(--bg-surface-hover)', padding: 10, borderRadius: 8, border: '1px dashed rgba(255,255,255,0.06)' }}>
                       📝 {b.description}
                     </p>
                   )}
@@ -472,7 +472,7 @@ export default function CobrancaDiariaPage() {
                       💸 Quitar/Abater
                     </button>
                   )}
-                  <button onClick={() => handleEdit(b)} style={{ flex: 1, padding: '8px', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#e2e8f0', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter' }}>
+                  <button onClick={() => handleEdit(b)} style={{ flex: 1, padding: '8px', borderRadius: 8, background: 'var(--bg-input)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-primary)', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter' }}>
                     ⚙️ Configurar
                   </button>
                   {!isPaidEarly && (
@@ -493,7 +493,7 @@ export default function CobrancaDiariaPage() {
             );
           })}
           {filteredBills.length === 0 && (
-            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: 60, color: '#64748b' }}>
+            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: 60, color: 'var(--text-muted)' }}>
               {loading ? 'Carregando faturamentos...' : 'Nenhum faturamento diário configurado'}
             </div>
           )}
@@ -502,11 +502,11 @@ export default function CobrancaDiariaPage() {
         {/* Configure/Edit Modal */}
         {showModal && (
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setShowModal(false)}>
-            <div onClick={e => e.stopPropagation()} className="modal-content" style={{ background: '#1e293b', borderRadius: 20, padding: 36, border: '1px solid rgba(255,255,255,0.1)' }}>
-              <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 8 }}>
+            <div onClick={e => e.stopPropagation()} className="modal-content" style={{ background: 'var(--bg-surface)', borderRadius: 20, padding: 36, border: '1px solid rgba(255,255,255,0.1)' }}>
+              <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
                 {editingBill ? '⚙️ Ajustar Faturamento Diário' : '📅 Ativar Faturamento Diário'}
               </h3>
-              <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20 }}>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 20 }}>
                 {editingBill 
                   ? 'Modifique as condições de cobrança e juros diários para este cliente.' 
                   : 'Selecione um cliente para ativar o faturamento diário automático.'}
@@ -516,14 +516,14 @@ export default function CobrancaDiariaPage() {
                 
                 {/* Client Selection */}
                 <div style={{ marginBottom: 14 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Cliente *</label>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Cliente *</label>
                   {editingBill ? (
-                    <input type="text" value={editingBill.client_name} style={{ ...inputS, color: '#64748b', cursor: 'not-allowed' }} disabled />
+                    <input type="text" value={editingBill.client_name} style={{ ...inputS, color: 'var(--text-muted)', cursor: 'not-allowed' }} disabled />
                   ) : (
                     <select 
                       value={form.client_id} 
                       onChange={e => setForm({ ...form, client_id: e.target.value })} 
-                      style={{ ...inputS, appearance: 'auto', color: '#e2e8f0' }} 
+                      style={{ ...inputS, appearance: 'auto', color: 'var(--text-primary)' }} 
                       required
                     >
                       <option style={{ color: '#0f172a' }} value="">Selecione um cliente...</option>
@@ -538,7 +538,7 @@ export default function CobrancaDiariaPage() {
 
                 {/* Base Daily Amount */}
                 <div style={{ marginBottom: 14 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Valor Faturado Diariamente (R$) *</label>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Valor Faturado Diariamente (R$) *</label>
                   <input 
                     type="number" 
                     step="0.01" 
@@ -553,7 +553,7 @@ export default function CobrancaDiariaPage() {
 
                 {/* Custom Daily Interest Rate */}
                 <div style={{ marginBottom: 14 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Juros Diários Pós-Vencimento (%)</label>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Juros Diários Pós-Vencimento (%)</label>
                   <input 
                     type="number" 
                     step="0.01" 
@@ -563,21 +563,21 @@ export default function CobrancaDiariaPage() {
                     onChange={e => setForm({ ...form, interest_rate: e.target.value })} 
                     style={inputS} 
                   />
-                  <span style={{ fontSize: 11, color: '#64748b', display: 'block', marginTop: 4 }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginTop: 4 }}>
                     💡 Baseado no score do cliente. Deixe em branco para usar 0% ou use taxas personalizadas.
                   </span>
                 </div>
 
                 {/* Vigência / End Date */}
                 <div style={{ marginBottom: 14 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Vigência Até (Data Final Opcional)</label>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Vigência Até (Data Final Opcional)</label>
                   <input 
                     type="date" 
                     value={form.end_date} 
                     onChange={e => setForm({ ...form, end_date: e.target.value })} 
                     style={inputS} 
                   />
-                  <span style={{ fontSize: 11, color: '#64748b', display: 'block', marginTop: 4 }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginTop: 4 }}>
                     Deixe em branco para tempo indeterminado (recorrência contínua).
                   </span>
                 </div>
@@ -596,8 +596,8 @@ export default function CobrancaDiariaPage() {
                       style={{ width: 18, height: 18, accentColor: '#8b5cf6', cursor: 'pointer' }}
                     />
                     <div>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>🚫 Não cobrar aos sábados</span>
-                      <p style={{ fontSize: 11, color: '#94a3b8', margin: '2px 0 0 0' }}>Remove sábados do calendário de cobranças</p>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>🚫 Não cobrar aos sábados</span>
+                      <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>Remove sábados do calendário de cobranças</p>
                     </div>
                   </label>
 
@@ -609,15 +609,15 @@ export default function CobrancaDiariaPage() {
                       style={{ width: 18, height: 18, accentColor: '#ef4444', cursor: 'pointer' }}
                     />
                     <div>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>🚫 Não cobrar em domingos e feriados</span>
-                      <p style={{ fontSize: 11, color: '#94a3b8', margin: '2px 0 0 0' }}>Remove domingos e feriados nacionais do calendário</p>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>🚫 Não cobrar em domingos e feriados</span>
+                      <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>Remove domingos e feriados nacionais do calendário</p>
                     </div>
                   </label>
                 </div>
 
                 {/* Description / Project name */}
                 <div style={{ marginBottom: 20 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Descrição do Serviço / Contrato</label>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Descrição do Serviço / Contrato</label>
                   <input 
                     type="text" 
                     placeholder="Ex: Mensalidade Academia, Aluguel de Equipamento, etc." 
@@ -628,8 +628,8 @@ export default function CobrancaDiariaPage() {
                 </div>
 
                 <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 24 }}>
-                  <button type="button" onClick={() => setShowModal(false)} style={{ padding: '12px 24px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'Inter', cursor: 'pointer' }}>Cancelar</button>
-                  <button type="submit" style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontWeight: 700, border: 'none', fontFamily: 'Inter', cursor: 'pointer' }}>
+                  <button type="button" onClick={() => setShowModal(false)} style={{ padding: '12px 24px', borderRadius: 10, background: 'var(--bg-input)', color: 'var(--text-secondary)', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'Inter', cursor: 'pointer' }}>Cancelar</button>
+                  <button type="submit" style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: 'var(--text-primary)', fontWeight: 700, border: 'none', fontFamily: 'Inter', cursor: 'pointer' }}>
                     {editingBill ? 'Salvar Alterações' : 'Configurar Contrato'}
                   </button>
                 </div>
@@ -642,11 +642,11 @@ export default function CobrancaDiariaPage() {
         {/* Payment/Rebate/Payoff Modal */}
         {showPaymentModal && selectedBillForPayment && (
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setShowPaymentModal(false)}>
-            <div onClick={e => e.stopPropagation()} style={{ background: '#1e293b', borderRadius: 20, padding: 36, width: 440, border: '1px solid rgba(255,255,255,0.1)' }}>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8 }}>
+            <div onClick={e => e.stopPropagation()} style={{ background: 'var(--bg-surface)', borderRadius: 20, padding: 36, width: 440, border: '1px solid rgba(255,255,255,0.1)' }}>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
                 💸 Pagar/Abater Faturamento Diário
               </h3>
-              <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20 }}>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 20 }}>
                 Cliente: <strong>{selectedBillForPayment.client_name}</strong><br />
                 Valor por dia: <strong>{fmt(selectedBillForPayment.amount)}/dia</strong><br />
                 Descrição: <strong>{selectedBillForPayment.description || 'Faturamento Diário'}</strong>
@@ -655,7 +655,7 @@ export default function CobrancaDiariaPage() {
               <form onSubmit={handlePaymentSubmit}>
                 {/* Amount Paid */}
                 <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Valor Recebido (R$) *</label>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Valor Recebido (R$) *</label>
                   <input 
                     type="number" 
                     step="0.01" 
@@ -680,16 +680,16 @@ export default function CobrancaDiariaPage() {
                     />
                     <div>
                       <span style={{ fontSize: 13, fontWeight: 700, color: '#fca5a5' }}>Quitar e finalizar contrato diário</span>
-                      <p style={{ fontSize: 11, color: '#94a3b8', margin: '2px 0 0 0' }}>Altera o status para quitado e interrompe as cobranças no calendário</p>
+                      <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>Altera o status para quitado e interrompe as cobranças no calendário</p>
                     </div>
                   </label>
                 </div>
 
                 <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-                  <button type="button" onClick={() => setShowPaymentModal(false)} style={{ padding: '10px 20px', borderRadius: 8, background: 'rgba(255,255,255,0.05)', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'Inter', cursor: 'pointer' }}>
+                  <button type="button" onClick={() => setShowPaymentModal(false)} style={{ padding: '10px 20px', borderRadius: 8, background: 'var(--bg-input)', color: 'var(--text-secondary)', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'Inter', cursor: 'pointer' }}>
                     Cancelar
                   </button>
-                  <button type="submit" style={{ padding: '10px 20px', borderRadius: 8, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontWeight: 700, border: 'none', fontFamily: 'Inter', cursor: 'pointer' }}>
+                  <button type="submit" style={{ padding: '10px 20px', borderRadius: 8, background: 'linear-gradient(135deg,#059669,#0d9488)', color: 'var(--text-primary)', fontWeight: 700, border: 'none', fontFamily: 'Inter', cursor: 'pointer' }}>
                     Confirmar Recebimento
                   </button>
                 </div>

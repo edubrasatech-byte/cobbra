@@ -7,8 +7,7 @@ import MobileNav from '../components/dashboard/MobileNav';
 import TopBar from '../components/dashboard/TopBar';
 
 const NAV_ITEMS = [
-  { href: '/dashboard', icon: '📊', label: 'Visão Geral' },
-  { href: '/dashboard/carteira', icon: '💳', label: 'Cobbra Pay' },
+  { href: '/dashboard', icon: '💳', label: 'Cobbra Pay' },
   { href: '/dashboard/cobrancas', icon: '💰', label: 'Cobranças' },
   { href: '/dashboard/cobranca-diaria', icon: '📅', label: 'Recorrentes' },
   { href: '/dashboard/calendario', icon: '🗓️', label: 'Calendário' },
@@ -23,7 +22,7 @@ const LEADS_ITEM = { href: '/dashboard/leads', icon: '🔍', label: 'Prospecçã
 const ADMIN_ITEM = { href: '/dashboard/admin', icon: '🛡️', label: 'Admin' };
 
 const NAV_ICONS = {
-  '/dashboard/carteira': (colorClass) => (
+  '/dashboard': (colorClass) => (
     <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="2" y="5" width="20" height="14" rx="2" />
       <line x1="2" y1="10" x2="22" y2="10" />
@@ -36,14 +35,6 @@ const NAV_ICONS = {
       <line x1="21" y1="21" x2="16.65" y2="16.65" />
       <line x1="8" y1="11" x2="14" y2="11" />
       <line x1="11" y1="8" x2="11" y2="14" />
-    </svg>
-  ),
-  '/dashboard': (colorClass) => (
-    <svg className={colorClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="7" height="9" rx="1.5" />
-      <rect x="14" y="3" width="7" height="5" rx="1.5" />
-      <rect x="14" y="12" width="7" height="9" rx="1.5" />
-      <rect x="3" y="16" width="7" height="5" rx="1.5" />
     </svg>
   ),
   '/dashboard/cobrancas': (colorClass) => (
@@ -585,8 +576,8 @@ export default function DashboardLayout({ children }) {
         </main>
       </div>
 
-      {/* 📱 Mobile Bottom Navigation Bar (Nubank/Revolut Style) */}
-      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-[#0C0E1A]/95 border-t border-slate-800/40 z-40 flex items-center justify-around md:hidden shadow-2xl">
+      {/* Mobile Bottom Navigation Bar (Nubank/Revolut Style) */}
+      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-modal-theme/95 backdrop-blur-sm border-t border-theme z-40 flex items-center justify-around md:hidden shadow-2xl">
         {[
           { href: '/dashboard', label: 'Início' },
           { href: '/dashboard/cobrancas', label: 'Cobranças' },
@@ -599,102 +590,102 @@ export default function DashboardLayout({ children }) {
               key={item.href} 
               href={item.href} 
               className={`flex flex-col items-center justify-center flex-1 h-full py-1 text-center transition-colors relative ${
-                isActive ? 'text-emerald-400 font-bold' : 'text-slate-500 hover:text-slate-300'
+                isActive ? "text-emerald-500 font-bold" : "text-secondary-theme hover:text-primary-theme"
               }`}
             >
               <span className="mb-1 flex items-center justify-center">
-                {NAV_ICONS[item.href] ? NAV_ICONS[item.href](isActive ? 'w-4.5 h-4.5 text-emerald-400' : 'w-4.5 h-4.5 text-slate-500') : null}
+                {NAV_ICONS[item.href] ? NAV_ICONS[item.href](isActive ? "w-4.5 h-4.5 text-emerald-500" : "w-4.5 h-4.5 text-secondary-theme") : null}
               </span>
               <span className="text-[8px] uppercase tracking-wider font-semibold">{item.label}</span>
-              {isActive && <span className="absolute bottom-0 w-6 h-0.5 bg-emerald-400 rounded-full" />}
+              {isActive && <span className="absolute bottom-0 w-6 h-0.5 bg-emerald-500 rounded-full" />}
             </a>
           );
         })}
       </nav>
 
-      {/* 👤 Stripe-style Global Client Details Modal Drawer */}
+      {/* Stripe-style Global Client Details Modal Drawer */}
       {selectedClient && (
         <div 
-          className="fixed inset-0 bg-slate-950/40 backdrop-blur-md z-50 flex items-center justify-center md:items-stretch md:justify-end p-4 md:p-0"
+          className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-50 flex items-center justify-center md:items-stretch md:justify-end p-4 md:p-0"
           onClick={() => setSelectedClient(null)}
         >
           {/* Drawer / Modal Container */}
           <div 
             onClick={e => e.stopPropagation()} 
-            className="bg-[#0C0E1A]/85 backdrop-blur-lg rounded-2xl md:rounded-none md:rounded-l-3xl p-6 md:p-8 w-full max-w-xl md:h-screen overflow-y-auto border border-slate-800/60 md:border-y-0 md:border-r-0 md:border-l border-slate-800/50 shadow-2xl flex flex-col"
+            className="bg-modal-theme rounded-2xl md:rounded-none md:rounded-l-3xl p-6 md:p-8 w-full max-w-xl md:h-screen overflow-y-auto border border-theme md:border-y-0 md:border-r-0 md:border-l shadow-2xl flex flex-col"
           >
             
             {/* Header info */}
-            <div className="flex justify-between items-start border-b border-slate-800/60 pb-5 mb-5 flex-shrink-0">
+            <div className="flex justify-between items-start border-b border-theme pb-5 mb-5 flex-shrink-0">
               <div className="flex gap-4 items-center">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-black text-lg">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-650 flex items-center justify-center text-white font-black text-lg">
                   {selectedClient.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-100">{selectedClient.name}</h3>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <h3 className="text-lg font-bold text-primary-theme">{selectedClient.name}</h3>
+                  <p className="text-xs text-secondary-theme mt-1">
                     {selectedClient.category || 'Geral'} • {selectedClient.phone || 'Sem celular'}
                   </p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">{selectedClient.email || 'Sem e-mail'}</p>
+                  <p className="text-[11px] text-muted-theme mt-0.5">{selectedClient.email || 'Sem e-mail'}</p>
                 </div>
               </div>
-              <button onClick={() => setSelectedClient(null)} className="w-8 h-8 rounded-full bg-slate-800/40 hover:bg-slate-800 text-slate-400 flex items-center justify-center transition-colors">×</button>
+              <button onClick={() => setSelectedClient(null)} className="w-8 h-8 rounded-full bg-input-theme hover:bg-surface-theme border border-theme text-secondary-theme flex items-center justify-center transition-colors">×</button>
             </div>
 
             {/* Score and Quick Stats Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6" style={{ marginBottom: '32px' }}>
-              <div className="bg-slate-900/60 rounded-2xl p-4 border border-slate-800/30 flex flex-col gap-1.5 justify-center">
-                <span className="text-[10px] text-slate-500 uppercase font-semibold">Score Pagador</span>
+              <div className="bg-card-theme rounded-2xl p-4 border border-theme flex flex-col gap-1.5 justify-center">
+                <span className="text-[10px] text-muted-theme uppercase font-semibold">Score Pagador</span>
                 <span className={`text-xs font-extrabold ${getPayerScore(selectedClient).c}`}>{getPayerScore(selectedClient).l}</span>
               </div>
-              <div className="bg-slate-900/60 rounded-2xl p-4 border border-slate-800/30 flex flex-col gap-1.5">
-                <span className="text-[10px] text-slate-500 uppercase font-semibold">Cobrado</span>
-                <span className="text-xs font-extrabold text-slate-200 block">{fmt(selectedClient.total_charged)}</span>
+              <div className="bg-card-theme rounded-2xl p-4 border border-theme flex flex-col gap-1.5">
+                <span className="text-[10px] text-muted-theme uppercase font-semibold">Cobrado</span>
+                <span className="text-xs font-extrabold text-primary-theme block">{fmt(selectedClient.total_charged)}</span>
               </div>
-              <div className="bg-slate-900/60 rounded-2xl p-4 border border-slate-800/30 flex flex-col gap-1.5">
-                <span className="text-[10px] text-slate-500 uppercase font-semibold">Quitado</span>
-                <span className="text-xs font-extrabold text-emerald-400 block">{fmt(selectedClient.total_paid)}</span>
+              <div className="bg-card-theme rounded-2xl p-4 border border-theme flex flex-col gap-1.5">
+                <span className="text-[10px] text-muted-theme uppercase font-semibold">Quitado</span>
+                <span className="text-xs font-extrabold text-emerald-500 block">{fmt(selectedClient.total_paid)}</span>
               </div>
               <div className={`rounded-2xl p-4 border flex flex-col gap-1.5 ${
-                selectedClient.total_overdue > 0 ? 'bg-rose-500/5 border-rose-500/20' : 'bg-slate-900/60 border-slate-800/30'
+                selectedClient.total_overdue > 0 ? 'bg-rose-500/5 border-rose-500/20' : 'bg-card-theme border-theme'
               }`} style={{ height: '100%' }}>
-                <span className="text-[10px] text-slate-500 uppercase font-semibold">Em Aberto</span>
-                <span className={`text-xs font-extrabold block ${selectedClient.total_overdue > 0 ? 'text-rose-400' : 'text-slate-400'}`}>{fmt(selectedClient.total_overdue)}</span>
+                <span className="text-[10px] text-muted-theme uppercase font-semibold">Em Aberto</span>
+                <span className={`text-xs font-extrabold block ${selectedClient.total_overdue > 0 ? 'text-rose-400' : 'text-secondary-theme'}`}>{fmt(selectedClient.total_overdue)}</span>
               </div>
             </div>
 
             {/* Debts list / History */}
-            <h4 className="text-sm font-bold text-slate-200 mb-3" style={{ marginTop: '12px', marginBottom: '16px' }}>Histórico Financeiro</h4>
+            <h4 className="text-sm font-bold text-primary-theme mb-3" style={{ marginTop: '12px', marginBottom: '16px' }}>Histórico Financeiro</h4>
             <div className="flex-1 space-y-3 overflow-y-auto pr-1">
               {loadingCharges ? (
-                <p className="text-slate-500 text-xs text-center py-6">Carregando faturas...</p>
+                <p className="text-secondary-theme text-xs text-center py-6">Carregando faturas...</p>
               ) : clientCharges.length === 0 ? (
-                <p className="text-slate-600 text-xs text-center py-6">Nenhuma cobrança registrada.</p>
+                <p className="text-muted-theme text-xs text-center py-6">Nenhuma cobrança registrada.</p>
               ) : (
                 clientCharges.map(c => {
                   const interest = calcInterest(c);
                   return (
-                    <div key={c.id} className="bg-slate-900/40 border border-slate-800/30 rounded-xl p-4 flex justify-between items-center hover:border-slate-800 transition-colors">
+                    <div key={c.id} className="bg-surface-theme border border-theme rounded-xl p-4 flex justify-between items-center hover:border-emerald-500/20 transition-colors">
                       <div className="min-w-0 pr-4">
-                        <p className="text-xs font-bold text-slate-200 truncate">{c.description || 'Cobrança Avulsa'}</p>
-                        <p className="text-[10px] text-slate-500 mt-1">
+                        <p className="text-xs font-bold text-primary-theme truncate">{c.description || 'Cobrança Avulsa'}</p>
+                        <p className="text-[10px] text-secondary-theme mt-1">
                           Vencimento: {new Date(c.due_date).toLocaleDateString('pt-BR')}
                         </p>
                         {interest > 0 && (
                           <span className="text-[10px] text-amber-500 font-semibold block mt-1">
-                            ⚠️ Juros acumulados: {fmt(interest)} (+{c.daily_interest_rate}%/dia)
+                            Aviso: Juros acumulados: {fmt(interest)} (+{c.daily_interest_rate}%/dia)
                           </span>
                         )}
                       </div>
                       <div className="flex items-center gap-3 flex-shrink-0">
                         <div className="text-right">
-                          <p className="text-xs font-black text-slate-100">{fmt(c.amount + interest)}</p>
+                          <p className="text-xs font-black text-primary-theme">{fmt(c.amount + interest)}</p>
                         </div>
                         {c.status !== 'paid' && c.status !== 'cancelled' && (
                           <div className="flex gap-2">
                             <button 
                               onClick={() => payChargeInHeader(c.id, selectedClient.id)} 
-                              className="px-2.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] transition-colors"
+                              className="px-2.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-605 text-slate-950 font-extrabold text-[10px] transition-colors cursor-pointer"
                             >
                               Confirmar
                             </button>
@@ -703,7 +694,7 @@ export default function DashboardLayout({ children }) {
                                 setRebateCharge(c);
                                 setShowRebateModal(true);
                               }} 
-                              className="px-2.5 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 font-bold text-[10px] transition-colors"
+                              className="px-2.5 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-550 font-extrabold text-[10px] transition-colors cursor-pointer"
                             >
                               Abater
                             </button>
@@ -718,32 +709,32 @@ export default function DashboardLayout({ children }) {
             
             {/* Footer notes */}
             {selectedClient.notes && (
-              <div className="mt-4 p-3 bg-slate-950/40 rounded-xl border border-slate-800/50 flex-shrink-0">
-                <span className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Notas Internas</span>
-                <p className="text-[11px] text-slate-400 leading-normal">{selectedClient.notes}</p>
+              <div className="mt-4 p-3 bg-input-theme rounded-xl border border-theme flex-shrink-0">
+                <span className="text-[10px] text-muted-theme font-bold uppercase block mb-1">Notas Internas</span>
+                <p className="text-[11px] text-secondary-theme leading-normal">{selectedClient.notes}</p>
               </div>
             )}
           </div>
         </div>
       )}
 
-      {/* 💸 Minimalist Rebate Modal Form */}
+      {/* Minimalist Rebate Modal Form */}
       {showRebateModal && rebateCharge && (
         <div 
-          className="fixed inset-0 bg-slate-950/40 backdrop-blur-md z-[60] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4"
           onClick={() => {
             setShowRebateModal(false);
             setRebateCharge(null);
           }}
         >
-          <div onClick={e => e.stopPropagation()} className="bg-[#0C0E1A]/85 backdrop-blur-lg rounded-2xl p-6 w-full max-w-sm border border-slate-800/60 shadow-2xl">
-            <h3 className="text-base font-bold text-slate-100 mb-1">Abatimento de Fatura</h3>
-            <p className="text-xs text-slate-500 mb-4 leading-relaxed">
-              Deduza uma quantia paga avulso da cobrança <strong className="text-slate-300">{rebateCharge.description}</strong>.
+          <div onClick={e => e.stopPropagation()} className="bg-modal-theme border border-theme rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 className="text-base font-bold text-primary-theme mb-1">Abatimento de Fatura</h3>
+            <p className="text-xs text-secondary-theme mb-4 leading-relaxed">
+              Deduza uma quantia paga avulso da cobrança <strong className="text-primary-theme">{rebateCharge.description}</strong>.
             </p>
             <form onSubmit={handleRebateSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs text-slate-400 font-semibold mb-1.5">Valor do Abatimento (R$) *</label>
+                <label className="block text-xs text-secondary-theme font-semibold mb-1.5">Valor do Abatimento (R$) *</label>
                 <input 
                   type="number" 
                   step="0.01" 
@@ -752,10 +743,10 @@ export default function DashboardLayout({ children }) {
                   value={rebateAmount}
                   onChange={e => setRebateAmount(e.target.value)}
                   placeholder="Ex: 50.00"
-                  className="w-full py-2 px-3 text-sm bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full py-2 px-3 text-sm bg-input-theme border border-theme text-primary-theme rounded-lg outline-none focus:border-emerald-500 transition-colors"
                   required
                 />
-                <span className="block text-[10px] text-slate-500 mt-1">
+                <span className="block text-[10px] text-muted-theme mt-1">
                   Saldo pendente na fatura: {fmt(rebateCharge.amount)}
                 </span>
               </div>
@@ -766,13 +757,13 @@ export default function DashboardLayout({ children }) {
                     setShowRebateModal(false);
                     setRebateCharge(null);
                   }} 
-                  className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold hover:bg-slate-800 hover:text-slate-200 transition-colors"
+                  className="px-4 py-2 rounded-lg bg-surface-theme border border-theme text-secondary-theme text-xs font-semibold hover:bg-card-hover-theme hover:text-primary-theme transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
-                  className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition-colors"
+                  className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs transition-colors cursor-pointer"
                 >
                   Confirmar
                 </button>
@@ -783,15 +774,15 @@ export default function DashboardLayout({ children }) {
       )}
 
       {rebateMsg && (
-        <div className="fixed top-20 right-6 bg-emerald-500 text-white px-5 py-3 rounded-xl text-xs font-bold z-50 shadow-lg shadow-emerald-500/20">
+        <div className="fixed top-20 right-6 bg-emerald-500 text-slate-950 px-5 py-3 rounded-xl text-xs font-bold z-50 shadow-lg shadow-emerald-500/20">
           {rebateMsg}
         </div>
       )}
 
-      {/* 🪄 Minimalist Copilot AI Drawer/Modal */}
+      {/* Minimalist Copilot AI Drawer/Modal */}
       {showCopilotModal && (
         <div 
-          className="fixed inset-0 bg-slate-950/40 backdrop-blur-md z-[50] flex items-end md:items-center justify-center p-0 md:p-4"
+          className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[50] flex items-end md:items-center justify-center p-0 md:p-4"
           onClick={() => {
             if (!copilotLoading) {
               setShowCopilotModal(false);
@@ -801,14 +792,18 @@ export default function DashboardLayout({ children }) {
         >
           <div 
             onClick={e => e.stopPropagation()} 
-            className="bg-[#0C0E1A]/85 backdrop-blur-lg rounded-t-3xl md:rounded-2xl p-6 w-full max-w-md border-t md:border border-slate-800/60 shadow-2xl flex flex-col max-h-[95vh] md:max-h-[85vh] overflow-hidden animate-fadeInUp"
+            className="bg-modal-theme rounded-t-3xl md:rounded-2xl p-6 w-full max-w-md border-t md:border border-theme shadow-2xl flex flex-col max-h-[95vh] md:max-h-[85vh] overflow-hidden animate-fadeInUp"
           >
             {/* Header */}
-            <div className="flex items-center gap-3 border-b border-slate-800/40 pb-4 mb-4 flex-shrink-0">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-xl shadow shadow-emerald-500/10">🪄</div>
+            <div className="flex items-center gap-3 border-b border-theme pb-4 mb-4 flex-shrink-0">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-550 flex items-center justify-center text-xl shadow shadow-emerald-500/10">
+                <svg className="w-5 h-5 text-slate-950" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l3.582-1.79A8.96 8.96 0 119.813 15.904z" />
+                </svg>
+              </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-100">Catarina AI Copilot</h3>
-                <p className="text-[10px] text-slate-500">Comandos rápidos em linguagem natural</p>
+                <h3 className="text-sm font-bold text-primary-theme">Catarina AI Copilot</h3>
+                <p className="text-[10px] text-secondary-theme">Comandos rápidos em linguagem natural</p>
               </div>
             </div>
 
@@ -819,22 +814,22 @@ export default function DashboardLayout({ children }) {
               {copilotLoading && (
                 <div className="py-8 text-center flex flex-col items-center justify-center flex-shrink-0">
                   <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-4 flex-shrink-0"></div>
-                  <p className="text-slate-300 text-xs font-semibold">Catarina está processando seu comando...</p>
-                  <p className="text-slate-500 text-[10px] mt-1">Validando intenções e estruturando dados 🐍</p>
+                  <p className="text-primary-theme text-xs font-semibold">Catarina está processando seu comando...</p>
+                  <p className="text-muted-theme text-[10px] mt-1">Validando intenções e estruturando dados...</p>
                 </div>
               )}
 
               {/* Error state */}
               {copilotError && !copilotLoading && (
                 <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 mb-4 text-left flex-shrink-0">
-                  <p className="text-rose-400 text-xs font-medium">❌ {copilotError}</p>
+                  <p className="text-rose-400 text-xs font-medium">Erro: {copilotError}</p>
                 </div>
               )}
 
               {/* Success state */}
               {copilotSuccessMsg && !copilotLoading && (
                 <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 mb-4 text-center flex-shrink-0">
-                  <p className="text-emerald-400 text-xs font-bold">{copilotSuccessMsg}</p>
+                  <p className="text-emerald-500 text-xs font-bold">{copilotSuccessMsg}</p>
                 </div>
               )}
 
@@ -855,11 +850,11 @@ export default function DashboardLayout({ children }) {
                           handleCopilotSubmit(copilotInput);
                         }
                       }}
-                      className="w-full py-3 pl-4 pr-12 text-xs bg-slate-950 border border-slate-800/80 text-slate-100 placeholder-slate-500 rounded-xl outline-none focus:border-emerald-500 transition-colors"
+                      className="w-full py-3 pl-4 pr-12 text-xs bg-input-theme border border-theme text-primary-theme placeholder-muted-theme rounded-xl outline-none focus:border-emerald-500 transition-colors"
                     />
                     <button
                       onClick={() => handleCopilotSubmit(copilotInput)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs transition-all"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-xs transition-all cursor-pointer"
                     >
                       ➔
                     </button>
@@ -867,7 +862,7 @@ export default function DashboardLayout({ children }) {
 
                   {/* Voice / Text Suggestions */}
                   <div>
-                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-2">Comandos Sugeridos</span>
+                    <span className="text-[9px] text-muted-theme font-bold uppercase tracking-wider block mb-2">Comandos Sugeridos</span>
                     <div className="grid grid-cols-1 gap-2">
                       {[
                         'Cobre R$ 150 de Carlos Eduardo amanhã',
@@ -882,9 +877,11 @@ export default function DashboardLayout({ children }) {
                             setCopilotInput(suggestion);
                             handleCopilotSubmit(suggestion);
                           }}
-                          className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-850 hover:bg-slate-800 hover:text-emerald-400 text-[10px] text-slate-400 font-semibold text-left transition-colors flex items-center gap-2"
+                          className="px-3 py-2 rounded-xl bg-card-theme border border-theme hover:bg-surface-theme hover:text-emerald-500 text-[10px] text-secondary-theme font-semibold text-left transition-colors flex items-center gap-2 cursor-pointer"
                         >
-                          <span className="text-emerald-500 text-xs">✨</span>
+                          <svg className="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l3.582-1.79A8.96 8.96 0 119.813 15.904z" />
+                          </svg>
                           <span>{suggestion}</span>
                         </button>
                       ))}
@@ -893,7 +890,7 @@ export default function DashboardLayout({ children }) {
 
                   <button 
                     onClick={() => setShowCopilotModal(false)}
-                    className="w-full py-3 bg-slate-900 border border-slate-800 text-slate-400 rounded-xl text-xs font-bold transition-all mt-4"
+                    className="w-full py-3 bg-card-theme border border-theme text-secondary-theme rounded-xl text-xs font-bold hover:bg-card-hover-theme transition-all mt-4 cursor-pointer"
                   >
                     Cancelar
                   </button>
@@ -903,7 +900,7 @@ export default function DashboardLayout({ children }) {
               {/* Content Form when structured response received */}
               {copilotResponse && !copilotLoading && !copilotSuccessMsg && (
                 <div className="space-y-4 flex-shrink-0">
-                  <p className="text-slate-300 text-xs leading-relaxed bg-slate-900/60 p-3 rounded-lg border border-slate-800/40">
+                  <p className="text-secondary-theme text-xs leading-relaxed bg-surface-theme p-3 rounded-lg border border-theme">
                     {formatMessageText(copilotResponse.responseMessage)}
                   </p>
 
@@ -912,11 +909,11 @@ export default function DashboardLayout({ children }) {
                       
                       {/* Client Selection */}
                       <div className="flex-shrink-0">
-                        <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Cliente Associado</label>
+                        <label className="block text-[10px] text-muted-theme font-bold uppercase mb-1">Cliente Associado</label>
                         <select
                           value={copilotResponse.client_id || ''}
                           onChange={e => setCopilotResponse(prev => ({ ...prev, client_id: e.target.value }))}
-                          className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500 cursor-pointer"
+                          className="w-full py-2 px-3 text-xs bg-input-theme border border-theme text-primary-theme rounded-lg outline-none focus:border-emerald-500 cursor-pointer"
                         >
                           <option value="">-- Selecione o Cliente --</option>
                           {allClients.map(cl => (
@@ -925,7 +922,7 @@ export default function DashboardLayout({ children }) {
                         </select>
                         {!copilotResponse.client_id && (
                           <span className="text-[10px] text-amber-500 block mt-1">
-                            ⚠️ Não consegui mapear o cliente. Selecione na lista!
+                            Aviso: Não consegui mapear o cliente. Selecione na lista!
                           </span>
                         )}
                       </div>
@@ -933,25 +930,25 @@ export default function DashboardLayout({ children }) {
                       {/* Amount & Due Date */}
                       <div className="grid grid-cols-2 gap-3 flex-shrink-0">
                         <div>
-                          <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Valor (R$)</label>
+                          <label className="block text-[10px] text-muted-theme font-bold uppercase mb-1">Valor (R$)</label>
                           <input
                             type="number"
                             step="0.01"
                             value={copilotResponse.amount || ''}
                             onChange={e => setCopilotResponse(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
-                            className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500"
+                            className="w-full py-2 px-3 text-xs bg-input-theme border border-theme text-primary-theme rounded-lg outline-none focus:border-emerald-500"
                           />
                         </div>
 
                         {/* Due Date (for single charge) */}
                         {copilotResponse.intent === 'create_charge' && (
                           <div>
-                            <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Vencimento</label>
+                            <label className="block text-[10px] text-muted-theme font-bold uppercase mb-1">Vencimento</label>
                             <input
                               type="date"
                               value={copilotResponse.due_date || ''}
                               onChange={e => setCopilotResponse(prev => ({ ...prev, due_date: e.target.value }))}
-                              className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500"
+                              className="w-full py-2 px-3 text-xs bg-input-theme border border-theme text-primary-theme rounded-lg outline-none focus:border-emerald-500"
                             />
                           </div>
                         )}
@@ -959,17 +956,17 @@ export default function DashboardLayout({ children }) {
 
                       {/* Description */}
                       <div className="flex-shrink-0">
-                        <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">Descrição</label>
+                        <label className="block text-[10px] text-muted-theme font-bold uppercase mb-1">Descrição</label>
                         <input
                           type="text"
                           value={copilotResponse.description || ''}
                           onChange={e => setCopilotResponse(prev => ({ ...prev, description: e.target.value }))}
-                          className="w-full py-2 px-3 text-xs bg-slate-900 border border-slate-800 text-white rounded-lg outline-none focus:border-emerald-500"
+                          className="w-full py-2 px-3 text-xs bg-input-theme border border-theme text-primary-theme rounded-lg outline-none focus:border-emerald-500"
                         />
                       </div>
                     </div>
                   ) : (
-                    <div className="text-center py-4 text-slate-500 text-xs flex-shrink-0">
+                    <div className="text-center py-4 text-muted-theme text-xs flex-shrink-0">
                       Nenhuma ação de banco de dados pendente para esta intenção.
                     </div>
                   )}
@@ -980,7 +977,7 @@ export default function DashboardLayout({ children }) {
                       onClick={() => {
                         setCopilotResponse(null);
                       }}
-                      className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold hover:bg-slate-800"
+                      className="px-4 py-2 rounded-lg bg-card-theme border border-theme text-secondary-theme text-xs font-semibold hover:bg-surface-theme cursor-pointer"
                     >
                       Voltar
                     </button>
@@ -988,9 +985,9 @@ export default function DashboardLayout({ children }) {
                     {(copilotResponse.intent === 'create_charge' || copilotResponse.intent === 'create_daily_billing') && (
                       <button
                         onClick={executeCopilotAction}
-                        className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-lg shadow-emerald-500/10"
+                        className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs transition-colors cursor-pointer"
                       >
-                        Confirmar e Lançar 🐍
+                        Confirmar e Lançar
                       </button>
                     )}
                   </div>

@@ -164,13 +164,13 @@ export default function RelatoriosPage() {
   if (user?.plan === 'starter') {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', minHeight: '60vh', textAlign: 'center', fontFamily: 'Inter, sans-serif' }}>
-        <div style={{ background: '#1e293b', borderRadius: 24, padding: '48px 32px', maxWidth: 540, border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
+        <div style={{ background: 'var(--bg-surface)', borderRadius: 24, padding: '48px 32px', maxWidth: 540, border: '1px solid var(--border-color)', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
           <div style={{ fontSize: 64, marginBottom: 24 }}>📈</div>
-          <h2 style={{ fontSize: 24, fontWeight: 800, color: '#fff', marginBottom: 12 }}>Relatórios Avançados</h2>
-          <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.6, marginBottom: 28 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 12 }}>Relatórios Avançados</h2>
+          <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 28 }}>
             Acesse rankings detalhados de pagadores, análise de efetividade de lembretes, taxas de inadimplência histórica e projeções de faturamento em tempo real.
           </p>
-          <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: 20, textAlign: 'left', border: '1px solid rgba(255,255,255,0.04)', marginBottom: 32 }}>
+          <div style={{ background: 'var(--bg-input)', borderRadius: 16, padding: 20, textAlign: 'left', border: '1px solid var(--border-color)', marginBottom: 32 }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: '#10b981', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>✓ Recursos inclusos a partir do Crescimento:</p>
             {[
               'Gráficos interativos e dinâmicos de receita diária',
@@ -178,14 +178,14 @@ export default function RelatoriosPage() {
               'Auditoria de inadimplência consolidada por cliente',
               'Métricas e taxas de leitura dos disparos no WhatsApp'
             ].map((beneficio, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, fontSize: 13, color: '#cbd5e1' }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
                 <span style={{ color: '#10b981', fontWeight: 'bold' }}>✓</span> {beneficio}
               </div>
             ))}
           </div>
           <a href="/dashboard/configuracoes" style={{
             display: 'inline-block', width: '100%', padding: '14px 28px', borderRadius: 12,
-            background: 'linear-gradient(135deg, #059669, #0d9488)', color: '#fff', fontSize: 15, fontWeight: 700,
+            background: 'linear-gradient(135deg, #059669, #0d9488)', color: 'var(--text-primary)', fontSize: 15, fontWeight: 700,
             textAlign: 'center', cursor: 'pointer', border: 'none', textDecoration: 'none', boxShadow: '0 4px 14px rgba(5,150,105,0.3)',
             transition: 'all 0.2s'
           }}>
@@ -205,10 +205,10 @@ export default function RelatoriosPage() {
   ];
 
   const cardS = { 
-    background: '#0C0E1A', 
+    background: 'var(--bg-surface)', 
     borderRadius: 20, 
     padding: isMobile ? '16px' : '24px', 
-    border: '1px solid rgba(255,255,255,0.04)' 
+    border: '1px solid var(--border-color)' 
   };
 
   return (
@@ -279,8 +279,8 @@ export default function RelatoriosPage() {
           <button 
             onClick={loadData}
             style={{
-              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 8, padding: '8px 14px', color: '#cbd5e1', cursor: 'pointer',
+              background: 'var(--bg-input)', border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 8, padding: '8px 14px', color: 'var(--text-secondary)', cursor: 'pointer',
               fontFamily: 'Inter', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6,
               transition: 'all 0.2s'
             }}
@@ -296,10 +296,10 @@ export default function RelatoriosPage() {
       </div>
 
       {/* Date Filter & Presets Panel (Frente 20) */}
-      <div className="no-print bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-4 mb-6 flex flex-col gap-4">
+      <div className="no-print bg-card-theme rounded-2xl border border-theme p-4 mb-6 flex flex-col gap-4">
         {/* Row 1: Presets */}
         <div className="flex flex-wrap items-center gap-2">
-          <span style={{ fontSize: 11, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginRight: 4 }}>Períodos:</span>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginRight: 4 }}>Períodos:</span>
           {['7', '30', '90', '365'].map(p => (
             <button 
               key={p} 
@@ -326,7 +326,7 @@ export default function RelatoriosPage() {
             onClick={() => setMonthPreset(0)} 
             style={{
               padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter', fontSize: 12, fontWeight: 600,
-              background: 'rgba(255,255,255,0.04)', color: '#94a3b8', transition: 'all 0.2s'
+              background: 'var(--bg-input)', color: 'var(--text-secondary)', transition: 'all 0.2s'
             }}
             onMouseEnter={e => e.currentTarget.style.color = '#10b981'}
             onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
@@ -337,7 +337,7 @@ export default function RelatoriosPage() {
             onClick={() => setMonthPreset(1)} 
             style={{
               padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter', fontSize: 12, fontWeight: 600,
-              background: 'rgba(255,255,255,0.04)', color: '#94a3b8', transition: 'all 0.2s'
+              background: 'var(--bg-input)', color: 'var(--text-secondary)', transition: 'all 0.2s'
             }}
             onMouseEnter={e => e.currentTarget.style.color = '#10b981'}
             onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
@@ -348,7 +348,7 @@ export default function RelatoriosPage() {
             onClick={() => setMonthPreset(2)} 
             style={{
               padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontFamily: 'Inter', fontSize: 12, fontWeight: 600,
-              background: 'rgba(255,255,255,0.04)', color: '#94a3b8', transition: 'all 0.2s'
+              background: 'var(--bg-input)', color: 'var(--text-secondary)', transition: 'all 0.2s'
             }}
             onMouseEnter={e => e.currentTarget.style.color = '#10b981'}
             onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
@@ -361,7 +361,7 @@ export default function RelatoriosPage() {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="flex-1 flex gap-2 items-center">
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: 10, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Data Inicial</label>
+              <label style={{ display: 'block', fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Data Inicial</label>
               <input 
                 type="date"
                 value={startDate}
@@ -370,13 +370,13 @@ export default function RelatoriosPage() {
                   setPeriod('');
                 }}
                 style={{
-                  width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)',
-                  background: 'rgba(0,0,0,0.2)', color: '#fff', fontSize: 12.5, outline: 'none'
+                  width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border-color)',
+                  background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 12.5, outline: 'none'
                 }}
               />
             </div>
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: 10, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Data Final</label>
+              <label style={{ display: 'block', fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Data Final</label>
               <input 
                 type="date"
                 value={endDate}
@@ -385,8 +385,8 @@ export default function RelatoriosPage() {
                   setPeriod('');
                 }}
                 style={{
-                  width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)',
-                  background: 'rgba(0,0,0,0.2)', color: '#fff', fontSize: 12.5, outline: 'none'
+                  width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border-color)',
+                  background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 12.5, outline: 'none'
                 }}
               />
             </div>
@@ -413,11 +413,11 @@ export default function RelatoriosPage() {
       {activeTab === 'revenue' && data && (
         <div style={{ marginTop: '16px' }}>
           {/* Note: Period picker removed here as it is now global above */}
-          <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: isMobile ? '16px' : '24px', marginBottom: 20 }}>
+          <div className="bg-card-theme rounded-2xl border border-theme" style={{ padding: isMobile ? '16px' : '24px', marginBottom: 20 }}>
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Histórico de Receita</h3>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <h3 className="text-xs font-bold text-secondary-theme uppercase tracking-wider">Histórico de Receita</h3>
+                <p className="text-[11px] text-muted-theme mt-0.5">
                   Total no período: <span className="text-[#10B981] font-bold">{fmt(data.total)}</span>
                 </p>
               </div>
@@ -428,10 +428,10 @@ export default function RelatoriosPage() {
                     <p className="text-[10px] text-[#10B981] font-bold uppercase tracking-wider leading-none">
                       {new Date(selectedBar.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}
                     </p>
-                    <p className="text-sm font-extrabold text-slate-200 mt-1 leading-none">{fmt(selectedBar.total)}</p>
+                    <p className="text-sm font-extrabold text-primary-theme mt-1 leading-none">{fmt(selectedBar.total)}</p>
                   </div>
                 ) : (
-                  <span className="text-[10px] text-slate-500 font-medium bg-slate-900 px-2.5 py-1 rounded border border-slate-800/60">
+                  <span className="text-[10px] text-muted-theme font-medium bg-input-theme px-2.5 py-1 rounded border border-theme">
                     Selecione um ponto
                   </span>
                 )}
@@ -453,23 +453,23 @@ export default function RelatoriosPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-40 text-xs text-slate-500 italic">
+              <div className="flex items-center justify-center h-40 text-xs text-muted-theme italic">
                 Sem dados de faturamentos registrados no período.
               </div>
             )}
           </div>
           {data.monthly && data.monthly.length > 0 && (
             <div style={cardS}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Receita mensal</h3>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Receita mensal</h3>
               {data.monthly.map((m, i) => {
                 const max = Math.max(...data.monthly.map(x => x.total), 1);
                 return (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                    <span style={{ fontSize: 13, color: '#94a3b8', width: 60 }}>{m.month}</span>
-                    <div style={{ flex: 1, height: 24, background: 'rgba(255,255,255,0.03)', borderRadius: 6, overflow: 'hidden' }}>
+                    <span style={{ fontSize: 13, color: 'var(--text-secondary)', width: 60 }}>{m.month}</span>
+                    <div style={{ flex: 1, height: 24, background: 'var(--bg-input)', borderRadius: 6, overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${(m.total / max) * 100}%`, background: 'linear-gradient(to right,#059669,#34d399)', borderRadius: 6, transition: 'width 0.5s' }} />
                     </div>
-                    <span style={{ fontSize: 13, color: '#e2e8f0', fontWeight: 600, width: 100, textAlign: 'right' }}>{fmt(m.total)}</span>
+                    <span style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 600, width: 100, textAlign: 'right' }}>{fmt(m.total)}</span>
                   </div>
                 );
               })}
@@ -482,33 +482,33 @@ export default function RelatoriosPage() {
       {activeTab === 'inadimplencia' && data && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ marginTop: '16px' }}>
           <div style={cardS}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Inadimplência por mês</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Inadimplência por mês</h3>
             {data.overdueByMonth?.map((m, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                <span style={{ color: '#94a3b8', fontSize: 13 }}>{m.month}</span>
+                <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{m.month}</span>
                 <div>
                   <span style={{ color: '#fca5a5', fontWeight: 600, fontSize: 14 }}>{fmt(m.total)}</span>
-                  <span style={{ color: '#64748b', fontSize: 12, marginLeft: 8 }}>({m.count} {m.count === 1 ? 'cobrança' : 'cobranças'})</span>
+                  <span style={{ color: 'var(--text-muted)', fontSize: 12, marginLeft: 8 }}>({m.count} {m.count === 1 ? 'cobrança' : 'cobranças'})</span>
                 </div>
               </div>
             ))}
-            {(!data.overdueByMonth || data.overdueByMonth.length === 0) && <p style={{ color: '#64748b', textAlign: 'center', padding: 30 }}>Sem inadimplência! 🎉</p>}
+            {(!data.overdueByMonth || data.overdueByMonth.length === 0) && <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 30 }}>Sem inadimplência! 🎉</p>}
           </div>
           <div style={cardS}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Inadimplência por cliente</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Inadimplência por cliente</h3>
             {data.overdueByClient?.map((c, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                 <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(239,68,68,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fca5a5', fontWeight: 700, fontSize: 12 }}>
                   {c.name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600 }} className="truncate">{c.name}</p>
-                  <p style={{ color: '#64748b', fontSize: 12 }}>{c.count} {c.count === 1 ? 'cobrança vencida' : 'cobranças vencidas'}</p>
+                  <p style={{ color: 'var(--text-primary)', fontSize: 14, fontWeight: 600 }} className="truncate">{c.name}</p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: 12 }}>{c.count} {c.count === 1 ? 'cobrança vencida' : 'cobranças vencidas'}</p>
                 </div>
                 <span style={{ color: '#fca5a5', fontWeight: 700, fontSize: 14, shrink: 0 }} className="shrink-0">{fmt(c.total)}</span>
               </div>
             ))}
-            {(!data.overdueByClient || data.overdueByClient.length === 0) && <p style={{ color: '#64748b', textAlign: 'center', padding: 30 }}>Nenhum devedor! 🎉</p>}
+            {(!data.overdueByClient || data.overdueByClient.length === 0) && <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: 30 }}>Nenhum devedor! 🎉</p>}
           </div>
         </div>
       )}
@@ -517,25 +517,25 @@ export default function RelatoriosPage() {
       {activeTab === 'clients' && data && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ marginTop: '16px' }}>
           <div style={cardS}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>🏆 Melhores pagadores</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>🏆 Melhores pagadores</h3>
             {data.topPayers?.map((c, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                 <span style={{ color: '#f59e0b', fontWeight: 800, fontSize: 16, width: 24, shrink: 0 }} className="shrink-0">{i + 1}º</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600 }} className="truncate">{c.name}</p>
-                  <p style={{ color: '#64748b', fontSize: 12 }}>Taxa: {c.payment_rate || 0}%</p>
+                  <p style={{ color: 'var(--text-primary)', fontSize: 14, fontWeight: 600 }} className="truncate">{c.name}</p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: 12 }}>Taxa: {c.payment_rate || 0}%</p>
                 </div>
                 <span style={{ color: '#10b981', fontWeight: 700, shrink: 0 }} className="shrink-0">{fmt(c.total_paid)}</span>
               </div>
             ))}
           </div>
           <div style={cardS}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 16 }}>⚠️ Maiores devedores</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>⚠️ Maiores devedores</h3>
             {data.topDebtors?.map((c, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                 <span style={{ color: '#ef4444', fontWeight: 800, fontSize: 16, width: 24, shrink: 0 }} className="shrink-0">{i + 1}º</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600 }} className="truncate">{c.name}</p>
+                  <p style={{ color: 'var(--text-primary)', fontSize: 14, fontWeight: 600 }} className="truncate">{c.name}</p>
                   <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(239,68,68,0.15)', color: '#fca5a5', fontWeight: 600, display: 'inline-block', marginTop: 2 }}>{c.health_score}</span>
                 </div>
                 <span style={{ color: '#fca5a5', fontWeight: 700, shrink: 0 }} className="shrink-0">{fmt(c.total_overdue)}</span>
@@ -553,15 +553,15 @@ export default function RelatoriosPage() {
             <div style={{ ...cardS, background: 'linear-gradient(135deg, #0f172a 0%, #020617 100%)', border: '1px solid rgba(16,185,129,0.15)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <h4 style={{ margin: 0, fontSize: 12, fontWeight: 800, color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.5px' }}>🏢 Desempenho Geral Corporativo</h4>
-                <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>Sem veículo vinculado</span>
+                <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>Sem veículo vinculado</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 16 }}>
-                <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 12, padding: '12px 16px', border: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>RECEITA GERAL</span>
-                  <p style={{ margin: '2px 0 0 0', fontSize: 18, fontWeight: 900, color: '#fff' }}>{fmt(data.company.income)}</p>
+                <div style={{ background: 'var(--bg-input)', borderRadius: 12, padding: '12px 16px', border: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>RECEITA GERAL</span>
+                  <p style={{ margin: '2px 0 0 0', fontSize: 18, fontWeight: 900, color: 'var(--text-primary)' }}>{fmt(data.company.income)}</p>
                 </div>
-                <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 12, padding: '12px 16px', border: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>DESPESAS GERAIS</span>
+                <div style={{ background: 'var(--bg-input)', borderRadius: 12, padding: '12px 16px', border: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600 }}>DESPESAS GERAIS</span>
                   <p style={{ margin: '2px 0 0 0', fontSize: 18, fontWeight: 900, color: '#f87171' }}>-{fmt(data.company.expense)}</p>
                 </div>
                 <div style={{ background: 'rgba(16,185,129,0.04)', borderRadius: 12, padding: '12px 16px', border: '1px solid rgba(16,185,129,0.1)' }}>
@@ -576,21 +576,21 @@ export default function RelatoriosPage() {
           <div style={cardS}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <h3 style={{ fontSize: 16, fontWeight: 800, color: '#ffffff', margin: 0 }}>Desempenho Financeiro da Frota</h3>
-              <span style={{ fontSize: 12, color: '#64748b' }}>{data.vehicles?.length || 0} veículos apurados</span>
+              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{data.vehicles?.length || 0} veículos apurados</span>
             </div>
             
             {(!data.vehicles || data.vehicles.length === 0) ? (
-              <div style={{ padding: '40px 0', textAlign: 'center', color: '#64748b', fontStyle: 'italic', fontSize: 13 }}>
+              <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-muted)', fontStyle: 'italic', fontSize: 13 }}>
                 Nenhum veículo registrado na frota com movimentações no período.
               </div>
             ) : isMobile ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {data.vehicles.map((v, i) => (
-                  <div key={v.id || i} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div key={v.id || i} style={{ background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
-                        <h4 style={{ margin: 0, fontSize: 13.5, fontWeight: 800, color: '#fff' }}>{v.model}</h4>
-                        <p style={{ margin: '2px 0 0 0', fontSize: 11, color: '#64748b' }}>Placa: <strong>{v.plate}</strong> • Cor: {v.color || 'N/A'}</p>
+                        <h4 style={{ margin: 0, fontSize: 13.5, fontWeight: 800, color: 'var(--text-primary)' }}>{v.model}</h4>
+                        <p style={{ margin: '2px 0 0 0', fontSize: 11, color: 'var(--text-muted)' }}>Placa: <strong>{v.plate}</strong> • Cor: {v.color || 'N/A'}</p>
                       </div>
                       <span style={{ fontSize: 10.5, padding: '3px 8px', borderRadius: 20, fontWeight: 700, color: '#10b981', background: 'rgba(16,185,129,0.08)' }}>
                         Margem {v.margin}%
@@ -598,16 +598,16 @@ export default function RelatoriosPage() {
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '8px 0', fontSize: 11.5 }}>
                       <div>
-                        <span style={{ color: '#64748b', fontSize: 9.5 }}>RECEITA (LOCAÇÃO)</span>
-                        <p style={{ margin: '2px 0 0 0', fontWeight: 700, color: '#cbd5e1' }}>{fmt(v.income)}</p>
+                        <span style={{ color: 'var(--text-muted)', fontSize: 9.5 }}>RECEITA (LOCAÇÃO)</span>
+                        <p style={{ margin: '2px 0 0 0', fontWeight: 700, color: 'var(--text-secondary)' }}>{fmt(v.income)}</p>
                       </div>
                       <div>
-                        <span style={{ color: '#64748b', fontSize: 9.5 }}>DESPESAS (MANUTENÇÃO)</span>
+                        <span style={{ color: 'var(--text-muted)', fontSize: 9.5 }}>DESPESAS (MANUTENÇÃO)</span>
                         <p style={{ margin: '2px 0 0 0', fontWeight: 700, color: '#f87171' }}>-{fmt(v.expense)}</p>
                       </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ color: '#64748b', fontSize: 10 }}>RENDIMENTO LÍQUIDO</span>
+                      <span style={{ color: 'var(--text-muted)', fontSize: 10 }}>RENDIMENTO LÍQUIDO</span>
                       <span style={{ fontWeight: 800, color: v.profit >= 0 ? '#10b981' : '#f87171', fontSize: 13 }}>{fmt(v.profit)}</span>
                     </div>
                   </div>
@@ -617,7 +617,7 @@ export default function RelatoriosPage() {
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 600, fontSize: 13 }}>
                   <thead>
-                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', color: '#64748b', fontWeight: 700 }}>
+                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', color: 'var(--text-muted)', fontWeight: 700 }}>
                       <th style={{ padding: '10px 8px' }}>Veículo</th>
                       <th style={{ padding: '10px 8px' }}>Placa</th>
                       <th style={{ padding: '10px 8px' }}>Cor</th>
@@ -630,9 +630,9 @@ export default function RelatoriosPage() {
                   <tbody>
                     {data.vehicles.map((v, i) => (
                       <tr key={v.id || i} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                        <td style={{ padding: '14px 8px', fontWeight: 700, color: '#fff' }}>{v.model}</td>
-                        <td style={{ padding: '14px 8px', color: '#cbd5e1' }}>{v.plate}</td>
-                        <td style={{ padding: '14px 8px', color: '#64748b' }}>{v.color || '-'}</td>
+                        <td style={{ padding: '14px 8px', fontWeight: 700, color: 'var(--text-primary)' }}>{v.model}</td>
+                        <td style={{ padding: '14px 8px', color: 'var(--text-secondary)' }}>{v.plate}</td>
+                        <td style={{ padding: '14px 8px', color: 'var(--text-muted)' }}>{v.color || '-'}</td>
                         <td style={{ padding: '14px 8px', color: '#34d399', fontWeight: 600 }}>{fmt(v.income)}</td>
                         <td style={{ padding: '14px 8px', color: '#f87171' }}>-{fmt(v.expense)}</td>
                         <td style={{ padding: '14px 8px', fontWeight: 800, color: v.profit >= 0 ? '#10b981' : '#f87171' }}>{fmt(v.profit)}</td>
@@ -653,17 +653,17 @@ export default function RelatoriosPage() {
           <div style={{ ...cardS, textAlign: 'center' }}>
             <p style={{ fontSize: 40, marginBottom: 8 }}>📤</p>
             <p style={{ fontSize: 36, fontWeight: 800, color: '#3b82f6' }}>{data.totalSent || 0}</p>
-            <p style={{ fontSize: 14, color: '#94a3b8' }}>Lembretes enviados</p>
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Lembretes enviados</p>
           </div>
           <div style={{ ...cardS, textAlign: 'center' }}>
             <p style={{ fontSize: 40, marginBottom: 8 }}>👁️</p>
             <p style={{ fontSize: 36, fontWeight: 800, color: '#10b981' }}>{data.totalRead || 0}</p>
-            <p style={{ fontSize: 14, color: '#94a3b8' }}>Lidos pelo cliente</p>
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Lidos pelo cliente</p>
           </div>
           <div style={{ ...cardS, textAlign: 'center' }}>
             <p style={{ fontSize: 40, marginBottom: 8 }}>📊</p>
             <p style={{ fontSize: 36, fontWeight: 800, color: '#f59e0b' }}>{data.readRate || 0}%</p>
-            <p style={{ fontSize: 14, color: '#94a3b8' }}>Taxa de leitura</p>
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Taxa de leitura</p>
           </div>
         </div>
       )}
@@ -671,7 +671,7 @@ export default function RelatoriosPage() {
       {!data && (
         <div className="flex flex-col items-center justify-center gap-3 py-16 flex-shrink-0">
           <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin flex-shrink-0 mx-auto"></div>
-          <p className="text-slate-500 text-xs font-semibold">Carregando relatórios...</p>
+          <p className="text-muted-theme text-xs font-semibold">Carregando relatórios...</p>
         </div>
       )}
     </div>

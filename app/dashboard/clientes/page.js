@@ -23,7 +23,7 @@ function StarRating({ rating }) {
     stars.push(
       <svg 
         key={i} 
-        className={`w-3.5 h-3.5 ${i <= rating ? 'text-amber-400 fill-amber-400' : 'text-slate-700'}`} 
+        className={`w-3.5 h-3.5 ${i <= rating ? "text-amber-400 fill-amber-400" : "text-muted-theme"}`} 
         viewBox="0 0 20 20" 
         fill="currentColor"
       >
@@ -303,7 +303,7 @@ export default function ClientesPage() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-primary-theme group-hover:text-emerald-400 transition-colors truncate">{c.name}</p>
-                      <p className="text-[10px] text-muted-theme font-semibold truncate leading-none mt-0.5">{c.category || 'Motorista'}</p>
+                      <p className="text-[10px] text-muted-theme font-semibold truncate leading-none mt-0.5">{c.category || 'Geral'}</p>
                     </div>
                   </div>
                   <span className={`text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border flex-shrink-0 ${h.b} ${h.c}`}>
@@ -360,9 +360,9 @@ export default function ClientesPage() {
             {loading ? (
               <div className="flex flex-col items-center gap-3">
                 <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
-                <span className="font-semibold">Buscando motoristas...</span>
+                <span className="font-semibold">Buscando clientes...</span>
               </div>
-            ) : 'Nenhum motorista localizado.'}
+            ) : 'Nenhum cliente localizado.'}
           </div>
         )}
       </div>
@@ -393,12 +393,12 @@ export default function ClientesPage() {
               <div className="min-w-0 w-full text-left">
                 <h3 className="text-base font-black text-primary-theme leading-tight truncate">{selectedClient.name}</h3>
                 <p className="text-[11px] text-secondary-theme mt-1 truncate">
-                  {selectedClient.category || 'Motorista'} • {selectedClient.phone || 'Sem contato'} • {selectedClient.email || 'Sem e-mail'}
+                  {selectedClient.category || 'Geral'} • {selectedClient.phone || 'Sem contato'} • {selectedClient.email || 'Sem e-mail'}
                 </p>
                 
                 {/* Secondary data wrapper */}
                 {(selectedClient.document || selectedClient.birthday || selectedClient.address) && (
-                  <div className="mt-2.5 p-2 rounded-lg bg-slate-950/40 border border-theme text-[10px] text-secondary-theme space-y-1">
+                  <div className="mt-2.5 p-2 rounded-lg bg-input-theme border border-theme text-[10px] text-secondary-theme space-y-1">
                     {selectedClient.document && <p><svg className="w-3 h-3 text-muted-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg> <strong>Documento:</strong> {selectedClient.document}</p>}
                     {selectedClient.birthday && <p><svg className="w-3 h-3 text-muted-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg> <strong>Nascimento:</strong> {new Date(selectedClient.birthday).toLocaleDateString('pt-BR')}</p>}
                     {selectedClient.address && <p className="truncate"><svg className="w-3 h-3 text-muted-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25s-7.5-4.108-7.5-11.25a7.5 7.5 0 1115 0z" /></svg> <strong>Endereço:</strong> {selectedClient.address}</p>}
@@ -440,7 +440,7 @@ export default function ClientesPage() {
               {loadingCharges ? (
                 <p className="text-muted-theme text-xs text-center py-6">Carregando faturas...</p>
               ) : clientCharges.length === 0 ? (
-                <p className="text-slate-600 text-xs text-center py-6">Nenhuma cobrança ativa registrada.</p>
+                <p className="text-muted-theme text-xs text-center py-6">Nenhuma cobrança ativa registrada.</p>
               ) : (
                 <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
                   {clientCharges.map(c => {
@@ -474,7 +474,7 @@ export default function ClientesPage() {
                             <div className="flex gap-1.5">
                               <button 
                                 onClick={() => setAbaterCharge(c)}
-                                className="px-2.5 py-1.5 rounded-lg bg-surface-theme border border-theme hover:bg-slate-700 hover:text-white text-primary-theme font-extrabold text-[10px] transition-colors cursor-pointer"
+                                className="px-2.5 py-1.5 rounded-lg bg-surface-theme border border-theme hover:bg-card-hover-theme hover:text-primary-theme text-primary-theme font-extrabold text-[10px] transition-colors cursor-pointer"
                               >
                                 Abater
                               </button>
@@ -496,7 +496,7 @@ export default function ClientesPage() {
 
             {/* Custom Notes area */}
             {selectedClient.notes && (
-              <div className="p-3 bg-slate-950/40 rounded-xl border border-theme text-[10px] text-muted-theme leading-normal text-left">
+              <div className="p-3 bg-input-theme rounded-xl border border-theme text-[10px] text-muted-theme leading-normal text-left">
                 <strong className="text-secondary-theme font-bold block mb-1">Observações do Cliente:</strong>
                 {selectedClient.notes}
               </div>
@@ -512,7 +512,7 @@ export default function ClientesPage() {
               </button>
               <button 
                 onClick={() => setSelectedClient(null)}
-                className="px-3.5 py-2 rounded-xl bg-surface-theme hover:bg-slate-750 text-primary-theme font-bold text-xs transition-all cursor-pointer"
+                className="px-3.5 py-2 rounded-xl bg-surface-theme hover:bg-card-hover-theme text-primary-theme font-bold text-xs transition-all cursor-pointer"
               >
                 Voltar
               </button>
@@ -556,7 +556,7 @@ export default function ClientesPage() {
               <button 
                 type="button" 
                 onClick={() => setAbaterCharge(null)} 
-                className="flex-1 py-2.5 rounded-xl bg-surface-theme hover:bg-slate-700 text-secondary-theme font-bold text-xs transition-all cursor-pointer"
+                className="flex-1 py-2.5 rounded-xl bg-surface-theme hover:bg-card-hover-theme text-secondary-theme font-bold text-xs transition-all cursor-pointer"
               >
                 Cancelar
               </button>
@@ -582,7 +582,7 @@ export default function ClientesPage() {
             onClick={e => e.stopPropagation()} 
             className="bg-surface-theme border border-theme rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl p-5 space-y-4"
           >
-            <h3 className="text-base font-bold text-primary-theme text-left">Novo Cliente / Motorista</h3>
+            <h3 className="text-base font-bold text-primary-theme text-left">Novo Cliente</h3>
             
             <form onSubmit={createClient} className="space-y-3.5">
               <div className="max-h-[50vh] overflow-y-auto pr-1 space-y-3">
@@ -591,7 +591,7 @@ export default function ClientesPage() {
                   { label: 'E-mail', key: 'email', type: 'email', ph: 'email@exemplo.com' },
                   { label: 'Telefone', key: 'phone', type: 'tel', ph: '(11) 99999-9999' },
                   { label: 'CPF / CNPJ', key: 'document', type: 'text', ph: 'Ex: 123.456.789-00' },
-                  { label: 'Categoria', key: 'category', type: 'text', ph: 'Ex: Motorista Pro, Próprio' },
+                  { label: 'Categoria', key: 'category', type: 'text', ph: 'Ex: Mensalista, Avulso, VIP' },
                   { label: 'Empresa', key: 'company_name', type: 'text', ph: 'Nome da Empresa (opcional)' },
                   { label: 'Data de Nascimento', key: 'birthday', type: 'date', ph: '' },
                   { label: 'Endereço', key: 'address', type: 'text', ph: 'Endereço completo (opcional)' },
@@ -615,7 +615,7 @@ export default function ClientesPage() {
                 <button 
                   type="button" 
                   onClick={() => setShowModal(false)} 
-                  className="flex-1 py-2.5 rounded-xl bg-surface-theme hover:bg-slate-700 text-secondary-theme font-bold text-xs transition-all cursor-pointer"
+                  className="flex-1 py-2.5 rounded-xl bg-surface-theme hover:bg-card-hover-theme text-secondary-theme font-bold text-xs transition-all cursor-pointer"
                 >
                   Cancelar
                 </button>

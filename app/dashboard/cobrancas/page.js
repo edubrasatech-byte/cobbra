@@ -6,7 +6,7 @@ const STATUS = {
   reminder_sent: { l: 'Enviado', c: 'text-blue-400', b: 'bg-blue-500/10 border border-blue-500/20' }, 
   paid: { l: 'Pago', c: 'text-emerald-400', b: 'bg-emerald-500/10 border border-emerald-500/20' }, 
   overdue: { l: 'Vencido', c: 'text-rose-400', b: 'bg-rose-500/10 border border-rose-500/20' }, 
-  cancelled: { l: 'Cancelado', c: 'text-slate-400', b: 'bg-slate-500/10 border border-slate-500/20' } 
+  cancelled: { l: 'Cancelado', c: 'text-muted-theme', b: 'bg-surface-theme border border-theme' } 
 };
 
 export default function CobrancasPage() {
@@ -1361,7 +1361,7 @@ export default function CobrancasPage() {
                         <span className="text-[10px] font-bold text-rose-800 leading-snug">{waError}</span>
                       </div>
                     ) : (
-                      <div className="w-48 h-48 flex flex-col items-center justify-center bg-slate-50 rounded-xl text-center">
+                      <div className="w-48 h-48 flex flex-col items-center justify-center bg-input-theme rounded-xl text-center border border-theme">
                         <div className="w-8 h-8 border-3 border-emerald-500/15 border-t-emerald-500 rounded-full animate-spin mb-3" />
                         <span className="text-[10px] text-muted-theme font-bold">Obtendo QR Code...</span>
                       </div>

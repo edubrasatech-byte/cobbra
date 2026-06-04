@@ -1679,7 +1679,7 @@ export default function LocacoesPage() {
                         <span className="text-[10px] font-bold text-rose-800 text-center leading-normal">{waError}</span>
                       </div>
                     ) : (
-                      <div className="w-[180px] h-[180px] flex flex-col items-center justify-center bg-slate-50 rounded-xl">
+                      <div className="w-[180px] h-[180px] flex flex-col items-center justify-center bg-input-theme rounded-xl">
                         <div className="w-8 h-8 border-3 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-3" />
                         <span className="text-[10px] text-slate-600 font-bold">Obtendo QR Code...</span>
                       </div>

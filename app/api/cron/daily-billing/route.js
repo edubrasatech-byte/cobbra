@@ -122,12 +122,48 @@ export async function GET(request) {
 
       // 5.4 Gerar a cobrança real (faturamento materializado em charge)
       const chargeId = generateId();
-      const finalDescription = `${rule.description || 'Cobrança Recorrente'} ${refToken}`;
+      const finalDescription = `${rule.description || 'Cobranca Recorrente'} ${refToken}`;
       
+      const user = queryOne("SELECT * FROM users WHERE id = ?", [rule.user_id]);
+      const client = queryOne("SELECT * FROM clients WHERE id = ?", [rule.client_id]);
+      
+      let asaasCustomerId = client?.asaas_customer_id || null;
+      let asaasPaymentLink = null;
+      let asaasPixCopyPaste = null;
+      let asaasId = null;
+
+      if (process.env.ASAAS_API_KEY && user && client) {
+        try {
+          const { createAsaasCustomer, createAsaasPayment } = require('@/lib/asaas');
+          asaasCustomerId = await createAsaasCustomer(user, client);
+          if (asaasCustomerId) {
+            if (asaasCustomerId !== client.asaas_customer_id) {
+              run('UPDATE clients SET asaas_customer_id = ? WHERE id = ?', [asaasCustomerId, client.id]);
+            }
+            
+            const chargeObj = { 
+              id: chargeId, 
+              amount: rule.amount, 
+              due_date: todayStr, 
+              description: finalDescription, 
+              payment_method: 'pix' 
+            };
+            const asaasResult = await createAsaasPayment(user, chargeObj, asaasCustomerId);
+            if (asaasResult && !asaasResult.fallback) {
+              asaasId = asaasResult.asaasId;
+              asaasPaymentLink = asaasResult.paymentLink || asaasResult.invoiceUrl;
+              asaasPixCopyPaste = asaasResult.pixCopyPaste;
+            }
+          }
+        } catch (err) {
+          console.error(`Erro Asaas ao integrar faturamento diario rule ${rule.id} com Asaas:`, err);
+        }
+      }
+
       run(
-        `INSERT INTO charges (id, user_id, client_id, amount, description, due_date, status, recurrence, reminder_channel, payment_method, daily_interest_rate)
-         VALUES (?, ?, ?, ?, ?, ?, 'pending', 'once', 'both', 'pix', ?)`,
-        [chargeId, rule.user_id, rule.client_id, rule.amount, finalDescription, todayStr, rule.interest_rate]
+        `INSERT INTO charges (id, user_id, client_id, amount, description, due_date, status, recurrence, reminder_channel, payment_method, daily_interest_rate, asaas_id, payment_link, pix_copy_paste)
+         VALUES (?, ?, ?, ?, ?, ?, 'pending', 'once', 'both', 'pix', ?, ?, ?, ?)`,
+        [chargeId, rule.user_id, rule.client_id, rule.amount, finalDescription, todayStr, rule.interest_rate, asaasId, asaasPaymentLink, asaasPixCopyPaste]
       );
 
       // Incrementar o faturamento bruto cobrado do cliente
@@ -136,14 +172,13 @@ export async function GET(request) {
       // Logs de Atividade
       run(
         'INSERT INTO activity_log (id, user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?, ?)',
-        [generateId(), rule.user_id, 'charge_created', 'charge', chargeId, `Cobrança recorrente diária gerada automaticamente - R$ ${rule.amount.toFixed(2)}`]
+        [generateId(), rule.user_id, 'charge_created', 'charge', chargeId, `Cobranca recorrente diaria gerada automaticamente - R$ ${rule.amount.toFixed(2)}`]
       );
 
       // Notificação interna
-      const client = queryOne("SELECT name FROM clients WHERE id = ?", [rule.client_id]);
       run(
         'INSERT INTO notifications (id, user_id, type, title, message, entity_type, entity_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [generateId(), rule.user_id, 'info', '⚡ Faturamento diário automático', `Cobrança de R$ ${rule.amount.toFixed(2)} gerada para ${client?.name || 'Cliente'}`, 'charge', chargeId]
+        [generateId(), rule.user_id, 'info', 'Faturamento diario automatico', `Cobranca de R$ ${rule.amount.toFixed(2)} gerada para ${client?.name || 'Cliente'}`, 'charge', chargeId]
       );
 
       createdCount++;

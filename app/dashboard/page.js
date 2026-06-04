@@ -1,21 +1,21 @@
-'use client';
-import { useState, useEffect } from 'react';
+"use client";
+import { useState, useEffect } from "react";
 
 function StatCard({ icon, label, value, subValue, subLabel, color, bg }) {
   let svgIcon = icon;
-  if (icon === 'money') {
+  if (icon === "money") {
     svgIcon = (
       <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     );
-  } else if (icon === 'time') {
+  } else if (icon === "time") {
     svgIcon = (
       <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     );
-  } else if (icon === 'chart') {
+  } else if (icon === "chart") {
     svgIcon = (
       <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.281m5.94 2.28l-2.28 5.941" />
@@ -64,11 +64,11 @@ function AreaChart({ data, onSelectPoint, selectedIndex }) {
   
   const linePath = points.reduce((acc, p, i) => {
     return acc + (i === 0 ? `M ${p.x} ${p.y}` : ` L ${p.x} ${p.y}`);
-  }, '');
+  }, "");
   
   const areaPath = points.length > 0
     ? `${linePath} L ${points[points.length - 1].x} ${height - paddingY} L ${points[0].x} ${height - paddingY} Z`
-    : '';
+    : "";
 
   return (
     <div className="relative w-full">
@@ -86,9 +86,9 @@ function AreaChart({ data, onSelectPoint, selectedIndex }) {
         </defs>
 
         {/* Grid lines */}
-        <line x1={paddingX} y1={paddingY} x2={width - paddingX} y2={paddingY} stroke="rgba(255,255,255,0.02)" strokeWidth="1" strokeDasharray="3 3" />
-        <line x1={paddingX} y1={height / 2} x2={width - paddingX} y2={height / 2} stroke="rgba(255,255,255,0.02)" strokeWidth="1" strokeDasharray="3 3" />
-        <line x1={paddingX} y1={height - paddingY} x2={width - paddingX} y2={height - paddingY} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+        <line x1={paddingX} y1={paddingY} x2={width - paddingX} y2={paddingY} stroke="rgba(128,128,128,0.05)" strokeWidth="1" strokeDasharray="3 3" />
+        <line x1={paddingX} y1={height / 2} x2={width - paddingX} y2={height / 2} stroke="rgba(128,128,128,0.05)" strokeWidth="1" strokeDasharray="3 3" />
+        <line x1={paddingX} y1={height - paddingY} x2={width - paddingX} y2={height - paddingY} stroke="rgba(128,128,128,0.1)" strokeWidth="1" />
 
         {/* Area fill */}
         {areaPath && (
@@ -125,8 +125,7 @@ function AreaChart({ data, onSelectPoint, selectedIndex }) {
               <circle
                 cx={p.x}
                 cy={p.y}
-                r={isSelected ? "4.5" : "3"}
-                fill={isSelected ? "#10b981" : "#0c0e1a"}
+                r={isSelected ? "4.5" : "var(--bg-base)"}
                 stroke={isSelected ? "#ffffff" : "#10b981"}
                 strokeWidth={isSelected ? "2" : "1.5"}
                 className="transition-all duration-200 hover:scale-150 origin-center"
@@ -141,9 +140,9 @@ function AreaChart({ data, onSelectPoint, selectedIndex }) {
 
 function DonutChart({ data, totalToReceive }) {
   const total = data.reduce((s, d) => s + d.count, 0);
-  const colors = { paid: '#10b981', pending: '#f59e0b', reminder_sent: '#3b82f6', overdue: '#ef4444' };
-  const labels = { paid: 'Pago', pending: 'Pendente', reminder_sent: 'Lembrete', overdue: 'Vencido' };
-  const fmt = v => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+  const colors = { paid: "#10b981", pending: "#f59e0b", reminder_sent: "#3b82f6", overdue: "#ef4444" };
+  const labels = { paid: "Pago", pending: "Pendente", reminder_sent: "Lembrete", overdue: "Vencido" };
+  const fmt = v => `R$ ${Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
   let cumulative = 0;
 
   return (
@@ -151,7 +150,7 @@ function DonutChart({ data, totalToReceive }) {
       <div className="flex items-center gap-6 flex-wrap md:flex-nowrap justify-between">
         <div className="relative w-[100px] h-[100px] flex-shrink-0 flex items-center justify-center">
           <svg width="100" height="100" viewBox="0 0 36 36" className="transform -rotate-90 w-full h-full">
-            <circle cx="18" cy="18" r="15.5" fill="transparent" stroke="#111322" strokeWidth="3" />
+            <circle cx="18" cy="18" r="15.5" fill="transparent" stroke="var(--border-color)" strokeWidth="3" />
             {data.map((d, i) => {
               const pct = total > 0 ? (d.count / total) * 100 : 0;
               const offset = 100 - cumulative;
@@ -163,7 +162,7 @@ function DonutChart({ data, totalToReceive }) {
                   cy="18" 
                   r="15.5" 
                   fill="transparent" 
-                  stroke={colors[d.status] || '#64748b'} 
+                  stroke={colors[d.status] || "#64748b"} 
                   strokeWidth="3.2"
                   strokeDasharray={`${pct} ${100 - pct}`} 
                   strokeDashoffset={offset} 
@@ -173,27 +172,27 @@ function DonutChart({ data, totalToReceive }) {
             })}
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center leading-none">
-            <span className="text-xl font-bold text-slate-100">{total}</span>
-            <span className="text-[9px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">Total</span>
+            <span className="text-xl font-bold text-primary-theme">{total}</span>
+            <span className="text-[9px] text-muted-theme font-semibold uppercase tracking-wider mt-0.5">Total</span>
           </div>
         </div>
         
         <div className="flex-1 min-w-[120px] space-y-2">
           {data.map((d, i) => (
-            <div key={i} className="flex items-center justify-between text-xs py-0.5 border-b border-slate-900/40">
+            <div key={i} className="flex items-center justify-between text-xs py-0.5 border-b border-theme">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: colors[d.status] }} />
-                <span className="text-slate-400 font-medium">{labels[d.status] || d.status}</span>
-                <span className="text-slate-500 font-bold">({d.count})</span>
+                <span className="text-secondary-theme font-medium">{labels[d.status] || d.status}</span>
+                <span className="text-muted-theme font-bold">({d.count})</span>
               </div>
-              <span className="text-slate-200 font-semibold">{fmt(d.total)}</span>
+              <span className="text-primary-theme font-semibold">{fmt(d.total)}</span>
             </div>
           ))}
         </div>
       </div>
       
-      <div className="border-t border-slate-800/40 pt-4 flex justify-between items-center text-xs">
-        <span className="text-slate-400 font-medium">A Receber Total:</span>
+      <div className="border-t border-theme pt-4 flex justify-between items-center text-xs">
+        <span className="text-secondary-theme font-medium">A Receber Total:</span>
         <span className="text-sm font-extrabold text-amber-400">{fmt(totalToReceive)}</span>
       </div>
     </div>
@@ -202,6 +201,10 @@ function DonutChart({ data, totalToReceive }) {
 
 export default function DashboardHome() {
   const [stats, setStats] = useState(null);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [withdrawalCount, setWithdrawalCount] = useState(0);
+  const [clients, setClients] = useState([]);
+  const [timeline, setTimeline] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBarIndex, setSelectedBarIndex] = useState(null);
   const [insights, setInsights] = useState([]);
@@ -209,91 +212,114 @@ export default function DashboardHome() {
   const [showFabDropdown, setShowFabDropdown] = useState(false);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [vehicles, setVehicles] = useState([]);
+  const [user, setUser] = useState(null);
+  
+  // Modals state
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [showChargeModal, setShowChargeModal] = useState(false);
+  const [showDepositModal, setShowDepositModal] = useState(false);
+
+  // Withdraw form state
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [pixKey, setPixKey] = useState("");
+  const [pixKeyType, setPixKeyType] = useState("cpf");
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
+  const [withdrawError, setWithdrawError] = useState("");
+  const [withdrawSuccess, setWithdrawSuccess] = useState(false);
+
+  // Charge client form state
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [chargeAmount, setChargeAmount] = useState("");
+  const [chargeLoading, setChargeLoading] = useState(false);
+  const [chargeSuccess, setChargeSuccess] = useState(false);
+  const [pixCopyPaste, setPixCopyPaste] = useState("");
+  const [paymentLink, setPaymentLink] = useState("");
+
+  // Deposit form state
+  const [depositAmount, setDepositAmount] = useState("");
+  const [depositLoading, setDepositLoading] = useState(false);
+  const [depositSuccess, setDepositSuccess] = useState(false);
+  const [depositPixCode, setDepositPixCode] = useState("");
+  const [depositLink, setDepositLink] = useState("");
+
+  // Manual Transaction form state
   const [txForm, setTxForm] = useState({
-    amount: '',
-    type: 'income',
-    notes: '',
-    vehicle_id: '',
-    payment_method: 'pix'
+    amount: "",
+    type: "income",
+    notes: "",
+    vehicle_id: "",
+    payment_method: "pix"
   });
 
-  function loadStats() {
-    setLoading(true);
-    fetch('/api/dashboard/stats')
-      .then(r => r.json())
-      .then(data => { setStats(data); setLoading(false); })
-      .catch(() => {
-        // Fallback demo data
-        setStats({
-          totalReceived: 8420, pendingCount: 3, pendingTotal: 1250, overdueCount: 3, overdueTotal: 1600,
-          paymentRate: 94, remindersSentToday: 4, totalClients: 10,
-          receivedToday: 450, dueToday: 950, dueTomorrow: 300,
-          dailyBillingTotal: 250, dailyBillingCount: 5,
-          revenueData: Array.from({ length: 14 }, (_, i) => ({ date: `2026-05-${String(i + 1).padStart(2, '0')}`, total: Math.random() * 2000 + 500 })),
-          statusDistribution: [
-            { status: 'paid', count: 8, total: 8420 }, 
-            { status: 'pending', count: 2, total: 800 }, 
-            { status: 'reminder_sent', count: 2, total: 450 }, 
-            { status: 'overdue', count: 3, total: 1600 }
-          ],
-          recentActivity: [
-            { id: '1', action: 'payment_received', details: 'Pagamento de R$ 450,00 recebido de Mariana Alves', created_at: new Date().toISOString() },
-            { id: '2', action: 'reminder_sent', details: 'Lembrete WhatsApp enviado para Rodrigo Pacheco', created_at: new Date(Date.now() - 3600000).toISOString() },
-            { id: '3', action: 'charge_created', details: 'Cobrança criada para Juliana Mendes - R$ 500,00', created_at: new Date(Date.now() - 7200000).toISOString() },
-          ],
-          atRiskClients: [
-            { name: 'Carlos Eduardo', total_overdue: 600, health_score: 'critical', oldest_overdue_date: '2026-05-05' },
-            { name: 'Rodrigo Pacheco', total_overdue: 450, health_score: 'warning', oldest_overdue_date: '2026-05-10' },
-          ]
-        });
-        setLoading(false);
-      });
-  }
+  const loadAllData = async () => {
+    try {
+      setLoading(true);
+      const [statsRes, balanceRes, insightsRes, vehiclesRes, userRes] = await Promise.all([
+        fetch("/api/dashboard/stats"),
+        fetch("/api/pay/balance"),
+        fetch("/api/ai/insights"),
+        fetch("/api/locacoes/vehicles").catch(() => null),
+        fetch("/api/auth/me").catch(() => null)
+      ]);
+      
+      if (statsRes && statsRes.ok) {
+        const d = await statsRes.json();
+        setStats(d);
+      }
+      
+      if (balanceRes && balanceRes.ok) {
+        const d = await balanceRes.json();
+        setWalletBalance(d.wallet_balance || 0);
+        setWithdrawalCount(d.withdrawal_count || 0);
+        setClients(d.clients || []);
+        setTimeline(d.timeline || []);
+      }
 
-  function loadInsights() {
-    setInsightsLoading(true);
-    fetch('/api/ai/insights')
-      .then(r => r.json())
-      .then(data => {
-        setInsights(data.insights || []);
-        setInsightsLoading(false);
-      })
-      .catch(() => {
-        setInsightsLoading(false);
-      });
-  }
+      if (insightsRes && insightsRes.ok) {
+        const d = await insightsRes.json();
+        setInsights(d.insights || []);
+      }
+
+      if (vehiclesRes && vehiclesRes.ok) {
+        const d = await vehiclesRes.json();
+        if (d.vehicles) setVehicles(d.vehicles);
+      }
+
+      if (userRes && userRes.ok) {
+        const d = await userRes.json();
+        if (d.user) setUser(d.user);
+      }
+    } catch (err) {
+      console.error("Erro ao carregar dados do dashboard:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    loadStats();
-    loadInsights();
-    fetch('/api/locacoes/vehicles')
-      .then(r => r.json())
-      .then(data => {
-        if (data.vehicles) setVehicles(data.vehicles);
-      })
-      .catch(() => {});
+    loadAllData();
   }, []);
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
-      if (showFabDropdown && !e.target.closest('#fab-container')) {
+      if (showFabDropdown && !e.target.closest("#fab-container")) {
         setShowFabDropdown(false);
       }
     };
-    document.addEventListener('click', handleOutsideClick);
-    return () => document.removeEventListener('click', handleOutsideClick);
+    document.addEventListener("click", handleOutsideClick);
+    return () => document.removeEventListener("click", handleOutsideClick);
   }, [showFabDropdown]);
 
   const handleTransactionSubmit = async (e) => {
     e.preventDefault();
     if (!txForm.amount || !txForm.notes) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
+      alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
     try {
-      const res = await fetch('/api/transactions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/transactions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: parseFloat(txForm.amount),
           type: txForm.type,
@@ -305,31 +331,151 @@ export default function DashboardHome() {
       if (res.ok) {
         setShowTransactionModal(false);
         setTxForm({
-          amount: '',
-          type: 'income',
-          notes: '',
-          vehicle_id: '',
-          payment_method: 'pix'
+          amount: "",
+          type: "income",
+          notes: "",
+          vehicle_id: "",
+          payment_method: "pix"
         });
-        loadStats();
-        alert('Transação manual registrada com sucesso!');
+        loadAllData();
+        alert("Transação manual registrada com sucesso!");
       } else {
         const data = await res.json();
-        alert(data.error || 'Erro ao registrar transação.');
+        alert(data.error || "Erro ao registrar transação.");
       }
     } catch (err) {
-      alert('Erro de conexão ao salvar transação.');
+      alert("Erro de conexão ao salvar transação.");
+    }
+  };
+
+  const handleProcessWithdraw = async (e) => {
+    e.preventDefault();
+    if (!withdrawAmount || parseFloat(withdrawAmount) <= 0 || !pixKey) return;
+
+    setWithdrawError("");
+    try {
+      setWithdrawLoading(true);
+      const res = await fetch("/api/pay/withdraw", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: parseFloat(withdrawAmount),
+          pix_key: pixKey,
+          pix_key_type: pixKeyType
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setWithdrawSuccess(true);
+        loadAllData();
+      } else {
+        setWithdrawError(data.error || "Falha ao processar saque.");
+      }
+    } catch (err) {
+      console.error(err);
+      setWithdrawError("Erro ao comunicar com o servidor.");
+    } finally {
+      setWithdrawLoading(false);
+    }
+  };
+
+  const handleCreateCharge = async (e) => {
+    e.preventDefault();
+    if (!selectedClientId || !chargeAmount || parseFloat(chargeAmount) <= 0) return;
+
+    try {
+      setChargeLoading(true);
+      const res = await fetch("/api/pay/deposit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: selectedClientId,
+          amount: parseFloat(chargeAmount)
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setPixCopyPaste(data.pix_copy_paste || "Chave Pix indisponível");
+        setPaymentLink(data.payment_link || "");
+        setChargeSuccess(true);
+        loadAllData();
+      } else {
+        alert(data.error || "Falha ao gerar cobrança.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Erro de conexão ao gerar cobrança.");
+    } finally {
+      setChargeLoading(false);
+    }
+  };
+
+  const handleCreateSelfDeposit = async (e) => {
+    e.preventDefault();
+    if (!depositAmount || parseFloat(depositAmount) <= 0) return;
+
+    try {
+      setDepositLoading(true);
+      // Buscar ou Criar um cliente auto-depósito
+      let selfClient = clients.find(c => c.category === "Autodepósito");
+      
+      if (!selfClient) {
+        // Criar o cliente auto-depósito para o assinante
+        const clientRes = await fetch("/api/clientes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: `${user?.name || "Assinante"} (Autodepósito)`,
+            category: "Autodepósito",
+            email: user?.email || "",
+            phone: user?.whatsapp_phone || ""
+          })
+        });
+        if (!clientRes.ok) {
+          const errData = await clientRes.json();
+          throw new Error(errData.error || "Erro ao registrar perfil de autodepósito");
+        }
+        const clData = await clientRes.json();
+        selfClient = clData.client;
+      }
+
+      // Agora gerar depósito real
+      const res = await fetch("/api/pay/deposit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: selfClient.id,
+          amount: parseFloat(depositAmount)
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setDepositPixCode(data.pix_copy_paste || "Chave Pix indisponível");
+        setDepositLink(data.payment_link || "");
+        setDepositSuccess(true);
+        loadAllData();
+      } else {
+        alert(data.error || "Falha ao processar depósito.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Erro de conexão ao processar depósito.");
+    } finally {
+      setDepositLoading(false);
     }
   };
 
   if (loading || !stats) return (
     <div className="flex flex-col items-center justify-center h-96">
       <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-4"></div>
-      <p className="text-slate-400 text-xs font-semibold tracking-wider">Carregando métricas reais...</p>
+      <p className="text-secondary-theme text-xs font-semibold tracking-wider">Carregando carteira e métricas...</p>
     </div>
   );
 
-  const fmt = v => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+  const fmt = v => `R$ ${Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
   const actIcons = {
     payment_received: (
       <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -360,7 +506,7 @@ export default function DashboardHome() {
 
   function relTime(d) {
     const diff = (Date.now() - new Date(d)) / 1000;
-    if (diff < 60) return 'agora';
+    if (diff < 60) return "agora";
     if (diff < 3600) return `${Math.floor(diff / 60)}min`;
     if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
     return `${Math.floor(diff / 86400)}d`;
@@ -370,17 +516,17 @@ export default function DashboardHome() {
   const selectedPoint = selectedBarIndex !== null && stats.revenueData ? stats.revenueData[selectedBarIndex] : null;
 
   return (
-    <div className="flex flex-col gap-6 text-left">
+    <div className="flex flex-col gap-6 text-left animate-fadeIn">
       
-      {/* 🔄 Top Floating Sync/Reload Header */}
+      {/* 🔄 Top Floating Header */}
       <div className="flex justify-between items-center border-b border-theme pb-4">
         <div>
-          <h2 className="text-sm font-bold text-primary-theme uppercase tracking-wider">Visão Geral das Operações</h2>
-          <p className="text-xs text-muted-theme mt-0.5">Visão unificada das cobranças e fluxos ativos</p>
+          <h2 className="text-sm font-black text-primary-theme uppercase tracking-wider">Conta Digital & Carteira</h2>
+          <p className="text-xs text-secondary-theme mt-0.5">Gestão de saldos, saques e cobranças unificadas</p>
         </div>
         <button 
-          onClick={loadStats}
-          className="p-2 rounded-lg bg-surface-theme border border-theme hover:border-emerald-500/30 text-primary-theme hover:text-emerald-400 flex items-center justify-center transition-all duration-200 cursor-pointer shadow-sm shadow-black/10 group"
+          onClick={loadAllData}
+          className="p-2 rounded-lg bg-surface-theme border border-theme hover:border-emerald-500/30 text-primary-theme hover:text-emerald-400 flex items-center justify-center transition-all duration-200 cursor-pointer shadow-sm group"
           title="Recarregar dados"
           aria-label="Recarregar dados"
         >
@@ -390,149 +536,137 @@ export default function DashboardHome() {
         </button>
       </div>
 
-      {/* 📱 Mobile Only: Resumo Financeiro Diário below the header */}
-      <div className="block md:hidden bg-card-theme rounded-2xl border border-theme animate-fadeInUp p-4">
-        <h3 className="text-xs font-bold text-[#10B981] uppercase tracking-wider flex items-center gap-2 mb-3">
-          <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg> Resumo Financeiro Diário
-        </h3>
-        <div className="grid grid-cols-1 gap-2">
-          <div className="bg-card-theme rounded-xl border border-theme flex justify-between items-center flex-wrap gap-y-1 gap-x-3 p-2.5 px-3.5">
-            <span className="text-[9px] text-muted-theme font-bold uppercase tracking-wider">Pago Hoje</span>
-            <p className="text-sm font-black text-emerald-400">{fmt(stats.receivedToday || 0)}</p>
+      {/* 💳 Premium Glassmorphic Balance Card */}
+      <div className="relative rounded-3xl p-6 bg-gradient-to-br from-slate-900 via-emerald-950/20 to-slate-950 border border-emerald-500/20 shadow-2xl overflow-hidden flex flex-col justify-between aspect-[1.9/1] md:aspect-[2.5/1]">
+        <div className="absolute top-0 right-0 w-44 h-44 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-teal-500/5 rounded-full blur-2xl pointer-events-none"></div>
+        
+        {/* Card Header */}
+        <div className="flex justify-between items-start z-10">
+          <div className="space-y-0.5">
+            <span className="text-[10px] font-black tracking-widest text-muted-theme uppercase">Cobbra Pay</span>
+            <h3 className="text-xs font-bold text-primary-theme uppercase">Conta Geral de Liquidações</h3>
           </div>
-          
-          <div className="bg-card-theme rounded-xl border border-theme flex justify-between items-center flex-wrap gap-y-1 gap-x-3 p-2.5 px-3.5">
-            <span className="text-[9px] text-muted-theme font-bold uppercase tracking-wider">A Vencer Hoje</span>
-            <p className="text-sm font-black text-amber-500">{fmt(stats.dueToday || 0)}</p>
+          <div className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[8px] font-black text-emerald-400 uppercase tracking-wider">
+            Ativa
           </div>
-          
-          <div className="bg-card-theme rounded-xl border border-theme flex justify-between items-center flex-wrap gap-y-1 gap-x-3 p-2.5 px-3.5">
-            <span className="text-[9px] text-muted-theme font-bold uppercase tracking-wider">A Vencer Amanhã</span>
-            <p className="text-sm font-black text-blue-400">{fmt(stats.dueTomorrow || 0)}</p>
+        </div>
+
+        {/* Main Balance Display */}
+        <div className="z-10 my-4">
+          <span className="text-[9px] font-bold text-muted-theme uppercase tracking-widest block">Saldo Disponível</span>
+          <h3 className="text-3xl md:text-4xl font-black text-primary-theme mt-0.5 tracking-tight">
+            {fmt(walletBalance)}
+          </h3>
+        </div>
+
+        {/* Card Footer */}
+        <div className="flex justify-between items-end z-10 border-t border-theme pt-3.5">
+          <div>
+            <p className="text-[8px] text-muted-theme font-bold uppercase tracking-wider">Assinante</p>
+            <p className="text-xs font-bold text-primary-theme leading-none truncate max-w-[200px] uppercase mt-0.5">
+              {user?.business_name || user?.name || "Acesso Cobbra"}
+            </p>
           </div>
-          
-          <div className="bg-card-theme hover:border-[#10B981]/30 rounded-xl border border-theme cursor-pointer transition-all duration-200 p-2.5 px-3.5" onClick={() => window.location.href = '/dashboard/cobranca-diaria'}>
-            <div className="flex justify-between items-center w-full flex-wrap gap-y-1 gap-x-3">
-              <div>
-                <span className="text-[9px] text-muted-theme font-bold uppercase tracking-wider block">Recorrentes Diários</span>
-                <span className="text-[8px] text-muted-theme font-semibold block mt-0.5">{stats.dailyBillingCount || 0} contratos ativos</span>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-black text-[#10B981]">{fmt(stats.dailyBillingTotal || 0)}<span className="text-[9px] text-muted-theme font-bold">/dia</span></p>
-              </div>
-            </div>
+          <div className="text-right">
+            <p className="text-[8px] text-muted-theme font-bold uppercase tracking-wider">Resgates Realizados</p>
+            <p className="text-xs font-bold text-primary-theme mt-0.5">{withdrawalCount} saques</p>
           </div>
         </div>
       </div>
 
-      {/* 📱 Mobile Only: Alertas de Clientes em Risco below Resumo Financeiro */}
-      <div className="block md:hidden bg-card-theme rounded-2xl border border-theme animate-fadeInUp p-4">
-        <h3 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2 mb-3">
-          <svg className="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg> Alertas de Clientes em Risco
-        </h3>
-        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-          {(stats.atRiskClients || []).map((c, i) => {
-            const dateStr = c.oldest_overdue_date 
-              ? `Vencido desde ${new Date(c.oldest_overdue_date).toLocaleDateString('pt-BR')}` 
-              : '';
-            
-            const isCritical = c.health_score === 'critical';
-            return (
-              <div 
-                key={i} 
-                className="bg-card-theme rounded-xl border border-theme flex items-center justify-between gap-3 hover:border-theme transition-colors flex-wrap gap-y-1 p-2 px-3"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm ${
-                    isCritical ? 'bg-rose-500/10 text-rose-400' : 'bg-amber-500/10 text-amber-400'
-                  }`}>
-                    {isCritical ? (
-                      <svg className="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                      </svg>
-                    ) : (
-                      <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                      </svg>
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-primary-theme truncate">{c.name}</p>
-                    <p className={`text-[9px] font-medium leading-none mt-1 ${isCritical ? 'text-rose-400/90' : 'text-amber-400/90'}`}>
-                      Débito: {fmt(c.total_overdue)}
-                    </p>
-                    {dateStr && (
-                      <p className="text-[8px] text-muted-theme mt-0.5 truncate">{dateStr}</p>
-                    )}
-                  </div>
-                </div>
-                
-                <span className={`text-[8px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                  isCritical ? 'bg-rose-500/10 text-rose-400 border border-rose-500/10' : 'bg-amber-500/10 text-amber-400 border border-amber-500/10'
-                } flex-shrink-0 scale-90`}>
-                  {isCritical ? 'Crítico' : 'Alerta'}
-                </span>
-              </div>
-            );
-          })}
-          
-          {(!stats.atRiskClients || stats.atRiskClients.length === 0) && (
-            <div className="flex flex-col items-center justify-center py-4 text-center">
-              <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              <p className="text-emerald-400 text-xs font-bold">100% em dia!</p>
-              <p className="text-[9px] text-muted-theme mt-0.5">Todos os clientes ativos adimplentes.</p>
-            </div>
-          )}
-        </div>
+      {/* 🚀 Interactive Quick Actions Buttons Row */}
+      <div className="grid grid-cols-3 gap-3.5">
+        <button
+          onClick={() => {
+            setWithdrawSuccess(false);
+            setWithdrawAmount("");
+            setWithdrawError("");
+            setShowWithdrawModal(true);
+          }}
+          className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/20 active:scale-98 transition-all text-emerald-450 cursor-pointer text-center font-bold"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5L12 14.5L5 7.5" />
+          </svg>
+          <span className="text-[10px] md:text-xs tracking-tight">Sacar Pix (Resgate)</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setDepositSuccess(false);
+            setDepositAmount("");
+            setShowDepositModal(true);
+          }}
+          className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-teal-500/10 hover:bg-teal-500/15 border border-teal-500/20 active:scale-98 transition-all text-teal-400 cursor-pointer text-center font-bold"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          <span className="text-[10px] md:text-xs tracking-tight">Depositar</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setChargeSuccess(false);
+            setChargeAmount("");
+            setSelectedClientId("");
+            setShowChargeModal(true);
+          }}
+          className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-blue-500/10 hover:bg-blue-500/15 border border-blue-500/20 active:scale-98 transition-all text-blue-400 cursor-pointer text-center font-bold"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span className="text-[10px] md:text-xs tracking-tight">Cobrar Cliente</span>
+        </button>
       </div>
 
-      {/* 📊 Exactly 3 Stat Cards Row */}
+      {/* 📊 Unified Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard 
           icon="money" 
           label="Recebido este mês" 
           value={fmt(stats.totalReceived)} 
-          subValue="↑ 23%" 
+          subValue="↑ Faturado" 
           bg="bg-emerald-500/10" 
-          color="text-emerald-400" 
-          subLabel={`Recebido hoje: ${fmt(stats.receivedToday || 0)}`}
+          color="text-emerald-450" 
+          subLabel={`Hoje: ${fmt(stats.receivedToday || 0)}`}
         />
         <StatCard 
           icon="time" 
-          label="Cobranças Pendentes" 
-          value={`${stats.pendingCount + stats.overdueCount} faturas`} 
+          label="A Receber Operacional" 
+          value={`${stats.pendingCount + stats.overdueCount} títulos`} 
           subValue={fmt(stats.pendingTotal + stats.overdueTotal)} 
           bg="bg-amber-500/10" 
-          color="text-amber-400" 
-          subLabel={`Vencidas: ${stats.overdueCount} | Pendentes: ${stats.pendingCount}`}
+          color="text-amber-500" 
+          subLabel={`Vencidos: ${stats.overdueCount} | Pendentes: ${stats.pendingCount}`}
         />
         <StatCard 
           icon="chart" 
-          label="Taxa de Pagamento" 
+          label="Adimplência Geral" 
           value={`${stats.paymentRate}%`} 
-          subValue="Adimplência" 
+          subValue="Score Médio" 
           bg="bg-blue-500/10" 
           color="text-blue-400" 
-          subLabel={`${stats.totalClients} clientes ativos cadastrados`}
+          subLabel={`${stats.totalClients} clientes cadastrados`}
         />
       </div>
 
-      {/* 📈 Charts Row */}
+      {/* 📈 Graphic Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Revolut-style Area/Line Chart for Revenue */}
         <div className="lg:col-span-2 bg-card-theme rounded-2xl border border-theme p-4 md:p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="text-xs font-bold text-primary-theme uppercase tracking-wider">Histórico de Receita</h3>
-              <p className="text-[11px] text-muted-theme mt-0.5">Últimos 14 dias de faturamentos ativos</p>
+              <p className="text-[11px] text-muted-theme mt-0.5">Faturamento acumulado nos últimos 14 dias</p>
             </div>
             
             <div className="text-right">
               {selectedPoint ? (
                 <div>
                   <p className="text-[10px] text-[#10B981] font-bold uppercase tracking-wider leading-none">
-                    {new Date(selectedPoint.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}
+                    {new Date(selectedPoint.date + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })}
                   </p>
                   <p className="text-sm font-extrabold text-primary-theme mt-1 leading-none">{fmt(selectedPoint.total)}</p>
                 </div>
@@ -552,20 +686,19 @@ export default function DashboardHome() {
                 selectedIndex={selectedBarIndex} 
               />
               
-              <div className="flex justify-between text-[9px] font-bold text-slate-600 px-2 pt-2 border-t border-theme">
-                <span>{new Date(stats.revenueData[0].date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
-                <span>{new Date(stats.revenueData[Math.floor(stats.revenueData.length / 2)].date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
-                <span>{new Date(stats.revenueData[stats.revenueData.length - 1].date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
+              <div className="flex justify-between text-[9px] font-bold text-slate-500 px-2 pt-2 border-t border-theme">
+                <span>{new Date(stats.revenueData[0].date + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
+                <span>{new Date(stats.revenueData[Math.floor(stats.revenueData.length / 2)].date + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
+                <span>{new Date(stats.revenueData[stats.revenueData.length - 1].date + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-40 text-xs text-slate-500 italic">
-              Sem dados de faturamentos registrados no período.
+            <div className="flex items-center justify-center h-40 text-xs text-muted-theme italic">
+              Sem lançamentos registrados no período.
             </div>
           )}
         </div>
 
-        {/* Status Distribution */}
         <div className="bg-card-theme rounded-2xl border border-theme p-4 md:p-6">
           <div className="mb-6">
             <h3 className="text-xs font-bold text-primary-theme uppercase tracking-wider">Status das Cobranças</h3>
@@ -582,27 +715,78 @@ export default function DashboardHome() {
         </div>
       </div>
 
-      {/* ⚡ Bottom Row widgets */}
+      {/* Extrato Extendido & Atividades */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        {/* 1. Atividade Recente */}
+        {/* 📑 timeline Extrato */}
+        <div className="md:col-span-2 bg-card-theme border border-theme rounded-2xl p-4 md:p-6 flex flex-col">
+          <div className="flex justify-between items-center pb-3 border-b border-theme mb-4">
+            <div>
+              <h3 className="text-xs font-black text-primary-theme uppercase tracking-wider">Extrato da Conta</h3>
+              <p className="text-[9px] text-muted-theme">Últimas movimentações integradas ao saldo</p>
+            </div>
+          </div>
+
+          <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
+            {timeline.length === 0 ? (
+              <div className="py-12 text-center text-slate-600 text-xs">
+                Nenhuma movimentação financeira registrada na conta.
+              </div>
+            ) : (
+              timeline.slice(0, 10).map((item, idx) => {
+                const isCredit = item.type === "credit";
+                return (
+                  <div 
+                    key={item.id || idx}
+                    className="bg-surface-theme border border-theme rounded-xl p-3 flex items-center justify-between gap-3 hover:border-emerald-500/20 transition-all"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-black ${
+                        isCredit ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
+                      }`}>
+                        {isCredit ? "↓" : "↑"}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-primary-theme truncate">{item.description}</p>
+                        <p className="text-[9px] text-muted-theme mt-0.5 font-medium">
+                          {new Date(item.date).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                          {item.notes ? ` • ${item.notes}` : ""}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <span className={`text-xs font-black flex-shrink-0 ${isCredit ? "text-emerald-450" : "text-primary-theme"}`}>
+                      {isCredit ? "+" : "-"} {fmt(item.amount)}
+                    </span>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* ⚡ Atividade Recente */}
         <div className="bg-card-theme rounded-2xl border border-theme flex flex-col p-4 md:p-6">
-          <h3 className="text-xs font-bold text-primary-theme uppercase tracking-wider mb-4">Atividade Recente</h3>
+          <h3 className="text-xs font-bold text-primary-theme uppercase tracking-wider mb-4">Registro Operacional</h3>
           <div className="space-y-3 flex-1 overflow-y-auto max-h-[300px] pr-1">
-            {(stats.recentActivity || []).slice(0, 6).map((a, i) => (
+            {(stats.recentActivity || []).slice(0, 5).map((a, i) => (
               <div 
                 key={i} 
                 className="flex gap-3 border-b border-theme last:border-b-0 hover:bg-card-hover-theme rounded-lg transition-colors duration-150 p-2"
               >
-                <div className="w-8 h-8 rounded-lg bg-surface-theme border border-theme flex items-center justify-center flex-shrink-0">
-                  {actIcons[a.action] || <svg className="w-4 h-4 text-secondary-theme" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" /></svg>}
+                <div className="w-7 h-7 rounded-lg bg-surface-theme border border-theme flex items-center justify-center flex-shrink-0">
+                  {actIcons[a.action] || (
+                    <svg className="w-3.5 h-3.5 text-secondary-theme" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
+                    </svg>
+                  )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-medium text-primary-theme truncate leading-snug">{a.details}</p>
-                  <p className="text-[10px] text-muted-theme mt-1 font-semibold flex items-center gap-1.5">
+                  <p className="text-[11px] font-semibold text-primary-theme truncate leading-snug">{a.details}</p>
+                  <p className="text-[9px] text-muted-theme mt-1 font-semibold flex items-center gap-1">
                     <span>{relTime(a.created_at)}</span>
                     <span className="w-1 h-1 rounded-full bg-slate-700"></span>
-                    <span>{new Date(a.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>
+                    <span>{new Date(a.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
                   </p>
                 </div>
               </div>
@@ -614,109 +798,18 @@ export default function DashboardHome() {
             )}
           </div>
         </div>
-
-        {/* 2. Resumo Diário */}
-        <div className="hidden md:block bg-card-theme rounded-2xl border border-theme p-4">
-          <h3 className="text-xs font-bold text-primary-theme uppercase tracking-wider mb-3">Resumo Financeiro Diário</h3>
-          <div className="space-y-2">
-            <div className="bg-card-theme rounded-xl border border-theme p-2.5">
-              <span className="text-[9px] text-muted-theme font-bold uppercase tracking-wider">Pago Hoje</span>
-              <p className="text-sm font-black text-emerald-400 mt-0.5">{fmt(stats.receivedToday || 0)}</p>
-            </div>
-            
-            <div className="bg-card-theme rounded-xl border border-theme p-2.5">
-              <span className="text-[9px] text-muted-theme font-bold uppercase tracking-wider">A Vencer Hoje</span>
-              <p className="text-sm font-black text-amber-500 mt-0.5">{fmt(stats.dueToday || 0)}</p>
-            </div>
-            
-            <div className="bg-card-theme rounded-xl border border-theme p-2.5">
-              <span className="text-[9px] text-muted-theme font-bold uppercase tracking-wider">A Vencer Amanhã</span>
-              <p className="text-sm font-black text-blue-400 mt-0.5">{fmt(stats.dueTomorrow || 0)}</p>
-            </div>
-            
-            <div className="bg-card-theme hover:border-[#10B981]/30 rounded-xl border border-theme cursor-pointer transition-all duration-200 p-2.5" onClick={() => window.location.href = '/dashboard/cobranca-diaria'}>
-              <div className="flex justify-between items-center">
-                <span className="text-[9px] text-muted-theme font-bold uppercase tracking-wider">Faturamentos Recorrentes Diários</span>
-                <span className="text-[10px] text-emerald-400 font-bold hover:underline">Ver →</span>
-              </div>
-              <p className="text-sm font-black text-emerald-400 mt-0.5">
-                {fmt(stats.dailyBillingTotal || 0)}
-                <span className="text-muted-theme font-bold text-xs"> /dia</span>
-              </p>
-              <p className="text-[8px] text-muted-theme mt-1 font-semibold">{stats.dailyBillingCount || 0} contratos recorrentes ativos</p>
-            </div>
-          </div>
-        </div>
-
-        {/* 3. Clientes em Risco */}
-        <div className="hidden md:block bg-card-theme rounded-2xl border border-theme p-4">
-          <h3 className="text-xs font-bold text-primary-theme uppercase tracking-wider mb-3">Alertas de Clientes em Risco</h3>
-          <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-            {(stats.atRiskClients || []).map((c, i) => {
-              const dateStr = c.oldest_overdue_date 
-                ? `Vencido desde ${new Date(c.oldest_overdue_date).toLocaleDateString('pt-BR')}` 
-                : '';
-              
-              const isCritical = c.health_score === 'critical';
-              return (
-                <div 
-                  key={i} 
-                  className="bg-card-theme rounded-xl border border-theme flex items-center justify-between gap-3 hover:border-theme transition-colors p-2 px-3"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm ${
-                      isCritical ? 'bg-rose-500/10 text-rose-400' : 'bg-amber-500/10 text-amber-400'
-                    }`}>
-                      {isCritical ? (
-                        <svg className="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                        </svg>
-                      ) : (
-                        <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                        </svg>
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-primary-theme truncate">{c.name}</p>
-                      <p className={`text-[9px] font-medium leading-none mt-1 ${isCritical ? 'text-rose-400/90' : 'text-amber-400/90'}`}>
-                        Débito: {fmt(c.total_overdue)}
-                      </p>
-                      {dateStr && (
-                        <p className="text-[8px] text-muted-theme mt-0.5 truncate">{dateStr}</p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <span className={`text-[8px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                    isCritical ? 'bg-rose-500/10 text-rose-400 border border-rose-500/10' : 'bg-amber-500/10 text-amber-400 border border-amber-500/10'
-                  } flex-shrink-0 scale-90`}>
-                    {isCritical ? 'Crítico' : 'Alerta'}
-                  </span>
-                </div>
-              );
-            })}
-            
-            {(!stats.atRiskClients || stats.atRiskClients.length === 0) && (
-               <div className="flex flex-col items-center justify-center py-4 text-center">
-                <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <p className="text-emerald-400 text-xs font-bold">100% em dia!</p>
-                <p className="text-[9px] text-muted-theme mt-0.5">Todos os clientes ativos adimplentes.</p>
-              </div>
-            )}
-          </div>
-        </div>
       </div>
 
-      {/* 🪄 Catarina AI Insights Premium Banner (Relocated to the bottom of the page) */}
+      {/* 🪄 Catarina AI Insights Premium Banner */}
       <div className="bg-card-theme border border-theme rounded-2xl relative overflow-hidden p-6">
-        {/* Decorative elements */}
-        <div className="absolute -right-20 -top-20 w-44 h-44 rounded-full bg-[#10B981]/5 blur-3xl pointer-events-none"></div>
-        <div className="absolute -left-20 -bottom-20 w-44 h-44 rounded-full bg-teal-500/5 blur-3xl pointer-events-none"></div>
+        <div className="absolute -right-20 -top-20 w-44 h-44 bg-[#10B981]/5 blur-3xl pointer-events-none"></div>
+        <div className="absolute -left-20 -bottom-20 w-44 h-44 bg-teal-500/5 blur-3xl pointer-events-none"></div>
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-theme pb-4 mb-4">
           <div className="flex items-center gap-3">
-            <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.813-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" /></svg>
+            <svg className="w-4 h-4 text-emerald-450" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.813-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+            </svg>
             <div>
               <h3 className="text-sm font-bold text-primary-theme flex items-center gap-2">
                 Catarina AI Insights
@@ -743,20 +836,20 @@ export default function DashboardHome() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {insights.map((insight, idx) => {
-              const borderColors = { success: 'border-emerald-500/40', warning: 'border-rose-500/40', info: 'border-blue-500/40' };
-              const bgColors = { success: 'bg-emerald-500/[0.02]', warning: 'bg-rose-500/[0.02]', info: 'bg-blue-500/[0.02]' };
-              const textColors = { success: 'text-emerald-400', warning: 'text-rose-400', info: 'text-blue-400' };
-              const badgeLabels = { success: 'Otimização', warning: 'Risco', info: 'Insight' };
+              const borderColors = { success: "border-emerald-500/40", warning: "border-rose-500/40", info: "border-blue-500/40" };
+              const bgColors = { success: "bg-emerald-500/[0.02]", warning: "bg-rose-500/[0.02]", info: "bg-blue-500/[0.02]" };
+              const textColors = { success: "text-emerald-400", warning: "text-rose-550", info: "text-blue-400" };
+              const badgeLabels = { success: "Otimização", warning: "Risco", info: "Insight" };
 
               return (
                 <div 
                   key={idx} 
-                  className={`border ${borderColors[insight.type] || 'border-theme'} ${bgColors[insight.type] || 'bg-card-theme'} transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg hover:shadow-black/5 rounded-2xl p-6`}
+                  className={`border ${borderColors[insight.type] || "border-theme"} ${bgColors[insight.type] || "bg-card-theme"} transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg hover:shadow-black/5 rounded-2xl p-6`}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h4 className="text-xs font-bold text-primary-theme">{insight.title}</h4>
                     <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${bgColors[insight.type]} ${textColors[insight.type]}`}>
-                      {badgeLabels[insight.type] || 'Info'}
+                      {badgeLabels[insight.type] || "Info"}
                     </span>
                   </div>
                   <p className="text-[11px] text-secondary-theme leading-relaxed">{insight.text}</p>
@@ -767,85 +860,74 @@ export default function DashboardHome() {
         )}
       </div>
 
-      {/* Floating Action Button Container (Speed Dial / Dropdown) */}
+      {/* Floating Action Button Container (Speed Dial) */}
       <div id="fab-container" className="fixed bottom-20 right-6 md:bottom-8 md:right-8 z-50 flex flex-col items-end">
-        {/* Dropdown Menu */}
         <div 
           className={`absolute bottom-16 right-0 mb-2 w-56 bg-modal-theme/95 backdrop-blur-xl border border-theme rounded-2xl shadow-2xl p-3 flex flex-col gap-1 transition-all duration-200 origin-bottom-right transform ${
             showFabDropdown 
-              ? 'scale-100 opacity-100 pointer-events-auto' 
-              : 'scale-95 opacity-0 pointer-events-none'
+              ? "scale-100 opacity-100 pointer-events-auto" 
+              : "scale-95 opacity-0 pointer-events-none"
           }`}
         >
           <div className="px-3 py-1.5 border-b border-theme mb-1">
             <p className="text-[10px] uppercase font-bold tracking-wider text-muted-theme">Ações Rápidas</p>
           </div>
           
-          <a
-            href="/dashboard/cobrancas?action=new"
-            className="w-full text-left px-3 py-2 hover:bg-card-hover-theme rounded-xl flex items-center gap-2.5 transition-colors group"
+          <button
+            onClick={() => {
+              setShowFabDropdown(false);
+              setChargeSuccess(false);
+              setChargeAmount("");
+              setSelectedClientId("");
+              setShowChargeModal(true);
+            }}
+            className="w-full text-left px-3 py-2 hover:bg-card-hover-theme rounded-xl flex items-center gap-2.5 transition-colors group cursor-pointer"
           >
-            <svg className="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <svg className="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
             <div>
-              <p className="text-xs font-bold text-primary-theme group-hover:text-emerald-400 transition-colors">Nova Cobrança</p>
-              <p className="text-[9px] text-muted-theme">Gerar Pix/Fatura</p>
+              <p className="text-xs font-bold text-primary-theme group-hover:text-emerald-400 transition-colors">Cobrar Cliente</p>
+              <p className="text-[9px] text-muted-theme">Gerar Pix/Fatura para terceiros</p>
             </div>
-          </a>
+          </button>
 
-          <a
-            href="/dashboard/locacoes?action=new"
-            className="w-full text-left px-3 py-2 hover:bg-card-hover-theme rounded-xl flex items-center gap-2.5 transition-colors group"
+          <button
+            onClick={() => {
+              setShowFabDropdown(false);
+              setDepositSuccess(false);
+              setDepositAmount("");
+              setShowDepositModal(true);
+            }}
+            className="w-full text-left px-3 py-2 hover:bg-card-hover-theme rounded-xl flex items-center gap-2.5 transition-colors group cursor-pointer"
           >
-            <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>
+            <svg className="w-4 h-4 text-teal-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
             <div>
-              <p className="text-xs font-bold text-primary-theme group-hover:text-emerald-400 transition-colors">Novo Contrato</p>
-              <p className="text-[9px] text-muted-theme">Locação de veículo</p>
+              <p className="text-xs font-bold text-primary-theme group-hover:text-teal-400 transition-colors">Depositar Saldo</p>
+              <p className="text-[9px] text-muted-theme">Recarga de saldo via Pix próprio</p>
             </div>
-          </a>
+          </button>
 
-          <a
-            href="/dashboard/veiculos?action=new"
-            className="w-full text-left px-3 py-2 hover:bg-card-hover-theme rounded-xl flex items-center gap-2.5 transition-colors group"
+          <button
+            onClick={() => {
+              setShowFabDropdown(false);
+              setWithdrawSuccess(false);
+              setWithdrawAmount("");
+              setWithdrawError("");
+              setShowWithdrawModal(true);
+            }}
+            className="w-full text-left px-3 py-2 hover:bg-card-hover-theme rounded-xl flex items-center gap-2.5 transition-colors group cursor-pointer"
           >
-            <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" /></svg>
+            <svg className="w-4 h-4 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5L12 14.5L5 7.5" />
+            </svg>
             <div>
-              <p className="text-xs font-bold text-primary-theme group-hover:text-emerald-400 transition-colors">Cadastrar Veículo</p>
-              <p className="text-[9px] text-muted-theme">Adicionar à frota</p>
+              <p className="text-xs font-bold text-primary-theme group-hover:text-amber-500 transition-colors">Sacar Pix (Resgate)</p>
+              <p className="text-[9px] text-muted-theme">Enviar saldo para banco externo</p>
             </div>
-          </a>
-
-          <a
-            href="/dashboard/clientes?action=new"
-            className="w-full text-left px-3 py-2 hover:bg-card-hover-theme rounded-xl flex items-center gap-2.5 transition-colors group"
-          >
-            <svg className="w-4 h-4 text-violet-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.386 11.386 0 0110.089 21c-2.243 0-4.352-.64-6.136-1.75a3.333 3.333 0 01-1.077-1.085 4.122 4.122 0 015.68-4.962c1.785 1.096 3.12 2.99 3.513 5.22m1.975-2.221a3.001 3.001 0 00-3.001-3.001 3 3 0 00-3 3M16.5 7.5a3 3 0 11-6 0 3 3 0 016 0zM18 10.5a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-            <div>
-              <p className="text-xs font-bold text-primary-theme group-hover:text-emerald-400 transition-colors">Novo Cliente</p>
-              <p className="text-[9px] text-muted-theme">Registrar no CRM</p>
-            </div>
-          </a>
-
-          <a
-            href="/dashboard/manutencoes?action=new"
-            className="w-full text-left px-3 py-2 hover:bg-card-hover-theme rounded-xl flex items-center gap-2.5 transition-colors group"
-          >
-            <svg className="w-4 h-4 text-teal-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.07c.754.023 1.487-.223 2.083-.715l.857.857a2.246 2.246 0 003.177-3.177l-.857-.857c.492-.596.738-1.329.715-2.083-1.026-.065-2.115.42-2.772 1.077l-.19.19a.75.75 0 01-1.06 0l-.19-.19c-.657-.657-1.142-1.746-1.077-2.772.754-.023 1.487.223 2.083.715l.857-.857a2.246 2.246 0 00-3.177-3.177l-.857.857c-.492-.596-.738-1.329-.715-2.083a2.25 2.25 0 01-1.077 1.077L7.56 7.56a.75.75 0 00-1.06 0l-.19.19a4.498 4.498 0 00-1.077 2.772c-.023-.754-.223-1.487-.715-2.083l.857-.857a2.246 2.246 0 013.177 3.177l-.857.857c.596-.492 1.329-.738 2.083-.715.065 1.026-.42 2.115-1.077 2.772l-.19.19a.75.75 0 000 1.06l.19.19c.657.657 1.746 1.142 2.772 1.077z" /></svg>
-            <div>
-              <p className="text-xs font-bold text-primary-theme group-hover:text-emerald-400 transition-colors">Lançar Manutenção</p>
-              <p className="text-[9px] text-muted-theme">Ordem de Serviço (OS)</p>
-            </div>
-          </a>
-
-          <a
-            href="/dashboard/locacoes?tab=fines&action=new"
-            className="w-full text-left px-3 py-2 hover:bg-card-hover-theme rounded-xl flex items-center gap-2.5 transition-colors group"
-          >
-            <svg className="w-4 h-4 text-orange-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-            <div>
-              <p className="text-xs font-bold text-primary-theme group-hover:text-emerald-400 transition-colors">Lançar Multa</p>
-              <p className="text-[9px] text-muted-theme">Multa de trânsito</p>
-            </div>
-          </a>
+          </button>
 
           <button
             onClick={() => {
@@ -854,10 +936,12 @@ export default function DashboardHome() {
             }}
             className="w-full text-left px-3 py-2 hover:bg-card-hover-theme rounded-xl flex items-center gap-2.5 transition-colors group cursor-pointer"
           >
-            <svg className="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
+            <svg className="w-4 h-4 text-violet-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+            </svg>
             <div>
-              <p className="text-xs font-bold text-primary-theme group-hover:text-emerald-400 transition-colors">Transação Manual</p>
-              <p className="text-[9px] text-muted-theme">Receita/Despesa avulsa</p>
+              <p className="text-xs font-bold text-primary-theme group-hover:text-violet-400 transition-colors">Lançamento Manual</p>
+              <p className="text-[9px] text-muted-theme">Registrar despesa ou receita física</p>
             </div>
           </button>
         </div>
@@ -865,25 +949,362 @@ export default function DashboardHome() {
         {/* Trigger Button */}
         <button
           onClick={() => setShowFabDropdown(!showFabDropdown)}
-          className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white flex items-center justify-center shadow-xl shadow-emerald-500/20 active:scale-95 transition-all select-none cursor-pointer border border-emerald-400/30 group"
+          className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-450 hover:to-teal-550 text-white flex items-center justify-center shadow-xl shadow-emerald-500/15 active:scale-95 transition-all select-none cursor-pointer border border-emerald-400/20 group"
           title="Ações Rápidas"
         >
           <span className={`text-2xl font-extrabold transition-transform duration-300 ${
-            showFabDropdown ? 'rotate-[135deg]' : ''
+            showFabDropdown ? "rotate-[135deg]" : ""
           }`}>+</span>
         </button>
       </div>
 
-      {/* 💸 Transaction Modal (Item 11) */}
+      {/* ==================== Saque Modal ==================== */}
+      {showWithdrawModal && (
+        <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={() => setShowWithdrawModal(false)}>
+          <div className="bg-modal-theme border border-theme rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setShowWithdrawModal(false)}
+              className="absolute top-4 right-4 text-secondary-theme hover:text-primary-theme text-xl font-light cursor-pointer"
+            >
+              ×
+            </button>
+
+            <div className="p-5 space-y-4">
+              <div>
+                <h3 className="text-base font-bold text-primary-theme">Resgate Pix Instantâneo</h3>
+                <p className="text-[11px] text-secondary-theme mt-0.5">Retire fundos da sua carteira Cobbra Pay direto para sua conta bancária externa.</p>
+              </div>
+
+              <div className="p-3 bg-base-theme border border-theme rounded-xl text-xs space-y-1 text-secondary-theme">
+                <span className="font-extrabold text-[9px] text-muted-theme uppercase tracking-wider block">Regra de Tarifas</span>
+                {withdrawalCount === 0 ? (
+                  <p className="text-emerald-450 font-bold">Este é o seu 1º saque do mês. Tarifa Cobbra é 100% GRÁTIS!</p>
+                ) : (
+                  <p className="text-primary-theme font-semibold">
+                    Tarifa por saque: <span className="text-rose-400 font-bold">R$ 3,90</span> (deduzida do valor líquido).
+                  </p>
+                )}
+                <span className="text-[10px] text-muted-theme block mt-1 font-semibold">Saldo disponível para resgate: {fmt(walletBalance)}</span>
+              </div>
+
+              {!withdrawSuccess ? (
+                <form onSubmit={handleProcessWithdraw} className="space-y-4">
+                  {withdrawError && (
+                    <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-xl font-medium">
+                      {withdrawError}
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Valor do Saque (R$)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        placeholder="0,00"
+                        required
+                        value={withdrawAmount}
+                        onChange={(e) => setWithdrawAmount(e.target.value)}
+                        className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-primary-theme outline-none text-sm"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Tipo de Chave</label>
+                        <select
+                          value={pixKeyType}
+                          onChange={(e) => setPixKeyType(e.target.value)}
+                          className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-2 py-2.5 text-primary-theme outline-none text-xs cursor-pointer"
+                        >
+                          <option value="cpf">CPF</option>
+                          <option value="cnpj">CNPJ</option>
+                          <option value="email">E-mail</option>
+                          <option value="phone">Telefone</option>
+                          <option value="evp">Chave Aleatória (EVP)</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Chave Pix</label>
+                        <input
+                          type="text"
+                          placeholder="Insira a chave"
+                          required
+                          value={pixKey}
+                          onChange={(e) => setPixKey(e.target.value)}
+                          className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3 py-2.5 text-primary-theme outline-none text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={withdrawLoading}
+                    className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-500/40 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                  >
+                    {withdrawLoading ? (
+                      <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></div>
+                    ) : "Solicitar Transferência"}
+                  </button>
+                </form>
+              ) : (
+                <div className="space-y-4 text-center py-4">
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-400 mx-auto flex items-center justify-center text-xl font-bold">
+                    ✓
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-primary-theme">Resgate efetuado!</h4>
+                    <p className="text-[11px] text-secondary-theme mt-1">
+                      A transferência Pix está sendo enviada da conta Asaas corporativa direto para sua conta de destino.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowWithdrawModal(false);
+                      setWithdrawSuccess(false);
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-surface-theme hover:bg-card-hover-theme text-primary-theme border border-theme font-bold text-xs transition-all cursor-pointer"
+                  >
+                    Fechar
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== Depositar Modal ==================== */}
+      {showDepositModal && (
+        <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={() => setShowDepositModal(false)}>
+          <div className="bg-modal-theme border border-theme rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setShowDepositModal(false)}
+              className="absolute top-4 right-4 text-secondary-theme hover:text-primary-theme text-xl font-light cursor-pointer"
+            >
+              ×
+            </button>
+
+            <div className="p-5 space-y-4">
+              <div>
+                <h3 className="text-base font-bold text-primary-theme">Adicionar Saldo via Pix</h3>
+                <p className="text-[11px] text-secondary-theme mt-0.5">Gere um código Pix para realizar uma recarga de saldo na sua própria conta digital.</p>
+              </div>
+
+              {!depositSuccess ? (
+                <form onSubmit={handleCreateSelfDeposit} className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Valor a Depositar (R$)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      placeholder="0,00"
+                      required
+                      value={depositAmount}
+                      onChange={(e) => setDepositAmount(e.target.value)}
+                      className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-primary-theme outline-none text-sm"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={depositLoading}
+                    className="w-full py-3 rounded-xl bg-teal-500 hover:bg-teal-400 disabled:bg-teal-500/40 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                  >
+                    {depositLoading ? (
+                      <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></div>
+                    ) : "Gerar QR Code Pix"}
+                  </button>
+                </form>
+              ) : (
+                <div className="space-y-4 text-center">
+                  <div className="w-12 h-12 rounded-full bg-teal-500/10 text-teal-400 mx-auto flex items-center justify-center text-xl font-bold">
+                    ✓
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-primary-theme">Código Pix de Recarga Gerado!</h4>
+                    <p className="text-[11px] text-secondary-theme mt-1">Copie o código Pix Copia e Cola abaixo para efetuar o pagamento da recarga.</p>
+                  </div>
+
+                  <div className="space-y-2 text-left">
+                    <label className="text-[8px] font-extrabold text-muted-theme uppercase tracking-wider">Pix Copia e Cola</label>
+                    <textarea
+                      readOnly
+                      rows="3"
+                      value={depositPixCode}
+                      onClick={(e) => e.target.select()}
+                      className="w-full bg-input-theme border border-theme rounded-xl p-2.5 text-[9px] text-primary-theme font-mono outline-none resize-none"
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(depositPixCode);
+                        alert("Pix copiado com sucesso!");
+                      }}
+                      className="flex-1 py-2.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 border border-teal-500/25 font-bold text-xs transition-all cursor-pointer"
+                    >
+                      Copiar Código
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowDepositModal(false);
+                        setDepositSuccess(false);
+                      }}
+                      className="flex-1 py-2.5 rounded-xl bg-surface-theme hover:bg-card-hover-theme text-primary-theme font-bold text-xs transition-all cursor-pointer"
+                    >
+                      Concluído
+                    </button>
+                  </div>
+
+                  {depositLink && (
+                    <a
+                      href={depositLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-[10px] text-muted-theme hover:text-emerald-400 underline transition-colors"
+                    >
+                      Visualizar link completo de fatura
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== Cobrar Cliente Modal ==================== */}
+      {showChargeModal && (
+        <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={() => setShowChargeModal(false)}>
+          <div className="bg-modal-theme border border-theme rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setShowChargeModal(false)}
+              className="absolute top-4 right-4 text-secondary-theme hover:text-primary-theme text-xl font-light cursor-pointer"
+            >
+              ×
+            </button>
+
+            <div className="p-5 space-y-4">
+              <div>
+                <h3 className="text-base font-bold text-primary-theme">Emitir Cobrança Pix para Cliente</h3>
+                <p className="text-[11px] text-secondary-theme mt-0.5">Gere um código de pagamento instantâneo para um cliente. O valor cai direto no seu saldo.</p>
+              </div>
+
+              {!chargeSuccess ? (
+                <form onSubmit={handleCreateCharge} className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Selecione o Cliente</label>
+                      <select
+                        required
+                        value={selectedClientId}
+                        onChange={(e) => setSelectedClientId(e.target.value)}
+                        className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3 py-2.5 text-primary-theme outline-none text-xs cursor-pointer"
+                      >
+                        <option value="">Selecione um cliente...</option>
+                        {clients.filter(c => c.category !== "Autodepósito").map(c => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Valor da Cobrança (R$)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        placeholder="0,00"
+                        required
+                        value={chargeAmount}
+                        onChange={(e) => setChargeAmount(e.target.value)}
+                        className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-primary-theme outline-none text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={chargeLoading}
+                    className="w-full py-3 rounded-xl bg-blue-500 hover:bg-blue-400 disabled:bg-blue-500/40 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                  >
+                    {chargeLoading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : "Gerar QR Code Pix"}
+                  </button>
+                </form>
+              ) : (
+                <div className="space-y-4 text-center">
+                  <div className="w-12 h-12 rounded-full bg-blue-500/10 text-blue-400 mx-auto flex items-center justify-center text-xl font-bold">
+                    ✓
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-primary-theme">Código Pix Gerado!</h4>
+                    <p className="text-[11px] text-secondary-theme mt-1">Copie o código Pix Gerado abaixo e envie para seu cliente.</p>
+                  </div>
+
+                  <div className="space-y-2 text-left">
+                    <label className="text-[8px] font-extrabold text-muted-theme uppercase tracking-wider">Pix Copia e Cola</label>
+                    <textarea
+                      readOnly
+                      rows="3"
+                      value={pixCopyPaste}
+                      onClick={(e) => e.target.select()}
+                      className="w-full bg-input-theme border border-theme rounded-xl p-2.5 text-[9px] text-primary-theme font-mono outline-none resize-none"
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(pixCopyPaste);
+                        alert("Pix copiado com sucesso!");
+                      }}
+                      className="flex-1 py-2.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/25 font-bold text-xs transition-all cursor-pointer"
+                    >
+                      Copiar Código
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowChargeModal(false);
+                        setChargeSuccess(false);
+                      }}
+                      className="flex-1 py-2.5 rounded-xl bg-surface-theme hover:bg-card-hover-theme text-primary-theme font-bold text-xs transition-all cursor-pointer"
+                    >
+                      Concluído
+                    </button>
+                  </div>
+
+                  {paymentLink && (
+                    <a
+                      href={paymentLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-[10px] text-muted-theme hover:text-emerald-400 underline transition-colors"
+                    >
+                      Visualizar link completo de fatura
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 💸 Manual Transaction Modal */}
       {showTransactionModal && (
-        <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4 overflow-y-auto" onClick={() => setShowTransactionModal(false)}>
-          <div className="bg-modal-theme border border-theme rounded-2xl max-w-md w-full overflow-hidden shadow-2xl relative my-8" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={() => setShowTransactionModal(false)}>
+          <div className="bg-modal-theme border border-theme rounded-2xl max-w-md w-full overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
             <div className="px-6 py-4 border-b border-theme flex justify-between items-center">
               <h3 className="text-sm font-bold text-primary-theme flex items-center gap-1.5">
-                <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
+                <svg className="w-4 h-4 text-emerald-450" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
                 Lançamento Financeiro Manual
               </h3>
-              <button onClick={() => setShowTransactionModal(false)} className="text-muted-theme hover:text-primary-theme text-sm">✕</button>
+              <button onClick={() => setShowTransactionModal(false)} className="text-secondary-theme hover:text-primary-theme text-sm">✕</button>
             </div>
             <form onSubmit={handleTransactionSubmit} className="p-6 space-y-4">
               <div>
@@ -891,22 +1312,22 @@ export default function DashboardHome() {
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
-                    onClick={() => setTxForm(prev => ({ ...prev, type: 'income' }))}
-                    className={`py-2 rounded-xl text-xs font-bold transition-all border ${
-                      txForm.type === 'income'
-                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 shadow-sm shadow-emerald-500/10'
-                        : 'bg-transparent text-muted-theme border-theme hover:border-theme'
+                    onClick={() => setTxForm(prev => ({ ...prev, type: "income" }))}
+                    className={`py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                      txForm.type === "income"
+                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 shadow-sm shadow-emerald-500/10"
+                        : "bg-transparent text-secondary-theme border-theme hover:border-emerald-500/20"
                     }`}
                   >
                     Receita (Entrada)
                   </button>
                   <button
                     type="button"
-                    onClick={() => setTxForm(prev => ({ ...prev, type: 'expense' }))}
-                    className={`py-2 rounded-xl text-xs font-bold transition-all border ${
-                      txForm.type === 'expense'
-                        ? 'bg-rose-500/10 text-rose-400 border-rose-500/30 shadow-sm shadow-rose-500/10'
-                        : 'bg-transparent text-muted-theme border-theme hover:border-theme'
+                    onClick={() => setTxForm(prev => ({ ...prev, type: "expense" }))}
+                    className={`py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                      txForm.type === "expense"
+                        ? "bg-rose-500/10 text-rose-400 border-rose-500/30 shadow-sm shadow-rose-500/10"
+                        : "bg-transparent text-secondary-theme border-theme hover:border-rose-500/20"
                     }`}
                   >
                     Despesa (Saída)
@@ -919,14 +1340,16 @@ export default function DashboardHome() {
                 <select
                   value={txForm.vehicle_id}
                   onChange={e => setTxForm(prev => ({ ...prev, vehicle_id: e.target.value }))}
-                  className="w-full bg-input-theme border border-theme focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-primary-theme focus:outline-none transition-colors"
+                  className="w-full bg-input-theme border border-theme focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-primary-theme focus:outline-none transition-colors cursor-pointer"
                 >
                   <option value="">Empresa (Geral / Caixa Corporativo)</option>
-                  <optgroup label="Frota de Veículos">
-                    {vehicles.map(v => (
-                      <option key={v.id} value={v.id}>{v.model} - {v.plate}</option>
-                    ))}
-                  </optgroup>
+                  {vehicles.length > 0 && (
+                    <optgroup label="Frota de Veículos">
+                      {vehicles.map(v => (
+                        <option key={v.id} value={v.id}>{v.model} - {v.plate}</option>
+                      ))}
+                    </optgroup>
+                  )}
                 </select>
               </div>
 
@@ -948,7 +1371,7 @@ export default function DashboardHome() {
                   <select
                     value={txForm.payment_method}
                     onChange={e => setTxForm(prev => ({ ...prev, payment_method: e.target.value }))}
-                    className="w-full bg-input-theme border border-theme focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-primary-theme focus:outline-none transition-colors"
+                    className="w-full bg-input-theme border border-theme focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-primary-theme focus:outline-none transition-colors cursor-pointer"
                   >
                     <option value="pix">Pix</option>
                     <option value="boleto">Boleto</option>
@@ -964,7 +1387,7 @@ export default function DashboardHome() {
                 <input
                   type="text"
                   required
-                  placeholder="Ex: Abastecimento de combustível, Recebimento de franquia..."
+                  placeholder="Ex: Abastecimento, Recebimento avulso..."
                   value={txForm.notes}
                   onChange={e => setTxForm(prev => ({ ...prev, notes: e.target.value }))}
                   className="w-full bg-input-theme border border-theme focus:border-emerald-500/40 rounded-xl px-4 py-2.5 text-xs text-primary-theme focus:outline-none transition-colors"
@@ -975,7 +1398,7 @@ export default function DashboardHome() {
                 <button
                   type="button"
                   onClick={() => setShowTransactionModal(false)}
-                  className="px-4 py-2.5 rounded-lg bg-surface-theme hover:bg-card-hover-theme border border-theme text-primary-theme text-xs font-bold transition-all"
+                  className="px-4 py-2.5 rounded-lg bg-surface-theme hover:bg-card-hover-theme border border-theme text-primary-theme text-xs font-bold transition-all cursor-pointer"
                 >
                   Cancelar
                 </button>
