@@ -36,7 +36,7 @@ export default function MobileNav({ user, pathname, mobileSidebarOpen, setMobile
       )}
 
       {/* 📱 Mobile Side Navigation Drawer */}
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-modal-theme/95 backdrop-blur-lg border-r border-theme z-50 transform md:hidden transition-transform duration-300 flex flex-col ${
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-modal-theme backdrop-blur-lg border-r border-theme z-50 transform md:hidden transition-transform duration-300 flex flex-col ${
         mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}>
         <div className="h-16 flex items-center justify-between px-6 border-b border-theme">

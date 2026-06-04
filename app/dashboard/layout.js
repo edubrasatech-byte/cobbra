@@ -742,7 +742,7 @@ export default function DashboardLayout({ children }) {
       </div>
 
       {/* Mobile Bottom Navigation Bar (Nubank/Revolut Style) */}
-      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-modal-theme/95 backdrop-blur-sm border-t border-theme z-40 flex items-center justify-around md:hidden shadow-2xl">
+      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-modal-theme backdrop-blur-sm border-t border-theme z-40 flex items-center justify-around md:hidden shadow-2xl">
         {[
           { href: '/dashboard', label: 'Início' },
           { href: '/dashboard/cobrancas', label: 'Cobranças' },
@@ -1027,7 +1027,7 @@ export default function DashboardLayout({ children }) {
           >
             {/* Header */}
             <div className="flex items-center gap-3 border-b border-theme pb-4 mb-4 flex-shrink-0">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-550 flex items-center justify-center text-xl shadow shadow-emerald-500/10">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-xl shadow shadow-emerald-500/10">
                 <svg className="w-5 h-5 text-slate-950" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l3.582-1.79A8.96 8.96 0 119.813 15.904z" />
                 </svg>

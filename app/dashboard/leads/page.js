@@ -342,7 +342,7 @@ export default function ProspectingPage() {
 
           <button
             onClick={() => setShowConfig(!showConfig)}
-            className="w-full py-3 rounded-xl bg-input-theme border border-theme text-secondary-theme font-bold text-xs uppercase tracking-wide hover:bg-card-theme/60 transition-colors"
+            className="w-full py-3 rounded-xl bg-input-theme border border-theme text-secondary-theme font-bold text-xs uppercase tracking-wide hover:bg-surface-theme transition-colors"
           >
             {showConfig ? 'Ocultar Configuração' : 'Configurar Chaves Locais'}
           </button>
@@ -458,7 +458,7 @@ export default function ProspectingPage() {
                   return (
                     <tr 
                       key={idx}
-                      className={`hover:bg-card-theme/10 transition-colors ${isSelected ? 'bg-emerald-500/[0.01]' : ''}`}
+                      className={`hover:bg-surface-theme transition-colors ${isSelected ? 'bg-emerald-500/5' : ''}`}
                     >
                       <td className="py-4 px-3">
                         <input 

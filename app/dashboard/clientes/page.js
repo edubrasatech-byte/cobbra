@@ -13,7 +13,7 @@ const STATUS = {
   reminder_sent: { l: 'Lembrete Enviado', c: 'text-blue-400', b: 'bg-blue-500/15' }, 
   paid: { l: 'Pago', c: 'text-emerald-400', b: 'bg-emerald-500/15' }, 
   overdue: { l: 'Vencido', c: 'text-rose-500', b: 'bg-rose-500/15' }, 
-  cancelled: { l: 'Cancelado', c: 'text-muted-theme', b: 'bg-surface-theme/60' } 
+  cancelled: { l: 'Cancelado', c: 'text-muted-theme', b: 'bg-surface-theme' } 
 };
 
 // SVG Star helper
