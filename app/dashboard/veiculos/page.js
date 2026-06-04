@@ -279,8 +279,7 @@ function VehiclesContent() {
             return (
               <div 
                 key={v.id} 
-                className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40 relative overflow-hidden transition-all duration-300 hover:border-emerald-500/40 group hover:translate-y-[-2px] flex flex-col justify-between"
-                style={{ padding: '24px' }}
+                className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40 relative overflow-hidden transition-all duration-300 hover:border-emerald-500/40 group hover:translate-y-[-2px] flex flex-col justify-between p-4 md:p-6"
               >
                 <div>
                   <div className="flex justify-between items-start mb-4">

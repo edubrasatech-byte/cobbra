@@ -561,3 +561,81 @@ aside, header, main, .chatbot-drawer-container {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
+/* ========================================================
+   COMPACT & DENSE DESIGN SYSTEM TOKENS (FRENTE 18 REFINED)
+   ======================================================== */
+.card-premium {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-theme);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-premium:hover {
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.row-dense {
+  padding: 10px 14px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 150ms ease;
+}
+
+.row-dense:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+.input-premium {
+  background-color: rgba(2, 6, 23, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: all 150ms ease;
+}
+
+.input-premium:focus {
+  border-color: #10b981;
+}
+
+.btn-premium {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  transition: all 150ms ease;
+  cursor: pointer;
+  min-height: 40px;
+}
+
+.btn-premium-primary {
+  background-color: #10b981;
+  color: #070913;
+}
+
+.btn-premium-primary:hover {
+  background-color: #34d399;
+  transform: translateY(-1px);
+}
+
+.btn-premium-secondary {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.btn-premium-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+

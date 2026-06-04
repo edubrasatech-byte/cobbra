@@ -1,32 +1,44 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 
 const HEALTH = { 
-  good: { l: 'Bom pagador', c: '#10b981', b: 'rgba(16,185,129,0.15)', i: '😊' }, 
-  warning: { l: 'Atenção', c: '#f59e0b', b: 'rgba(245,158,11,0.15)', i: '⚠️' }, 
-  critical: { l: 'Inadimplente', c: '#ef4444', b: 'rgba(239,68,68,0.15)', i: '🚨' } 
+  good: { l: 'Bom pagador', c: 'text-emerald-400', b: 'bg-emerald-500/10 border-emerald-500/20', i: '😊' }, 
+  warning: { l: 'Atenção', c: 'text-amber-500', b: 'bg-amber-500/10 border-amber-500/20', i: '⚠️' }, 
+  critical: { l: 'Inadimplente', c: 'text-rose-500', b: 'bg-rose-500/10 border-rose-500/20', i: '🚨' } 
 };
 
 const STATUS = { 
-  pending: { l: 'Pendente', c: '#f59e0b', b: 'rgba(245,158,11,0.15)' }, 
-  reminder_sent: { l: 'Lembrete Enviado', c: '#3b82f6', b: 'rgba(59,130,246,0.15)' }, 
-  paid: { l: 'Pago', c: '#10b981', b: 'rgba(16,185,129,0.15)' }, 
-  overdue: { l: 'Vencido', c: '#ef4444', b: 'rgba(239,68,68,0.15)' }, 
-  cancelled: { l: 'Cancelado', c: '#6b7280', b: 'rgba(107,114,128,0.15)' } 
+  pending: { l: 'Pendente', c: 'text-amber-500', b: 'bg-amber-500/15' }, 
+  reminder_sent: { l: 'Lembrete Enviado', c: 'text-blue-400', b: 'bg-blue-500/15' }, 
+  paid: { l: 'Pago', c: 'text-emerald-400', b: 'bg-emerald-500/15' }, 
+  overdue: { l: 'Vencido', c: 'text-rose-500', b: 'bg-rose-500/15' }, 
+  cancelled: { l: 'Cancelado', c: 'text-slate-500', b: 'bg-slate-800/60' } 
 };
+
+// SVG Star helper
+function StarRating({ rating }) {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    stars.push(
+      <svg 
+        key={i} 
+        className={`w-3.5 h-3.5 ${i <= rating ? 'text-amber-400 fill-amber-400' : 'text-slate-700'}`} 
+        viewBox="0 0 20 20" 
+        fill="currentColor"
+      >
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+      </svg>
+    );
+  }
+  return <div className="flex gap-0.5">{stars}</div>;
+}
 
 export default function ClientesPage() {
   const [clients, setClients] = useState([]);
   const [search, setSearch] = useState('');
   const [healthFilter, setHealthFilter] = useState('');
-  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 640);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ 
     name: '', 
@@ -70,6 +82,7 @@ export default function ClientesPage() {
       .then(d => { if (d.user) setUser(d.user); })
       .catch(() => {});
   }, []);
+
   useEffect(() => { loadClients(); }, [search, healthFilter]);
 
   // Load client charges when client is selected
@@ -125,8 +138,7 @@ export default function ClientesPage() {
         notes: '' 
       }); 
       loadClients(); 
-      setMsg('Cliente cadastrado! 🐍'); 
-      setTimeout(() => setMsg(''), 3000); 
+      showToast('Cliente cadastrado com sucesso! 🐍'); 
     } else {
       const err = await res.json();
       alert(err.error || 'Erro ao cadastrar cliente.');
@@ -139,8 +151,7 @@ export default function ClientesPage() {
     await fetch(`/api/clientes/${id}`, { method: 'DELETE' });
     loadClients(); 
     setSelectedClient(null);
-    setMsg('Cliente excluído.'); 
-    setTimeout(() => setMsg(''), 3000);
+    showToast('Cliente excluído com sucesso.'); 
   }
 
   async function payCharge(chargeId, clientId) {
@@ -149,17 +160,14 @@ export default function ClientesPage() {
       headers: { 'Content-Type': 'application/json' }, 
       body: JSON.stringify({ status: 'paid' }) 
     });
-    // Reload charges list
     setLoadingCharges(true);
     const r = await fetch(`/api/cobrancas?client_id=${clientId}`);
     const data = await r.json();
     setClientCharges(data.charges || []);
     setLoadingCharges(false);
     
-    // Refresh client stats
     refreshSelectedClient(clientId);
-    setMsg('Pagamento confirmado! 💰');
-    setTimeout(() => setMsg(''), 3000);
+    showToast('Pagamento confirmado com sucesso! 💰');
   }
 
   async function abaterChargeAction() {
@@ -177,39 +185,41 @@ export default function ClientesPage() {
     if (res.ok) {
       setAbaterCharge(null);
       setRebateVal('');
-      // Reload charges list
       setLoadingCharges(true);
       const r = await fetch(`/api/cobrancas?client_id=${clientId}`);
       const data = await r.json();
       setClientCharges(data.charges || []);
       setLoadingCharges(false);
       
-      // Refresh client stats
       refreshSelectedClient(clientId);
-      setMsg('Abatimento registrado com sucesso! 💸');
-      setTimeout(() => setMsg(''), 3000);
+      showToast('Abatimento registrado com sucesso! 💸');
     } else {
       const err = await res.json();
       alert(err.error || 'Erro ao registrar abatimento.');
     }
   }
 
+  const showToast = (text) => {
+    setMsg(text);
+    setTimeout(() => setMsg(''), 3000);
+  };
+
   const getPayerScore = c => {
     const limitGood = user?.score_limit_good ?? 0.2;
     const limitRegular = user?.score_limit_regular ?? 0.4;
     
     if (!c.total_charged || c.total_charged === 0) {
-      return { l: 'Excelente', c: '#10b981', b: 'rgba(16,185,129,0.15)', s: '⭐⭐⭐⭐⭐' };
+      return { l: 'Excelente', c: 'text-emerald-400', b: 'bg-emerald-500/10', s: 5 };
     }
     const overdueRatio = c.total_overdue / c.total_charged;
     if (c.total_overdue === 0) {
-      return { l: 'Excelente', c: '#10b981', b: 'rgba(16,185,129,0.15)', s: '⭐⭐⭐⭐⭐' };
+      return { l: 'Excelente', c: 'text-emerald-400', b: 'bg-emerald-500/10', s: 5 };
     } else if (overdueRatio < limitGood) {
-      return { l: 'Bom', c: '#6ee7b7', b: 'rgba(110,231,183,0.15)', s: '⭐⭐⭐⭐' };
+      return { l: 'Bom', c: 'text-emerald-350', b: 'bg-emerald-500/5', s: 4 };
     } else if (overdueRatio < limitRegular) {
-      return { l: 'Regular', c: '#f59e0b', b: 'rgba(245,158,11,0.15)', s: '⭐⭐⭐' };
+      return { l: 'Regular', c: 'text-amber-500', b: 'bg-amber-500/5', s: 3 };
     } else {
-      return { l: 'Alto Risco', c: '#ef4444', b: 'rgba(239,68,68,0.15)', s: '⭐' };
+      return { l: 'Alto Risco', c: 'text-rose-500', b: 'bg-rose-500/5', s: 1 };
     }
   };
 
@@ -224,328 +234,397 @@ export default function ClientesPage() {
   };
 
   const fmt = v => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-  const inputS = { 
-    width: '100%', 
-    height: '44px',
-    minHeight: '44px',
-    padding: '10px 14px', 
-    borderRadius: 12, 
-    border: '1px solid rgba(255,255,255,0.08)', 
-    background: '#020617', 
-    color: '#f8fafc', 
-    fontSize: 13, 
-    outline: 'none', 
-    fontFamily: 'Inter,sans-serif',
-    transition: 'all 0.2s'
-  };
-  const cardS = {
-    background: '#0C0E1A',
-    borderRadius: 20,
-    padding: isMobile ? '16px' : '24px',
-    border: '1px solid rgba(255,255,255,0.04)',
-    transition: 'all 0.3s',
-    cursor: 'pointer',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between'
-  };
 
   return (
-    <div>
-      {msg && <div style={{ position: 'fixed', top: 80, right: 32, background: '#10b981', color: '#fff', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, zIndex: 1001, boxShadow: '0 4px 14px rgba(16,185,129,0.3)', animation: 'fadeInUp 0.3s ease' }}>{msg}</div>}
+    <div className="w-full max-w-7xl mx-auto px-4 pb-20 space-y-6 text-left animate-fadeIn">
+      {msg && (
+        <div className="fixed top-20 right-6 bg-emerald-500 text-slate-950 px-5 py-2.5 rounded-xl text-xs font-bold z-50 shadow-lg shadow-emerald-500/20 animate-fadeInUp">
+          {msg}
+        </div>
+      )}
 
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center mb-6" style={{ marginBottom: '36px' }}>
-        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-          <input placeholder="Buscar clientes..." value={search} onChange={e => setSearch(e.target.value)} className="w-full sm:w-64 h-11 min-h-[44px] flex-shrink-0" style={inputS} />
-          <div className="flex gap-2 h-11 min-h-[44px] flex-shrink-0">
-            <select value={healthFilter} onChange={e => setHealthFilter(e.target.value)} className="flex-1 sm:w-44 h-11 min-h-[44px] flex-shrink-0" style={{ ...inputS, appearance: 'auto', color: '#e2e8f0' }}>
-              <option style={{ color: '#0f172a' }} value="">Todos os status</option>
-              {Object.entries(HEALTH).map(([k, v]) => <option style={{ color: '#0f172a' }} key={k} value={k}>{v.i} {v.l}</option>)}
+      {/* Header controls */}
+      <div className="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
+        <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center flex-1 max-w-xl">
+          <input 
+            placeholder="Buscar clientes..." 
+            value={search} 
+            onChange={e => setSearch(e.target.value)} 
+            className="bg-slate-900 border border-slate-800/80 rounded-xl px-3.5 py-2 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-emerald-500/40 h-10 min-h-[40px] transition-all"
+          />
+          <div className="flex gap-2">
+            <select 
+              value={healthFilter} 
+              onChange={e => setHealthFilter(e.target.value)} 
+              className="bg-slate-900 border border-slate-800/80 rounded-xl px-3 py-2 text-xs text-slate-350 outline-none focus:border-emerald-500/40 h-10 min-h-[40px] transition-all flex-1 min-w-[140px]"
+            >
+              <option value="">Status geral (Todos)</option>
+              {Object.entries(HEALTH).map(([k, v]) => (
+                <option key={k} value={k}>{v.i} {v.l}</option>
+              ))}
             </select>
             <button 
               onClick={loadClients} 
-              style={{
-                width: '44px',
-                height: '44px',
-                minHeight: '44px',
-                borderRadius: '12px',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                color: '#cbd5e1',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                flexShrink: 0
-              }}
-              className="hover:bg-white/10 active:scale-95 transition-all"
+              className="h-10 min-h-[40px] w-10 bg-slate-900 border border-slate-850 hover:bg-slate-800 text-slate-400 hover:text-emerald-400 flex items-center justify-center rounded-xl transition-all cursor-pointer"
+              title="Recarregar"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
               </svg>
             </button>
           </div>
         </div>
-        <button onClick={() => setShowModal(true)} style={{ height: 44, padding: '0 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', fontFamily: 'Inter' }} className="w-full md:w-auto text-center flex-shrink-0">+ Novo Cliente</button>
+        
+        <button 
+          onClick={() => setShowModal(true)} 
+          className="h-10 px-5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-xs hover:from-emerald-500 hover:to-teal-500 cursor-pointer shadow shadow-emerald-500/10 active:scale-98 transition-all flex items-center justify-center gap-1.5"
+        >
+          <span>+</span> Novo Cliente
+        </button>
       </div>
 
-      {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-24" style={{ marginTop: '12px' }}>
+      {/* Grid List of Clients */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {clients.map(c => {
           const h = HEALTH[c.health_score] || HEALTH.good;
           const score = getPayerScore(c);
           return (
-            <div key={c.id} onClick={() => setSelectedClient(c)} style={cardS}
-              onMouseEnter={e => e.currentTarget.style.borderColor = '#059669'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)'}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(135deg,#059669,#0d9488)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 14 }}>
+            <div 
+              key={c.id} 
+              onClick={() => setSelectedClient(c)}
+              className="bg-[#0C0E1A] hover:bg-[#0C0E1A]/80 border border-slate-900 hover:border-emerald-500/20 rounded-2xl p-4 cursor-pointer shadow-md transition-all flex flex-col justify-between group min-h-[190px]"
+            >
+              <div className="space-y-3">
+                {/* Header card info */}
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-600 to-teal-600 text-white flex items-center justify-center font-black text-xs select-none flex-shrink-0">
                       {c.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
                     </div>
-                    <div>
-                      <p style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0' }}>{c.name}</p>
-                      <p style={{ fontSize: 12, color: '#64748b' }}>{c.category || 'Sem categoria'}</p>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition-colors truncate">{c.name}</p>
+                      <p className="text-[10px] text-slate-500 font-semibold truncate leading-none mt-0.5">{c.category || 'Motorista'}</p>
                     </div>
                   </div>
-                  <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: h.b, color: h.c, fontWeight: 600 }}>{h.i} {h.l}</span>
+                  <span className={`text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border flex-shrink-0 ${h.b} ${h.c}`}>
+                    {h.i} {h.l}
+                  </span>
                 </div>
 
-                {/* Bom Pagador Score */}
-                <div style={{ background: 'rgba(5,150,105,0.05)', borderRadius: 10, padding: '10px 12px', marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(5,150,105,0.1)' }}>
-                  <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500 }}>Score Pagador:</span>
-                  <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: score.c, marginRight: 6 }}>{score.l}</span>
-                    <span style={{ fontSize: 10 }}>{score.s}</span>
+                {/* Score rating summary */}
+                <div className="bg-slate-900/40 rounded-xl p-2 border border-slate-900 flex justify-between items-center text-[10px]">
+                  <span className="text-slate-500 font-bold">Pontualidade:</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className={`font-black uppercase tracking-wider ${score.c}`}>{score.l}</span>
+                    <StarRating rating={score.s} />
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 12px' }}>
-                    <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>Total cobrado</p>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0' }}>{fmt(c.total_charged)}</p>
+                {/* Billing statistics summary */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-slate-950/20 rounded-lg p-2 border border-slate-950/30 text-left">
+                    <span className="text-[9px] text-slate-500 font-bold block">Cobrado</span>
+                    <span className="text-[11px] font-bold text-slate-350">{fmt(c.total_charged)}</span>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 12px' }}>
-                    <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>Total pago</p>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: '#10b981' }}>{fmt(c.total_paid)}</p>
+                  <div className="bg-slate-950/20 rounded-lg p-2 border border-slate-950/30 text-left">
+                    <span className="text-[9px] text-slate-500 font-bold block">Pago</span>
+                    <span className="text-[11px] font-bold text-emerald-400">{fmt(c.total_paid)}</span>
                   </div>
                 </div>
+
+                {/* Overdue alert */}
                 {c.total_overdue > 0 && (
-                  <div style={{ background: 'rgba(239,68,68,0.1)', borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
-                    <span style={{ fontSize: 12, color: '#fca5a5', fontWeight: 600 }}>⚠️ Deve: {fmt(c.total_overdue)}</span>
+                  <div className="bg-rose-500/5 border border-rose-500/10 rounded-lg py-1.5 px-2.5 text-[10px] text-rose-400 font-bold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                    <span>Débito em aberto: {fmt(c.total_overdue)}</span>
                   </div>
                 )}
               </div>
-              <div>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-500 border-t border-white/5 pt-3 mt-1 min-w-0">
-                  {c.email && <span className="truncate min-w-0" title={c.email}>✉️ {c.email}</span>}
-                  {c.phone && <span className="shrink-0">📱 {c.phone}</span>}
+
+              {/* Card Footer contacts */}
+              <div className="border-t border-slate-900/50 pt-2.5 mt-3 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[9px] text-slate-500 truncate max-w-[70%]">
+                  {c.phone && <span className="truncate">📱 {c.phone}</span>}
                 </div>
-                <div style={{ display: 'flex', gap: 8, marginTop: 12, justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 11, color: '#059669', fontWeight: 600 }}>👁️ Ver histórico</span>
-                  <button onClick={(e) => deleteClient(c.id, e)} style={{ padding: '6px 12px', borderRadius: 6, background: 'rgba(239,68,68,0.1)', color: '#fca5a5', fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'Inter' }}>Excluir</button>
+                
+                <div className="flex gap-2">
+                  <span className="text-[9px] font-bold text-emerald-400 group-hover:underline transition-all">Ver Histórico →</span>
                 </div>
               </div>
             </div>
           );
         })}
+
         {clients.length === 0 && (
-          <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '60px 20px', color: '#64748b' }} className="flex-shrink-0">
+          <div className="col-span-full py-16 bg-slate-950/20 border border-slate-900/60 rounded-3xl text-center text-xs text-slate-500">
             {loading ? (
-              <div className="flex flex-col items-center justify-center gap-3 py-6">
-                <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin flex-shrink-0"></div>
-                <p className="text-slate-500 text-xs font-semibold">Carregando clientes...</p>
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
+                <span className="font-semibold">Buscando motoristas...</span>
               </div>
-            ) : 'Nenhum cliente encontrado'}
+            ) : 'Nenhum motorista localizado.'}
           </div>
         )}
       </div>
 
-      {/* Expanded Client Details Modal */}
+      {/* ==================== 👤 DETAILED CLIENT DRAWER MODAL ==================== */}
       {selectedClient && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999 }}
-          onClick={() => setSelectedClient(null)}>
-          <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 md:p-8 max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto border border-white/10" style={{ padding: isMobile ? '24px' : '32px' }}>
-            
-            {/* Header info */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 20, marginBottom: 20 }}>
-              <div style={{ display: 'flex', gap: 16, alignItems: 'center', width: '90%' }}>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg,#059669,#0d9488)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 18, flexShrink: 0 }}>
-                  {selectedClient.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
-                </div>
-                <div style={{ width: '100%' }}>
-                  <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', margin: 0 }}>{selectedClient.name}</h3>
-                  <p style={{ fontSize: 13, color: '#94a3b8', margin: '4px 0 0 0' }}>
-                    {selectedClient.category || 'Sem categoria'} • {selectedClient.phone || 'Sem telefone'} • {selectedClient.email || 'Sem e-mail'}
-                  </p>
-                  {(selectedClient.company_name || selectedClient.document || selectedClient.birthday || selectedClient.address) && (
-                    <div style={{ fontSize: 12, color: '#94a3b8', margin: '8px 0 0 0', display: 'flex', flexWrap: 'wrap', gap: '8px 16px', background: 'rgba(255,255,255,0.02)', padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.04)' }}>
-                      {selectedClient.company_name && <span>🏢 <strong>Empresa:</strong> {selectedClient.company_name}</span>}
-                      {selectedClient.document && <span>📄 <strong>CPF/CNPJ:</strong> {selectedClient.document}</span>}
-                      {selectedClient.birthday && <span>🎂 <strong>Nascimento:</strong> {new Date(selectedClient.birthday).toLocaleDateString('pt-BR')}</span>}
-                      {selectedClient.address && <span>📍 <strong>Endereço:</strong> {selectedClient.address}</span>}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <button onClick={() => setSelectedClient(null)} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: 32, height: 32, color: '#94a3b8', cursor: 'pointer', fontSize: 16, flexShrink: 0 }}>×</button>
-            </div>
+        <div 
+          className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedClient(null)}
+        >
+          <div 
+            onClick={e => e.stopPropagation()} 
+            className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-xl max-h-[85vh] overflow-y-auto shadow-2xl relative p-5 space-y-5"
+          >
+            {/* Top Close button */}
+            <button 
+              onClick={() => setSelectedClient(null)} 
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-200 text-lg cursor-pointer"
+            >
+              ×
+            </button>
 
-            {/* Score and Quick Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6" style={{ marginBottom: '32px' }}>
-              <div style={{ background: 'rgba(5,150,105,0.08)', borderRadius: 16, padding: '16px 18px', border: '1px solid rgba(5,150,105,0.15)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <p style={{ fontSize: 11, color: '#94a3b8', margin: 0 }}>Pontualidade (Score)</p>
-                <p style={{ fontSize: 15, fontWeight: 700, color: getPayerScore(selectedClient).c, margin: 0 }}>
-                  {getPayerScore(selectedClient).l} {getPayerScore(selectedClient).s}
+            {/* Profile Info block */}
+            <div className="flex gap-3.5 items-center pb-4 border-b border-slate-800/40">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-600 to-teal-600 text-white flex items-center justify-center font-black text-sm flex-shrink-0 select-none">
+                {selectedClient.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+              </div>
+              <div className="min-w-0 w-full text-left">
+                <h3 className="text-base font-black text-slate-100 leading-tight truncate">{selectedClient.name}</h3>
+                <p className="text-[11px] text-slate-400 mt-1 truncate">
+                  {selectedClient.category || 'Motorista'} • {selectedClient.phone || 'Sem contato'} • {selectedClient.email || 'Sem e-mail'}
                 </p>
-              </div>
-              <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.04)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <p style={{ fontSize: 11, color: '#64748b', margin: 0 }}>Total Cobrado</p>
-                <p style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0', margin: 0 }}>{fmt(selectedClient.total_charged)}</p>
-              </div>
-              <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.04)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <p style={{ fontSize: 11, color: '#64748b', margin: 0 }}>Total Pago</p>
-                <p style={{ fontSize: 15, fontWeight: 700, color: '#10b981', margin: 0 }}>{fmt(selectedClient.total_paid)}</p>
-              </div>
-              <div style={{ background: selectedClient.total_overdue > 0 ? 'rgba(239,68,68,0.08)' : 'rgba(255,255,255,0.02)', borderRadius: 16, padding: '16px 18px', border: selectedClient.total_overdue > 0 ? '1px solid rgba(239,68,68,0.15)' : '1px solid rgba(255,255,255,0.04)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <p style={{ fontSize: 11, color: selectedClient.total_overdue > 0 ? '#ef4444' : '#64748b', margin: 0 }}>Em Aberto</p>
-                <p style={{ fontSize: 15, fontWeight: 700, color: selectedClient.total_overdue > 0 ? '#ef4444' : '#94a3b8', margin: 0 }}>{fmt(selectedClient.total_overdue)}</p>
+                
+                {/* Secondary data wrapper */}
+                {(selectedClient.document || selectedClient.birthday || selectedClient.address) && (
+                  <div className="mt-2.5 p-2 rounded-lg bg-slate-950/40 border border-slate-850/50 text-[10px] text-slate-400 space-y-1">
+                    {selectedClient.document && <p>📄 <strong>Documento:</strong> {selectedClient.document}</p>}
+                    {selectedClient.birthday && <p>🎂 <strong>Nascimento:</strong> {new Date(selectedClient.birthday).toLocaleDateString('pt-BR')}</p>}
+                    {selectedClient.address && <p className="truncate">📍 <strong>Endereço:</strong> {selectedClient.address}</p>}
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Debts list / History */}
-            <h4 style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginTop: '12px', marginBottom: '16px' }}>Histórico Completo de Cobranças</h4>
-            {loadingCharges ? (
-              <p style={{ color: '#94a3b8', fontSize: 14, textAlign: 'center', padding: 20 }}>Carregando histórico...</p>
-            ) : clientCharges.length === 0 ? (
-              <p style={{ color: '#64748b', fontSize: 13, textAlign: 'center', padding: 20 }}>Nenhuma cobrança registrada para este cliente.</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {clientCharges.map(c => {
-                  const interest = calcInterest(c);
-                  return (
-                    <div key={c.id} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 12, padding: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <p style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0', margin: 0 }}>{c.description || 'Cobrança sem descrição'}</p>
-                        <p style={{ fontSize: 11, color: '#64748b', margin: '4px 0 0 0' }}>
-                          Início: {c.created_at ? new Date(c.created_at.replace(' ', 'T')).toLocaleDateString('pt-BR') : 'N/A'} • Vencimento: {new Date(c.due_date + 'T12:00:00').toLocaleDateString('pt-BR')} • Canal: {c.reminder_channel === 'both' ? 'Whats+Email' : c.reminder_channel}
-                        </p>
-                        {interest > 0 && (
-                          <span style={{ fontSize: 11, color: '#f59e0b', fontWeight: 600, display: 'block', marginTop: 4 }}>
-                            ⚠️ Juros acumulados: {fmt(interest)} (+{c.daily_interest_rate}%/dia)
-                          </span>
-                        )}
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                        <div style={{ textAlign: 'right' }}>
-                          <p style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0', margin: 0 }}>{fmt(c.amount + interest)}</p>
-                          <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 4, background: STATUS[c.status]?.b, color: STATUS[c.status]?.c, fontWeight: 600, display: 'inline-block', marginTop: 4 }}>
-                            {STATUS[c.status]?.l}
-                          </span>
+            {/* Financial Overview quick cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <div className="bg-slate-950/20 border border-slate-850/40 rounded-xl p-3 flex flex-col justify-between">
+                <span className="text-[9px] text-slate-500 font-bold block uppercase leading-none">Score</span>
+                <span className={`text-xs font-black mt-1.5 ${getPayerScore(selectedClient).c}`}>
+                  {getPayerScore(selectedClient).l}
+                </span>
+              </div>
+              <div className="bg-slate-950/20 border border-slate-850/40 rounded-xl p-3 flex flex-col justify-between">
+                <span className="text-[9px] text-slate-500 font-bold block uppercase leading-none">Cobrado</span>
+                <span className="text-xs font-black text-slate-300 mt-1.5">{fmt(selectedClient.total_charged)}</span>
+              </div>
+              <div className="bg-slate-950/20 border border-slate-850/40 rounded-xl p-3 flex flex-col justify-between">
+                <span className="text-[9px] text-slate-500 font-bold block uppercase leading-none">Pago</span>
+                <span className="text-xs font-black text-emerald-400 mt-1.5">{fmt(selectedClient.total_paid)}</span>
+              </div>
+              <div className={`border rounded-xl p-3 flex flex-col justify-between ${
+                selectedClient.total_overdue > 0 ? 'bg-rose-500/5 border-rose-500/10' : 'bg-slate-950/20 border-slate-850/40'
+              }`}>
+                <span className="text-[9px] text-slate-500 font-bold block uppercase leading-none">Em Aberto</span>
+                <span className={`text-xs font-black mt-1.5 ${selectedClient.total_overdue > 0 ? 'text-rose-400' : 'text-slate-400'}`}>
+                  {fmt(selectedClient.total_overdue)}
+                </span>
+              </div>
+            </div>
+
+            {/* Invoices list statement */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-black text-slate-200 uppercase tracking-wider">Histórico de Cobranças</h4>
+              
+              {loadingCharges ? (
+                <p className="text-slate-500 text-xs text-center py-6">Carregando faturas...</p>
+              ) : clientCharges.length === 0 ? (
+                <p className="text-slate-600 text-xs text-center py-6">Nenhuma cobrança ativa registrada.</p>
+              ) : (
+                <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                  {clientCharges.map(c => {
+                    const interest = calcInterest(c);
+                    return (
+                      <div 
+                        key={c.id} 
+                        className="bg-slate-950/20 border border-slate-850/50 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left hover:border-slate-800 transition-colors"
+                      >
+                        <div className="space-y-1 min-w-0">
+                          <p className="text-xs font-bold text-slate-200 truncate">{c.description || 'Cobrança Sem Descrição'}</p>
+                          <p className="text-[9px] text-slate-500 font-semibold leading-none">
+                            Vencimento: {new Date(c.due_date + 'T12:00:00').toLocaleDateString('pt-BR')} • {c.payment_method?.toUpperCase()}
+                          </p>
+                          {interest > 0 && (
+                            <span className="text-[9px] text-amber-500 font-bold block mt-1">
+                              ⚠️ Juros de mora: +{fmt(interest)}
+                            </span>
+                          )}
                         </div>
-                        {c.status !== 'paid' && c.status !== 'cancelled' && (
-                          <div style={{ display: 'flex', gap: 6 }}>
-                            <button 
-                              onClick={() => setAbaterCharge(c)} 
-                              style={{ padding: '6px 12px', borderRadius: 6, background: 'rgba(255,255,255,0.05)', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.1)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter' }}
-                            >
-                              💸 Abater
-                            </button>
-                            <button 
-                              onClick={() => payCharge(c.id, selectedClient.id)} 
-                              style={{ padding: '6px 12px', borderRadius: 6, background: '#10b981', color: '#fff', border: 'none', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter' }}
-                            >
-                              ✓ Receber
-                            </button>
+
+                        <div className="flex items-center gap-3 flex-shrink-0 justify-between sm:justify-end border-t sm:border-t-0 border-slate-850/30 pt-2 sm:pt-0">
+                          <div className="text-left sm:text-right">
+                            <p className="text-xs font-black text-slate-200">{fmt(c.amount + interest)}</p>
+                            <span className={`text-[8px] font-black px-1.5 py-0.5 rounded uppercase mt-1 inline-block ${STATUS[c.status]?.b} ${STATUS[c.status]?.c}`}>
+                              {STATUS[c.status]?.l}
+                            </span>
                           </div>
-                        )}
+
+                          {c.status !== 'paid' && c.status !== 'cancelled' && (
+                            <div className="flex gap-1.5">
+                              <button 
+                                onClick={() => setAbaterCharge(c)}
+                                className="px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700/60 hover:bg-slate-700 hover:text-white text-slate-300 font-extrabold text-[10px] transition-colors cursor-pointer"
+                              >
+                                Abater
+                              </button>
+                              <button 
+                                onClick={() => payCharge(c.id, selectedClient.id)}
+                                className="px-2.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-[10px] transition-colors cursor-pointer"
+                              >
+                                Receber
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            
-            {/* Footer notes */}
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Custom Notes area */}
             {selectedClient.notes && (
-              <div style={{ marginTop: 24, padding: 14, background: 'rgba(255,255,255,0.01)', borderRadius: 10, border: '1px dashed rgba(255,255,255,0.08)' }}>
-                <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 }}>Observações internas:</span>
-                <p style={{ fontSize: 12, color: '#94a3b8', margin: 0 }}>{selectedClient.notes}</p>
+              <div className="p-3 bg-slate-950/40 rounded-xl border border-slate-850/50 text-[10px] text-slate-500 leading-normal text-left">
+                <strong className="text-slate-400 font-bold block mb-1">Observações do Cliente:</strong>
+                {selectedClient.notes}
               </div>
             )}
+
+            {/* Delete button option */}
+            <div className="flex justify-between items-center pt-3 border-t border-slate-800/40">
+              <button 
+                onClick={(e) => deleteClient(selectedClient.id, e)}
+                className="px-3.5 py-2 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-400 hover:bg-rose-500 hover:text-white font-extrabold text-xs transition-all cursor-pointer"
+              >
+                Excluir Cadastro
+              </button>
+              <button 
+                onClick={() => setSelectedClient(null)}
+                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 font-bold text-xs transition-all cursor-pointer"
+              >
+                Voltar
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Partial Abatement Modal (Modal Secundário) */}
+      {/* ==================== 💸 ABATEMENT MODAL ==================== */}
       {abaterCharge && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1001 }} onClick={() => setAbaterCharge(null)}>
-          <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 max-w-md w-full mx-4 border border-white/15" style={{ padding: '24px' }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>💸 Abater Parte do Valor</h3>
-            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 20 }}>
-              Dívida: <strong>{abaterCharge.description || 'Sem descrição'}</strong><br />
-              Valor atual da cobrança: <strong>{fmt(abaterCharge.amount)}</strong>
+        <div 
+          className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+          onClick={() => setAbaterCharge(null)}
+        >
+          <div 
+            onClick={e => e.stopPropagation()} 
+            className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl relative"
+          >
+            <h3 className="text-base font-bold text-slate-200">Abatimento Parcial</h3>
+            <p className="text-xs text-slate-400 leading-relaxed text-left">
+              Registrar abatimento na cobrança: <strong className="text-slate-200">{abaterCharge.description || 'Aluguel/Cobrança'}</strong><br />
+              Valor total original: <strong className="text-slate-200">{fmt(abaterCharge.amount)}</strong>
             </p>
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>Valor do Abatimento (R$)</label>
+
+            <div className="space-y-1 text-left">
+              <label className="text-[9px] font-extrabold text-slate-500 uppercase tracking-wider block">Valor de Abatimento (R$)</label>
               <input 
                 type="number" 
                 step="0.01"
                 min="0.01"
                 max={abaterCharge.amount}
-                placeholder="Ex: 50.00" 
+                placeholder="0,00" 
                 value={rebateVal} 
                 onChange={e => setRebateVal(e.target.value)} 
-                style={inputS} 
+                className="w-full bg-slate-950/80 border border-slate-800 focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-slate-200 outline-none text-sm"
                 autoFocus
               />
             </div>
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+
+            <div className="flex gap-2">
               <button 
                 type="button" 
                 onClick={() => setAbaterCharge(null)} 
-                style={{ padding: '10px 20px', borderRadius: 8, background: 'rgba(255,255,255,0.05)', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'Inter', cursor: 'pointer' }}
+                className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold text-xs transition-all cursor-pointer"
               >
                 Cancelar
               </button>
               <button 
                 type="button" 
                 onClick={abaterChargeAction}
-                style={{ padding: '10px 20px', borderRadius: 8, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontWeight: 700, border: 'none', fontFamily: 'Inter', cursor: 'pointer' }}
+                className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition-all cursor-pointer"
               >
-                Confirmar Abatimento
+                Confirmar
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Create Client Modal */}
+      {/* ==================== ➕ CREATE CLIENT MODAL ==================== */}
       {showModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setShowModal(false)}>
-          <div onClick={e => e.stopPropagation()} className="bg-[#1e293b] rounded-2xl p-6 md:p-8 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto border border-white/10" style={{ padding: isMobile ? '24px' : '32px' }}>
-            <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 24 }}>Novo Cliente</h3>
-            <form onSubmit={createClient}>
-              {[
-                { label: 'Nome *', key: 'name', type: 'text', ph: 'Nome completo', required: true },
-                { label: 'E-mail', key: 'email', type: 'email', ph: 'email@exemplo.com' },
-                { label: 'Telefone', key: 'phone', type: 'tel', ph: '(11) 99999-9999' },
-                { label: 'CPF / CNPJ', key: 'document', type: 'text', ph: 'Ex: 123.456.789-00' },
-                { label: 'Categoria', key: 'category', type: 'text', ph: 'Ex: Aluno, Empresa, etc.' },
-                { label: 'Empresa', key: 'company_name', type: 'text', ph: 'Nome da Empresa (opcional)' },
-                { label: 'Data de Nascimento', key: 'birthday', type: 'date', ph: '' },
-                { label: 'Endereço', key: 'address', type: 'text', ph: 'Endereço completo (opcional)' },
-                { label: 'Observações', key: 'notes', type: 'text', ph: 'Notas sobre o cliente' },
-              ].map(f => (
-                <div key={f.key} style={{ marginBottom: 14 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>{f.label}</label>
-                  <input type={f.type} value={form[f.key]} onChange={e => setForm({ ...form, [f.key]: e.target.value })} placeholder={f.ph} style={inputS} required={f.required} />
-                </div>
-              ))}
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 20 }}>
-                <button type="button" onClick={() => setShowModal(false)} style={{ padding: '12px 24px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'Inter', cursor: 'pointer' }}>Cancelar</button>
-                <button type="submit" style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#059669,#0d9488)', color: '#fff', fontWeight: 700, border: 'none', fontFamily: 'Inter', cursor: 'pointer' }}>Cadastrar</button>
+        <div 
+          className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setShowModal(false)}
+        >
+          <div 
+            onClick={e => e.stopPropagation()} 
+            className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl p-5 space-y-4"
+          >
+            <h3 className="text-base font-bold text-slate-200 text-left">Novo Cliente / Motorista</h3>
+            
+            <form onSubmit={createClient} className="space-y-3.5">
+              <div className="max-h-[50vh] overflow-y-auto pr-1 space-y-3">
+                {[
+                  { label: 'Nome *', key: 'name', type: 'text', ph: 'Nome completo', required: true },
+                  { label: 'E-mail', key: 'email', type: 'email', ph: 'email@exemplo.com' },
+                  { label: 'Telefone', key: 'phone', type: 'tel', ph: '(11) 99999-9999' },
+                  { label: 'CPF / CNPJ', key: 'document', type: 'text', ph: 'Ex: 123.456.789-00' },
+                  { label: 'Categoria', key: 'category', type: 'text', ph: 'Ex: Motorista Pro, Próprio' },
+                  { label: 'Empresa', key: 'company_name', type: 'text', ph: 'Nome da Empresa (opcional)' },
+                  { label: 'Data de Nascimento', key: 'birthday', type: 'date', ph: '' },
+                  { label: 'Endereço', key: 'address', type: 'text', ph: 'Endereço completo (opcional)' },
+                  { label: 'Observações', key: 'notes', type: 'text', ph: 'Notas internas adicionais' },
+                ].map(f => (
+                  <div key={f.key} className="space-y-1 text-left">
+                    <label className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">{f.label}</label>
+                    <input 
+                      type={f.type} 
+                      value={form[f.key]} 
+                      onChange={e => setForm({ ...form, [f.key]: e.target.value })} 
+                      placeholder={f.ph} 
+                      required={f.required}
+                      className="w-full bg-slate-950/80 border border-slate-800 focus:border-emerald-500/50 rounded-xl px-3 py-2 text-slate-200 outline-none text-xs"
+                    />
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex gap-2 pt-2 border-t border-slate-850">
+                <button 
+                  type="button" 
+                  onClick={() => setShowModal(false)} 
+                  className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold text-xs transition-all cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition-all cursor-pointer"
+                >
+                  Cadastrar
+                </button>
               </div>
             </form>
           </div>

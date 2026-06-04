@@ -421,7 +421,7 @@ export default function CobrancasPage() {
   const fmt = v => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+    <div className="flex flex-col gap-8">
       
       {/* Toast Alert */}
       {msg && (() => {
@@ -450,27 +450,14 @@ export default function CobrancasPage() {
 
       {/* WhatsApp Connection Induction Card */}
       {whatsappStatus !== 'connected' && (
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.03) 100%)',
-          border: '1px solid rgba(16, 185, 129, 0.25)',
-          borderRadius: 20,
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 16,
-          boxShadow: '0 8px 24px rgba(16, 185, 129, 0.05)',
-          animation: 'fadeInUp 0.5s ease'
-        }}>
-          <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-            <span style={{ fontSize: 32, filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.4))' }}>📱</span>
+        <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/25 rounded-2xl p-4 md:p-5 flex flex-row flex-wrap items-center justify-between gap-4 shadow-lg shadow-emerald-500/5 animate-fadeInUp">
+          <div className="flex gap-3.5 items-start">
+            <span className="text-3xl filter drop-shadow-[0_0_8px_rgba(16,185,129,0.4)]">📱</span>
             <div>
-              <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: '#10b981', letterSpacing: '-0.2px' }}>
+              <h4 className="m-0 text-sm md:text-base font-extrabold text-emerald-400 tracking-tight">
                 Conecte seu próprio WhatsApp comercial!
               </h4>
-              <p style={{ margin: '4px 0 0 0', fontSize: 13, color: '#a7f3d0', lineHeight: 1.45 }}>
+              <p className="mt-1 text-xs md:text-sm text-emerald-100 leading-relaxed">
                 Evite que seus clientes recebam cobranças de um número genérico do sistema. Conectando seu aparelho, os lembretes saem com <strong>sua foto e seu nome</strong> e as respostas vão direto para você!
               </p>
             </div>
@@ -480,19 +467,7 @@ export default function CobrancasPage() {
               setShowWaPairModal(true);
               handleStartWaConnection();
             }}
-            style={{
-              padding: '10px 20px',
-              borderRadius: 10,
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              border: 'none',
-              color: '#070913',
-              fontSize: 13,
-              fontWeight: 800,
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 4px 12px rgba(16,185,129,0.25)',
-              transition: 'transform 0.2s'
-            }}
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-[#070913] text-xs font-black hover:from-emerald-400 hover:to-emerald-500 active:scale-98 transition-all shadow-md shadow-emerald-500/20 whitespace-nowrap cursor-pointer"
           >
             🔗 Conectar WhatsApp Próprio
           </button>
@@ -500,7 +475,7 @@ export default function CobrancasPage() {
       )}
 
       {/* Minimal Header and Filter Panel */}
-      <div className="flex flex-col gap-4 border-b border-slate-900/60 pb-5" style={{ paddingBottom: '20px' }}>
+      <div className="flex flex-col gap-4 border-b border-slate-900/60 pb-5">
         
         {/* Row 1: Search Input + Reload Button + Add Charge Button (Unified single-row for extreme screen-space efficiency) */}
         <div className="flex items-center gap-2.5 w-full">
@@ -510,8 +485,7 @@ export default function CobrancasPage() {
               placeholder="Buscar cobranças..." 
               value={search} 
               onChange={e => setSearch(e.target.value)} 
-              className="w-full h-11 min-h-[44px] py-2.5 text-xs bg-[#0C0E1A] border border-slate-800/60 text-white rounded-xl outline-none focus:border-emerald-500 transition-colors placeholder-slate-500 font-medium"
-              style={{ paddingLeft: '38px' }}
+              className="w-full h-11 min-h-[44px] py-2.5 pl-10 text-xs bg-[#0C0E1A] border border-slate-800/60 text-white rounded-xl outline-none focus:border-emerald-500 transition-colors placeholder-slate-500 font-medium"
             />
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">🔍</span>
           </div>
@@ -528,20 +502,11 @@ export default function CobrancasPage() {
           
           <button 
             onClick={() => setShowModal(true)} 
-            className="flex-shrink-0 flex flex-col items-center justify-center active:scale-95 transition-all duration-200 cursor-pointer select-none"
-            style={{ 
-              width: '44px', 
-              height: '44px', 
-              borderRadius: '12px', 
-              backgroundColor: '#10B981', 
-              color: '#070913',
-              boxShadow: '0 10px 15px -3px rgba(16, 185, 129, 0.25)',
-              border: '1px solid rgba(52, 211, 153, 0.3)'
-            }}
+            className="w-11 h-11 flex-shrink-0 flex flex-col items-center justify-center rounded-xl bg-[#10B981] text-[#070913] border border-emerald-400/30 hover:bg-emerald-400 active:scale-95 transition-all shadow-lg shadow-emerald-500/25 cursor-pointer select-none"
             title="Nova Cobrança"
           >
-            <span className="text-[13px] font-black leading-none mb-0.5" style={{ color: '#070913' }}>+</span>
-            <span className="text-[8px] font-black uppercase tracking-widest leading-none" style={{ color: '#070913' }}>Nova</span>
+            <span className="text-[13px] font-black leading-none mb-0.5">+</span>
+            <span className="text-[8px] font-black uppercase tracking-widest leading-none">Nova</span>
           </button>
         </div>
 
@@ -577,15 +542,14 @@ export default function CobrancasPage() {
       </div>
 
       {/* 📱 Mobile UI: Card Lists with Drawer Menu (Operable with one hand) */}
-      <div className="md:hidden" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <div className="md:hidden flex flex-col gap-3.5">
         {charges.map(c => {
           const interest = calcInterest(c);
           return (
             <div 
               key={c.id} 
               onClick={() => setActiveDrawerCharge(c)}
-              className="bg-[#0C0E1A] hover:bg-slate-900/40 border border-slate-800/40 rounded-2xl flex items-center justify-between cursor-pointer transition-all duration-200 active:scale-[0.98]"
-              style={{ padding: '16px' }}
+              className="bg-[#0C0E1A] hover:bg-slate-900/40 border border-slate-800/40 rounded-2xl flex items-center justify-between cursor-pointer transition-all duration-200 active:scale-[0.98] p-4"
             >
               <div className="min-w-0 pr-4 flex-1">
                 <p className="font-extrabold text-sm text-slate-100 truncate">{c.client_name || 'Cliente Sem Nome'}</p>
@@ -757,7 +721,7 @@ export default function CobrancasPage() {
             onClick={() => setActiveDrawerCharge(null)}
           />
           
-          <div className="fixed inset-x-0 bottom-0 bg-[#0C0E1A] border-t border-slate-800/80 rounded-t-3xl z-[46] md:hidden space-y-5 shadow-2xl animate-slide-up" style={{ padding: '24px' }}>
+          <div className="fixed inset-x-0 bottom-0 bg-[#0C0E1A] border-t border-slate-800/80 rounded-t-3xl z-[46] md:hidden space-y-5 shadow-2xl animate-slide-up p-6">
             
             {/* Grabber Handle */}
             <div className="w-12 h-1 bg-slate-800 rounded-full mx-auto" onClick={() => setActiveDrawerCharge(null)} />
@@ -1296,9 +1260,10 @@ export default function CobrancasPage() {
                       CONTRATANTE<br />{c.client_name}
                     </div>
                     <div className="border-t border-slate-800 text-center pt-2 font-bold text-[10px]">
-                      CONTRATADA<br />{user?.business_name || user?.name || 'PRESTADOR'}
+                      CONTRATADA<br />{user?.business_name || user?.name || 'PRESTADOR DE SERVIÇOS'}
                     </div>
                   </div>
+
                 </div>
               )}
 
@@ -1314,7 +1279,7 @@ export default function CobrancasPage() {
                 <button 
                   type="button" 
                   onClick={handlePrintContract} 
-                  className="px-4 py-2.5 rounded-lg bg-[#10B981] hover:bg-emerald-600 text-white font-bold text-xs flex items-center gap-1.5 transition-colors shadow-lg shadow-emerald-500/10"
+                  className="px-4 py-2.5 rounded-lg bg-[#10B981] hover:bg-emerald-600 text-[#070913] font-bold text-xs flex items-center gap-1.5 transition-colors shadow-lg shadow-emerald-500/10"
                 >
                   🖨️ Imprimir / Salvar PDF
                 </button>
@@ -1327,89 +1292,66 @@ export default function CobrancasPage() {
       
       {/* WhatsApp Pairing Modal */}
       {showWaPairModal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(12, 14, 26, 0.98)',
-          zIndex: 1010,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 20
-        }}>
-          <div style={{
-            width: '100%',
-            maxWidth: 480,
-            background: '#0C0E1A',
-            border: '1px solid rgba(16, 185, 129, 0.25)',
-            borderRadius: 24,
-            padding: 24,
-            boxShadow: '0 20px 40px rgba(0,0,0,0.9), 0 0 30px rgba(16,185,129,0.05)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 16,
-            maxHeight: '90vh',
-            overflowY: 'auto'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontSize: 17, fontStyle: 'normal', fontWeight: 900, color: '#ffffff', margin: 0, fontFamily: 'sans-serif' }}>
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[1010] flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-[#0C0E1A] border border-emerald-500/20 rounded-3xl p-6 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto relative animate-scaleIn">
+            <button 
+              onClick={() => setShowWaPairModal(false)}
+              className="absolute top-4 right-4 text-slate-500 hover:text-slate-350 text-xl font-light cursor-pointer"
+            >
+              ✕
+            </button>
+            
+            <div className="flex items-center gap-2 border-b border-slate-900 pb-3">
+              <h3 className="text-base font-black text-slate-200">
                 📱 Conectar Seu WhatsApp
               </h3>
-              <button 
-                onClick={() => setShowWaPairModal(false)}
-                style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: 18, cursor: 'pointer', marginLeft: 'auto' }}
-              >
-                ✕
-              </button>
             </div>
 
             {whatsappStatus === 'connecting' && (
-              <div style={{ padding: '30px 0', textAlign: 'center' }}>
-                <div style={{ border: '3.5px solid rgba(16,185,129,0.1)', borderTop: '3.5px solid #10b981', borderRadius: '50%', width: 44, height: 44, margin: '0 auto 20px', animation: 'spin 1s linear infinite' }} />
-                <p style={{ fontSize: 14, fontWeight: 600, color: '#f8fafc', marginBottom: 6, fontFamily: 'sans-serif' }}>Gerando Sessão de WhatsApp...</p>
-                <p style={{ fontSize: 12, color: '#64748b', fontFamily: 'sans-serif' }}>Conectando com o servidor de mensagens. Aguarde alguns instantes.</p>
+              <div className="py-8 text-center flex flex-col items-center justify-center">
+                <div className="w-10 h-10 border-4 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin mb-4" />
+                <p className="text-sm font-bold text-slate-200">Gerando Sessão de WhatsApp...</p>
+                <p className="text-xs text-slate-500 mt-1">Conectando com o servidor de mensagens. Aguarde alguns instantes.</p>
               </div>
             )}
 
             {whatsappStatus === 'scanning' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div style={{ textAlign: 'left', background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: 18, border: '1px solid rgba(255,255,255,0.04)' }}>
-                  <h4 style={{ fontSize: 12, fontWeight: 800, color: '#10b981', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: 0.5, fontFamily: 'sans-serif' }}>Como parear:</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12, color: '#cbd5e1', fontFamily: 'sans-serif' }}>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                      <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>1</span>
+              <div className="flex flex-col gap-4">
+                <div className="text-left bg-slate-950/40 rounded-xl p-4 border border-slate-900/60">
+                  <h4 className="text-xs font-black text-emerald-400 uppercase tracking-wider mb-3">Como parear:</h4>
+                  <div className="flex flex-col gap-2.5 text-xs text-slate-300">
+                    <div className="flex gap-2.5 items-start">
+                      <span className="bg-emerald-500 text-slate-950 w-4.5 h-4.5 rounded-full inline-flex items-center justify-center font-black text-[10px] flex-shrink-0">1</span>
                       <span>Abra o <strong>WhatsApp</strong> no seu celular.</span>
                     </div>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                      <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>2</span>
+                    <div className="flex gap-2.5 items-start">
+                      <span className="bg-emerald-500 text-slate-950 w-4.5 h-4.5 rounded-full inline-flex items-center justify-center font-black text-[10px] flex-shrink-0">2</span>
                       <span>Acesse <strong>Aparelhos Conectados</strong> e clique em <strong>Conectar um Aparelho</strong>.</span>
                     </div>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                      <span style={{ background: '#10b981', color: '#070913', width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 10, flexShrink: 0 }}>3</span>
+                    <div className="flex gap-2.5 items-start">
+                      <span className="bg-emerald-500 text-slate-950 w-4.5 h-4.5 rounded-full inline-flex items-center justify-center font-black text-[10px] flex-shrink-0">3</span>
                       <span>Aponte a câmera para o QR Code abaixo:</span>
                     </div>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0' }}>
-                  <div style={{ background: '#fff', padding: 14, borderRadius: 16, border: '4px solid #10b981', display: 'inline-block' }}>
+                <div className="flex justify-center my-2">
+                  <div className="bg-white p-3.5 rounded-2xl border-4 border-emerald-500 inline-block shadow-lg">
                     {whatsappQrCode ? (
-                      <img src={whatsappQrCode} alt="WhatsApp QR Code" style={{ width: 200, height: 200, display: 'block' }} />
+                      <img src={whatsappQrCode} alt="WhatsApp QR Code" className="w-48 h-48 block" />
                     ) : waError ? (
-                      <div style={{ width: 200, height: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fef2f2', borderRadius: 12, padding: 12 }}>
-                        <span style={{ fontSize: 24, marginBottom: 8 }}>⚠️</span>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#991b1b', textAlign: 'center', lineHeight: '1.4' }}>{waError}</span>
+                      <div className="w-48 h-48 flex flex-col items-center justify-center bg-rose-50 rounded-xl p-3 text-center">
+                        <span className="text-2xl mb-2">⚠️</span>
+                        <span className="text-[10px] font-bold text-rose-800 leading-snug">{waError}</span>
                       </div>
                     ) : (
-                      <div style={{ width: 200, height: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', borderRadius: 12 }}>
-                        <div style={{ border: '3px solid rgba(16,185,129,0.1)', borderTop: '3px solid #10b981', borderRadius: '50%', width: 32, height: 32, marginBottom: 12, animation: 'spin 1s linear infinite' }} />
-                        <span style={{ fontSize: 11, color: '#475569', fontWeight: 700, fontFamily: 'sans-serif' }}>Obtendo QR Code...</span>
+                      <div className="w-48 h-48 flex flex-col items-center justify-center bg-slate-50 rounded-xl text-center">
+                        <div className="w-8 h-8 border-3 border-emerald-500/15 border-t-emerald-500 rounded-full animate-spin mb-3" />
+                        <span className="text-[10px] text-slate-500 font-bold">Obtendo QR Code...</span>
                       </div>
                     )}
                   </div>
                 </div>
-
-
               </div>
             )}
           </div>

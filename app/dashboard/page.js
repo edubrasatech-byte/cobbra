@@ -2,31 +2,52 @@
 import { useState, useEffect } from 'react';
 
 function StatCard({ icon, label, value, subValue, subLabel, color, bg }) {
+  // Map icons to sleek SVGs instead of emojis if they match
+  let svgIcon = icon;
+  if (icon === '💰') {
+    svgIcon = (
+      <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    );
+  } else if (icon === '⏳') {
+    svgIcon = (
+      <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    );
+  } else if (icon === '📈') {
+    svgIcon = (
+      <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    );
+  }
+
   return (
-    <div 
-      className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40 transition-all duration-300 hover:border-[#10B981]/40 group relative overflow-hidden"
-      style={{ padding: '24px' }}
-    >
+    <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-4 transition-all duration-300 hover:border-[#10B981]/45 group relative overflow-hidden shadow-md flex flex-col justify-between min-h-[120px]">
       {/* Top row */}
-      <div className="flex justify-between items-start mb-4">
-        <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800/60 flex items-center justify-center text-lg shadow-sm">
-          {icon}
+      <div className="flex justify-between items-center mb-3">
+        <div className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800/60 flex items-center justify-center shadow-sm">
+          {svgIcon}
         </div>
         {subValue && (
-          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${bg} ${color}`}>
+          <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${bg} ${color}`}>
             {subValue}
           </span>
         )}
       </div>
       
       {/* Middle row */}
-      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">{label}</p>
-      <p className="text-2xl font-extrabold text-slate-100 tracking-tight group-hover:text-[#10B981] transition-colors">{value}</p>
+      <div>
+        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">{label}</p>
+        <p className="text-xl font-black text-slate-100 tracking-tight group-hover:text-[#10B981] transition-colors leading-none">{value}</p>
+      </div>
       
       {/* Bottom row */}
       {subLabel && (
-        <p className="text-[11px] text-slate-400 mt-2 font-medium flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
+        <p className="text-[10px] text-slate-400 mt-2 font-medium flex items-center gap-1.5 border-t border-slate-900/60 pt-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
           {subLabel}
         </p>
       )}
@@ -354,27 +375,27 @@ export default function DashboardHome() {
       </div>
 
       {/* 📱 Mobile Only: Resumo Financeiro Diário below the header */}
-      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 animate-fadeInUp" style={{ padding: '16px' }}>
-        <h3 className="text-xs font-bold text-[#10B981] uppercase tracking-wider flex items-center gap-2" style={{ marginBottom: '12px' }}>
+      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 animate-fadeInUp p-4">
+        <h3 className="text-xs font-bold text-[#10B981] uppercase tracking-wider flex items-center gap-2 mb-3">
           <span>📅</span> Resumo Financeiro Diário
         </h3>
         <div className="grid grid-cols-1 gap-2">
-          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1 gap-x-3" style={{ padding: '10px 14px' }}>
+          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1 gap-x-3 p-2.5 px-3.5">
             <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Pago Hoje</span>
             <p className="text-sm font-black text-emerald-400">{fmt(stats.receivedToday || 0)}</p>
           </div>
           
-          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1 gap-x-3" style={{ padding: '10px 14px' }}>
+          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1 gap-x-3 p-2.5 px-3.5">
             <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Hoje</span>
             <p className="text-sm font-black text-amber-500">{fmt(stats.dueToday || 0)}</p>
           </div>
           
-          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1 gap-x-3" style={{ padding: '10px 14px' }}>
+          <div className="bg-[#0F111E] rounded-xl border border-slate-900 flex justify-between items-center flex-wrap gap-y-1 gap-x-3 p-2.5 px-3.5">
             <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Amanhã</span>
             <p className="text-sm font-black text-blue-400">{fmt(stats.dueTomorrow || 0)}</p>
           </div>
           
-          <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl border border-slate-900 cursor-pointer transition-all duration-200" onClick={() => window.location.href = '/dashboard/cobranca-diaria'} style={{ padding: '10px 14px' }}>
+          <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl border border-slate-900 cursor-pointer transition-all duration-200 p-2.5 px-3.5" onClick={() => window.location.href = '/dashboard/cobranca-diaria'}>
             <div className="flex justify-between items-center w-full flex-wrap gap-y-1 gap-x-3">
               <div>
                 <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block">Recorrentes Diários</span>
@@ -389,8 +410,8 @@ export default function DashboardHome() {
       </div>
 
       {/* 📱 Mobile Only: Alertas de Clientes em Risco below Resumo Financeiro */}
-      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 animate-fadeInUp" style={{ padding: '16px' }}>
-        <h3 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2" style={{ marginBottom: '12px' }}>
+      <div className="block md:hidden bg-[#0C0E1A] rounded-2xl border border-slate-800/40 animate-fadeInUp p-4">
+        <h3 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2 mb-3">
           <span>🚨</span> Alertas de Clientes em Risco
         </h3>
         <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
@@ -403,8 +424,7 @@ export default function DashboardHome() {
             return (
               <div 
                 key={i} 
-                className="bg-[#0F111E] rounded-xl border border-slate-900 flex items-center justify-between gap-3 hover:border-slate-800 transition-colors flex-wrap gap-y-1"
-                style={{ padding: '8px 12px' }}
+                className="bg-[#0F111E] rounded-xl border border-slate-900 flex items-center justify-between gap-3 hover:border-slate-800 transition-colors flex-wrap gap-y-1 p-2 px-3"
               >
                 <div className="flex items-center gap-2 min-w-0">
                   <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm ${
@@ -477,7 +497,7 @@ export default function DashboardHome() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Revolut-style Area/Line Chart for Revenue */}
-        <div className="lg:col-span-2 bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '24px' }}>
+        <div className="lg:col-span-2 bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-4 md:p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Histórico de Receita</h3>
@@ -522,7 +542,7 @@ export default function DashboardHome() {
         </div>
 
         {/* Status Distribution */}
-        <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '24px' }}>
+        <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-4 md:p-6">
           <div className="mb-6">
             <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Status das Cobranças</h3>
             <p className="text-[11px] text-slate-500 mt-0.5">Distribuição geral de títulos e quitações</p>
@@ -542,14 +562,13 @@ export default function DashboardHome() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* 1. Atividade Recente */}
-        <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40 flex flex-col" style={{ padding: '24px' }}>
+        <div className="bg-[#0C0E1A] rounded-2xl border border-slate-800/40 flex flex-col p-4 md:p-6">
           <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4">Atividade Recente</h3>
           <div className="space-y-3 flex-1 overflow-y-auto max-h-[300px] pr-1">
             {(stats.recentActivity || []).slice(0, 6).map((a, i) => (
               <div 
                 key={i} 
-                className="flex gap-3 border-b border-slate-900/60 last:border-b-0 hover:bg-slate-950/20 rounded-lg transition-colors duration-150"
-                style={{ paddingLeft: '16px', paddingRight: '16px', paddingTop: '10px', paddingBottom: '10px' }}
+                className="flex gap-3 border-b border-slate-900/60 last:border-b-0 hover:bg-slate-950/20 rounded-lg transition-colors duration-150 p-2"
               >
                 <div className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800/50 flex items-center justify-center text-base flex-shrink-0">
                   {actIcons[a.action] || '📋'}
@@ -573,25 +592,25 @@ export default function DashboardHome() {
         </div>
 
         {/* 2. Resumo Diário */}
-        <div className="hidden md:block bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '16px' }}>
-          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider" style={{ marginBottom: '12px' }}>Resumo Financeiro Diário</h3>
+        <div className="hidden md:block bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-4">
+          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">Resumo Financeiro Diário</h3>
           <div className="space-y-2">
-            <div className="bg-[#0F111E] rounded-xl border border-slate-900" style={{ padding: '10px 14px' }}>
+            <div className="bg-[#0F111E] rounded-xl border border-slate-900 p-2.5">
               <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Pago Hoje</span>
               <p className="text-sm font-black text-emerald-400 mt-0.5">{fmt(stats.receivedToday || 0)}</p>
             </div>
             
-            <div className="bg-[#0F111E] rounded-xl border border-slate-900" style={{ padding: '10px 14px' }}>
+            <div className="bg-[#0F111E] rounded-xl border border-slate-900 p-2.5">
               <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Hoje</span>
               <p className="text-sm font-black text-amber-500 mt-0.5">{fmt(stats.dueToday || 0)}</p>
             </div>
             
-            <div className="bg-[#0F111E] rounded-xl border border-slate-900" style={{ padding: '10px 14px' }}>
+            <div className="bg-[#0F111E] rounded-xl border border-slate-900 p-2.5">
               <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">A Vencer Amanhã</span>
               <p className="text-sm font-black text-blue-400 mt-0.5">{fmt(stats.dueTomorrow || 0)}</p>
             </div>
             
-            <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl border border-slate-900 cursor-pointer transition-all duration-200" onClick={() => window.location.href = '/dashboard/cobranca-diaria'} style={{ padding: '10px 14px' }}>
+            <div className="bg-[#0F111E] hover:border-[#10B981]/30 rounded-xl border border-slate-900 cursor-pointer transition-all duration-200 p-2.5" onClick={() => window.location.href = '/dashboard/cobranca-diaria'}>
               <div className="flex justify-between items-center">
                 <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Faturamentos Recorrentes Diários</span>
                 <span className="text-[10px] text-emerald-400 font-bold hover:underline">Ver →</span>
@@ -606,8 +625,8 @@ export default function DashboardHome() {
         </div>
 
         {/* 3. Clientes em Risco */}
-        <div className="hidden md:block bg-[#0C0E1A] rounded-2xl border border-slate-800/40" style={{ padding: '16px' }}>
-          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider" style={{ marginBottom: '12px' }}>Alertas de Clientes em Risco</h3>
+        <div className="hidden md:block bg-[#0C0E1A] rounded-2xl border border-slate-800/40 p-4">
+          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">Alertas de Clientes em Risco</h3>
           <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
             {(stats.atRiskClients || []).map((c, i) => {
               const dateStr = c.oldest_overdue_date 
@@ -618,8 +637,7 @@ export default function DashboardHome() {
               return (
                 <div 
                   key={i} 
-                  className="bg-[#0F111E] rounded-xl border border-slate-900 flex items-center justify-between gap-3 hover:border-slate-800 transition-colors"
-                  style={{ padding: '8px 12px' }}
+                  className="bg-[#0F111E] rounded-xl border border-slate-900 flex items-center justify-between gap-3 hover:border-slate-800 transition-colors p-2 px-3"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-sm ${
@@ -648,7 +666,7 @@ export default function DashboardHome() {
             })}
             
             {(!stats.atRiskClients || stats.atRiskClients.length === 0) && (
-              <div className="flex flex-col items-center justify-center py-4 text-center">
+               <div className="flex flex-col items-center justify-center py-4 text-center">
                 <span className="text-2xl mb-1.5">🎉</span>
                 <p className="text-emerald-400 text-xs font-bold">100% em dia!</p>
                 <p className="text-[9px] text-slate-500 mt-0.5">Todos os clientes ativos adimplentes.</p>
@@ -659,7 +677,7 @@ export default function DashboardHome() {
       </div>
 
       {/* 🪄 Catarina AI Insights Premium Banner (Relocated to the bottom of the page) */}
-      <div className="bg-[#0C0E1A]/80 backdrop-blur-lg border border-slate-800/40 rounded-2xl relative overflow-hidden" style={{ padding: '24px' }}>
+      <div className="bg-[#0C0E1A]/80 backdrop-blur-lg border border-slate-800/40 rounded-2xl relative overflow-hidden p-6">
         {/* Decorative elements */}
         <div className="absolute -right-20 -top-20 w-44 h-44 rounded-full bg-[#10B981]/5 blur-3xl pointer-events-none"></div>
         <div className="absolute -left-20 -bottom-20 w-44 h-44 rounded-full bg-teal-500/5 blur-3xl pointer-events-none"></div>
@@ -701,8 +719,7 @@ export default function DashboardHome() {
               return (
                 <div 
                   key={idx} 
-                  className={`border ${borderColors[insight.type] || 'border-slate-800/40'} ${bgColors[insight.type] || 'bg-slate-900/10'} transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg hover:shadow-black/5`}
-                  style={{ borderRadius: '16px', padding: '24px' }}
+                  className={`border ${borderColors[insight.type] || 'border-slate-800/40'} ${bgColors[insight.type] || 'bg-slate-900/10'} transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg hover:shadow-black/5 rounded-2xl p-6`}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h4 className="text-xs font-bold text-slate-200">{insight.title}</h4>

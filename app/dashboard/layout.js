@@ -181,7 +181,7 @@ export default function DashboardLayout({ children }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const horizontalPadding = isDesktop ? '40px' : '24px';
+  const horizontalPadding = isDesktop ? '40px' : '16px';
 
   // Copilot States
   const [copilotInput, setCopilotInput] = useState('');

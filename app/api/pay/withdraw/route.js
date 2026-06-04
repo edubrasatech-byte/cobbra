@@ -2,6 +2,11 @@ import { getUserFromRequest } from '@/lib/auth';
 import { run, queryOne, generateId } from '@/lib/db';
 import { requestAsaasTransfer } from '@/lib/asaas';
 
+/**
+ * POST /api/pay/withdraw
+ * Processa a solicitação de saque (resgate Pix) da carteira Cobbra Pay
+ * do assinante logado para sua conta bancária externa.
+ */
 export async function POST(request) {
   try {
     const user = getUserFromRequest(request);
@@ -10,11 +15,11 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { client_id, amount, pix_key, pix_key_type } = body;
+    const { amount, pix_key, pix_key_type } = body;
 
-    if (!client_id || !amount || !pix_key || !pix_key_type) {
+    if (!amount || !pix_key || !pix_key_type) {
       return Response.json(
-        { error: 'Parâmetros inválidos. client_id, amount, pix_key e pix_key_type são obrigatórios.' },
+        { error: 'Parâmetros inválidos. amount, pix_key e pix_key_type são obrigatórios.' },
         { status: 400 }
       );
     }
@@ -24,26 +29,27 @@ export async function POST(request) {
       return Response.json({ error: 'Valor de saque inválido.' }, { status: 400 });
     }
 
-    // Load client and verify ownership
-    const client = queryOne(
-      'SELECT id, name, wallet_balance, withdrawal_count FROM clients WHERE id = ? AND user_id = ?',
-      [client_id, user.id]
+    // Carregar dados atualizados do assinante
+    const userData = queryOne(
+      'SELECT name, wallet_balance, withdrawal_count FROM users WHERE id = ?',
+      [user.id]
     );
 
-    if (!client) {
-      return Response.json({ error: 'Cliente não encontrado.' }, { status: 404 });
+    if (!userData) {
+      return Response.json({ error: 'Usuário não encontrado.' }, { status: 404 });
     }
 
-    // Verify sufficient balance
-    if ((client.wallet_balance || 0) < numAmount) {
+    // Verificar se possui saldo suficiente
+    const currentBalance = userData.wallet_balance || 0;
+    if (currentBalance < numAmount) {
       return Response.json(
-        { error: `Saldo insuficiente. Saldo disponível: R$ ${(client.wallet_balance || 0).toFixed(2)}` },
+        { error: `Saldo insuficiente. Saldo disponível: R$ ${currentBalance.toFixed(2)}` },
         { status: 400 }
       );
     }
 
-    // Calculate fees
-    const withdrawalCount = client.withdrawal_count || 0;
+    // Regra de Tarifas de Saque: 1º Saque Grátis, demais R$ 3,90
+    const withdrawalCount = userData.withdrawal_count || 0;
     const fee = withdrawalCount === 0 ? 0.0 : 3.90;
     const netAmount = numAmount - fee;
 
@@ -54,7 +60,7 @@ export async function POST(request) {
       );
     }
 
-    // Request transfer on Asaas
+    // Chamar API de Transferência do Asaas (TED/Pix de saída)
     let asaasResult;
     try {
       asaasResult = await requestAsaasTransfer(netAmount, pix_key, pix_key_type);
@@ -68,20 +74,19 @@ export async function POST(request) {
 
     const transferId = asaasResult.transferId || generateId();
 
-    // Deduct wallet balance and increment withdrawal count in local database
+    // Deduzir o saldo do assinante no SQLite e incrementar contagem de saques
     run(
-      'UPDATE clients SET wallet_balance = wallet_balance - ?, withdrawal_count = withdrawal_count + 1, updated_at = datetime("now") WHERE id = ?',
-      [numAmount, client_id]
+      'UPDATE users SET wallet_balance = wallet_balance - ?, withdrawal_count = withdrawal_count + 1, updated_at = datetime("now") WHERE id = ?',
+      [numAmount, user.id]
     );
 
-    // Save bank transfer record
+    // Salvar registro de saque externo (client_id é NULL pois o saque é geral do assinante)
     run(
       `INSERT INTO bank_transfers (id, user_id, client_id, amount, fee, net_amount, status, pix_key, pix_key_type, description)
-       VALUES (?, ?, ?, ?, ?, ?, 'done', ?, ?, ?)`,
+       VALUES (?, ?, NULL, ?, ?, ?, 'done', ?, ?, ?)`,
       [
         transferId,
         user.id,
-        client_id,
         numAmount,
         fee,
         netAmount,
@@ -91,44 +96,43 @@ export async function POST(request) {
       ]
     );
 
-    // Record client transaction (so it shows up in their ledger as debit)
+    // Gravar transação de débito no livro financeiro geral
     run(
       `INSERT INTO transactions (id, user_id, client_id, amount, type, payment_method, reference, notes)
-       VALUES (?, ?, ?, ?, 'expense', 'pix', ?, ?)`,
+       VALUES (?, ?, NULL, ?, 'expense', 'pix', ?, ?)`,
       [
         generateId(),
         user.id,
-        client_id,
         numAmount,
         transferId,
         `Saque Pix efetuado para a chave: ${pix_key}. Tarifa: R$ ${fee.toFixed(2)}`
       ]
     );
 
-    // Create log activity
+    // Gravar log de atividade
     run(
       'INSERT INTO activity_log (id, user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?, ?)',
       [
         generateId(),
         user.id,
         'withdraw_payout',
-        'client',
-        client_id,
-        `Saque de R$ ${numAmount.toFixed(2)} (líquido R$ ${netAmount.toFixed(2)}) efetuado para ${client.name}.`
+        'user',
+        user.id,
+        `Saque de R$ ${numAmount.toFixed(2)} (líquido R$ ${netAmount.toFixed(2)}) efetuado para a conta do assinante.`
       ]
     );
 
-    // Create user notification
+    // Criar notificação para o assinante
     run(
       'INSERT INTO notifications (id, user_id, type, title, message, entity_type, entity_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [
         generateId(),
         user.id,
         'warning',
-        '💸 Saque realizado',
-        `Saque de R$ ${numAmount.toFixed(2)} da carteira de ${client.name} processado com sucesso.`,
-        'client',
-        client_id
+        '💸 Saque realizado com sucesso',
+        `Saque de R$ ${numAmount.toFixed(2)} processado e enviado para sua chave Pix.`,
+        'user',
+        user.id
       ]
     );
 

@@ -59,6 +59,10 @@ export async function POST(request) {
       run('UPDATE clients SET wallet_balance = wallet_balance + ?, total_paid = total_paid + ?, total_overdue = MAX(0, total_overdue - ?), last_payment_at = datetime("now"), updated_at = datetime("now") WHERE id = ?', 
         [netAmount, paidAmount, existing.amount, existing.client_id]);
 
+      // Atualizar o saldo de Cobbra Pay do assinante (users)
+      run('UPDATE users SET wallet_balance = wallet_balance + ?, updated_at = datetime("now") WHERE id = ?',
+        [netAmount, existing.user_id]);
+
       // Registrar transação no livro financeiro (com o valor líquido creditado na carteira)
       run('INSERT INTO transactions (id, user_id, charge_id, client_id, amount, type, payment_method, reference, notes) VALUES (?, ?, ?, ?, ?, "income", ?, ?, ?)',
         [
