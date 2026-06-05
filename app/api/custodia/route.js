@@ -126,7 +126,7 @@ export async function POST(request) {
     // Register history: lease_start
     run(
       `INSERT INTO capital_custody_history (id, custody_id, type, amount, notes)
-       VALUES (?, ?, 'lease_start', ?, ?)`,
+       VALUES (?, ?, ?, ?, ?)`,
       [generateId(), id, 'lease_start', parsedPrincipal, `Contrato iniciado: Capital locado de R$ ${parsedPrincipal.toFixed(2)} com taxa diária de R$ ${parsedDailyFee.toFixed(2)}`]
     );
 

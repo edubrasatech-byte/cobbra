@@ -49,10 +49,10 @@ export async function GET(request) {
       instance = userData?.whatsapp_instance || `cobbra_inst_${user.id.substring(0, 8)}`;
     }
 
-    // Trust the database status if it is already connected.
+    // Trust the database status if it is already connected with a valid phone.
     // This prevents connection drops due to temporary network lags or transient VPS state checks.
-    if (status === 'connected') {
-      return Response.json({ status: 'connected', phone: phone || '5511999999999', instance });
+    if (status === 'connected' && phone && phone !== '5511999999999') {
+      return Response.json({ status: 'connected', phone, instance });
     }
 
     const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL || process.env.EVOLUTION_API_URL;
@@ -94,17 +94,39 @@ export async function GET(request) {
 
         if (isConnected) {
           status = 'connected';
+          
+          // Try to fetch the actual connected JID/phone from Evolution API
+          let fetchedPhone = null;
+          try {
+            const listRes = await fetch(`${baseUrl}/instance/fetchInstances`, {
+              headers: { 'apikey': evoToken }
+            });
+            if (listRes.ok) {
+              const list = await listRes.json();
+              if (Array.isArray(list)) {
+                const matched = list.find(i => i.name === instance || i.instanceName === instance);
+                if (matched && matched.ownerJid) {
+                  fetchedPhone = matched.ownerJid.split('@')[0];
+                }
+              }
+            }
+          } catch (phoneErr) {
+            console.error('[GET REAL PHONE ERROR]', phoneErr);
+          }
+
+          const finalPhone = fetchedPhone || phone || '5511999999999';
+
           // Heal the database status!
           if (isOutreach) {
             setSetting('outreach_whatsapp_status', 'connected');
-            setSetting('outreach_whatsapp_phone', phone || '5511999999999');
+            setSetting('outreach_whatsapp_phone', finalPhone);
           } else {
             run(
               "UPDATE users SET whatsapp_status = 'connected', whatsapp_instance = ?, whatsapp_phone = ?, updated_at = datetime('now') WHERE id = ?",
-              [instance, phone || '5511999999999', user.id]
+              [instance, finalPhone, user.id]
             );
           }
-          return Response.json({ status: 'connected', phone: phone || '5511999999999', instance });
+          return Response.json({ status: 'connected', phone: finalPhone, instance });
         } else if (status === 'connected') {
           // Heal the database status: if db status is 'connected' but VPS is not open, then it is disconnected!
           status = 'disconnected';
