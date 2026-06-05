@@ -753,22 +753,20 @@ aside, header, main, .chatbot-drawer-container {
 
 @media (max-width: 640px) {
   .onboarding-main {
-    padding: 10px 8px;
+    padding: 16px 12px;
     align-items: center;
-    min-height: calc(100vh - 100px);
-    overflow: hidden;
+    min-height: auto;
+    overflow: visible;
   }
 
   .onboarding-card {
     border-radius: 16px;
-    padding: 16px;
-    max-height: calc(100vh - 120px);
-    max-height: calc(100svh - 120px);
+    padding: 20px 16px;
+    max-height: none;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    /* Evita bounces e movimentos desnecessários no scroll do celular */
-    overscroll-behavior: contain;
+    overflow-y: visible;
+    overscroll-behavior: auto;
   }
 }
 

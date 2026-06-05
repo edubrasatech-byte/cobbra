@@ -689,6 +689,14 @@ export default function DashboardLayout({ children }) {
     );
   }
 
+  if (pathname === '/dashboard/onboarding') {
+    return (
+      <div className="min-h-screen bg-[#0C0E1A] text-slate-100 font-sans antialiased overflow-x-hidden">
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-base-theme text-primary-theme font-sans antialiased overflow-x-hidden">
       
