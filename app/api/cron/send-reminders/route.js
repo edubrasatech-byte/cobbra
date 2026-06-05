@@ -8,11 +8,13 @@ import { getInstanceToken, getEvolutionConfig, sendWhatsAppMessage } from '@/lib
 export async function POST(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const secret = searchParams.get('secret');
+    const secret = searchParams.get('secret') || searchParams.get('token');
+    const authHeader = request.headers.get('authorization');
 
     // Validação de segurança
     const cronSecret = process.env.CRON_SECRET || 'cobbra-cron-secret-key-2026';
-    if (secret !== cronSecret) {
+    const isAuthorized = (secret === cronSecret) || (authHeader === `Bearer ${cronSecret}`);
+    if (!isAuthorized) {
       return Response.json({ error: 'Não autorizado' }, { status: 401 });
     }
 

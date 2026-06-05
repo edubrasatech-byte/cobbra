@@ -8,18 +8,20 @@ export async function POST(request) {
       return Response.json({ error: 'Não autorizado. Faça login novamente.' }, { status: 401 });
     }
 
-    const { business_name, business_niche, collection_rigor, pix_key, pix_key_type } = await request.json();
+    const { business_name, business_niche, collection_rigor, pix_key, pix_key_type, onboarding_answers } = await request.json();
 
     if (!business_name || !business_niche || !pix_key) {
       return Response.json({ error: 'Nome da empresa, nicho e chave Pix são obrigatórios.' }, { status: 400 });
     }
 
+    const answersJson = onboarding_answers ? JSON.stringify(onboarding_answers) : null;
+
     // Update user profile and complete onboarding
     run(
       `UPDATE users 
-       SET business_name = ?, business_niche = ?, collection_rigor = ?, pix_key = ?, pix_key_type = ?, onboarding_completed = 1, updated_at = datetime('now')
+       SET business_name = ?, business_niche = ?, collection_rigor = ?, pix_key = ?, pix_key_type = ?, onboarding_answers = ?, onboarding_completed = 1, updated_at = datetime('now')
        WHERE id = ?`,
-      [business_name, business_niche, collection_rigor || 'neutral', pix_key, pix_key_type || 'email', user.id]
+      [business_name, business_niche, collection_rigor || 'neutral', pix_key, pix_key_type || 'email', answersJson, user.id]
     );
 
     // Clean up any old templates for this user to avoid duplications

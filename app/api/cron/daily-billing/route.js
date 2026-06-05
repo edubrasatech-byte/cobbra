@@ -28,7 +28,7 @@ export async function GET(request) {
   try {
     // 1. Chave de proteção simples para chamadas de cron externo
     const { searchParams } = new URL(request.url);
-    const secret = searchParams.get('secret');
+    const secret = searchParams.get('secret') || searchParams.get('token');
     const authHeader = request.headers.get('authorization');
     const expectedSecret = process.env.CRON_SECRET || 'cobbra-cron-security-token-2026';
 

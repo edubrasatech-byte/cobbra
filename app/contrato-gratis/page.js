@@ -230,7 +230,7 @@ CONDIÇÕES COMERCIAIS & DETALHES DA LOCAÇÃO OU SERVIÇO: ${notes}
 
   const handleOnboardSuccess = (user) => {
     setRegisteredUser(user);
-    executeAuthorizedAction(onboardCallbackAction, user);
+    window.location.href = `/dashboard/onboarding?source=contrato-gratis&project_id=${projectId}&action=${onboardCallbackAction}`;
   };
 
   const handleExportCharges = async () => {

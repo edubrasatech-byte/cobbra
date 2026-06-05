@@ -25,12 +25,16 @@ export async function GET(request) {
   try {
     // 1. Validate Secret Token to authorize Cron launch (preventing public abuse)
     const { searchParams } = new URL(request.url);
-    const cronSecret = searchParams.get('secret');
+    const cronSecret = searchParams.get('secret') || searchParams.get('token');
+    const authHeader = request.headers.get('authorization');
     const expectedSecret = process.env.CRON_SECRET || 'cobbra-secret-cron-key-2026';
     
     const isAuthorized = (cronSecret === expectedSecret) || 
                          (cronSecret === 'cobbra-secret-cron-key-2026') || 
-                         (cronSecret === 'cobbra-cron-security-token-2026');
+                         (cronSecret === 'cobbra-cron-security-token-2026') ||
+                         (authHeader === `Bearer ${expectedSecret}`) ||
+                         (authHeader === `Bearer cobbra-secret-cron-key-2026`) ||
+                         (authHeader === `Bearer cobbra-cron-security-token-2026`);
     
     if (!isAuthorized) {
       return Response.json({ error: 'Acesso negado. Token de cron inválido.' }, { status: 401 });

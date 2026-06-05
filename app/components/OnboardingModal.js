@@ -2,7 +2,6 @@
 import { useState } from 'react';
 
 export default function OnboardingModal({ isOpen, onClose, onSuccess }) {
-  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
@@ -11,48 +10,29 @@ export default function OnboardingModal({ isOpen, onClose, onSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
-  
-  const [businessName, setBusinessName] = useState('');
-  const [businessNiche, setBusinessNiche] = useState('freelancer');
-  const [pixKeyType, setPixKeyType] = useState('cnpj');
-  const [pixKey, setPixKey] = useState('');
-  const [collectionRigor, setCollectionRigor] = useState('neutral');
 
   if (!isOpen) return null;
-
-  const handleNextStep = (e) => {
-    e.preventDefault();
-    setError('');
-    
-    if (step === 1) {
-      if (!name || !email || !password || !phone) {
-        setError('Por favor, preencha todos os campos obrigatórios.');
-        return;
-      }
-      if (password.length < 8) {
-        setError('A senha deve ter pelo menos 8 caracteres.');
-        return;
-      }
-      if (!email.includes('@')) {
-        setError('Por favor, insira um e-mail válido.');
-        return;
-      }
-      setStep(2);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     
-    if (!businessName || !pixKey) {
-      setError('Por favor, preencha o nome da sua empresa e a chave Pix.');
+    if (!name || !email || !password || !phone) {
+      setError('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+    if (password.length < 8) {
+      setError('A senha deve ter pelo menos 8 caracteres.');
+      return;
+    }
+    if (!email.includes('@')) {
+      setError('Por favor, insira um e-mail válido.');
       return;
     }
 
     setLoading(true);
     try {
-      // 1. Register the user
+      // Register the user - this also sets the cobroo_token cookie on the browser
       const registerRes = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -71,26 +51,7 @@ export default function OnboardingModal({ isOpen, onClose, onSuccess }) {
         throw new Error(registerData.error || 'Erro ao realizar o cadastro. Tente outro e-mail.');
       }
 
-      // 2. Perform onboarding configuration
-      const onboardingRes = await fetch('/api/auth/onboarding', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          business_name: businessName,
-          business_niche: businessNiche,
-          collection_rigor: collectionRigor,
-          pix_key: pixKey,
-          pix_key_type: pixKeyType
-        })
-      });
-
-      const onboardingData = await onboardingRes.json();
-
-      if (!onboardingRes.ok) {
-        throw new Error(onboardingData.error || 'Erro no onboarding. Mas sua conta foi criada!');
-      }
-
-      // Success
+      // Success callback
       if (onSuccess) {
         onSuccess(registerData.user);
       }
@@ -134,7 +95,7 @@ export default function OnboardingModal({ isOpen, onClose, onSuccess }) {
         border: '1px solid #334155',
         borderRadius: 24,
         width: '100%',
-        maxWidth: 520,
+        maxWidth: 500,
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
         overflow: 'hidden',
         position: 'relative'
@@ -191,7 +152,7 @@ export default function OnboardingModal({ isOpen, onClose, onSuccess }) {
             marginBottom: 6,
             letterSpacing: '-0.5px'
           }}>
-            {step === 1 ? 'Crie sua conta grátis' : 'Configure seus recebimentos'}
+            Crie sua conta grátis
           </h3>
           <p style={{
             fontSize: 14,
@@ -199,10 +160,7 @@ export default function OnboardingModal({ isOpen, onClose, onSuccess }) {
             marginBottom: 24,
             lineHeight: 1.5
           }}>
-            {step === 1 
-              ? 'Complete o cadastro rápido para exportar seu contrato completo e configurar seus lembretes Pix.'
-              : 'Seus dados de Pix e cobrança são criptografados e você recebe 100% direto no seu Pix, sem intermediários e com taxa zero.'
-            }
+            Crie seu cadastro rápido em segundos. Você configurará seu Pix e suas automações financeiras no passo seguinte.
           </p>
 
           {error && (
@@ -220,140 +178,64 @@ export default function OnboardingModal({ isOpen, onClose, onSuccess }) {
             </div>
           )}
 
-          {step === 1 ? (
-            <form onSubmit={handleNextStep} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Seu Nome Completo *</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="Ex: João da Silva" 
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    backgroundColor: '#0f172a',
-                    border: '1px solid #334155',
-                    borderRadius: 10,
-                    color: '#f8fafc',
-                    fontSize: 14,
-                    outline: 'none',
-                    transition: 'border-color 0.2s'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#10b981'}
-                  onBlur={(e) => e.target.style.borderColor = '#334155'}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>E-mail de Trabalho *</label>
-                <input 
-                  type="email" 
-                  required
-                  placeholder="Ex: joao@seuemail.com" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    backgroundColor: '#0f172a',
-                    border: '1px solid #334155',
-                    borderRadius: 10,
-                    color: '#f8fafc',
-                    fontSize: 14,
-                    outline: 'none',
-                    transition: 'border-color 0.2s'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#10b981'}
-                  onBlur={(e) => e.target.style.borderColor = '#334155'}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>WhatsApp com DDD *</label>
-                  <input 
-                    type="tel" 
-                    required
-                    placeholder="Ex: 11999998888" 
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '12px 14px',
-                      backgroundColor: '#0f172a',
-                      border: '1px solid #334155',
-                      borderRadius: 10,
-                      color: '#f8fafc',
-                      fontSize: 14,
-                      outline: 'none',
-                      transition: 'border-color 0.2s'
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = '#10b981'}
-                    onBlur={(e) => e.target.style.borderColor = '#334155'}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Senha de Acesso *</label>
-                  <input 
-                    type="password" 
-                    required
-                    placeholder="Mínimo 8 dígitos" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '12px 14px',
-                      backgroundColor: '#0f172a',
-                      border: '1px solid #334155',
-                      borderRadius: 10,
-                      color: '#f8fafc',
-                      fontSize: 14,
-                      outline: 'none',
-                      transition: 'border-color 0.2s'
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = '#10b981'}
-                    onBlur={(e) => e.target.style.borderColor = '#334155'}
-                  />
-                </div>
-              </div>
-
-              <button 
-                type="submit"
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Seu Nome Completo *</label>
+              <input 
+                type="text" 
+                required
+                placeholder="Ex: João da Silva" 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '14px',
-                  background: 'linear-gradient(135deg, #10b981, #059669)',
-                  border: 'none',
-                  borderRadius: 12,
-                  color: '#ffffff',
-                  fontSize: 15,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  marginTop: 8,
-                  transition: 'transform 0.1s, opacity 0.2s',
-                  boxShadow: '0 4px 14px rgba(16, 185, 129, 0.2)'
+                  padding: '12px 14px',
+                  backgroundColor: '#0f172a',
+                  border: '1px solid #334155',
+                  borderRadius: 10,
+                  color: '#f8fafc',
+                  fontSize: 14,
+                  outline: 'none',
+                  transition: 'border-color 0.2s'
                 }}
-                onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
-                onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
-                onClick={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
-                onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-              >
-                Prosseguir para Onboarding ➜
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                onFocus={(e) => e.target.style.borderColor = '#10b981'}
+                onBlur={(e) => e.target.style.borderColor = '#334155'}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>E-mail de Trabalho *</label>
+              <input 
+                type="email" 
+                required
+                placeholder="Ex: joao@seuemail.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 14px',
+                  backgroundColor: '#0f172a',
+                  border: '1px solid #334155',
+                  borderRadius: 10,
+                  color: '#f8fafc',
+                  fontSize: 14,
+                  outline: 'none',
+                  transition: 'border-color 0.2s'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#10b981'}
+                onBlur={(e) => e.target.style.borderColor = '#334155'}
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Nome Fantasia / Empresa / Negócio *</label>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>WhatsApp com DDD *</label>
                 <input 
-                  type="text" 
+                  type="tel" 
                   required
-                  placeholder="Ex: Rota Sul Locadora ou Consultório Dra. Ana" 
-                  value={businessName}
-                  onChange={(e) => setBusinessName(e.target.value)}
+                  placeholder="Ex: 11999998888" 
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                   style={{
                     width: '100%',
                     padding: '12px 14px',
@@ -370,160 +252,57 @@ export default function OnboardingModal({ isOpen, onClose, onSuccess }) {
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Seu Ramo / Nicho *</label>
-                  <select 
-                    value={businessNiche}
-                    onChange={(e) => setBusinessNiche(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '12px 14px',
-                      backgroundColor: '#0f172a',
-                      border: '1px solid #334155',
-                      borderRadius: 10,
-                      color: '#f8fafc',
-                      fontSize: 14,
-                      outline: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <option value="locacao_veiculos">🚗 Locação de Frotas/Carros</option>
-                    <option value="emprestimo">💰 Empréstimos / Microcrédito</option>
-                    <option value="personal">🏋️‍♂️ Personal Trainer / Fitness</option>
-                    <option value="clinica">🩺 Clínica / Sessões / Consultório</option>
-                    <option value="freelancer">💼 Freelancer / Serviços Gerais</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Rigor da Régua *</label>
-                  <select 
-                    value={collectionRigor}
-                    onChange={(e) => setCollectionRigor(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '12px 14px',
-                      backgroundColor: '#0f172a',
-                      border: '1px solid #334155',
-                      borderRadius: 10,
-                      color: '#f8fafc',
-                      fontSize: 14,
-                      outline: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <option value="gentle">🌸 Gentil (Recomendado)</option>
-                    <option value="neutral">⚖️ Neutro / Padrão</option>
-                    <option value="firm">⚡ Firme / Estrito</option>
-                  </select>
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr', gap: 10 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Tipo da Chave Pix *</label>
-                  <select 
-                    value={pixKeyType}
-                    onChange={(e) => setPixKeyType(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '12px 14px',
-                      backgroundColor: '#0f172a',
-                      border: '1px solid #334155',
-                      borderRadius: 10,
-                      color: '#f8fafc',
-                      fontSize: 14,
-                      outline: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <option value="cnpj">CNPJ</option>
-                    <option value="cpf">CPF</option>
-                    <option value="phone">Celular</option>
-                    <option value="email">E-mail</option>
-                    <option value="random">Chave Aleatória</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Chave Pix para Receber *</label>
-                  <input 
-                    type="text" 
-                    required
-                    placeholder="Sua chave de recebimento" 
-                    value={pixKey}
-                    onChange={(e) => setPixKey(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '12px 14px',
-                      backgroundColor: '#0f172a',
-                      border: '1px solid #334155',
-                      borderRadius: 10,
-                      color: '#f8fafc',
-                      fontSize: 14,
-                      outline: 'none',
-                      transition: 'border-color 0.2s'
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = '#10b981'}
-                    onBlur={(e) => e.target.style.borderColor = '#334155'}
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
-                <button 
-                  type="button"
-                  onClick={() => setStep(1)}
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#cbd5e1', marginBottom: 6 }}>Senha de Acesso *</label>
+                <input 
+                  type="password" 
+                  required
+                  placeholder="Mínimo 8 dígitos" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   style={{
-                    flex: 1,
-                    padding: '14px',
-                    backgroundColor: 'transparent',
+                    width: '100%',
+                    padding: '12px 14px',
+                    backgroundColor: '#0f172a',
                     border: '1px solid #334155',
-                    borderRadius: 12,
-                    color: '#94a3b8',
-                    fontSize: 15,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
+                    borderRadius: 10,
+                    color: '#f8fafc',
+                    fontSize: 14,
+                    outline: 'none',
+                    transition: 'border-color 0.2s'
                   }}
-                  onMouseOver={(e) => { e.currentTarget.style.color = '#f1f5f9'; e.currentTarget.style.borderColor = '#475569'; }}
-                  onMouseOut={(e) => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.borderColor = '#334155'; }}
-                >
-                  Voltar
-                </button>
-
-                <button 
-                  type="submit"
-                  disabled={loading}
-                  style={{
-                    flex: 2,
-                    padding: '14px',
-                    background: 'linear-gradient(135deg, #10b981, #059669)',
-                    border: 'none',
-                    borderRadius: 12,
-                    color: '#ffffff',
-                    fontSize: 15,
-                    fontWeight: 700,
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    opacity: loading ? 0.7 : 1,
-                    transition: 'transform 0.1s, opacity 0.2s',
-                    boxShadow: '0 4px 14px rgba(16, 185, 129, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8
-                  }}
-                  onMouseOver={(e) => { if(!loading) e.currentTarget.style.opacity = '0.9'; }}
-                  onMouseOut={(e) => { if(!loading) e.currentTarget.style.opacity = '1'; }}
-                  onClick={(e) => { if(!loading) e.currentTarget.style.transform = 'scale(0.98)'; }}
-                  onMouseUp={(e) => { if(!loading) e.currentTarget.style.transform = 'scale(1)'; }}
-                >
-                  {loading ? 'Processando...' : 'Finalizar Cadastro 🐍'}
-                </button>
+                  onFocus={(e) => e.target.style.borderColor = '#10b981'}
+                  onBlur={(e) => e.target.style.borderColor = '#334155'}
+                />
               </div>
-            </form>
-          )}
+            </div>
+
+            <button 
+              type="submit"
+              disabled={loading}
+              style={{
+                width: '100%',
+                padding: '14px',
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                border: 'none',
+                borderRadius: 12,
+                color: '#ffffff',
+                fontSize: 15,
+                fontWeight: 700,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.7 : 1,
+                marginTop: 8,
+                transition: 'transform 0.1s, opacity 0.2s',
+                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.2)'
+              }}
+              onMouseOver={(e) => { if (!loading) e.currentTarget.style.opacity = '0.9'; }}
+              onMouseOut={(e) => { if (!loading) e.currentTarget.style.opacity = '1'; }}
+              onClick={(e) => { if (!loading) e.currentTarget.style.transform = 'scale(0.98)'; }}
+              onMouseUp={(e) => { if (!loading) e.currentTarget.style.transform = 'scale(1)'; }}
+            >
+              {loading ? 'Cadastrando...' : 'Criar Conta e Configurar Painel ➜'}
+            </button>
+          </form>
         </div>
       </div>
     </div>

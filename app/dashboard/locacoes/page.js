@@ -1,5 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
+import FleetGrid from '@/app/components/locacoes/FleetGrid';
+import FinesPanel from '@/app/components/locacoes/FinesPanel';
+import EscrowTracker from '@/app/components/locacoes/EscrowTracker';
+import SplitPanel from '@/app/components/locacoes/SplitPanel';
 
 export default function LocacoesPage() {
   const [rentals, setRentals] = useState([]);
@@ -834,518 +838,116 @@ export default function LocacoesPage() {
       {/* Tab: Content with Premium transitions (Frente 18) */}
       <div key={activeTab} className="tab-content-active">
         {activeTab === 'contracts' && (
-        <>
-          {/* Grid Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div className="card-premium border-l-4 border-l-emerald-500 p-4">
-              <span className="text-[10px] uppercase tracking-wider text-secondary-theme font-semibold">Veículos em Uso</span>
-              <h3 className="text-xl md:text-2xl font-black text-primary-theme mt-1">{activeCount}</h3>
-            </div>
-            <div className="card-premium border-l-4 border-l-rose-500 p-4">
-              <span className="text-[10px] uppercase tracking-wider text-secondary-theme font-semibold">Bloqueios / Atrasados</span>
-              <h3 className="text-xl md:text-2xl font-black text-primary-theme mt-1">{overdueCount}</h3>
-            </div>
-            <div className="card-premium border-l-4 border-l-blue-500 p-4">
-              <span className="text-[10px] uppercase tracking-wider text-secondary-theme font-semibold">Contratos Finalizados</span>
-              <h3 className="text-xl md:text-2xl font-black text-primary-theme mt-1">{paidCount}</h3>
-            </div>
-          </div>
-        
-          <h3 className="text-sm font-extrabold text-primary-theme mb-4">Controle de Frota Sincronizado</h3>
-        
-        {/* Mobile View: Cards (Visible only on mobile/tablet) */}
-        <div className="block sm:hidden space-y-4">
-          {rentals.map((r, idx) => {
-            const config = statusConfig[r.status] || statusConfig.pending;
-            return (
-              <div 
-                key={r.id || idx} 
-                className="bg-card-theme border border-theme rounded-2xl p-4 flex flex-col gap-3"
-              >
-                {/* Card Header: Vehicle + Status */}
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="text-xs md:text-sm font-extrabold text-primary-theme">{r.vehicle_info}</h4>
-                    <p className="text-[10px] text-secondary-theme mt-0.5">Devolução: {new Date(r.due_date).toLocaleDateString('pt-BR')}</p>
-                  </div>
-                  <span className={`text-[9px] px-2 py-1 rounded-full font-bold ${config.c} ${config.bg}`}>
-                    {config.l}
-                  </span>
-                </div>
+          <FleetGrid
+            rentals={rentals}
+            statusConfig={statusConfig}
+            recurrenceConfig={recurrenceConfig}
+            triggerAlert={triggerAlert}
+            handleConfirmReturn={handleConfirmReturn}
+            handleRefundDeposit={handleRefundDeposit}
+            handleOpenContract={handleOpenContract}
+            activeCount={activeCount}
+            overdueCount={overdueCount}
+            paidCount={paidCount}
+          />
+        )}
+        {activeTab === 'fines' && (
+          <FinesPanel
+            fines={fines}
+            finesLoading={finesLoading}
+            setShowFineModal={setShowFineModal}
+            handleConfirmFineIndication={handleConfirmFineIndication}
+            setFineWaText={setFineWaText}
+            setFineMatchedClientPhone={setFineMatchedClientPhone}
+            setShowFineWaModal={setShowFineWaModal}
+          />
+        )}
+        {activeTab === 'escrow' && (
+          <EscrowTracker
+            escrows={escrows}
+            escrowsLoading={escrowsLoading}
+            setEscrowForm={setEscrowForm}
+            setShowEscrowModal={setShowEscrowModal}
+          />
+        )}
+        {activeTab === 'split' && (
+          <SplitPanel
+            payouts={payouts}
+            payoutsLoading={payoutsLoading}
+            handleConfirmPayout={handleConfirmPayout}
+          />
+        )}
+      </div>
 
-                {/* Card Details: Payer + Value */}
-                <div className="grid grid-cols-2 gap-2 border-y border-theme py-3">
-                  <div>
-                    <span className="text-[9px] text-secondary-theme font-bold uppercase block">Locatário</span>
-                    <p className="text-xs font-semibold text-primary-theme mt-0.5">{r.client_name}</p>
-                    <span className="text-[10px] text-muted-theme">{r.client_phone}</span>
-                  </div>
-                  <div>
-                    <span className="text-[9px] text-secondary-theme font-bold uppercase block">Aluguel</span>
-                    <p className="text-xs font-bold text-primary-theme mt-0.5">R$ {Number(r.amount).toFixed(2)}</p>
-                    <p className="text-[9px] text-secondary-theme mt-0.5">Caução: R$ {Number(r.deposit_amount || 0).toFixed(2)}</p>
-                  </div>
-                </div>
-
-                {/* Card Actions */}
-                <div className="flex flex-wrap gap-2">
-                  <button 
-                    onClick={() => handleOpenContract(r)}
-                    className="flex-1 min-w-[80px] btn-premium btn-premium-secondary text-[10px]"
-                  >
-                    <svg className="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg> Contrato
-                  </button>
-                  {r.status !== 'paid' && (
-                    <button 
-                      onClick={() => triggerAlert('diaria', r)}
-                      className="flex-1 min-w-[80px] btn-premium btn-premium-primary text-[10px]"
-                    >
-                      <svg className="w-3.5 h-3.5 inline mr-1 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg> Cobrar Pix
-                    </button>
-                  )}
-                  {r.status !== 'paid' && (
-                    <button 
-                      onClick={() => triggerAlert('return', r)}
-                      className="flex-1 min-w-[80px] btn-premium bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px]"
-                    >
-                      <svg className="w-3.5 h-3.5 inline mr-1 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a9.041 9.041 0 01-3.714 0M17.5 17.5a9 9 0 01-11 0m11 0V9a7.5 7.5 0 00-15 0v8.5m15 0h-15" /></svg> Retorno
-                    </button>
-                  )}
-                  
-                  {/* Return Confirmation Button (Item 3) */}
-                  {r.status !== 'paid' && (
-                    <button 
-                      onClick={() => handleConfirmReturn(r)}
-                      className="flex-1 min-w-[80px] btn-premium bg-blue-500/20 border border-blue-500/30 text-blue-300 text-[10px]"
-                    >
-                      <svg className="w-3.5 h-3.5 inline mr-1 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg> Receber Carro
-                    </button>
-                  )}
-
-                  {/* Refund Deposit Button (Item 2) */}
-                  {r.status === 'paid' && r.deposit_amount > 0 && (
-                    <button 
-                      onClick={() => handleRefundDeposit(r)}
-                      className="flex-1 min-w-[80px] btn-premium bg-amber-500/20 border border-amber-500/30 text-amber-400 text-[10px]"
-                    >
-                      <svg className="w-3.5 h-3.5 inline mr-1 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg> Devolver Caução
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Desktop View: Table (Hidden on mobile) */}
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="w-full border-collapse text-left min-w-[600px]">
-            <thead>
-              <tr className="border-b border-theme">
-                <th className="pb-3 text-xs text-secondary-theme font-bold uppercase tracking-wider">Veículo</th>
-                <th className="pb-3 text-xs text-secondary-theme font-bold uppercase tracking-wider">Locatário</th>
-                <th className="pb-3 text-xs text-secondary-theme font-bold uppercase tracking-wider">Valor Aluguel</th>
-                <th className="pb-3 text-xs text-secondary-theme font-bold uppercase tracking-wider">Devolução</th>
-                <th className="pb-3 text-xs text-secondary-theme font-bold uppercase tracking-wider">Status</th>
-                <th className="pb-3 text-xs text-secondary-theme font-bold uppercase tracking-wider text-center">Contrato</th>
-                <th className="pb-3 text-xs text-secondary-theme font-bold uppercase tracking-wider text-right">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {rentals.map((r, idx) => {
-                const config = statusConfig[r.status] || statusConfig.pending;
-                return (
-                  <tr key={r.id || idx} className="hover:bg-card-theme transition-colors">
-                    <td className="py-4 text-xs md:text-sm font-extrabold text-primary-theme">{r.vehicle_info}</td>
-                    <td className="py-4 text-xs md:text-sm text-primary-theme">
-                      <p className="font-semibold">{r.client_name}</p>
-                      <span className="text-[10px] text-muted-theme">{r.client_phone}</span>
-                    </td>
-                    <td className="py-4 text-xs md:text-sm text-primary-theme">
-                      <p className="font-bold text-primary-theme">R$ {Number(r.amount).toFixed(2)}</p>
-                      <p className="text-[10px] text-secondary-theme">Caução: R$ {Number(r.deposit_amount || 0).toFixed(2)}</p>
-                      <span className="text-[9px] text-emerald-400 font-medium">{recurrenceConfig[r.recurrence] || 'Recorrente'}</span>
-                    </td>
-                    <td className="py-4 text-xs md:text-sm text-primary-theme">
-                      {new Date(r.due_date).toLocaleDateString('pt-BR')}
-                    </td>
-                    <td className="py-4">
-                      <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold ${config.c} ${config.bg}`}>
-                        {config.l}
-                      </span>
-                    </td>
-                    <td className="py-4 text-center">
-                      <button 
-                        onClick={() => handleOpenContract(r)}
-                        className="btn-premium btn-premium-secondary !min-h-[32px] !py-1 text-[11px]"
-                      >
-                        Ver Contrato
-                      </button>
-                    </td>
-                    <td className="py-4 text-right">
-                      <div className="flex gap-2 justify-end">
-                        {r.status !== 'paid' && (
-                          <button 
-                            onClick={() => triggerAlert('diaria', r)}
-                            title="Cobrar Valor no WhatsApp"
-                            className="btn-premium btn-premium-primary !min-h-[32px] !py-1 text-[11px]"
-                          >
-                            Cobrar
-                          </button>
-                        )}
-                        {r.status !== 'paid' && (
-                          <button 
-                            onClick={() => triggerAlert('return', r)}
-                            title="Notificar Prazo de Devolução"
-                            className="btn-premium bg-blue-500/10 border border-blue-500/20 text-blue-400 !min-h-[32px] !py-1 text-[11px]"
-                          >
-                            Retorno
-                          </button>
-                        )}
-                        {r.status !== 'paid' && (
-                          <button 
-                            onClick={() => handleConfirmReturn(r)}
-                            title="Confirmar devolução do carro e liquidar"
-                            className="btn-premium bg-blue-500/20 border border-blue-500/30 text-blue-300 !min-h-[32px] !py-1 text-[11px]"
-                          >
-                            Devolver
-                          </button>
-                        )}
-                        {r.status === 'paid' && r.deposit_amount > 0 && (
-                          <button 
-                            onClick={() => handleRefundDeposit(r)}
-                            title="Restituir o depósito de caução locatício"
-                            className="btn-premium bg-amber-500/20 border border-amber-500/30 text-amber-400 !min-h-[32px] !py-1 text-[11px]"
-                          >
-                            Caução
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        </>
-      )}
-      {activeTab === 'fines' && (
-        <div className="flex flex-col gap-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-bold text-secondary-theme uppercase tracking-wider">
-              Gestão de Multas de Trânsito
-            </span>
-            <button 
-              onClick={() => setShowFineModal(true)}
-              className="btn-premium btn-premium-primary"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-4 h-4 mr-1 inline-block align-middle">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              <span className="align-middle">Lançar Multa</span>
-            </button>
-          </div>
-
-          {finesLoading ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-3"></div>
-              <p className="text-xs text-muted-theme font-semibold">Buscando infrações de trânsito...</p>
-            </div>
-          ) : fines.length === 0 ? (
-            <div className="card-premium border-dashed p-8 text-center flex flex-col items-center justify-center">
-              <svg className="w-8 h-8 text-muted-theme mb-3" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-              <h4 className="text-sm font-extrabold text-primary-theme mb-1">Nenhuma multa registrada</h4>
-              <p className="text-xs text-secondary-theme max-w-sm leading-relaxed">Lançando multas na data e hora da infração, a Catarina localiza automaticamente o motorista correspondente de forma transparente.</p>
-              <button 
-                onClick={() => setShowFineModal(true)}
-                className="btn-premium btn-premium-primary mt-4"
-              >
-                Lançar Primeira Multa
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {fines.map(f => {
-                const markupAmount = f.amount * 1.20; // 20% mark-up
-                return (
-                  <div key={f.id} className="card-premium p-4 flex flex-col gap-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="text-xs md:text-sm font-extrabold text-primary-theme"><svg className="w-4 h-4 text-amber-500 inline mr-1 animate-pulse" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg> {f.description}</h4>
-                        <p className="text-[10px] text-primary-theme mt-1"><strong>Carro:</strong> {f.model} • {f.plate}</p>
-                      </div>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 font-bold whitespace-nowrap">
-                        +{f.points} PTS CNH
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col gap-1.5 text-xs text-primary-theme border-t border-theme pt-3">
-                      <p><strong>Data Infração:</strong> {new Date(f.infraction_date).toLocaleString('pt-BR')}</p>
-                      <p><strong>Valor Nominal:</strong> R$ {f.amount?.toFixed(2)}</p>
-                      <p className="text-emerald-400"><strong>Reembolso (+20%):</strong> R$ {markupAmount?.toFixed(2)}</p>
-                      <p className={`font-medium ${f.client_name ? 'text-primary-theme' : 'text-muted-theme'}`}>
-                        <strong>Motorista:</strong> {f.client_name || 'Não localizado pela data'}
-                      </p>
-                    </div>
-
-                    <div className="flex justify-between items-center border-t border-theme pt-3 mt-auto">
-                      <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
-                        f.driver_indicated ? 'text-emerald-400 bg-emerald-500/10' : 'text-amber-400 bg-amber-500/10'
-                      }`}>
-                        {f.driver_indicated ? 'Condutor Indicado' : 'Aguardando Indicação'}
-                      </span>
-
-                      <div className="flex gap-2">
-                        {f.client_name && !f.driver_indicated && (
-                          <button 
-                            onClick={() => handleConfirmFineIndication(f.id)}
-                            className="btn-premium btn-premium-primary !min-h-[30px] !py-1 text-[10px]"
-                          >
-                            Indicar Detran
-                          </button>
-                        )}
-                        {f.client_name && f.wa_message && (
-                          <button 
-                            onClick={() => {
-                              setFineWaText(f.wa_message);
-                              setFineMatchedClientPhone(f.client_phone || '');
-                              setShowFineWaModal(true);
-                            }}
-                            className="btn-premium btn-premium-secondary !min-h-[30px] !py-1 text-[10px] text-emerald-400 border-emerald-500/20"
-                          >
-                            Cobrar
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-      {/* Tab: Caução & Custódias (Contas de Segurança) */}
-      {activeTab === 'escrow' && (
-        <div className="flex flex-col gap-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-bold text-secondary-theme uppercase tracking-wider">
-              Contas de Caução em Custódia
-            </span>
-            <button 
-              onClick={() => {
-                setEscrowForm({ contract_id: '', amount: '', type: 'deposit', notes: '' });
-                setShowEscrowModal(true);
-              }}
-              className="btn-premium btn-premium-primary"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-4 h-4 mr-1 inline-block align-middle">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              <span className="align-middle">Lançar Movimentação</span>
-            </button>
-          </div>
-
-          {escrowsLoading ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-3"></div>
-              <p className="text-xs text-muted-theme font-semibold">Buscando saldos de caução...</p>
-            </div>
-          ) : escrows.length === 0 ? (
-            <div className="card-premium border-dashed p-8 text-center flex flex-col items-center justify-center">
-              <svg className="w-8 h-8 text-muted-theme mb-3" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
-              <h4 className="text-sm font-extrabold text-primary-theme mb-1">Nenhum depósito de caução registrado</h4>
-              <p className="text-xs text-secondary-theme max-w-sm leading-relaxed">A caução é amortizada e retida automaticamente de acordo com as locações configuradas.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {escrows.map(e => {
-                const pct = Math.min(100, Math.max(0, (e.balance_paid / e.total_target_amount) * 100));
-                return (
-                  <div key={e.id} className="card-premium p-4 flex flex-col gap-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="text-xs md:text-sm font-extrabold text-primary-theme"><svg className="w-4 h-4 text-secondary-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg> {e.client_name}</h4>
-                        <p className="text-[10px] text-secondary-theme mt-1"><svg className="w-3.5 h-3.5 text-secondary-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg> {e.vehicle_model} • {e.vehicle_plate}</p>
-                      </div>
-                      <span className={`text-[9px] px-2.5 py-0.5 rounded-full font-bold ${
-                        e.status === 'fully_paid' ? 'text-emerald-400 bg-emerald-500/10' : e.status === 'refunded' ? 'text-secondary-theme bg-card-theme' : 'text-amber-400 bg-amber-500/10'
-                      }`}>
-                        {e.status === 'fully_paid' ? 'Quitado' : e.status === 'refunded' ? 'Restituído' : 'Em Amortização'}
-                      </span>
-                    </div>
-
-                    <div className="border-t border-theme pt-3 flex flex-col gap-2">
-                      <div className="flex justify-between text-xs text-primary-theme">
-                        <span>Acumulado:</span>
-                        <span className="font-bold">R$ {Number(e.balance_paid).toFixed(2)} / R$ {Number(e.total_target_amount).toFixed(2)}</span>
-                      </div>
-                      <div className="w-full h-1.5 bg-card-theme rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${pct}%` }} />
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 border-t border-theme pt-3 mt-auto">
-                      <button 
-                        onClick={() => {
-                          setEscrowForm({ contract_id: e.contract_id, amount: '', type: 'withdraw', notes: 'Abatimento por Avaria' });
-                          setShowEscrowModal(true);
-                        }}
-                        className="btn-premium btn-premium-secondary flex-1 !min-h-[32px] !py-1 text-[10px] text-rose-400 border-rose-500/20"
-                      >
-                        <svg className="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.67 2.67 0 0021 17.25l-5.83-5.83m-3.75 3.75a3.75 3.75 0 01-3.75-3.75M11.42 15.17l-1.2-1.2A3.75 3.75 0 009 11.42l-1.2-1.2m0 0A3.75 3.75 0 019 7.92M7.8 7.82l-5.83 5.83A2.67 2.67 0 005.72 17.4l5.83-5.83" /></svg> Descontar Avaria
-                      </button>
-                      <button 
-                        onClick={() => {
-                          setEscrowForm({ contract_id: e.contract_id, amount: e.balance_paid, type: 'refund', notes: 'Restituição de Caução' });
-                          setShowEscrowModal(true);
-                        }}
-                        className="btn-premium btn-premium-secondary flex-1 !min-h-[32px] !py-1 text-[10px] text-sky-400 border-sky-500/20"
-                      >
-                        Devolver Caução
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tab: Repasses para Investidores (Split Control) */}
-      {activeTab === 'split' && (
-        <div className="flex flex-col gap-4">
-          <span className="text-xs font-bold text-secondary-theme uppercase tracking-wider mb-2">
-            Repasse de Comissão e Splits de Faturamento
-          </span>
-
-          {payoutsLoading ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <div className="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-3"></div>
-              <p className="text-xs text-muted-theme font-semibold">Calculando repasses de parceiros...</p>
-            </div>
-          ) : payouts.length === 0 ? (
-            <div className="card-premium border-dashed p-8 text-center flex flex-col items-center justify-center">
-              <svg className="w-8 h-8 text-muted-theme mb-3" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.281m5.94 2.28l-2.28 5.941" /></svg>
-              <h4 className="text-sm font-extrabold text-primary-theme mb-1">Nenhum veículo de investidor ativo</h4>
-              <p className="text-xs text-secondary-theme max-w-sm leading-relaxed">Insira o nome do investidor no cadastro do carro para habilitar o cálculo automático de divisão de faturamento.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {payouts.map(p => (
-                <div key={p.vehicle_id} className="card-premium p-4 flex flex-col gap-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="text-xs md:text-sm font-extrabold text-primary-theme"><svg className="w-4 h-4 text-emerald-400 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.281m5.94 2.28l-2.28 5.941" /></svg> Investidor: {p.investor_name}</h4>
-                      <p className="text-[10px] text-secondary-theme mt-1"><svg className="w-3.5 h-3.5 text-secondary-theme inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg> {p.model} • {p.plate}</p>
-                    </div>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 font-bold whitespace-nowrap">
-                      Split {p.investor_split_rate}%
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col gap-2 text-xs text-primary-theme border-t border-theme pt-3">
-                    <div className="flex justify-between">
-                      <span className="text-secondary-theme">Receita Bruta:</span>
-                      <span className="font-bold text-primary-theme">R$ {p.gross_revenue?.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-secondary-theme">Despesas Oficina:</span>
-                      <span className="font-bold text-rose-400">-{p.maintenance_cost?.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-secondary-theme">Comissão Admin ({100 - p.investor_split_rate}%):</span>
-                      <span className="font-bold text-primary-theme">R$ {p.admin_commission?.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between border-t border-theme pt-2 text-emerald-400 font-black">
-                      <span>Líquido Repassar:</span>
-                      <span>R$ {p.net_repasse?.toFixed(2)}</span>
-                    </div>
-                  </div>
-
-                  {p.last_payout_at && (
-                    <p className="text-[9px] text-muted-theme">
-                      Último repasse: {new Date(p.last_payout_at).toLocaleDateString('pt-BR')}
-                    </p>
-                  )}
-
-                  {p.net_repasse > 0 && (
-                    <button 
-                      onClick={() => handleConfirmPayout(p.vehicle_id, p.net_repasse, p.investor_name)}
-                      className="btn-premium btn-premium-primary w-full mt-2"
-                    >
-                      <svg className="w-3.5 h-3.5 inline mr-1 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg> Confirmar Repasse
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Escrow Transaction Modal */}
+      {/* Movimentar Caução Modal */}
       {showEscrowModal && (
         <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm backdrop-blur-sm z-[1000] flex justify-center items-center p-4 overflow-y-auto">
           <div className="w-full max-w-md bg-modal-theme border border-theme rounded-3xl p-6 shadow-2xl animate-scaleIn flex flex-col gap-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-extrabold text-primary-theme"><svg className="w-4 h-4 text-emerald-400 inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg> Movimentação de Caução</h3>
-              <button onClick={() => setShowEscrowModal(false)} className="text-muted-theme hover:text-primary-theme text-lg cursor-pointer">✕</button>
+              <h3 className="text-sm font-extrabold text-primary-theme flex items-center gap-2">
+                <svg className="w-5 h-5 text-emerald-400 inline" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182 1.172-.879 3.07-.879 4.242 0l.879.659M12 3v3m0 12v3" /></svg>
+                Registrar Movimentação de Caução
+              </h3>
+              <button 
+                onClick={() => setShowEscrowModal(false)}
+                className="text-muted-theme hover:text-primary-theme text-lg cursor-pointer ml-auto"
+              >
+                ✕
+              </button>
             </div>
+
             <form onSubmit={handleEscrowTransaction} className="flex flex-col gap-4">
               <div>
-                <label className="block text-[10px] text-secondary-theme font-bold uppercase tracking-wider mb-1.5">Contrato de Locação</label>
+                <label className="block text-[10px] text-secondary-theme font-bold uppercase tracking-wider mb-1.5">Contrato Associado *</label>
                 <select
-                  required
                   value={escrowForm.contract_id}
-                  onChange={e => setEscrowForm(prev => ({ ...prev, contract_id: e.target.value }))}
-                  className="input-premium w-full cursor-pointer bg-input-theme"
+                  onChange={e => setEscrowForm({ ...escrowForm, contract_id: e.target.value })}
+                  className="input-premium w-full bg-input-theme cursor-pointer"
+                  required
                 >
-                  <option value="">Selecione o motorista...</option>
-                  {escrows.map(e => (
-                    <option key={e.id} value={e.contract_id}>{e.client_name} - {e.vehicle_plate}</option>
+                  <option value="">-- Selecione o contrato/motorista --</option>
+                  {rentals.map(r => (
+                    <option key={r.id} value={r.id}>{r.client_name} - {r.vehicle_info}</option>
                   ))}
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] text-secondary-theme font-bold uppercase tracking-wider mb-1.5">Valor</label>
+                  <label className="block text-[10px] text-secondary-theme font-bold uppercase tracking-wider mb-1.5">Tipo de Movimento *</label>
+                  <select
+                    value={escrowForm.type}
+                    onChange={e => setEscrowForm({ ...escrowForm, type: e.target.value })}
+                    className="input-premium w-full bg-input-theme cursor-pointer"
+                    required
+                  >
+                    <option value="deposit">Depósito / Aporte</option>
+                    <option value="withdraw">Desconto / Abatimento de Avaria</option>
+                    <option value="refund">Restituição / Reembolso</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] text-secondary-theme font-bold uppercase tracking-wider mb-1.5">Valor (R$) *</label>
                   <input
                     type="number"
                     step="0.01"
-                    required
-                    placeholder="0.00"
                     value={escrowForm.amount}
-                    onChange={e => setEscrowForm(prev => ({ ...prev, amount: e.target.value }))}
+                    onChange={e => setEscrowForm({ ...escrowForm, amount: e.target.value })}
+                    placeholder="250.00"
                     className="input-premium w-full"
+                    required
                   />
-                </div>
-                <div>
-                  <label className="block text-[10px] text-secondary-theme font-bold uppercase tracking-wider mb-1.5">Tipo</label>
-                  <select
-                    value={escrowForm.type}
-                    onChange={e => setEscrowForm(prev => ({ ...prev, type: e.target.value }))}
-                    className="input-premium w-full cursor-pointer bg-input-theme"
-                  >
-                    <option value="deposit">Aporte (Depósito)</option>
-                    <option value="withdraw">Abatimento (Dano/Multa)</option>
-                    <option value="refund">Restituição (Devolver)</option>
-                  </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] text-secondary-theme font-bold uppercase tracking-wider mb-1.5">Descrição / Justificativa</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ex: Aporte semanal de caução"
+                <label className="block text-[10px] text-secondary-theme font-bold uppercase tracking-wider mb-1.5">Observações / Motivo *</label>
+                <textarea
                   value={escrowForm.notes}
-                  onChange={e => setEscrowForm(prev => ({ ...prev, notes: e.target.value }))}
-                  className="input-premium w-full"
+                  onChange={e => setEscrowForm({ ...escrowForm, notes: e.target.value })}
+                  placeholder="Ex: Quebra do retrovisor direito"
+                  className="input-premium w-full h-[80px]"
+                  required
                 />
               </div>
 
@@ -1359,7 +961,6 @@ export default function LocacoesPage() {
           </div>
         </div>
       )}
-      </div>
 
       {/* Register New Lease Modal */}
       {showModal && (

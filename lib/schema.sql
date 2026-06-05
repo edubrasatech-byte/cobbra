@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS users (
   whatsapp_status TEXT DEFAULT 'disconnected',
   whatsapp_phone TEXT,
   whatsapp_instance TEXT,
+  onboarding_answers TEXT DEFAULT NULL,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))
 );

@@ -8,6 +8,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isMagicLink, setIsMagicLink] = useState(false);
+  const [magicValue, setMagicValue] = useState('');
+  const [magicSuccess, setMagicSuccess] = useState('');
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -28,6 +31,35 @@ export default function LoginPage() {
       setLoading(false);
     }
   }
+
+  async function handleMagicLinkSubmit(e) {
+    e.preventDefault();
+    setError('');
+    setMagicSuccess('');
+    setLoading(true);
+    try {
+      const isEmail = magicValue.includes('@');
+      const payload = isEmail ? { email: magicValue } : { phone: magicValue };
+      const res = await fetch('/api/auth/magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setMagicSuccess('Link de acesso enviado com sucesso! Verifique seu e-mail ou o seu WhatsApp.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const toggleMode = () => {
+    setIsMagicLink(!isMagicLink);
+    setError('');
+    setMagicSuccess('');
+  };
 
   const inputStyle = {
     width: '100%',
@@ -370,62 +402,139 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div>
-              <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, marginBottom: 8, color: '#cbd5e1' }}>E-mail corporativo</label>
-              <input 
-                type="email" 
-                value={email} 
-                onChange={e => setEmail(e.target.value)} 
-                placeholder="nome@empresa.com"
-                style={inputStyle} 
-                required
-                className="input-glow"
-              />
+          {magicSuccess && (
+            <div style={{ 
+              background: 'rgba(16, 185, 129, 0.08)', 
+              border: '1px solid rgba(16, 185, 129, 0.25)', 
+              borderRadius: 10, 
+              padding: '10px 14px', 
+              marginBottom: 20, 
+              color: '#34d399', 
+              fontSize: 13,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              lineHeight: 1.4
+            }}>
+              <span>✅</span>
+              <span>{magicSuccess}</span>
             </div>
-            
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: '#cbd5e1', margin: 0 }}>Senha de acesso</label>
-                <a href="#forgot" style={{ fontSize: 12, color: '#34d399', textDecoration: 'none', fontWeight: 600 }}>Esqueceu?</a>
-              </div>
-              <input 
-                type="password" 
-                value={password} 
-                onChange={e => setPassword(e.target.value)} 
-                placeholder="••••••••"
-                style={inputStyle} 
-                required
-                className="input-glow"
-              />
-            </div>
+          )}
 
-            <button 
-              type="submit" 
-              disabled={loading} 
-              style={{
-                width: '100%', 
-                padding: '12px', 
-                borderRadius: 10, 
-                border: 'none', 
-                cursor: loading ? 'default' : 'pointer',
-                background: loading ? '#334155' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: '#ffffff', 
-                fontSize: 13.5, 
-                fontWeight: 700, 
-                transition: 'all 0.3s ease',
-                boxShadow: loading ? 'none' : '0 4px 20px rgba(16, 185, 129, 0.25)',
-                marginTop: 8,
-                fontFamily: 'Inter, sans-serif'
-              }}
-              className="btn-hover"
-            >
-              {loading ? 'Validando credenciais...' : 'Entrar com Segurança'}
-            </button>
-          </form>
+          {!isMagicLink ? (
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, marginBottom: 8, color: '#cbd5e1' }}>E-mail corporativo</label>
+                <input 
+                  type="email" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)} 
+                  placeholder="nome@empresa.com"
+                  style={inputStyle} 
+                  required
+                  className="input-glow"
+                />
+              </div>
+              
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: '#cbd5e1', margin: 0 }}>Senha de acesso</label>
+                  <a href="#forgot" style={{ fontSize: 12, color: '#34d399', textDecoration: 'none', fontWeight: 600 }}>Esqueceu?</a>
+                </div>
+                <input 
+                  type="password" 
+                  value={password} 
+                  onChange={e => setPassword(e.target.value)} 
+                  placeholder="••••••••"
+                  style={inputStyle} 
+                  required
+                  className="input-glow"
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={loading} 
+                style={{
+                  width: '100%', 
+                  padding: '12px', 
+                  borderRadius: 10, 
+                  border: 'none', 
+                  cursor: loading ? 'default' : 'pointer',
+                  background: loading ? '#334155' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  color: '#ffffff', 
+                  fontSize: 13.5, 
+                  fontWeight: 700, 
+                  transition: 'all 0.3s ease',
+                  boxShadow: loading ? 'none' : '0 4px 20px rgba(16, 185, 129, 0.25)',
+                  marginTop: 8,
+                  fontFamily: 'Inter, sans-serif'
+                }}
+                className="btn-hover"
+              >
+                {loading ? 'Validando credenciais...' : 'Entrar com Segurança'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleMagicLinkSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, marginBottom: 8, color: '#cbd5e1' }}>E-mail ou WhatsApp cadastrado</label>
+                <input 
+                  type="text" 
+                  value={magicValue} 
+                  onChange={e => setMagicValue(e.target.value)} 
+                  placeholder="nome@empresa.com ou (11) 99999-9999"
+                  style={inputStyle} 
+                  required
+                  className="input-glow"
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={loading} 
+                style={{
+                  width: '100%', 
+                  padding: '12px', 
+                  borderRadius: 10, 
+                  border: 'none', 
+                  cursor: loading ? 'default' : 'pointer',
+                  background: loading ? '#334155' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  color: '#ffffff', 
+                  fontSize: 13.5, 
+                  fontWeight: 700, 
+                  transition: 'all 0.3s ease',
+                  boxShadow: loading ? 'none' : '0 4px 20px rgba(16, 185, 129, 0.25)',
+                  marginTop: 8,
+                  fontFamily: 'Inter, sans-serif'
+                }}
+                className="btn-hover"
+              >
+                {loading ? 'Enviando link...' : 'Enviar Link de Acesso'}
+              </button>
+            </form>
+          )}
 
           {/* Form Footer */}
           <div style={{ textAlign: 'center', marginTop: 20, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 16 }}>
+            <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 12px 0' }}>
+              <button 
+                onClick={toggleMode}
+                type="button"
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  color: '#34d399', 
+                  fontWeight: 600, 
+                  cursor: 'pointer', 
+                  textDecoration: 'underline',
+                  fontSize: 13,
+                  fontFamily: 'Inter, sans-serif'
+                }}
+              >
+                {!isMagicLink ? 'Entrar sem Senha (Link de Acesso)' : 'Voltar para Login tradicional'}
+              </button>
+            </p>
             <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
               Novo na plataforma? <a href="/cadastro" style={{ color: '#34d399', fontWeight: 600, textDecoration: 'none' }}>Cadastre-se grátis</a>
             </p>

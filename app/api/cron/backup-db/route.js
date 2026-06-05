@@ -8,10 +8,13 @@ export const dynamic = 'force-dynamic';
 export async function GET(request) {
   // Simple token security
   const { searchParams } = new URL(request.url);
-  const token = searchParams.get('token');
+  const token = searchParams.get('secret') || searchParams.get('token');
+  const authHeader = request.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET || 'cobbra-cron-key-135';
 
-  if (!token || token !== cronSecret) {
+  const isAuthorized = (token === cronSecret) || (authHeader === `Bearer ${cronSecret}`);
+
+  if (!isAuthorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

@@ -1,5 +1,35 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { query, run, generateId, queryOne } from '@/lib/db';
+import fs from 'fs';
+import path from 'path';
+
+const MIME_EXTENSION_MAP = {
+  'application/pdf': 'pdf',
+  'image/jpeg': 'jpg',
+  'image/jpg': 'jpg',
+  'image/png': 'png',
+  'image/gif': 'gif',
+  'image/webp': 'webp',
+  'image/svg+xml': 'svg',
+};
+
+function ensureUploadsDir() {
+  const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+  return uploadsDir;
+}
+
+function parseBase64(raw, defaultExt = 'pdf') {
+  const dataUriMatch = raw.match(/^data:([^;]+);base64,(.+)$/);
+  if (dataUriMatch) {
+    const mime = dataUriMatch[1];
+    const ext = MIME_EXTENSION_MAP[mime] || mime.split('/')[1] || defaultExt;
+    return { ext, buffer: Buffer.from(dataUriMatch[2], 'base64') };
+  }
+  return { ext: defaultExt, buffer: Buffer.from(raw, 'base64') };
+}
 
 // GET /api/clientes/[id]/documents - List client documents metadata
 export async function GET(request, { params }) {
@@ -45,10 +75,18 @@ export async function POST(request, { params }) {
 
     const docId = generateId();
 
+    const uploadsDir = ensureUploadsDir();
+    const { ext, buffer } = parseBase64(file_base64, file_type.split('/')[1] || 'pdf');
+    const diskFileName = `${docId}.${ext}`;
+    const filePath = path.join(uploadsDir, diskFileName);
+
+    fs.writeFileSync(filePath, buffer);
+    const relativePath = `/uploads/${diskFileName}`;
+
     run(
       `INSERT INTO client_documents (id, user_id, client_id, name, file_name, file_type, file_size, file_base64)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [docId, user.id, client_id, name, file_name, file_type, parseInt(file_size || 0), file_base64]
+      [docId, user.id, client_id, name, file_name, file_type, parseInt(file_size || 0), relativePath]
     );
 
     const newDoc = {

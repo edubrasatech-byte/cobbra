@@ -207,6 +207,7 @@ export default function DashboardHome() {
   const [timeline, setTimeline] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hideBalance, setHideBalance] = useState(true);
+  const [hideChecklistTemp, setHideChecklistTemp] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("hide_balance");
@@ -233,15 +234,32 @@ export default function DashboardHome() {
   // Modals state
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showChargeModal, setShowChargeModal] = useState(false);
-  const [showDepositModal, setShowDepositModal] = useState(false);
 
   // Withdraw form state
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [pixKey, setPixKey] = useState("");
   const [pixKeyType, setPixKeyType] = useState("cpf");
-  const [withdrawLoading, setWithdrawLoading] = useState(false);
-  const [withdrawError, setWithdrawError] = useState("");
   const [withdrawSuccess, setWithdrawSuccess] = useState(false);
+  const [requires2fa, setRequires2fa] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+
+  const handleCloseWithdrawModal = () => {
+    setShowWithdrawModal(false);
+    setWithdrawSuccess(false);
+    setWithdrawAmount("");
+    setWithdrawError("");
+    setRequires2fa(false);
+    setVerificationCode("");
+  };
+
+  const handleOpenWithdrawModal = () => {
+    setWithdrawSuccess(false);
+    setWithdrawAmount("");
+    setWithdrawError("");
+    setRequires2fa(false);
+    setVerificationCode("");
+    setShowWithdrawModal(true);
+  };
 
   // Charge client form state
   const [selectedClientId, setSelectedClientId] = useState("");
@@ -251,12 +269,7 @@ export default function DashboardHome() {
   const [pixCopyPaste, setPixCopyPaste] = useState("");
   const [paymentLink, setPaymentLink] = useState("");
 
-  // Deposit form state
-  const [depositAmount, setDepositAmount] = useState("");
-  const [depositLoading, setDepositLoading] = useState(false);
-  const [depositSuccess, setDepositSuccess] = useState(false);
-  const [depositPixCode, setDepositPixCode] = useState("");
-  const [depositLink, setDepositLink] = useState("");
+
 
   // Manual Transaction form state
   const [txForm, setTxForm] = useState({
@@ -371,20 +384,31 @@ export default function DashboardHome() {
     setWithdrawError("");
     try {
       setWithdrawLoading(true);
+      const payload = {
+        amount: parseFloat(withdrawAmount),
+        pix_key: pixKey,
+        pix_key_type: pixKeyType
+      };
+      if (requires2fa) {
+        payload.code = verificationCode;
+      }
+
       const res = await fetch("/api/pay/withdraw", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: parseFloat(withdrawAmount),
-          pix_key: pixKey,
-          pix_key_type: pixKeyType
-        })
+        body: JSON.stringify(payload)
       });
 
       const data = await res.json();
       if (res.ok) {
-        setWithdrawSuccess(true);
-        loadAllData();
+        if (data.requires_2fa) {
+          setRequires2fa(true);
+        } else {
+          setWithdrawSuccess(true);
+          setRequires2fa(false);
+          setVerificationCode("");
+          loadAllData();
+        }
       } else {
         setWithdrawError(data.error || "Falha ao processar saque.");
       }
@@ -428,61 +452,6 @@ export default function DashboardHome() {
     }
   };
 
-  const handleCreateSelfDeposit = async (e) => {
-    e.preventDefault();
-    if (!depositAmount || parseFloat(depositAmount) <= 0) return;
-
-    try {
-      setDepositLoading(true);
-      // Buscar ou Criar um cliente auto-depósito
-      let selfClient = clients.find(c => c.category === "Autodepósito");
-      
-      if (!selfClient) {
-        // Criar o cliente auto-depósito para o assinante
-        const clientRes = await fetch("/api/clientes", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: `${user?.name || "Assinante"} (Autodepósito)`,
-            category: "Autodepósito",
-            email: user?.email || "",
-            phone: user?.whatsapp_phone || ""
-          })
-        });
-        if (!clientRes.ok) {
-          const errData = await clientRes.json();
-          throw new Error(errData.error || "Erro ao registrar perfil de autodepósito");
-        }
-        const clData = await clientRes.json();
-        selfClient = clData.client;
-      }
-
-      // Agora gerar depósito real
-      const res = await fetch("/api/pay/deposit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          client_id: selfClient.id,
-          amount: parseFloat(depositAmount)
-        })
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        setDepositPixCode(data.pix_copy_paste || "Chave Pix indisponível");
-        setDepositLink(data.payment_link || "");
-        setDepositSuccess(true);
-        loadAllData();
-      } else {
-        alert(data.error || "Falha ao processar depósito.");
-      }
-    } catch (err) {
-      console.error(err);
-      alert(err.message || "Erro de conexão ao processar depósito.");
-    } finally {
-      setDepositLoading(false);
-    }
-  };
 
   if (loading || !stats) return (
     <div className="flex flex-col items-center justify-center h-96">
@@ -528,11 +497,172 @@ export default function DashboardHome() {
     return `${Math.floor(diff / 86400)}d`;
   }
 
+  const phase1Done = user?.whatsapp_status === 'connected';
+  const phase2Done = stats ? stats.totalClients > 0 : false;
+  const phase3Done = stats ? (stats.pendingCount + stats.overdueCount + (stats.statusDistribution?.find(d => d.status === 'paid')?.count || 0)) > 0 : false;
+  const checklistCompleted = phase1Done && phase2Done && phase3Done;
+
   const totalToReceive = stats.pendingTotal + stats.overdueTotal;
   const selectedPoint = selectedBarIndex !== null && stats.revenueData ? stats.revenueData[selectedBarIndex] : null;
 
   return (
     <div className="flex flex-col gap-6 text-left animate-fadeIn">
+      {!checklistCompleted && !hideChecklistTemp && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(13, 148, 136, 0.08) 100%)',
+          border: '1px solid rgba(16, 185, 129, 0.25)',
+          borderRadius: 20,
+          padding: 20,
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 16,
+          boxShadow: '0 8px 32px rgba(16, 185, 129, 0.05)'
+        }}>
+          {/* Close button */}
+          <button
+            onClick={() => setHideChecklistTemp(true)}
+            style={{
+              position: 'absolute', top: 16, right: 16,
+              background: 'transparent', border: 'none', color: '#94a3b8',
+              fontSize: 16, cursor: 'pointer', outline: 'none'
+            }}
+            title="Ocultar checklist"
+            className="hover:text-emerald-400 transition-colors"
+          >
+            ✕
+          </button>
+
+          <div>
+            <h3 style={{ fontSize: 16, fontWeight: 800, color: '#ffffff', display: 'flex', alignItems: 'center', gap: 8 }} className="m-0">
+              <span>🚀</span> Fases de Ativação do seu Painel Cobbra
+            </h3>
+            <p style={{ fontSize: 12.5, color: '#94a3b8', marginTop: 4, lineHeight: 1.4 }} className="m-0">
+              Complete estas 3 etapas simples para começar a faturar no Pix com taxa zero e automatizar sua régua de WhatsApp.
+            </p>
+          </div>
+
+          {/* Progress bar */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, color: '#10b981', marginBottom: 6 }}>
+              <span>Progresso de Ativação</span>
+              <span>{Math.round(( (phase1Done ? 1 : 0) + (phase2Done ? 1 : 0) + (phase3Done ? 1 : 0) ) / 3 * 100)}%</span>
+            </div>
+            <div style={{ width: '100%', height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
+              <div style={{
+                width: `${Math.round(( (phase1Done ? 1 : 0) + (phase2Done ? 1 : 0) + (phase3Done ? 1 : 0) ) / 3 * 100)}%`,
+                height: '100%', background: '#10b981', boxShadow: '0 0 8px rgba(16, 185, 129, 0.5)',
+                transition: 'all 0.4s ease'
+              }} />
+            </div>
+          </div>
+
+          {/* Checklist items */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {/* Phase 1: WhatsApp Connection */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '12px 14px', borderRadius: 12, background: 'rgba(15,23,42,0.4)',
+              border: phase1Done ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(255,255,255,0.04)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 16 }}>{phase1Done ? '✅' : '⏳'}</span>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: phase1Done ? '#34d399' : '#f8fafc', margin: 0 }}>
+                    Fase 1: Conectar WhatsApp de Cobrança
+                  </p>
+                  <p style={{ fontSize: 10.5, color: '#64748b', margin: '2px 0 0 0' }}>
+                    Pareie seu número para que a Catarina AI dispare lembretes automáticos.
+                  </p>
+                </div>
+              </div>
+              {!phase1Done && (
+                <a
+                  href="/dashboard/configuracoes"
+                  style={{
+                    fontSize: 11, fontWeight: 700, color: '#090d16', background: '#10b981',
+                    padding: '6px 12px', borderRadius: 8, textDecoration: 'none',
+                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)'
+                  }}
+                  className="hover:scale-95 transition-transform"
+                >
+                  Conectar
+                </a>
+              )}
+            </div>
+
+            {/* Phase 2: Client Creation */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '12px 14px', borderRadius: 12, background: 'rgba(15,23,42,0.4)',
+              border: phase2Done ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(255,255,255,0.04)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 16 }}>{phase2Done ? '✅' : '⏳'}</span>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: phase2Done ? '#34d399' : '#f8fafc', margin: 0 }}>
+                    Fase 2: Cadastrar seu Primeiro Cliente
+                  </p>
+                  <p style={{ fontSize: 10.5, color: '#64748b', margin: '2px 0 0 0' }}>
+                    Insira as informações de contato do cliente devedor.
+                  </p>
+                </div>
+              </div>
+              {!phase2Done && (
+                <a
+                  href="/dashboard/clientes"
+                  style={{
+                    fontSize: 11, fontWeight: 700, color: '#090d16', background: '#10b981',
+                    padding: '6px 12px', borderRadius: 8, textDecoration: 'none',
+                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)'
+                  }}
+                  className="hover:scale-95 transition-transform"
+                >
+                  Cadastrar
+                </a>
+              )}
+            </div>
+
+            {/* Phase 3: Charge Creation */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '12px 14px', borderRadius: 12, background: 'rgba(15,23,42,0.4)',
+              border: phase3Done ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(255,255,255,0.04)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 16 }}>{phase3Done ? '✅' : '⏳'}</span>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: phase3Done ? '#34d399' : '#f8fafc', margin: 0 }}>
+                    Fase 3: Emitir sua Primeira Cobrança Pix
+                  </p>
+                  <p style={{ fontSize: 10.5, color: '#64748b', margin: '2px 0 0 0' }}>
+                    Lanche o título e gere a chave Pix copia e cola com lembrete no WhatsApp.
+                  </p>
+                </div>
+              </div>
+              {!phase3Done && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setChargeSuccess(false);
+                    setChargeAmount("");
+                    setSelectedClientId("");
+                    setShowChargeModal(true);
+                  }}
+                  style={{
+                    fontSize: 11, fontWeight: 700, color: '#090d16', background: '#10b981',
+                    border: 'none', padding: '6px 12px', borderRadius: 8, cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)'
+                  }}
+                  className="hover:scale-95 transition-transform"
+                >
+                  Emitir
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Main Responsive Grid Wrapper (Desktop: 3 columns; Mobile: 1 stacked column) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -623,34 +753,15 @@ export default function DashboardHome() {
           </div>
 
           {/* 🚀 Interactive Quick Actions Buttons Row */}
-          <div className="grid grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-2 gap-3.5">
             <button
-              onClick={() => {
-                setWithdrawSuccess(false);
-                setWithdrawAmount("");
-                setWithdrawError("");
-                setShowWithdrawModal(true);
-              }}
+              onClick={handleOpenWithdrawModal}
               className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/20 active:scale-98 transition-all text-emerald-400 cursor-pointer text-center font-bold"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5L12 14.5L5 7.5" />
               </svg>
               <span className="text-[10px] md:text-xs tracking-tight">Sacar Pix</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setDepositSuccess(false);
-                setDepositAmount("");
-                setShowDepositModal(true);
-              }}
-              className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-teal-500/10 hover:bg-teal-500/15 border border-teal-500/20 active:scale-98 transition-all text-teal-400 cursor-pointer text-center font-bold"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              <span className="text-[10px] md:text-xs tracking-tight">Depositar</span>
             </button>
 
             <button
@@ -988,31 +1099,11 @@ export default function DashboardHome() {
             </div>
           </button>
 
-          <button
-            onClick={() => {
-              setShowFabDropdown(false);
-              setDepositSuccess(false);
-              setDepositAmount("");
-              setShowDepositModal(true);
-            }}
-            className="w-full text-left px-3 py-2 hover:bg-card-hover-theme rounded-xl flex items-center gap-2.5 transition-colors group cursor-pointer"
-          >
-            <svg className="w-4 h-4 text-teal-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            <div>
-              <p className="text-xs font-bold text-primary-theme group-hover:text-teal-400 transition-colors">Depositar Saldo</p>
-              <p className="text-[9px] text-muted-theme">Recarga de saldo via Pix próprio</p>
-            </div>
-          </button>
 
           <button
             onClick={() => {
               setShowFabDropdown(false);
-              setWithdrawSuccess(false);
-              setWithdrawAmount("");
-              setWithdrawError("");
-              setShowWithdrawModal(true);
+              handleOpenWithdrawModal();
             }}
             className="w-full text-left px-3 py-2 hover:bg-card-hover-theme rounded-xl flex items-center gap-2.5 transition-colors group cursor-pointer"
           >
@@ -1056,10 +1147,10 @@ export default function DashboardHome() {
 
       {/* ==================== Saque Modal ==================== */}
       {showWithdrawModal && (
-        <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={() => setShowWithdrawModal(false)}>
+        <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={handleCloseWithdrawModal}>
           <div className="bg-modal-theme border border-theme rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
             <button
-              onClick={() => setShowWithdrawModal(false)}
+              onClick={handleCloseWithdrawModal}
               className="absolute top-4 right-4 text-secondary-theme hover:text-primary-theme text-xl font-light cursor-pointer"
             >
               ×
@@ -1091,49 +1182,111 @@ export default function DashboardHome() {
                     </div>
                   )}
 
-                  <div className="space-y-3">
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Valor do Saque (R$)</label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        placeholder="0,00"
-                        required
-                        value={withdrawAmount}
-                        onChange={(e) => setWithdrawAmount(e.target.value)}
-                        className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-primary-theme outline-none text-sm"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
+                  {!requires2fa ? (
+                    <div className="space-y-3">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Tipo de Chave</label>
-                        <select
-                          value={pixKeyType}
-                          onChange={(e) => setPixKeyType(e.target.value)}
-                          className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-2 py-2.5 text-primary-theme outline-none text-xs cursor-pointer"
-                        >
-                          <option value="cpf">CPF</option>
-                          <option value="cnpj">CNPJ</option>
-                          <option value="email">E-mail</option>
-                          <option value="phone">Telefone</option>
-                          <option value="evp">Chave Aleatória (EVP)</option>
-                        </select>
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Chave Pix</label>
+                        <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Valor do Saque (R$)</label>
                         <input
-                          type="text"
-                          placeholder="Insira a chave"
+                          type="number"
+                          step="0.01"
+                          placeholder="0,00"
                           required
-                          value={pixKey}
-                          onChange={(e) => setPixKey(e.target.value)}
-                          className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3 py-2.5 text-primary-theme outline-none text-xs"
+                          value={withdrawAmount}
+                          onChange={(e) => setWithdrawAmount(e.target.value)}
+                          className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-primary-theme outline-none text-sm"
                         />
                       </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Tipo de Chave</label>
+                          <select
+                            value={pixKeyType}
+                            onChange={(e) => setPixKeyType(e.target.value)}
+                            className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-2 py-2.5 text-primary-theme outline-none text-xs cursor-pointer"
+                          >
+                            <option value="cpf">CPF</option>
+                            <option value="cnpj">CNPJ</option>
+                            <option value="email">E-mail</option>
+                            <option value="phone">Telefone</option>
+                            <option value="evp">Chave Aleatória (EVP)</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Chave Pix</label>
+                          <input
+                            type="text"
+                            placeholder="Insira a chave"
+                            required
+                            value={pixKey}
+                            onChange={(e) => setPixKey(e.target.value)}
+                            className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3 py-2.5 text-primary-theme outline-none text-xs"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="space-y-4 py-2">
+                      <div className="text-center space-y-1.5">
+                        <label className="text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider block">Verificação de Segurança</label>
+                        <p className="text-[10px] text-secondary-theme">
+                          Enviamos um código de 6 dígitos no WhatsApp cadastrado finalizado em <span className="font-bold text-primary-theme">{user?.phone ? user.phone.slice(-4) : 'suporte'}</span>.
+                        </p>
+                      </div>
+
+                      <div className="flex justify-center">
+                        <input
+                          type="text"
+                          maxLength={6}
+                          pattern="[0-9]*"
+                          inputMode="numeric"
+                          placeholder="000000"
+                          required
+                          value={verificationCode}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, "");
+                            setVerificationCode(val);
+                          }}
+                          className="w-48 bg-input-theme border-2 border-emerald-500/30 focus:border-emerald-500 focus:shadow-[0_0_15px_rgba(16,185,129,0.2)] rounded-2xl py-3.5 text-center text-2xl font-mono tracking-[0.4em] pl-[0.4em] text-primary-theme outline-none transition-all"
+                        />
+                      </div>
+
+                      <div className="text-center">
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            setWithdrawError("");
+                            try {
+                              setWithdrawLoading(true);
+                              const res = await fetch("/api/pay/withdraw", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                  amount: parseFloat(withdrawAmount),
+                                  pix_key: pixKey,
+                                  pix_key_type: pixKeyType
+                                })
+                              });
+                              const data = await res.json();
+                              if (res.ok && data.requires_2fa) {
+                                alert("Código reenviado com sucesso!");
+                              } else {
+                                setWithdrawError(data.error || "Falha ao reenviar código.");
+                              }
+                            } catch(err) {
+                              setWithdrawError("Erro ao comunicar com o servidor.");
+                            } finally {
+                              setWithdrawLoading(false);
+                            }
+                          }}
+                          className="text-[10px] text-emerald-400 hover:text-emerald-300 font-bold transition-colors cursor-pointer"
+                        >
+                          Reenviar Código por WhatsApp
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   <button
                     type="submit"
@@ -1142,7 +1295,7 @@ export default function DashboardHome() {
                   >
                     {withdrawLoading ? (
                       <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></div>
-                    ) : "Solicitar Transferência"}
+                    ) : requires2fa ? "Confirmar Código & Resgatar" : "Solicitar Transferência"}
                   </button>
                 </form>
               ) : (
@@ -1157,10 +1310,7 @@ export default function DashboardHome() {
                     </p>
                   </div>
                   <button
-                    onClick={() => {
-                      setShowWithdrawModal(false);
-                      setWithdrawSuccess(false);
-                    }}
+                    onClick={handleCloseWithdrawModal}
                     className="w-full py-2.5 rounded-xl bg-surface-theme hover:bg-card-hover-theme text-primary-theme border border-theme font-bold text-xs transition-all cursor-pointer"
                   >
                     Fechar
@@ -1172,106 +1322,6 @@ export default function DashboardHome() {
         </div>
       )}
 
-      {/* ==================== Depositar Modal ==================== */}
-      {showDepositModal && (
-        <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={() => setShowDepositModal(false)}>
-          <div className="bg-modal-theme border border-theme rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
-            <button
-              onClick={() => setShowDepositModal(false)}
-              className="absolute top-4 right-4 text-secondary-theme hover:text-primary-theme text-xl font-light cursor-pointer"
-            >
-              ×
-            </button>
-
-            <div className="p-5 space-y-4">
-              <div>
-                <h3 className="text-base font-bold text-primary-theme">Adicionar Saldo via Pix</h3>
-                <p className="text-[11px] text-secondary-theme mt-0.5">Gere um código Pix para realizar uma recarga de saldo na sua própria conta digital.</p>
-              </div>
-
-              {!depositSuccess ? (
-                <form onSubmit={handleCreateSelfDeposit} className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Valor a Depositar (R$)</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      placeholder="0,00"
-                      required
-                      value={depositAmount}
-                      onChange={(e) => setDepositAmount(e.target.value)}
-                      className="w-full bg-input-theme border border-theme focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-primary-theme outline-none text-sm"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={depositLoading}
-                    className="w-full py-3 rounded-xl bg-teal-500 hover:bg-teal-400 disabled:bg-teal-500/40 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
-                  >
-                    {depositLoading ? (
-                      <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></div>
-                    ) : "Gerar QR Code Pix"}
-                  </button>
-                </form>
-              ) : (
-                <div className="space-y-4 text-center">
-                  <div className="w-12 h-12 rounded-full bg-teal-500/10 text-teal-400 mx-auto flex items-center justify-center text-xl font-bold">
-                    ✓
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-primary-theme">Código Pix de Recarga Gerado!</h4>
-                    <p className="text-[11px] text-secondary-theme mt-1">Copie o código Pix Copia e Cola abaixo para efetuar o pagamento da recarga.</p>
-                  </div>
-
-                  <div className="space-y-2 text-left">
-                    <label className="text-[8px] font-extrabold text-muted-theme uppercase tracking-wider">Pix Copia e Cola</label>
-                    <textarea
-                      readOnly
-                      rows="3"
-                      value={depositPixCode}
-                      onClick={(e) => e.target.select()}
-                      className="w-full bg-input-theme border border-theme rounded-xl p-2.5 text-[9px] text-primary-theme font-mono outline-none resize-none"
-                    />
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(depositPixCode);
-                        alert("Pix copiado com sucesso!");
-                      }}
-                      className="flex-1 py-2.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 border border-teal-500/25 font-bold text-xs transition-all cursor-pointer"
-                    >
-                      Copiar Código
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowDepositModal(false);
-                        setDepositSuccess(false);
-                      }}
-                      className="flex-1 py-2.5 rounded-xl bg-surface-theme hover:bg-card-hover-theme text-primary-theme font-bold text-xs transition-all cursor-pointer"
-                    >
-                      Concluído
-                    </button>
-                  </div>
-
-                  {depositLink && (
-                    <a
-                      href={depositLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block text-[10px] text-muted-theme hover:text-emerald-400 underline transition-colors"
-                    >
-                      Visualizar link completo de fatura
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ==================== Cobrar Cliente Modal ==================== */}
       {showChargeModal && (
