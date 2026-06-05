@@ -73,6 +73,34 @@ export async function POST(request) {
       run('UPDATE users SET wallet_balance = wallet_balance + ?, updated_at = datetime("now") WHERE id = ?',
         [netAmount, existing.user_id]);
 
+      // Integrar com módulo de Custódia de Capital (V15)
+      try {
+        const custodyFeeHist = queryOne("SELECT id, custody_id FROM capital_custody_history WHERE charge_id = ? AND type = 'daily_fee'", [chargeId]);
+        if (custodyFeeHist) {
+          run(
+            `INSERT INTO capital_custody_history (id, custody_id, type, amount, charge_id, notes)
+             VALUES (?, ?, 'fee_payment', ?, ?, ?)`,
+            [generateId(), custodyFeeHist.custody_id, paidAmount, chargeId, `Confirmado pagamento da taxa de custódia diária de R$ ${paidAmount.toFixed(2)}`]
+          );
+        }
+
+        const custodyAmortHist = queryOne("SELECT id, custody_id, amount FROM capital_custody_history WHERE charge_id = ? AND type = 'amortization'", [chargeId]);
+        if (custodyAmortHist) {
+          run("UPDATE capital_custody SET current_principal = MAX(0, current_principal - ?), updated_at = datetime('now') WHERE id = ?", [custodyAmortHist.amount, custodyAmortHist.custody_id]);
+          run("UPDATE capital_custody_history SET notes = ? WHERE id = ?", [`Confirmada amortização parcial de R$ ${custodyAmortHist.amount.toFixed(2)}`, custodyAmortHist.id]);
+          console.log(`✅ Amortização de R$ ${custodyAmortHist.amount} processada para o contrato ${custodyAmortHist.custody_id}`);
+        }
+
+        const custodyRepayHist = queryOne("SELECT id, custody_id, amount FROM capital_custody_history WHERE charge_id = ? AND type = 'repayment'", [chargeId]);
+        if (custodyRepayHist) {
+          run("UPDATE capital_custody SET status = 'completed', current_principal = 0, updated_at = datetime('now') WHERE id = ?", [custodyRepayHist.custody_id]);
+          run("UPDATE capital_custody_history SET notes = ? WHERE id = ?", [`Confirmada quitação integral de R$ ${custodyRepayHist.amount.toFixed(2)}. Contrato finalizado.`, custodyRepayHist.id]);
+          console.log(`✅ Quitação integral processada para o contrato ${custodyRepayHist.custody_id}`);
+        }
+      } catch (custodyErr) {
+        console.error('❌ Falha ao processar conciliação de custódia no webhook:', custodyErr);
+      }
+
       // Registrar transação no livro financeiro (com o valor líquido creditado na carteira)
       run('INSERT INTO transactions (id, user_id, charge_id, client_id, amount, type, payment_method, reference, notes) VALUES (?, ?, ?, ?, ?, "income", ?, ?, ?)',
         [

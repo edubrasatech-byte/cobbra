@@ -184,6 +184,217 @@ export async function GET(request) {
       createdCount++;
     }
 
+    // 6. Processar cobranças automáticas de Custódia de Capital (V15)
+    let custodyProcessed = 0;
+    let custodyChargesCreated = 0;
+    try {
+      const activeCustodies = query("SELECT * FROM capital_custody WHERE status = 'active'");
+      for (const contract of activeCustodies) {
+        custodyProcessed++;
+
+        const user = queryOne("SELECT * FROM users WHERE id = ?", [contract.user_id]);
+        const client = queryOne("SELECT * FROM clients WHERE id = ?", [contract.client_id]);
+        if (!user || !client) continue;
+
+        // 6.1 Procura cobrança anterior pendente/vencida de custódia para acumular
+        const lastUnpaidFee = queryOne(
+          `SELECT c.*, h.id as history_id FROM charges c
+           JOIN capital_custody_history h ON c.id = h.charge_id
+           WHERE h.custody_id = ? AND h.type = 'daily_fee' AND c.status IN ('pending', 'reminder_sent', 'overdue')
+           ORDER BY c.created_at DESC LIMIT 1`,
+          [contract.id]
+        );
+
+        // Se já geramos a taxa hoje e ela está acumulada, evita duplicidade
+        if (lastUnpaidFee && lastUnpaidFee.description.includes(`na data ${todayStr}`)) {
+          continue;
+        }
+
+        // Se não houver pendente, checa idempotência de nova fatura já gerada e paga hoje
+        if (!lastUnpaidFee) {
+          const refToken = `[Custódia Ref: ${contract.id} na data ${todayStr}]`;
+          const alreadyBilled = queryOne(
+            "SELECT id FROM charges WHERE client_id = ? AND user_id = ? AND description LIKE ?",
+            [contract.client_id, contract.user_id, `%${refToken}%`]
+          );
+          if (alreadyBilled) continue;
+        }
+
+        // 6.2 Calcular taxa diária proporcional (amortização parcial diminui a taxa)
+        let calculatedFee = contract.daily_fee;
+        if (contract.current_principal < contract.principal_amount && contract.principal_amount > 0) {
+          calculatedFee = contract.daily_fee * (contract.current_principal / contract.principal_amount);
+          calculatedFee = Math.round(calculatedFee * 100) / 100;
+        }
+
+        if (calculatedFee <= 0) continue;
+
+        let asaasPaymentLink = null;
+        let asaasPixCopyPaste = null;
+        let asaasId = null;
+        let finalDescription = '';
+        let finalAmount = calculatedFee;
+
+        if (lastUnpaidFee) {
+          // 6.3 Cenário A: Acumular na cobrança pendente (Rollover com Juros)
+          const lastDue = new Date(lastUnpaidFee.due_date);
+          const todayDateObj = new Date(todayStr);
+          const daysOverdue = Math.max(0, Math.floor((todayDateObj - lastDue) / (1000 * 60 * 60 * 24)));
+          
+          const lateRate = contract.late_interest_rate !== undefined ? contract.late_interest_rate : 0.01;
+          const interestAmount = Math.round((lastUnpaidFee.amount * lateRate * daysOverdue) * 100) / 100;
+          finalAmount = Math.round((lastUnpaidFee.amount + interestAmount + calculatedFee) * 100) / 100;
+
+          finalDescription = `Taxa de Custódia Diária (Acumulada) - Capital Locado. Inclui R$ ${interestAmount.toFixed(2)} de juros de atraso (${daysOverdue} dias) e R$ ${calculatedFee.toFixed(2)} da taxa de hoje. [Custódia Ref: ${contract.id} na data ${todayStr}]`;
+          
+          asaasId = lastUnpaidFee.asaas_id;
+          asaasPaymentLink = lastUnpaidFee.payment_link;
+          asaasPixCopyPaste = lastUnpaidFee.pix_copy_paste;
+
+          if (process.env.ASAAS_API_KEY && asaasId) {
+            try {
+              const { updateAsaasPayment } = require('@/lib/asaas');
+              const asaasResult = await updateAsaasPayment(user, asaasId, finalAmount, todayStr, finalDescription);
+              if (asaasResult && !asaasResult.fallback) {
+                asaasPaymentLink = asaasResult.paymentLink || asaasResult.invoiceUrl;
+                asaasPixCopyPaste = asaasResult.pixCopyPaste;
+              }
+            } catch (err) {
+              console.error(`Erro Asaas ao atualizar cobrança acumulada ${asaasId}:`, err);
+            }
+          }
+
+          if (!asaasPixCopyPaste) {
+            const { generateStaticPix } = require('@/lib/pix');
+            asaasPixCopyPaste = generateStaticPix({
+              key: user.pix_key || 'demo@cobbra.com.br',
+              amount: finalAmount,
+              name: user.business_name || user.name || 'Cobbra Pay',
+              txid: lastUnpaidFee.id.substring(0, 25).toUpperCase().replace(/[^A-Z0-9]/g, 'C')
+            });
+          }
+
+          // Atualizar a cobrança existente na base SQLite
+          run(
+            `UPDATE charges SET amount = ?, description = ?, due_date = ?, status = 'pending', payment_link = ?, pix_copy_paste = ?, updated_at = datetime('now') WHERE id = ?`,
+            [finalAmount, finalDescription, todayStr, asaasPaymentLink, asaasPixCopyPaste, lastUnpaidFee.id]
+          );
+
+          // Incrementar faturamento no cliente
+          run("UPDATE clients SET total_charged = total_charged + ?, updated_at = datetime('now') WHERE id = ?", [calculatedFee, contract.client_id]);
+
+          // Registrar histórico
+          run(
+            `INSERT INTO capital_custody_history (id, custody_id, type, amount, charge_id, notes)
+             VALUES (?, ?, 'daily_fee', ?, ?, ?)`,
+            [generateId(), contract.id, 'daily_fee', calculatedFee, lastUnpaidFee.id, `Taxa diária acumulada: adicionado R$ ${calculatedFee.toFixed(2)} (juros aplicados: R$ ${interestAmount.toFixed(2)})`]
+          );
+
+          // Notificação de sistema
+          run(
+            'INSERT INTO notifications (id, user_id, type, title, message, entity_type, entity_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [generateId(), contract.user_id, 'info', 'Taxa de Custódia Acumulada', `Fatura de custódia atualizada para R$ ${finalAmount.toFixed(2)} para ${client.name}`, 'charge', lastUnpaidFee.id]
+          );
+
+        } else {
+          // 6.4 Cenário B: Criar nova cobrança do zero
+          const chargeId = generateId();
+          finalDescription = `Taxa de Custódia Diária - Capital Locado [Custódia Ref: ${contract.id} na data ${todayStr}]`;
+
+          let asaasCustomerId = client.asaas_customer_id || null;
+
+          if (process.env.ASAAS_API_KEY) {
+            try {
+              const { createAsaasCustomer, createAsaasPayment } = require('@/lib/asaas');
+              asaasCustomerId = await createAsaasCustomer(user, client);
+              if (asaasCustomerId) {
+                if (asaasCustomerId !== client.asaas_customer_id) {
+                  run('UPDATE clients SET asaas_customer_id = ? WHERE id = ?', [asaasCustomerId, client.id]);
+                }
+
+                const chargeObj = {
+                  id: chargeId,
+                  amount: calculatedFee,
+                  due_date: todayStr,
+                  description: finalDescription,
+                  payment_method: 'pix'
+                };
+
+                const asaasResult = await createAsaasPayment(user, chargeObj, asaasCustomerId);
+                if (asaasResult && !asaasResult.fallback) {
+                  asaasId = asaasResult.asaasId;
+                  asaasPaymentLink = asaasResult.paymentLink || asaasResult.invoiceUrl;
+                  asaasPixCopyPaste = asaasResult.pixCopyPaste;
+                }
+              }
+            } catch (err) {
+              console.error(`Erro Asaas ao criar nova cobrança de custódia:`, err);
+            }
+          }
+
+          if (!asaasPixCopyPaste) {
+            const { generateStaticPix } = require('@/lib/pix');
+            asaasPixCopyPaste = generateStaticPix({
+              key: user.pix_key || 'demo@cobbra.com.br',
+              amount: calculatedFee,
+              name: user.business_name || user.name || 'Cobbra Pay',
+              txid: chargeId.substring(0, 25).toUpperCase().replace(/[^A-Z0-9]/g, 'C')
+            });
+          }
+
+          run(
+            `INSERT INTO charges (id, user_id, client_id, amount, description, due_date, status, recurrence, reminder_channel, payment_method, daily_interest_rate, asaas_id, payment_link, pix_copy_paste)
+             VALUES (?, ?, ?, ?, ?, ?, 'pending', 'once', 'both', 'pix', 0, ?, ?, ?)`,
+            [chargeId, contract.user_id, contract.client_id, calculatedFee, finalDescription, todayStr, asaasId, asaasPaymentLink, asaasPixCopyPaste]
+          );
+
+          run("UPDATE clients SET total_charged = total_charged + ?, updated_at = datetime('now') WHERE id = ?", [calculatedFee, contract.client_id]);
+
+          run(
+            `INSERT INTO capital_custody_history (id, custody_id, type, amount, charge_id, notes)
+             VALUES (?, ?, 'daily_fee', ?, ?, ?)`,
+            [generateId(), contract.id, 'daily_fee', calculatedFee, chargeId, `Taxa de custódia diária gerada: R$ ${calculatedFee.toFixed(2)}`]
+          );
+
+          run(
+            'INSERT INTO notifications (id, user_id, type, title, message, entity_type, entity_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [generateId(), contract.user_id, 'info', 'Taxa de Custódia Gerada', `Taxa de R$ ${calculatedFee.toFixed(2)} gerada para ${client.name}`, 'charge', chargeId]
+          );
+        }
+
+        // 6.5 Enfileirar WhatsApp com template customizado
+        let messageText = '';
+        const currentChargeId = lastUnpaidFee ? lastUnpaidFee.id : chargeId;
+        const currentLink = asaasPaymentLink || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://cobbra.com.br'}/api/cobranca-diaria/pagar?id=${currentChargeId}`;
+
+        if (contract.custom_message_template) {
+          const valorFmt = `R$ ${finalAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+          const principalFmt = `R$ ${contract.current_principal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+          messageText = contract.custom_message_template
+            .replace(/{cliente_nome}/g, client.name)
+            .replace(/{taxa_diaria}/g, valorFmt)
+            .replace(/{capital_total}/g, principalFmt)
+            .replace(/{link_pagamento}/g, currentLink);
+        } else {
+          messageText = `Olá ${client.name}! ⚡ Segue a taxa de custódia diária acumulada do capital locado sob sua responsabilidade, no valor total de R$ ${finalAmount.toFixed(2)}. Pague pelo Pix copia e cola ou no link: ${currentLink}`;
+        }
+
+        if (client?.phone) {
+          const cleanPhone = client.phone.replace(/\D/g, '');
+          const fullPhone = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+          run(
+            `INSERT INTO whatsapp_queue (id, user_id, phone, message, status, max_attempts)
+             VALUES (?, ?, ?, ?, 'pending', 3)`,
+            [generateId(), contract.user_id, fullPhone, messageText]
+          );
+        }
+
+        custodyChargesCreated++;
+      }
+    } catch (custodyCronErr) {
+      console.error('❌ Falha ao processar cron de custódia de capital:', custodyCronErr);
+    }
+
     return Response.json({
       success: true,
       today: todayStr,
@@ -193,7 +404,9 @@ export async function GET(request) {
         totalRulesActive: rules.length,
         processedRules: processedCount,
         chargesCreated: createdCount,
-        rulesPausedExpired: pausedCount
+        rulesPausedExpired: pausedCount,
+        custodyProcessed,
+        custodyChargesCreated
       }
     });
 
