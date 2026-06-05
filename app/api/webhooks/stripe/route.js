@@ -11,6 +11,10 @@ export async function POST(request) {
   try {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     if (!webhookSecret) {
+      if (process.env.NODE_ENV === 'production') {
+        console.error('❌ STRIPE_WEBHOOK_SECRET is not set in production! Blocking request for security reasons.');
+        return new Response('Stripe webhook configuration error', { status: 500 });
+      }
       console.warn('STRIPE_WEBHOOK_SECRET is not set. Bypassing signature verification for testing purposes ONLY.');
       event = JSON.parse(body);
     } else {

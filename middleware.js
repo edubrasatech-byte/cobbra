@@ -95,7 +95,7 @@ export function middleware(request) {
     }
   }
 
-  const isPublicApi = pathname === '/api/ai/chat' || pathname.startsWith('/api/cron/');
+  const isPublicApi = pathname === '/api/ai/chat' || pathname.startsWith('/api/cron/') || pathname.startsWith('/api/webhooks/');
 
   if (isPublicRoute || isApiAuth || isStaticFile || isPublicApi) {
     return NextResponse.next();

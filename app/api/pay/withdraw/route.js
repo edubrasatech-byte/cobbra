@@ -156,12 +156,24 @@ export async function POST(request) {
       [user.id]
     );
 
+    // Deduzir preventivamente o saldo do usuário para evitar condições de corrida (Race Conditions)
+    // Como better-sqlite3 executa síncronamente, isso garante exclusão mútua contra saques simultâneos
+    run(
+      'UPDATE users SET wallet_balance = wallet_balance - ?, updated_at = datetime("now") WHERE id = ?',
+      [numAmount, user.id]
+    );
+
     // Chamar API de Transferência do Asaas (TED/Pix de saída)
     let asaasResult;
     try {
       asaasResult = await requestAsaasTransfer(netAmount, pix_key, pix_key_type);
     } catch (err) {
       console.error('Failed to request Asaas transfer:', err);
+      // Estornar o saldo preventivamente deduzido em caso de falha na chamada externa
+      run(
+        'UPDATE users SET wallet_balance = wallet_balance + ?, updated_at = datetime("now") WHERE id = ?',
+        [numAmount, user.id]
+      );
       return Response.json(
         { error: `Falha ao processar saque via Asaas: ${err.message}` },
         { status: 500 }
@@ -170,10 +182,10 @@ export async function POST(request) {
 
     const transferId = asaasResult.transferId || generateId();
 
-    // Deduzir o saldo do assinante no SQLite e incrementar contagem de saques
+    // Incrementar contagem de saques (o saldo já foi deduzido preventivamente)
     run(
-      'UPDATE users SET wallet_balance = wallet_balance - ?, withdrawal_count = withdrawal_count + 1, updated_at = datetime("now") WHERE id = ?',
-      [numAmount, user.id]
+      'UPDATE users SET withdrawal_count = withdrawal_count + 1, updated_at = datetime("now") WHERE id = ?',
+      [user.id]
     );
 
     // Salvar registro de saque externo (client_id é NULL pois o saque é geral do assinante)

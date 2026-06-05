@@ -7,6 +7,16 @@ import { calcInterest } from '@/lib/finance';
  */
 export async function POST(request) {
   try {
+    // Validar token de acesso do webhook se configurado
+    const webhookToken = process.env.ASAAS_WEBHOOK_TOKEN;
+    if (webhookToken) {
+      const receivedToken = request.headers.get('asaas-access-token');
+      if (!receivedToken || receivedToken !== webhookToken) {
+        console.warn('⚠️ Webhook Asaas - Tentativa de requisição com token inválido ou ausente.');
+        return new Response('Unauthorized', { status: 401 });
+      }
+    }
+
     const body = await request.json();
     const { event, payment } = body;
 

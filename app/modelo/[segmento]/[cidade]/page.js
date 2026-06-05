@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 // Static dictionaries for programmatic SEO mapping
-const SEGMENTS = {
+export const SEGMENTS = {
   'aluguel-carros-frota': {
     title: 'Sistema de Aluguel de Carros e Frotas',
     niche: 'Locação de Veículos',
@@ -200,7 +200,7 @@ const SEGMENTS = {
   }
 };
 
-const CITIES = {
+export const CITIES = {
   'sao-paulo': { name: 'São Paulo', state: 'SP', article: 'em' },
   'rio-de-janeiro': { name: 'Rio de Janeiro', state: 'RJ', article: 'no' },
   'belo-horizonte': { name: 'Belo Horizonte', state: 'MG', article: 'em' },

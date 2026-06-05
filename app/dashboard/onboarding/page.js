@@ -317,19 +317,8 @@ export default function OnboardingPage() {
       </header>
 
       {/* Center content container */}
-      <main style={{
-        flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center',
-        padding: '24px 16px', zIndex: 5
-      }}>
-        <div style={{
-          width: '100%', maxWidth: 540,
-          background: 'rgba(15, 23, 42, 0.85)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid #334155',
-          borderRadius: 24,
-          padding: '28px 24px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)'
-        }}>
+      <main className="onboarding-main">
+        <div className="onboarding-card">
 
           {/* STEP 1: BUSINESS NAME */}
           {step === 1 && (
@@ -380,10 +369,7 @@ export default function OnboardingPage() {
               </div>
 
               {/* Grid selectors */}
-              <div style={{
-                display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10,
-                maxHeight: 230, overflowY: 'auto', paddingRight: 4
-              }}>
+              <div className="onboarding-grid-niches">
                 {NICHES.map((item) => {
                   const isActive = niche === item.id;
                   return (
@@ -622,19 +608,7 @@ export default function OnboardingPage() {
               </div>
 
               {/* Interactive Virtual Card Mockup */}
-              <div style={{
-                background: 'linear-gradient(135deg, #090d16 0%, #1e293b 100%)',
-                border: '1px solid rgba(16, 185, 129, 0.35)',
-                borderRadius: 16,
-                padding: '20px 24px',
-                height: 160,
-                boxShadow: '0 8px 32px rgba(16, 185, 129, 0.1), inset 0 0 10px rgba(16,185,129,0.05)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
+              <div className="pix-card-mockup">
                 {/* Glowing blob */}
                 <div style={{
                   position: 'absolute', top: -30, right: -30, width: 90, height: 90, borderRadius: '50%',
@@ -748,10 +722,7 @@ export default function OnboardingPage() {
                 </div>
 
                 {/* Body with simulated background */}
-                <div style={{
-                  backgroundImage: 'url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png")',
-                  backgroundSize: 'contain', padding: '18px 14px', minHeight: 180, display: 'flex', alignItems: 'flex-end'
-                }}>
+                <div className="whatsapp-mockup-body">
                   {/* Chat bubble */}
                   <div style={{
                     background: '#005c4b', borderRadius: '10px 10px 0 10px', padding: '10px 12px',

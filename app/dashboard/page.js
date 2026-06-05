@@ -234,6 +234,16 @@ export default function DashboardHome() {
   // Modals state
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showChargeModal, setShowChargeModal] = useState(false);
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [showChecklistModal, setShowChecklistModal] = useState(false);
+
+  // Deposit form state
+  const [depositClientId, setDepositClientId] = useState("");
+  const [depositAmount, setDepositAmount] = useState("");
+  const [depositLoading, setDepositLoading] = useState(false);
+  const [depositSuccess, setDepositSuccess] = useState(false);
+  const [depositPixCopyPaste, setDepositPixCopyPaste] = useState("");
+  const [depositPaymentLink, setDepositPaymentLink] = useState("");
 
   // Withdraw form state
   const [withdrawAmount, setWithdrawAmount] = useState("");
@@ -452,6 +462,52 @@ export default function DashboardHome() {
     }
   };
 
+  const handleCloseDepositModal = () => {
+    setShowDepositModal(false);
+    setDepositSuccess(false);
+    setDepositAmount("");
+    setDepositClientId("");
+  };
+
+  const handleOpenDepositModal = () => {
+    setDepositSuccess(false);
+    setDepositAmount("");
+    setDepositClientId("");
+    setShowDepositModal(true);
+  };
+
+  const handleCreateDeposit = async (e) => {
+    e.preventDefault();
+    if (!depositClientId || !depositAmount || parseFloat(depositAmount) <= 0) return;
+
+    try {
+      setDepositLoading(true);
+      const res = await fetch("/api/pay/deposit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: depositClientId,
+          amount: parseFloat(depositAmount)
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setDepositPixCopyPaste(data.pix_copy_paste || "Chave Pix indisponível");
+        setDepositPaymentLink(data.payment_link || "");
+        setDepositSuccess(true);
+        loadAllData();
+      } else {
+        alert(data.error || "Falha ao gerar Pix de depósito.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Erro de conexão ao gerar depósito Pix.");
+    } finally {
+      setDepositLoading(false);
+    }
+  };
+
 
   if (loading || !stats) return (
     <div className="flex flex-col items-center justify-center h-96">
@@ -508,158 +564,34 @@ export default function DashboardHome() {
   return (
     <div className="flex flex-col gap-6 text-left animate-fadeIn">
       {!checklistCompleted && !hideChecklistTemp && (
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(13, 148, 136, 0.08) 100%)',
-          border: '1px solid rgba(16, 185, 129, 0.25)',
-          borderRadius: 20,
-          padding: 20,
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 16,
-          boxShadow: '0 8px 32px rgba(16, 185, 129, 0.05)'
-        }}>
-          {/* Close button */}
-          <button
-            onClick={() => setHideChecklistTemp(true)}
-            style={{
-              position: 'absolute', top: 16, right: 16,
-              background: 'transparent', border: 'none', color: '#94a3b8',
-              fontSize: 16, cursor: 'pointer', outline: 'none'
-            }}
-            title="Ocultar checklist"
-            className="hover:text-emerald-400 transition-colors"
-          >
-            ✕
-          </button>
-
-          <div>
-            <h3 style={{ fontSize: 16, fontWeight: 800, color: '#ffffff', display: 'flex', alignItems: 'center', gap: 8 }} className="m-0">
-              <span>🚀</span> Fases de Ativação do seu Painel Cobbra
-            </h3>
-            <p style={{ fontSize: 12.5, color: '#94a3b8', marginTop: 4, lineHeight: 1.4 }} className="m-0">
-              Complete estas 3 etapas simples para começar a faturar no Pix com taxa zero e automatizar sua régua de WhatsApp.
-            </p>
-          </div>
-
-          {/* Progress bar */}
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, color: '#10b981', marginBottom: 6 }}>
-              <span>Progresso de Ativação</span>
-              <span>{Math.round(( (phase1Done ? 1 : 0) + (phase2Done ? 1 : 0) + (phase3Done ? 1 : 0) ) / 3 * 100)}%</span>
-            </div>
-            <div style={{ width: '100%', height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
-              <div style={{
-                width: `${Math.round(( (phase1Done ? 1 : 0) + (phase2Done ? 1 : 0) + (phase3Done ? 1 : 0) ) / 3 * 100)}%`,
-                height: '100%', background: '#10b981', boxShadow: '0 0 8px rgba(16, 185, 129, 0.5)',
-                transition: 'all 0.4s ease'
-              }} />
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs shadow-md">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="animate-pulse">🚀</span>
+            <span className="font-extrabold text-primary-theme">Ative seu painel Cobbra:</span>
+            <span className="text-secondary-theme hidden sm:inline">Complete as 3 etapas para faturar com taxa zero.</span>
+            <div className="flex items-center gap-1.5 ml-2">
+              <div className="w-16 bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div
+                  className="bg-emerald-500 h-full shadow-[0_0_8px_#10b981]"
+                  style={{ width: `${Math.round(((phase1Done ? 1 : 0) + (phase2Done ? 1 : 0) + (phase3Done ? 1 : 0)) / 3 * 100)}%` }}
+                />
+              </div>
+              <span className="font-bold text-emerald-400">{Math.round(((phase1Done ? 1 : 0) + (phase2Done ? 1 : 0) + (phase3Done ? 1 : 0)) / 3 * 100)}%</span>
             </div>
           </div>
-
-          {/* Checklist items */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {/* Phase 1: WhatsApp Connection */}
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '12px 14px', borderRadius: 12, background: 'rgba(15,23,42,0.4)',
-              border: phase1Done ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(255,255,255,0.04)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 16 }}>{phase1Done ? '✅' : '⏳'}</span>
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: phase1Done ? '#34d399' : '#f8fafc', margin: 0 }}>
-                    Fase 1: Conectar WhatsApp de Cobrança
-                  </p>
-                  <p style={{ fontSize: 10.5, color: '#64748b', margin: '2px 0 0 0' }}>
-                    Pareie seu número para que a Catarina AI dispare lembretes automáticos.
-                  </p>
-                </div>
-              </div>
-              {!phase1Done && (
-                <a
-                  href="/dashboard/configuracoes"
-                  style={{
-                    fontSize: 11, fontWeight: 700, color: '#090d16', background: '#10b981',
-                    padding: '6px 12px', borderRadius: 8, textDecoration: 'none',
-                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)'
-                  }}
-                  className="hover:scale-95 transition-transform"
-                >
-                  Conectar
-                </a>
-              )}
-            </div>
-
-            {/* Phase 2: Client Creation */}
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '12px 14px', borderRadius: 12, background: 'rgba(15,23,42,0.4)',
-              border: phase2Done ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(255,255,255,0.04)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 16 }}>{phase2Done ? '✅' : '⏳'}</span>
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: phase2Done ? '#34d399' : '#f8fafc', margin: 0 }}>
-                    Fase 2: Cadastrar seu Primeiro Cliente
-                  </p>
-                  <p style={{ fontSize: 10.5, color: '#64748b', margin: '2px 0 0 0' }}>
-                    Insira as informações de contato do cliente devedor.
-                  </p>
-                </div>
-              </div>
-              {!phase2Done && (
-                <a
-                  href="/dashboard/clientes"
-                  style={{
-                    fontSize: 11, fontWeight: 700, color: '#090d16', background: '#10b981',
-                    padding: '6px 12px', borderRadius: 8, textDecoration: 'none',
-                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)'
-                  }}
-                  className="hover:scale-95 transition-transform"
-                >
-                  Cadastrar
-                </a>
-              )}
-            </div>
-
-            {/* Phase 3: Charge Creation */}
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '12px 14px', borderRadius: 12, background: 'rgba(15,23,42,0.4)',
-              border: phase3Done ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(255,255,255,0.04)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 16 }}>{phase3Done ? '✅' : '⏳'}</span>
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: phase3Done ? '#34d399' : '#f8fafc', margin: 0 }}>
-                    Fase 3: Emitir sua Primeira Cobrança Pix
-                  </p>
-                  <p style={{ fontSize: 10.5, color: '#64748b', margin: '2px 0 0 0' }}>
-                    Lanche o título e gere a chave Pix copia e cola com lembrete no WhatsApp.
-                  </p>
-                </div>
-              </div>
-              {!phase3Done && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setChargeSuccess(false);
-                    setChargeAmount("");
-                    setSelectedClientId("");
-                    setShowChargeModal(true);
-                  }}
-                  style={{
-                    fontSize: 11, fontWeight: 700, color: '#090d16', background: '#10b981',
-                    border: 'none', padding: '6px 12px', borderRadius: 8, cursor: 'pointer',
-                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)'
-                  }}
-                  className="hover:scale-95 transition-transform"
-                >
-                  Emitir
-                </button>
-              )}
-            </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowChecklistModal(true)}
+              className="text-[10px] font-black text-slate-950 bg-emerald-400 px-3 py-1 rounded-lg hover:scale-95 transition-all cursor-pointer"
+            >
+              Ver Fases
+            </button>
+            <button
+              onClick={() => setHideChecklistTemp(true)}
+              className="text-slate-400 hover:text-emerald-400 font-bold focus:outline-none"
+            >
+              ✕
+            </button>
           </div>
         </div>
       )}
@@ -753,10 +685,20 @@ export default function DashboardHome() {
           </div>
 
           {/* 🚀 Interactive Quick Actions Buttons Row */}
-          <div className="grid grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-3 gap-3">
+            <button
+              onClick={handleOpenDepositModal}
+              className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-teal-500/10 hover:bg-teal-500/15 border border-teal-500/20 active:scale-98 transition-all text-teal-400 cursor-pointer text-center font-bold"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span className="text-[10px] md:text-xs tracking-tight">Depositar Pix</span>
+            </button>
+
             <button
               onClick={handleOpenWithdrawModal}
-              className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/20 active:scale-98 transition-all text-emerald-400 cursor-pointer text-center font-bold"
+              className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/20 active:scale-98 transition-all text-emerald-400 cursor-pointer text-center font-bold"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5L12 14.5L5 7.5" />
@@ -771,7 +713,7 @@ export default function DashboardHome() {
                 setSelectedClientId("");
                 setShowChargeModal(true);
               }}
-              className="flex flex-col items-center justify-center gap-2 p-3.5 rounded-2xl bg-blue-500/10 hover:bg-blue-500/15 border border-blue-500/20 active:scale-98 transition-all text-blue-400 cursor-pointer text-center font-bold"
+              className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-blue-500/10 hover:bg-blue-500/15 border border-blue-500/20 active:scale-98 transition-all text-blue-400 cursor-pointer text-center font-bold"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -1556,6 +1498,260 @@ export default function DashboardHome() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== Checklist de Ativação Modal ==================== */}
+      {showChecklistModal && (
+        <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={() => setShowChecklistModal(false)}>
+          <div className="bg-modal-theme border border-theme rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setShowChecklistModal(false)}
+              className="absolute top-4 right-4 text-secondary-theme hover:text-primary-theme text-xl font-light cursor-pointer"
+            >
+              ×
+            </button>
+
+            <div className="p-6 space-y-6">
+              <div>
+                <h3 className="text-base font-bold text-primary-theme flex items-center gap-2">
+                  🚀 Fases de Ativação Cobbra
+                </h3>
+                <p className="text-[11px] text-secondary-theme mt-0.5">
+                  Complete estes 3 passos simples para desbloquear o potencial máximo do seu painel e receber via Pix com taxa zero.
+                </p>
+              </div>
+
+              {/* Progress bar in modal header */}
+              <div className="bg-surface-theme border border-theme rounded-2xl p-4 flex flex-col gap-2">
+                <div className="flex justify-between items-center text-xs font-bold">
+                  <span className="text-primary-theme">Progresso Geral</span>
+                  <span className="text-emerald-400">{Math.round(((phase1Done ? 1 : 0) + (phase2Done ? 1 : 0) + (phase3Done ? 1 : 0)) / 3 * 100)}%</span>
+                </div>
+                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div
+                    className="bg-emerald-500 h-full shadow-[0_0_8px_#10b981]"
+                    style={{ width: `${Math.round(((phase1Done ? 1 : 0) + (phase2Done ? 1 : 0) + (phase3Done ? 1 : 0)) / 3 * 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {/* Step 1: Conectar WhatsApp */}
+                <div className={`border rounded-2xl p-4 transition-all ${phase1Done ? "border-emerald-500/30 bg-emerald-500/[0.02]" : "border-theme bg-surface-theme"}`}>
+                  <div className="flex items-start gap-3">
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-sm ${phase1Done ? "bg-emerald-500/10 text-emerald-400" : "bg-slate-800 text-slate-400"}`}>
+                      {phase1Done ? "✓" : "1"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="text-xs font-bold text-primary-theme">Conectar WhatsApp</h4>
+                        {phase1Done && <span className="text-[8px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-md uppercase">Concluído</span>}
+                      </div>
+                      <p className="text-[10px] text-muted-theme mt-1 leading-relaxed">
+                        Conecte o seu número de WhatsApp para que a Catarina AI dispare lembretes automáticos com boleto Pix.
+                      </p>
+                      {!phase1Done && (
+                        <a
+                          href="/dashboard/whatsapp"
+                          className="inline-block mt-3 text-[10px] font-black text-slate-950 bg-emerald-400 hover:bg-emerald-300 px-3 py-1.5 rounded-lg transition-all"
+                        >
+                          Conectar WhatsApp
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 2: Cadastrar Primeiro Cliente */}
+                <div className={`border rounded-2xl p-4 transition-all ${phase2Done ? "border-emerald-500/30 bg-emerald-500/[0.02]" : "border-theme bg-surface-theme"}`}>
+                  <div className="flex items-start gap-3">
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-sm ${phase2Done ? "bg-emerald-500/10 text-emerald-400" : "bg-slate-800 text-slate-400"}`}>
+                      {phase2Done ? "✓" : "2"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="text-xs font-bold text-primary-theme">Cadastrar Primeiro Cliente</h4>
+                        {phase2Done && <span className="text-[8px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-md uppercase">Concluído</span>}
+                      </div>
+                      <p className="text-[10px] text-muted-theme mt-1 leading-relaxed">
+                        Cadastre o seu primeiro cliente (motorista ou pagador) para iniciar a gestão e cobranças automáticas.
+                      </p>
+                      {!phase2Done && (
+                        <a
+                          href="/dashboard/clientes"
+                          className="inline-block mt-3 text-[10px] font-black text-slate-950 bg-emerald-400 hover:bg-emerald-300 px-3 py-1.5 rounded-lg transition-all"
+                        >
+                          Cadastrar Cliente
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 3: Emitir Primeira Cobrança */}
+                <div className={`border rounded-2xl p-4 transition-all ${phase3Done ? "border-emerald-500/30 bg-emerald-500/[0.02]" : "border-theme bg-surface-theme"}`}>
+                  <div className="flex items-start gap-3">
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-sm ${phase3Done ? "bg-emerald-500/10 text-emerald-400" : "bg-slate-800 text-slate-400"}`}>
+                      {phase3Done ? "✓" : "3"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="text-xs font-bold text-primary-theme">Emitir Primeira Cobrança</h4>
+                        {phase3Done && <span className="text-[8px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-md uppercase">Concluído</span>}
+                      </div>
+                      <p className="text-[10px] text-muted-theme mt-1 leading-relaxed">
+                        Gere a primeira cobrança Pix. A régua inteligente enviará alertas de vencimento pelo WhatsApp.
+                      </p>
+                      {!phase3Done && (
+                        <button
+                          onClick={() => {
+                            setShowChecklistModal(false);
+                            setChargeSuccess(false);
+                            setChargeAmount("");
+                            setSelectedClientId("");
+                            setShowChargeModal(true);
+                          }}
+                          className="inline-block mt-3 text-[10px] font-black text-slate-950 bg-emerald-400 hover:bg-emerald-300 px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+                        >
+                          Emitir Cobrança
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <button
+                  onClick={() => setShowChecklistModal(false)}
+                  className="w-full py-2.5 rounded-xl bg-surface-theme hover:bg-card-hover-theme text-primary-theme border border-theme font-bold text-xs transition-all cursor-pointer"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== Depositar Pix Modal ==================== */}
+      {showDepositModal && (
+        <div className="fixed inset-0 bg-modal-overlay-theme backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={handleCloseDepositModal}>
+          <div className="bg-modal-theme border border-theme rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={handleCloseDepositModal}
+              className="absolute top-4 right-4 text-secondary-theme hover:text-primary-theme text-xl font-light cursor-pointer"
+            >
+              ×
+            </button>
+
+            <div className="p-5 space-y-4">
+              <div>
+                <h3 className="text-base font-bold text-primary-theme flex items-center gap-2">
+                  <span className="text-teal-400">⚡</span>
+                  Depositar Pix (Recarga de Saldo)
+                </h3>
+                <p className="text-[11px] text-secondary-theme mt-0.5">
+                  Gere um Pix Copia e Cola para realizar uma recarga de saldo na sua conta business vinculada a um cliente.
+                </p>
+              </div>
+
+              {!depositSuccess ? (
+                <form onSubmit={handleCreateDeposit} className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Selecione o Cliente / Motorista</label>
+                      <select
+                        required
+                        value={depositClientId}
+                        onChange={(e) => setDepositClientId(e.target.value)}
+                        className="w-full bg-input-theme border border-theme focus:border-teal-500/50 rounded-xl px-3 py-2.5 text-primary-theme outline-none text-xs cursor-pointer"
+                      >
+                        <option value="">Selecione um cliente...</option>
+                        {clients.map(c => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-extrabold text-secondary-theme uppercase tracking-wider block">Valor do Depósito (R$)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        placeholder="0,00"
+                        required
+                        value={depositAmount}
+                        onChange={(e) => setDepositAmount(e.target.value)}
+                        className="w-full bg-input-theme border border-theme focus:border-teal-500/50 rounded-xl px-3.5 py-2.5 text-primary-theme outline-none text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={depositLoading}
+                    className="w-full py-3 rounded-xl bg-teal-500 hover:bg-teal-400 disabled:bg-teal-500/40 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                  >
+                    {depositLoading ? (
+                      <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></div>
+                    ) : "Gerar QR Code Pix"}
+                  </button>
+                </form>
+              ) : (
+                <div className="space-y-4 text-center">
+                  <div className="w-12 h-12 rounded-full bg-teal-500/10 text-teal-400 mx-auto flex items-center justify-center text-xl font-bold">
+                    ✓
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-primary-theme">Pix de Depósito Gerado!</h4>
+                    <p className="text-[11px] text-secondary-theme mt-1">Copie o código Pix Copia e Cola para realizar o pagamento. O saldo é liberado na hora.</p>
+                  </div>
+
+                  <div className="space-y-2 text-left">
+                    <label className="text-[8px] font-extrabold text-muted-theme uppercase tracking-wider">Pix Copia e Cola</label>
+                    <textarea
+                      readOnly
+                      rows="3"
+                      value={depositPixCopyPaste}
+                      onClick={(e) => e.target.select()}
+                      className="w-full bg-input-theme border border-theme rounded-xl p-2.5 text-[9px] text-primary-theme font-mono outline-none resize-none"
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(depositPixCopyPaste);
+                        alert("Pix copiado com sucesso!");
+                      }}
+                      className="flex-1 py-2.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 border border-teal-500/25 font-bold text-xs transition-all cursor-pointer"
+                    >
+                      Copiar Código
+                    </button>
+                    <button
+                      onClick={handleCloseDepositModal}
+                      className="flex-1 py-2.5 rounded-xl bg-surface-theme hover:bg-card-hover-theme text-primary-theme font-bold text-xs transition-all cursor-pointer"
+                    >
+                      Concluído
+                    </button>
+                  </div>
+
+                  {depositPaymentLink && (
+                    <a
+                      href={depositPaymentLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-[10px] text-muted-theme hover:text-teal-400 underline transition-colors"
+                    >
+                      Visualizar link completo de fatura
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -10,7 +10,6 @@ const MIME_EXTENSION_MAP = {
   'image/png': 'png',
   'image/gif': 'gif',
   'image/webp': 'webp',
-  'image/svg+xml': 'svg',
 };
 
 function ensureUploadsDir() {
@@ -73,10 +72,22 @@ export async function POST(request, { params }) {
       return Response.json({ error: 'Campos obrigatórios ausentes' }, { status: 400 });
     }
 
+    // Validar tipo de arquivo
+    const mappedExt = MIME_EXTENSION_MAP[file_type];
+    if (!mappedExt) {
+      return Response.json({ error: 'Tipo de arquivo não permitido. Apenas PDF, JPG, JPEG, PNG, GIF e WEBP são suportados.' }, { status: 400 });
+    }
+
+    const { ext, buffer } = parseBase64(file_base64, mappedExt);
+
+    // Validar tamanho do arquivo decodificado no servidor (max 10MB)
+    if (buffer.length > 10 * 1024 * 1024) {
+      return Response.json({ error: 'O arquivo excede o limite de tamanho permitido de 10MB.' }, { status: 400 });
+    }
+
     const docId = generateId();
 
     const uploadsDir = ensureUploadsDir();
-    const { ext, buffer } = parseBase64(file_base64, file_type.split('/')[1] || 'pdf');
     const diskFileName = `${docId}.${ext}`;
     const filePath = path.join(uploadsDir, diskFileName);
 
