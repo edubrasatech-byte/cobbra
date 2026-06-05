@@ -495,6 +495,20 @@ export default function ConfiguracoesPage() {
           0% { transform: scale(1); opacity: 0.8; }
           100% { transform: scale(1.4); opacity: 0; }
         }
+        .radar-pulse {
+          animation: pulseShadow 1.5s infinite ease-in-out;
+        }
+        @keyframes pulseShadow {
+          0%, 100% { opacity: 0.4; transform: scale(0.9); }
+          50% { opacity: 1; transform: scale(1.1); }
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
+        }
         .custom-switch {
           width: 44px;
           height: 24px;
@@ -818,60 +832,226 @@ export default function ConfiguracoesPage() {
                         </div>
                       ) : (
                         <div>
-                          {/* Method selection */}
-                          <div style={{ display: 'flex', gap: 8, background: 'var(--bg-input)', padding: 4, borderRadius: 10, marginBottom: 20, maxWidth: 360 }}>
-                            <button onClick={() => setWaMethod('simplified')} style={{ flex: 1, padding: 8, border: 'none', borderRadius: 8, background: waMethod === 'simplified' ? '#10b981' : 'transparent', color: waMethod === 'simplified' ? '#070913' : '#64748b', fontWeight: 800, fontSize: 11.5, cursor: 'pointer', transition: 'all 0.2s' }}>⚡ Simplificado (Cobbra API)</button>
-                            <button onClick={() => setWaMethod('advanced')} style={{ flex: 1, padding: 8, border: 'none', borderRadius: 8, background: waMethod === 'advanced' ? '#10b981' : 'transparent', color: waMethod === 'advanced' ? '#070913' : '#64748b', fontWeight: 800, fontSize: 11.5, cursor: 'pointer', transition: 'all 0.2s' }}>⚙️ Avançado (Z-API)</button>
+                          {/* Step Tracker Header */}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0 auto 32px', maxWidth: '500px', position: 'relative' }}>
+                            <div style={{ position: 'absolute', top: '20px', left: '12%', right: '12%', height: '2px', background: 'rgba(255,255,255,0.06)', zIndex: 1 }}></div>
+                            <div style={{ 
+                              position: 'absolute', 
+                              top: '20px', 
+                              left: '12%', 
+                              width: whatsappStatus === 'connecting' || whatsappStatus === 'scanning' ? '38%' : whatsappStatus === 'connected' ? '76%' : '0%', 
+                              height: '2px', 
+                              background: 'linear-gradient(90deg, #10b981 0%, #059669 100%)', 
+                              transition: 'all 0.5s ease', 
+                              zIndex: 1 
+                            }}></div>
+
+                            {[
+                              { step: 1, label: 'Configuração', active: true, completed: whatsappStatus !== 'disconnected' || waMethod !== 'simplified' },
+                              { step: 2, label: 'Autenticação', active: whatsappStatus === 'connecting' || whatsappStatus === 'scanning' || whatsappStatus === 'connected', completed: whatsappStatus === 'connected' },
+                              { step: 3, label: 'Concluído', active: whatsappStatus === 'connected', completed: whatsappStatus === 'connected' }
+                            ].map((s) => (
+                              <div key={s.step} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, position: 'relative', width: '80px' }}>
+                                <div style={{ 
+                                  width: '40px', 
+                                  height: '40px', 
+                                  borderRadius: '50%', 
+                                  background: s.completed ? '#10b981' : s.active ? 'rgba(16,185,129,0.1)' : 'var(--bg-input)', 
+                                  border: s.active || s.completed ? '2.5px solid #10b981' : '2px solid var(--border-color)',
+                                  color: s.completed ? '#070913' : s.active ? '#10b981' : 'var(--text-secondary)',
+                                  display: 'flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center', 
+                                  fontWeight: '900',
+                                  fontSize: '13.5px',
+                                  transition: 'all 0.3s ease',
+                                  boxShadow: s.active ? '0 0 16px rgba(16,185,129,0.2)' : 'none'
+                                }}>
+                                  {s.completed ? '✓' : s.step}
+                                </div>
+                                <span style={{ 
+                                  fontSize: '11px', 
+                                  marginTop: '8px', 
+                                  color: s.active || s.completed ? 'var(--text-primary)' : 'var(--text-muted)', 
+                                  fontWeight: s.active || s.completed ? '800' : '500', 
+                                  textAlign: 'center', 
+                                  whiteSpace: 'nowrap' 
+                                }}>
+                                  {s.label}
+                                </span>
+                              </div>
+                            ))}
                           </div>
+
+                          {/* Method selection (Only show when disconnected or when using advanced method) */}
+                          {(whatsappStatus === 'disconnected' || waMethod === 'advanced') && (
+                            <div style={{ display: 'flex', gap: 8, background: 'var(--bg-input)', padding: 4, borderRadius: 10, marginBottom: 24, maxWidth: 360, margin: '0 auto 24px' }}>
+                              <button onClick={() => setWaMethod('simplified')} style={{ flex: 1, padding: 8, border: 'none', borderRadius: 8, background: waMethod === 'simplified' ? '#10b981' : 'transparent', color: waMethod === 'simplified' ? '#070913' : '#64748b', fontWeight: 800, fontSize: 11.5, cursor: 'pointer', transition: 'all 0.2s' }}>⚡ Simplificado (Cobbra API)</button>
+                              <button onClick={() => setWaMethod('advanced')} style={{ flex: 1, padding: 8, border: 'none', borderRadius: 8, background: waMethod === 'advanced' ? '#10b981' : 'transparent', color: waMethod === 'advanced' ? '#070913' : '#64748b', fontWeight: 800, fontSize: 11.5, cursor: 'pointer', transition: 'all 0.2s' }}>⚙️ Avançado (Z-API)</button>
+                            </div>
+                          )}
 
                           {waMethod === 'simplified' ? (
                             <div>
                               {whatsappStatus === 'disconnected' && (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 500, margin: '0 auto', textAlign: 'center' }}>
+                                  <p style={{ fontSize: 13.5, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                                     Utilize o assistente simplificado para parear o seu celular em segundos gerando uma conexão direta com nossa API Evolution.
                                   </p>
-                                  <button onClick={handleStartWaConnection} style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', color: '#070913', fontSize: 13, fontWeight: 800, cursor: 'pointer', alignSelf: 'flex-start' }}>
-                                    Iniciar Pareamento de Aparelho 📱
+                                  <button 
+                                    onClick={handleStartWaConnection} 
+                                    style={{ 
+                                      padding: '14px 28px', 
+                                      borderRadius: 12, 
+                                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 
+                                      border: 'none', 
+                                      color: '#070913', 
+                                      fontSize: 13.5, 
+                                      fontWeight: 800, 
+                                      cursor: 'pointer', 
+                                      boxShadow: '0 4px 14px rgba(16,185,129,0.3)',
+                                      alignSelf: 'center',
+                                      marginTop: 10
+                                    }}
+                                  >
+                                    Gerar QR Code de Pareamento 📱
                                   </button>
                                 </div>
                               )}
 
                               {whatsappStatus === 'connecting' && (
-                                <div style={{ padding: '30px 0', textAlign: 'center' }}>
-                                  <div style={{ border: '3.5px solid rgba(16,185,129,0.1)', borderTop: '3.5px solid #10b981', borderRadius: '50%', width: 40, height: 40, margin: '0 auto 20px', animation: 'spin 1s linear infinite' }} />
-                                  <p style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Gerando Instância...</p>
-                                  <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Conectando com o servidor de pareamento. Aguarde.</p>
+                                <div style={{ padding: '40px 0', textAlign: 'center' }}>
+                                  <div style={{ border: '3.5px solid rgba(16,185,129,0.1)', borderTop: '3.5px solid #10b981', borderRadius: '50%', width: 44, height: 44, margin: '0 auto 20px', animation: 'spin 1s linear infinite' }} />
+                                  <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 4 }}>Gerando Instância...</p>
+                                  <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Conectando com o servidor de pareamento. Por favor, aguarde.</p>
                                 </div>
                               )}
 
                               {whatsappStatus === 'scanning' && (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                                  <div style={{ background: 'var(--bg-input)', border: '1px solid var(--border-color)', padding: 16, borderRadius: 14, fontSize: 12, color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                                    <div>1. Abra o **WhatsApp** no seu aparelho celular.</div>
-                                    <div>2. Acesse **Aparelhos Conectados** e clique em **Conectar um Aparelho**.</div>
-                                    <div>3. Aponte a câmera para o QR Code abaixo:</div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 500, margin: '0 auto' }}>
+                                  <div style={{ background: 'var(--bg-input)', border: '1px solid var(--border-color)', padding: 20, borderRadius: 16, fontSize: 13, color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                    <div style={{ display: 'flex', gap: 8 }}><span style={{ color: '#10b981', fontWeight: 'bold' }}>1.</span><span>Abra o **WhatsApp** no seu aparelho celular.</span></div>
+                                    <div style={{ display: 'flex', gap: 8 }}><span style={{ color: '#10b981', fontWeight: 'bold' }}>2.</span><span>Acesse **Aparelhos Conectados** e selecione **Conectar um Aparelho**.</span></div>
+                                    <div style={{ display: 'flex', gap: 8 }}><span style={{ color: '#10b981', fontWeight: 'bold' }}>3.</span><span>Aponte a câmera para o QR Code abaixo para sincronizar.</span></div>
                                   </div>
 
-                                  <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <div style={{ background: '#fff', padding: 14, borderRadius: 16, border: '4px solid #10b981', display: 'inline-block' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                                    <div style={{ background: '#fff', padding: 16, borderRadius: 20, border: '4px solid #10b981', display: 'inline-block', boxShadow: '0 8px 24px rgba(16,185,129,0.15)' }}>
                                       {whatsappQrCode ? (
-                                        <img src={whatsappQrCode} alt="WhatsApp QR Code" style={{ width: 180, height: 180, display: 'block' }} />
+                                        <img src={whatsappQrCode} alt="WhatsApp QR Code" style={{ width: 200, height: 200, display: 'block' }} />
                                       ) : waError ? (
-                                        <div style={{ width: 180, height: 180, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fef2f2', borderRadius: 12, padding: 12 }}>
-                                          <span style={{ fontSize: 24, marginBottom: 8 }}>⚠️</span>
-                                          <span style={{ fontSize: 11, fontWeight: 700, color: '#991b1b', textAlign: 'center', lineHeight: '1.4' }}>{waError}</span>
+                                        <div style={{ width: 200, height: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fef2f2', borderRadius: 12, padding: 16 }}>
+                                          <span style={{ fontSize: 28, marginBottom: 8 }}>⚠️</span>
+                                          <span style={{ fontSize: 12, fontWeight: 700, color: '#991b1b', textAlign: 'center', lineHeight: '1.4' }}>{waError}</span>
                                         </div>
                                       ) : (
-                                        <div style={{ width: 180, height: 180, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', borderRadius: 12 }}>
-                                          <div style={{ border: '3px solid rgba(16,185,129,0.1)', borderTop: '3px solid #10b981', borderRadius: '50%', width: 32, height: 32, marginBottom: 12, animation: 'spin 1s linear infinite' }} />
-                                          <span style={{ fontSize: 11, color: '#475569', fontWeight: 700 }}>Gerando QR Code...</span>
+                                        <div style={{ width: 200, height: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', borderRadius: 12 }}>
+                                          <div style={{ border: '3px solid rgba(16,185,129,0.1)', borderTop: '3px solid #10b981', borderRadius: '50%', width: 36, height: 36, marginBottom: 12, animation: 'spin 1s linear infinite' }} />
+                                          <span style={{ fontSize: 12, color: '#475569', fontWeight: 700 }}>Gerando QR Code...</span>
                                         </div>
                                       )}
                                     </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#10b981', fontWeight: '700' }}>
+                                      <span className="radar-pulse" style={{ width: 8, height: 8, background: '#10b981', borderRadius: '50%', display: 'inline-block' }}></span>
+                                      Aguardando leitura do QR Code...
+                                    </div>
                                   </div>
 
-                                  <button onClick={handleDisconnectWa} style={{ padding: '10px 20px', borderRadius: 10, background: 'rgba(239,68,68,0.1)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.2)', fontSize: 12, fontWeight: 700, cursor: 'pointer', marginTop: 10 }}>Cancel / Reset</button>
+                                  <button 
+                                    onClick={handleDisconnectWa} 
+                                    style={{ 
+                                      padding: '10px 20px', 
+                                      borderRadius: 10, 
+                                      background: 'rgba(239,68,68,0.1)', 
+                                      color: '#fca5a5', 
+                                      border: '1px solid rgba(239,68,68,0.2)', 
+                                      fontSize: 12, 
+                                      fontWeight: 700, 
+                                      cursor: 'pointer', 
+                                      alignSelf: 'center'
+                                    }}
+                                  >
+                                    Cancelar e Redefinir
+                                  </button>
+                                </div>
+                              )}
+
+                              {whatsappStatus === 'connected' && (
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, maxWidth: 500, margin: '0 auto', textAlign: 'center', padding: '10px 0' }}>
+                                  <div style={{ 
+                                    width: 72, 
+                                    height: 72, 
+                                    borderRadius: '50%', 
+                                    background: 'rgba(16,185,129,0.1)', 
+                                    border: '3px solid #10b981', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center', 
+                                    fontSize: 32,
+                                    animation: 'bounce 2s infinite'
+                                  }}>
+                                    🎉
+                                  </div>
+                                  <div>
+                                    <h4 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: '#10b981' }}>Dispositivo Conectado com Sucesso!</h4>
+                                    <p style={{ margin: '8px 0 0 0', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                                      O Cobbra agora está sincronizado e todas as mensagens automáticas de cobrança serão enviadas usando o seu número.
+                                    </p>
+                                  </div>
+
+                                  <div style={{ 
+                                    width: '100%', 
+                                    background: 'var(--bg-surface-hover)', 
+                                    border: '1px solid rgba(16,185,129,0.25)', 
+                                    padding: 20, 
+                                    borderRadius: 16, 
+                                    textAlign: 'left',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 12
+                                  }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: 10 }}>
+                                      <span style={{ fontSize: 12.5, color: 'var(--text-muted)', fontWeight: 600 }}>Número Pareado:</span>
+                                      <span style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 800 }}>{whatsappPhone}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                      <span style={{ fontSize: 12.5, color: 'var(--text-muted)', fontWeight: 600 }}>Status da Integração:</span>
+                                      <span style={{ fontSize: 11, color: '#10b981', fontWeight: 800 }}>🟢 ATIVO & CONECTADO</span>
+                                    </div>
+                                  </div>
+
+                                  <div style={{ display: 'flex', gap: 12, justifyContent: 'center', width: '100%' }}>
+                                    <button 
+                                      onClick={() => setSelectedInt(null)} 
+                                      style={{ 
+                                        padding: '11px 22px', 
+                                        borderRadius: 10, 
+                                        background: 'var(--bg-input)', 
+                                        color: 'var(--text-primary)', 
+                                        border: '1px solid var(--border-color)', 
+                                        fontSize: 13, 
+                                        fontWeight: 700, 
+                                        cursor: 'pointer' 
+                                      }}
+                                    >
+                                      Concluído
+                                    </button>
+                                    <button 
+                                      onClick={handleDisconnectWa} 
+                                      style={{ 
+                                        padding: '11px 22px', 
+                                        borderRadius: 10, 
+                                        background: 'rgba(239,68,68,0.12)', 
+                                        color: '#fca5a5', 
+                                        border: '1px solid rgba(239,68,68,0.25)', 
+                                        fontSize: 13, 
+                                        fontWeight: 700, 
+                                        cursor: 'pointer' 
+                                      }}
+                                    >
+                                      Desconectar Aparelho
+                                    </button>
+                                  </div>
                                 </div>
                               )}
                             </div>
