@@ -206,11 +206,15 @@ export default function DashboardHome() {
   const [clients, setClients] = useState([]);
   const [timeline, setTimeline] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [hideBalance, setHideBalance] = useState(false);
+  const [hideBalance, setHideBalance] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem("hide_balance") === "true";
-    setHideBalance(saved);
+    const saved = localStorage.getItem("hide_balance");
+    if (saved !== null) {
+      setHideBalance(saved === "true");
+    } else {
+      setHideBalance(true);
+    }
   }, []);
 
   const toggleHideBalance = () => {
@@ -530,20 +534,6 @@ export default function DashboardHome() {
   return (
     <div className="flex flex-col gap-6 text-left animate-fadeIn">
       
-      {/* 🔄 Top Page Action Row */}
-      <div className="flex justify-end items-center -mb-2">
-        <button 
-          onClick={loadAllData}
-          className="p-1.5 rounded-lg bg-surface-theme border border-theme hover:border-emerald-500/25 text-secondary-theme hover:text-emerald-400 flex items-center justify-center transition-all duration-200 cursor-pointer shadow-sm group"
-          title="Recarregar dados"
-          aria-label="Recarregar dados"
-        >
-          <svg className="w-3.5 h-3.5 text-secondary-theme group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
-          </svg>
-        </button>
-      </div>
-
       {/* Main Responsive Grid Wrapper (Desktop: 3 columns; Mobile: 1 stacked column) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         
