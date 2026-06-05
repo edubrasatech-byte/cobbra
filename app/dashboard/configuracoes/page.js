@@ -69,6 +69,12 @@ export default function ConfiguracoesPage() {
   });
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab) setActiveTab(tab);
+    }
+
     // Fetch active WhatsApp connection status
     fetch('/api/whatsapp/connect')
       .then(r => r.json())

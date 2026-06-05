@@ -1554,7 +1554,7 @@ export default function DashboardHome() {
                       </p>
                       {!phase1Done && (
                         <a
-                          href="/dashboard/whatsapp"
+                          href="/dashboard/configuracoes?tab=integrations"
                           className="inline-block mt-3 text-[10px] font-black text-slate-950 bg-emerald-400 hover:bg-emerald-300 px-3 py-1.5 rounded-lg transition-all"
                         >
                           Conectar WhatsApp
