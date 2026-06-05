@@ -164,10 +164,8 @@ export async function POST(request) {
       const instance = userData?.whatsapp_instance || `cobbra_inst_${user.id.substring(0, 8)}`;
       
       if (evoUrl && evoToken) {
-        if (client.phone) {
-          // Clean non-digits and format for WhatsApp (55 prefix for Brazil if missing)
-          const cleanPhone = client.phone.replace(/\D/g, '');
-          const waNumber = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+          const { normalizeBrazilianNumber } = require('@/lib/evolution');
+          const waNumber = normalizeBrazilianNumber(client.phone);
           
           let activeEvoUrl = evoUrl;
           let response;
@@ -296,7 +294,6 @@ export async function POST(request) {
             console.log(`[SELF-HEALING DB] Automatically healed whatsapp_status to connected for user ${user.id}`);
           }
           console.log(`[EVOLUTION API] Successfully sent WhatsApp message to ${waNumber} via instance ${instance}`);
-        }
       }
     }
 

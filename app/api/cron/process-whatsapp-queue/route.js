@@ -1,5 +1,5 @@
 import { query, queryOne, run, generateId } from '@/lib/db';
-import { getInstanceToken } from '@/lib/evolution';
+import { getInstanceToken, normalizeBrazilianNumber } from '@/lib/evolution';
 
 export async function GET(request) {
   try {
@@ -63,7 +63,7 @@ export async function GET(request) {
               'apikey': instanceToken
             },
             body: JSON.stringify({
-              number: msg.phone,
+              number: normalizeBrazilianNumber(msg.phone),
               text: msg.message,
               delay: 1000
             })
