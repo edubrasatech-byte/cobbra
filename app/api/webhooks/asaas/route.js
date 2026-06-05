@@ -123,6 +123,104 @@ export async function POST(request) {
         [generateId(), existing.user_id, 'payment', '💰 Pagamento confirmado via Asaas', `R$ ${paidAmount.toFixed(2)} recebido de ${client?.name}`, 'charge', chargeId]);
 
       console.log(`✅ Cobrança ${chargeId} liquidada com sucesso via Webhook Asaas.`);
+    } else if (event === 'PAYMENT_REFUNDED' || event === 'PAYMENT_PARTIALLY_REFUNDED') {
+      const chargeId = payment.externalReference;
+      if (!chargeId) {
+        return new Response('Missing externalReference', { status: 200 });
+      }
+
+      // Localizar a cobrança
+      const existing = queryOne('SELECT * FROM charges WHERE id = ?', [chargeId]);
+      if (!existing) {
+        return new Response('Charge not found', { status: 200 });
+      }
+
+      // Se já está cancelada/estornada, ignora
+      if (existing.status === 'cancelled') {
+        return new Response('Already refunded', { status: 200 });
+      }
+
+      const user = queryOne('SELECT * FROM users WHERE id = ?', [existing.user_id]);
+      const client = queryOne('SELECT * FROM clients WHERE id = ?', [existing.client_id]);
+
+      const refundValue = payment.value || existing.amount;
+
+      // Atualizar cobrança para cancelled
+      run(
+        `UPDATE charges 
+         SET status = 'cancelled', 
+             cancel_reason = 'Estorno de pagamento recebido via webhook do Asaas',
+             cancelled_at = datetime('now'),
+             updated_at = datetime('now') 
+         WHERE id = ?`,
+        [chargeId]
+      );
+
+      // Deduzir da carteira do usuário
+      run(
+        `UPDATE users 
+         SET wallet_balance = MAX(0, wallet_balance - ?), 
+             updated_at = datetime('now') 
+         WHERE id = ?`,
+        [refundValue, existing.user_id]
+      );
+
+      // Deduzir da carteira e total pago do cliente
+      run(
+        `UPDATE clients 
+         SET wallet_balance = MAX(0, wallet_balance - ?), 
+             total_paid = MAX(0, total_paid - ?),
+             updated_at = datetime('now') 
+         WHERE id = ?`,
+        [refundValue, refundValue, existing.client_id]
+      );
+
+      // Registrar transação de estorno
+      run(
+        `INSERT INTO transactions (id, user_id, charge_id, client_id, amount, type, payment_method, reference, notes) 
+         VALUES (?, ?, ?, ?, ?, 'refund', ?, ?, ?)`,
+        [
+          generateId(),
+          existing.user_id,
+          chargeId,
+          existing.client_id,
+          refundValue,
+          existing.payment_method || 'pix',
+          payment.id || 'ASAAS-WH-REFUND',
+          `Estorno recebido via Asaas: ${existing.description || ''}`
+        ]
+      );
+
+      // Registrar atividade do usuário
+      run(
+        `INSERT INTO activity_log (id, user_id, action, entity_type, entity_id, details) 
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          generateId(),
+          existing.user_id,
+          'charge_refund',
+          'charge',
+          chargeId,
+          `Estorno de R$ ${refundValue.toFixed(2)} processado via webhook Asaas.`
+        ]
+      );
+
+      // Criar notificação no painel
+      run(
+        `INSERT INTO notifications (id, user_id, type, title, message, entity_type, entity_id) 
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          generateId(),
+          existing.user_id,
+          'alert',
+          '💸 Reembolso processado (Asaas)',
+          `R$ ${refundValue.toFixed(2)} foi estornado para o cliente via Asaas.`,
+          'charge',
+          chargeId
+        ]
+      );
+
+      console.log(`✅ Estorno da cobrança ${chargeId} conciliado via Webhook Asaas.`);
     }
 
     return Response.json({ success: true }, { status: 200 });
