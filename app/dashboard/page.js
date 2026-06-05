@@ -530,6 +530,20 @@ export default function DashboardHome() {
   return (
     <div className="flex flex-col gap-6 text-left animate-fadeIn">
       
+      {/* 🔄 Top Page Action Row */}
+      <div className="flex justify-end items-center -mb-2">
+        <button 
+          onClick={loadAllData}
+          className="p-1.5 rounded-lg bg-surface-theme border border-theme hover:border-emerald-500/25 text-secondary-theme hover:text-emerald-400 flex items-center justify-center transition-all duration-200 cursor-pointer shadow-sm group"
+          title="Recarregar dados"
+          aria-label="Recarregar dados"
+        >
+          <svg className="w-3.5 h-3.5 text-secondary-theme group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
+          </svg>
+        </button>
+      </div>
+
       {/* Main Responsive Grid Wrapper (Desktop: 3 columns; Mobile: 1 stacked column) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         
@@ -537,7 +551,7 @@ export default function DashboardHome() {
         <div className="lg:col-span-2 flex flex-col gap-6 w-full">
           
           {/* 💳 Premium Redesigned Bank Card */}
-          <div className="relative rounded-3xl p-6 bg-gradient-to-br from-[#0c0f1d] via-[#101426] to-[#04060d] border border-emerald-500/20 shadow-2xl overflow-hidden flex flex-col justify-between aspect-[2.1/1] md:aspect-[2.3/1] min-h-[220px]">
+          <div className="relative rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-[#0c0f1d] via-[#101426] to-[#04060d] border border-emerald-500/20 shadow-2xl overflow-hidden flex flex-col justify-between min-h-[180px] sm:min-h-[200px] md:min-h-[210px] w-full">
             {/* Glow Effects */}
             <div className="absolute -top-12 -right-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
             <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -564,68 +578,56 @@ export default function DashboardHome() {
               </div>
               
               <div className="text-right">
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-black tracking-widest bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent uppercase">Cobbra Pay</span>
-                  <button 
-                    onClick={loadAllData}
-                    className="p-1 rounded bg-surface-theme border border-theme hover:border-emerald-500/30 text-primary-theme hover:text-emerald-400 flex items-center justify-center transition-all duration-200 cursor-pointer shadow-sm group"
-                    title="Recarregar dados"
-                    aria-label="Recarregar dados"
-                  >
-                    <svg className="w-2.5 h-2.5 text-secondary-theme group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"></path>
-                    </svg>
-                  </button>
-                </div>
+                <span className="text-[11px] font-black tracking-widest bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent uppercase">Cobbra Pay</span>
                 <p className="text-[8px] text-muted-theme font-bold uppercase tracking-wider leading-none mt-0.5">Conta Business</p>
               </div>
             </div>
 
             {/* Card Middle: Balance display with Hide/Show eye icon */}
             <div className="z-10 my-3">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <span className="text-[9px] font-bold text-muted-theme uppercase tracking-widest">Saldo Disponível</span>
                 <button 
                   type="button"
                   onClick={toggleHideBalance}
-                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 border border-emerald-500/20 text-[9px] font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-sm focus:outline-none"
+                  className="flex items-center gap-1 text-muted-theme hover:text-emerald-400 hover:underline transition-all cursor-pointer focus:outline-none"
                   title={hideBalance ? "Mostrar saldo" : "Ocultar saldo"}
                 >
                   {hideBalance ? (
                     <>
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
                       </svg>
-                      <span className="text-[8px]">Ver Saldo</span>
+                      <span className="text-[9px] tracking-wide normal-case font-bold pl-0.5">Ver Saldo</span>
                     </>
                   ) : (
                     <>
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.43 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
-                      <span className="text-[8px]">Ocultar Saldo</span>
+                      <span className="text-[9px] tracking-wide normal-case font-bold pl-0.5">Ocultar Saldo</span>
                     </>
                   )}
                 </button>
               </div>
               
-              <h3 className="text-3xl md:text-4xl font-black text-primary-theme tracking-tight font-mono mt-1.5 transition-all">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-primary-theme tracking-tight font-mono mt-1.5 transition-all">
                 {hideBalance ? "R$ ****" : fmt(walletBalance)}
               </h3>
             </div>
 
             {/* Card Bottom: Member Name & Card Details */}
-            <div className="flex justify-between items-end z-10 border-t border-theme pt-3.5">
-              <div className="min-w-0 pr-3">
+            <div className="flex justify-between items-end z-10 border-t border-theme pt-3 mt-2">
+              <div className="min-w-0 pr-3 flex-1">
                 <p className="text-[8px] text-muted-theme font-bold uppercase tracking-wider">Titular</p>
-                <p className="text-xs font-bold text-primary-theme leading-none uppercase tracking-wide truncate mt-0.5">
+                <p className="text-xs sm:text-sm font-bold text-primary-theme leading-none uppercase tracking-wide truncate mt-1">
                   {user?.business_name || user?.name || "Cobbra Member"}
                 </p>
               </div>
               <div className="text-right flex-shrink-0">
                 <p className="text-[8px] text-muted-theme font-bold uppercase tracking-wider">Resgates</p>
-                <p className="text-xs font-bold text-emerald-400 mt-0.5">{withdrawalCount} Pix</p>
+                <p className="text-xs sm:text-sm font-bold text-emerald-400 mt-1">{withdrawalCount} Pix</p>
               </div>
             </div>
           </div>
