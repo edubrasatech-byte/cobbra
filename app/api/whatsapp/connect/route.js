@@ -49,6 +49,12 @@ export async function GET(request) {
       instance = userData?.whatsapp_instance || `cobbra_inst_${user.id.substring(0, 8)}`;
     }
 
+    // Trust the database status if it is already connected.
+    // This prevents connection drops due to temporary network lags or transient VPS state checks.
+    if (status === 'connected') {
+      return Response.json({ status: 'connected', phone: phone || '5511999999999', instance });
+    }
+
     const evoUrl = process.env.NEXT_PUBLIC_EVOLUTION_API_URL || process.env.EVOLUTION_API_URL;
     const evoToken = process.env.EVOLUTION_API_GLOBAL_TOKEN || process.env.EVOLUTION_API_TOKEN || process.env.EVOLUTION_API_GLOBAL_API_KEY || process.env.EVOLUTION_API_KEY;
     let baseUrl = evoUrl ? (evoUrl.endsWith('/') ? evoUrl.slice(0, -1) : evoUrl) : '';
